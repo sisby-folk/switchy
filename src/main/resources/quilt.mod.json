@@ -1,0 +1,40 @@
+{
+	"schema_version": 1,
+	"quilt_loader": {
+		"group": "folk.sisby",
+		"id": "switchy",
+		"version": "${version}",
+		"metadata": {
+			"name": "Switchy",
+			"description": "Combines player personalization features from other mods into presets",
+			"contributors": {
+				"Sisby Folk": "Owner"
+			},
+			"contact": {
+				"homepage": "https://modrinth.com/mod/switchy",
+				"issues": "https://github.com/sisby-folk/switchy/issues",
+				"sources": "https://github.com/sisby-folk/switchy"
+			},
+			"icon": "assets/switchy/icon.png"
+		},
+		"intermediate_mappings": "net.fabricmc:intermediary",
+		"entrypoints": {
+			"init": "folk.sisby.switchy.Switchy"
+		},
+		"depends": [
+			{
+				"id": "quilt_loader",
+				"versions": ">=0.17.0-"
+			},
+			{
+				"id": "quilted_fabric_api",
+				"versions": ">=4.0.0-"
+			},
+			{
+				"id": "minecraft",
+				"versions": ">=1.19.2"
+			}
+		]
+	},
+	"mixin": "switchy.mixins.json"
+}
