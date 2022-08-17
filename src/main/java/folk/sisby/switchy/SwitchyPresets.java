@@ -7,13 +7,13 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 public class SwitchyPresets {
 
-	private final Map<String, SwitchyPreset> presetMap;
+	private final Map<String, SwitchyPreset> presetMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 	private final PlayerEntity player;
 	@Nullable private SwitchyPreset currentPreset;
 
@@ -39,12 +39,11 @@ public class SwitchyPresets {
 	}
 
 	public static SwitchyPresets fromEmpty(PlayerEntity player) {
-		return new SwitchyPresets(player, new HashMap<>());
+		return new SwitchyPresets(player);
 	}
 
-	private SwitchyPresets(PlayerEntity player, Map<String, SwitchyPreset> presetMap) {
+	private SwitchyPresets(PlayerEntity player) {
 		this.player = player;
-		this.presetMap = presetMap;
 	}
 
 	public boolean setCurrentPreset(String presetName){
@@ -86,7 +85,7 @@ public class SwitchyPresets {
 
 	public boolean deletePreset(String presetName) {
 		if (this.presetMap.containsKey(presetName)) {
-			if (Objects.equals(Objects.toString(this.currentPreset, null), presetName)) {
+			if (presetName.equalsIgnoreCase(Objects.toString(this.currentPreset, null))) {
 				this.currentPreset = null;
 			}
 			this.presetMap.remove(presetName);
