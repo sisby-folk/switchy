@@ -34,12 +34,12 @@ public class SwitchyPresets {
 		SwitchyPresets outPresets = SwitchyPresets.fromEmpty(player);
 		NbtCompound listNbt = nbt.getCompound(KEY_PRESET_LIST);
 		for (String key : listNbt.getKeys()) {
-			SwitchyPreset preset = SwitchyPreset.fromNbt(key, nbt.getCompound(key));
+			SwitchyPreset preset = SwitchyPreset.fromNbt(key, listNbt.getCompound(key));
 			if (!outPresets.addPreset(preset)) {
 				Switchy.LOGGER.warn("Player data contained duplicate preset. Data may have been lost.");
 			}
 		}
-		if (nbt.contains(KEY_PRESET_CURRENT) && !outPresets.setCurrentPreset(nbt.getString(KEY_PRESET_CURRENT))) {
+		if (nbt.contains(KEY_PRESET_CURRENT) && !outPresets.setCurrentPreset(nbt.getString(KEY_PRESET_CURRENT), false)) {
 			Switchy.LOGGER.warn("Unable to set current preset from data. Data may have been lost.");
 		}
 		return outPresets;
@@ -53,10 +53,10 @@ public class SwitchyPresets {
 		this.player = player;
 	}
 
-	public boolean setCurrentPreset(String presetName) {
+	public boolean setCurrentPreset(String presetName, Boolean performSwitch) {
 		if (this.presetMap.containsKey(presetName)) {
 			SwitchyPreset newPreset = this.presetMap.get(presetName);
-			this.switchPreset(currentPreset, newPreset);
+			if (performSwitch) this.switchPreset(currentPreset, newPreset);
 			this.currentPreset = newPreset;
 			return true;
 		} else {

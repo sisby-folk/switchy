@@ -102,7 +102,7 @@ public class SwitchyCommands {
 		SwitchyPresets presets = validateSwitchyPlayer(player).switchy$getPresets();
 
 		String oldPresetName = Objects.toString(presets.getCurrentPreset(), "<None>");
-		if (presets.setCurrentPreset(presetName)) {
+		if (presets.setCurrentPreset(presetName, true)) {
 			informSwitch(player, oldPresetName, presetName);
 		} else {
 			inform(player, "That preset doesn't exist! /switchy list");
