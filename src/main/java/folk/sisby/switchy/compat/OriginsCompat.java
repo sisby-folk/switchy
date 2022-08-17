@@ -30,7 +30,7 @@ public class OriginsCompat extends PresetCompat {
 	@Override
 	public void updateFromPlayer(PlayerEntity player) {
 		OriginComponent originComponent = ModComponents.ORIGIN.get(player);
-		this.origins = originComponent.getOrigins();
+		this.origins = new HashMap<>(originComponent.getOrigins());
 	}
 
 	@Override
