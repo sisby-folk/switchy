@@ -6,13 +6,9 @@ import net.minecraft.nbt.NbtCompound;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class SwitchyPreset {
 	public final List<PresetCompat> compatModules = new ArrayList<>();
-
-	public static final String KEY_PRESET_NAME = "presetName";
-	public static final String KEY_PRESET_DATA = "presetData";
 
 	public String presetName;
 
@@ -23,12 +19,9 @@ public class SwitchyPreset {
 
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
-		outNbt.putString(KEY_PRESET_NAME, Optional.ofNullable(this.presetName).orElse("\u0000"));
-		NbtCompound dataNbt = new NbtCompound();
 		for (PresetCompat module : compatModules) {
-			dataNbt.put(module.getKey(), module.toNbt(this));
+			outNbt.put(module.getKey(), module.toNbt(this));
 		}
-		outNbt.put(KEY_PRESET_DATA, dataNbt);
 		return outNbt;
 	}
 

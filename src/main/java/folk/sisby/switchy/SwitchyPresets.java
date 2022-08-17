@@ -1,10 +1,8 @@
 package folk.sisby.switchy;
 
-import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -18,21 +16,31 @@ public class SwitchyPresets {
 	private final PlayerEntity player;
 	@Nullable private SwitchyPreset currentPreset;
 
+	public static final String KEY_PRESET_CURRENT = "current";
+	public static final String KEY_PRESET_LIST = "list";
+
 	public NbtElement toNbt() {
 		NbtCompound outNbt = new NbtCompound();
+		NbtCompound listNbt = new NbtCompound();
 		for (SwitchyPreset preset : presetMap.values()) {
-			outNbt.put(preset.presetName, preset.toNbt());
+			listNbt.put(preset.presetName, preset.toNbt());
 		}
+		outNbt.put(KEY_PRESET_LIST, listNbt);
+		if (this.currentPreset != null) outNbt.putString(KEY_PRESET_CURRENT, currentPreset.presetName);
 		return outNbt;
 	}
 
 	public static SwitchyPresets fromNbt(PlayerEntity player, NbtCompound nbt) {
 		SwitchyPresets outPresets = SwitchyPresets.fromEmpty(player);
-		for (String key : nbt.getKeys()) {
+		NbtCompound listNbt = nbt.getCompound(KEY_PRESET_LIST);
+		for (String key : listNbt.getKeys()) {
 			SwitchyPreset preset = SwitchyPreset.fromNbt(key, nbt.getCompound(key));
 			if (!outPresets.addPreset(preset)) {
 				Switchy.LOGGER.warn("Player data contained duplicate preset. Data may have been lost.");
 			}
+		}
+		if (nbt.contains(KEY_PRESET_CURRENT) && !outPresets.setCurrentPreset(nbt.getString(KEY_PRESET_CURRENT))) {
+			Switchy.LOGGER.warn("Unable to set current preset from data. Data may have been lost.");
 		}
 		return outPresets;
 	}
@@ -45,7 +53,7 @@ public class SwitchyPresets {
 		this.player = player;
 	}
 
-	public boolean setCurrentPreset(String presetName){
+	public boolean setCurrentPreset(String presetName) {
 		if (this.presetMap.containsKey(presetName)) {
 			SwitchyPreset newPreset = this.presetMap.get(presetName);
 			this.switchPreset(currentPreset, newPreset);
@@ -64,7 +72,11 @@ public class SwitchyPresets {
 		newPreset.applyToPlayer(player);
 	}
 
-	public @Nullable SwitchyPreset getCurrentPreset(){
+	public void saveCurrentPreset() {
+		if (this.currentPreset != null) this.currentPreset.updateFromPlayer(player);
+	}
+
+	public @Nullable SwitchyPreset getCurrentPreset() {
 		return currentPreset;
 	}
 
