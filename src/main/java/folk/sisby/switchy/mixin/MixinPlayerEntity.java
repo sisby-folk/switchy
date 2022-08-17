@@ -32,7 +32,7 @@ public abstract class MixinPlayerEntity extends LivingEntity implements SwitchyP
 
 	@Inject(at = @At("TAIL"), method = "readCustomDataFromNbt(Lnet/minecraft/nbt/NbtCompound;)V")
 	public void readCustomDataFromNbt(NbtCompound tag, CallbackInfo ci) {
-		switchy$switchyPresets = SwitchyPresets.fromNbt((PlayerEntity)(Object) this, tag.contains("switchy:presets", NbtType.LIST) ? tag.getList("switchy:presets", NbtType.LIST) : new NbtList());
+		switchy$switchyPresets = SwitchyPresets.fromNbt((PlayerEntity)(Object) this, tag.contains("switchy:presets", NbtType.COMPOUND) ? tag.getCompound("switchy:presets") : new NbtCompound());
 	}
 
 	@Override

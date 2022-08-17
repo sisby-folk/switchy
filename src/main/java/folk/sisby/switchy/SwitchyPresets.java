@@ -7,6 +7,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -18,21 +19,19 @@ public class SwitchyPresets {
 	@Nullable private SwitchyPreset currentPreset;
 
 	public NbtElement toNbt() {
-		NbtList outList = new NbtList();
+		NbtCompound outNbt = new NbtCompound();
 		for (SwitchyPreset preset : presetMap.values()) {
-			outList.add(preset.toNbt());
+			outNbt.put(preset.presetName, preset.toNbt());
 		}
-		return outList;
+		return outNbt;
 	}
 
-	public static SwitchyPresets fromNbt(PlayerEntity player, NbtList nbtList) {
+	public static SwitchyPresets fromNbt(PlayerEntity player, NbtCompound nbt) {
 		SwitchyPresets outPresets = SwitchyPresets.fromEmpty(player);
-		for (NbtElement item : nbtList) {
-			if (item.getType() == NbtType.COMPOUND && item instanceof NbtCompound compound) {
-				SwitchyPreset preset = SwitchyPreset.fromNbt(compound);
-				if (!outPresets.addPreset(preset)) {
-					Switchy.LOGGER.warn("Player data contained duplicate preset. Data may have been lost.");
-				}
+		for (String key : nbt.getKeys()) {
+			SwitchyPreset preset = SwitchyPreset.fromNbt(key, nbt.getCompound(key));
+			if (!outPresets.addPreset(preset)) {
+				Switchy.LOGGER.warn("Player data contained duplicate preset. Data may have been lost.");
 			}
 		}
 		return outPresets;
@@ -81,6 +80,10 @@ public class SwitchyPresets {
 	@Override
 	public String toString() {
 		return presetMap.keySet().toString();
+	}
+
+	public List<String> getPresetNames() {
+		return presetMap.keySet().stream().sorted().toList();
 	}
 
 	public boolean deletePreset(String presetName) {

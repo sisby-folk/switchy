@@ -32,11 +32,10 @@ public class SwitchyPreset {
 		return outNbt;
 	}
 
-	public static SwitchyPreset fromNbt(NbtCompound nbt) {
-		SwitchyPreset outPreset = new SwitchyPreset(nbt.getString(KEY_PRESET_NAME));
-		NbtCompound dataNbt = nbt.getCompound(KEY_PRESET_NAME);
+	public static SwitchyPreset fromNbt(String presetName, NbtCompound nbt) {
+		SwitchyPreset outPreset = new SwitchyPreset(presetName);
 		for (PresetCompat module : outPreset.compatModules) {
-			module.fillFromNbt(dataNbt.getCompound(module.getKey()));
+			module.fillFromNbt(nbt.getCompound(module.getKey()));
 		}
 		return outPreset;
 	}
