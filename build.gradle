@@ -77,8 +77,8 @@ dependencies {
 	modImplementation 'com.github.apace100:origins-fabric:v1.6.2'
 
 	modImplementation files('/build/libs/player-pronouns-1.5.1+1.19.jar')
-	// runtimeOnly "eu.pb4:placeholder-api:2.0.0-beta.7+1.19"
-	// runtimeOnly files('/build/libs/more-codecs-0.2.2+1.18.jar')
+	modRuntimeOnly "eu.pb4:placeholder-api:2.0.0-beta.7+1.19"
+	modRuntimeOnly files('/build/libs/more-codecs-0.2.2+1.18.jar')
 
 }
 
