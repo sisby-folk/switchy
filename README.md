@@ -2,6 +2,9 @@
 
 Adds an extensible preset system that allows players to quickly switch between player customizations from other mods.
 
+![image](https://user-images.githubusercontent.com/55819817/185186588-6bd80141-727c-4ed3-a987-815aab17d790.png)
+
+
 Works in singleplayer and on server-side.
 
 Commands:
