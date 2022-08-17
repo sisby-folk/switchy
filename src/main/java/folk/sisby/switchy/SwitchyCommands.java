@@ -51,7 +51,7 @@ public class SwitchyCommands {
 		ServerPlayerEntity player = context.getSource().getPlayer();
 
 		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
-		player.sendMessage(Text.literal("Presets: ").append(Text.literal(presets.toString())), false);
+		player.sendMessage(Text.literal("Presets: ").append(Text.literal(Objects.toString(presets, "[]"))), false);
 		player.sendMessage(Text.literal("Current Preset: ").append(Text.literal(Objects.toString(presets.getCurrentPreset(), "<None>"))), false);
 		return 1;
 	}

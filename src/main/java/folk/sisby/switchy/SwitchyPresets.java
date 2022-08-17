@@ -1,8 +1,8 @@
 package folk.sisby.switchy;
 
-import com.unascribed.drogtor.DrogtorPlayer;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import org.jetbrains.annotations.Nullable;
@@ -28,8 +28,8 @@ public class SwitchyPresets {
 	public static SwitchyPresets fromNbt(PlayerEntity player, NbtList nbtList) {
 		SwitchyPresets outPresets = SwitchyPresets.fromEmpty(player);
 		for (NbtElement item : nbtList) {
-			if (item.getType() == NbtType.LIST && item instanceof NbtList list) {
-				SwitchyPreset preset = SwitchyPreset.fromNbt(list);
+			if (item.getType() == NbtType.COMPOUND && item instanceof NbtCompound compound) {
+				SwitchyPreset preset = SwitchyPreset.fromNbt(compound);
 				if (!outPresets.addPreset(preset)) {
 					Switchy.LOGGER.warn("Player data contained duplicate preset. Data may have been lost.");
 				}
@@ -90,6 +90,17 @@ public class SwitchyPresets {
 				this.currentPreset = null;
 			}
 			this.presetMap.remove(presetName);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean renamePreset(String oldName, String newName) {
+		if (this.presetMap.containsKey(oldName) && !this.presetMap.containsKey(newName)) {
+			SwitchyPreset preset = this.presetMap.get(oldName);
+			this.presetMap.put(newName, preset);
+			this.presetMap.remove(oldName);
 			return true;
 		} else {
 			return false;

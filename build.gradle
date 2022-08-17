@@ -13,13 +13,44 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+
+	// Jitpack
 	maven { url 'https://jitpack.io' }
+
+	// Player Pronouns
+	maven {
+		name = "NucleoidMC"
+		url = uri("https://maven.nucleoid.xyz/")
+	}
+
+	// Fabric Tailor
 	maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
 
-	mavenLocal {
+	// Origins
+	maven {
+		name = "Ladysnake Libs"
+		url = 'https://ladysnake.jfrog.io/artifactory/mods'
+	}
+	maven {
+		url = 'https://maven.cafeteria.dev'
 		content {
-			includeGroup "com.unascribed"
+			includeGroup 'net.adriantodt.fabricmc'
 		}
+	}
+	maven {
+		url "https://maven.jamieswhiteshirt.com/libs-release"
+		content {
+			includeGroup "com.jamieswhiteshirt"
+		}
+	}
+	maven {
+		url "https://jitpack.io"
+	}
+	maven {
+		url "https://maven.shedaniel.me/"
+	}
+	maven {
+		url "https://maven.terraformersmc.com/"
 	}
 }
 
@@ -38,9 +69,15 @@ dependencies {
 	modImplementation libs.quilted.fabric.api
 	// modImplementation libs.bundles.quilted.fabric.api // If you wish to use Fabric API's deprecated modules, you can replace the above line with this one
 
-	modImplementation 'me.lucko:fabric-permissions-api:0.2-SNAPSHOT'
-	modImplementation 'com.github.samolego:FabricTailor:1.9.0'
 	modImplementation files('/build/libs/drogtor-1.1.3.jar')
+
+	// modImplementation 'me.lucko:fabric-permissions-api:0.2-SNAPSHOT'
+	modImplementation 'com.github.samolego:FabricTailor:1.9.0'
+
+	modImplementation 'com.github.apace100:origins-fabric:v1.6.2'
+
+	modImplementation files('/build/libs/player-pronouns-1.5.1+1.19.jar')
+
 }
 
 processResources {
