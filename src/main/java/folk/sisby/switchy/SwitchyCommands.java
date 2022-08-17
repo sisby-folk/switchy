@@ -10,10 +10,10 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -76,7 +76,7 @@ public class SwitchyCommands {
 
 		if (((SwitchyPlayer) player).switchy$getPresets() != null) {
 			((SwitchyPlayer) player).switchy$getPresets().getPresetNames().stream()
-					.filter((s) -> s.startsWith(remaining))
+					.filter((s) -> s.toLowerCase(Locale.ROOT).startsWith(remaining))
 					.forEach(builder::suggest);
 		}
 
