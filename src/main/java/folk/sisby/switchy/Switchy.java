@@ -9,30 +9,31 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Switchy implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("Switchy");
-	public static final List<PresetCompat> COMPAT_MODULES = new ArrayList<>();
+	public static final List<Supplier<? extends PresetCompatModule>> COMPAT_MODULES = new ArrayList<>();
 
 	@Override
 	public void onInitialize(ModContainer mod) {
 		SwitchyCommands.InitializeCommands();
 
 		if (QuiltLoader.isModLoaded("drogtor")) {
-			DrogtorCompat.register();
+			DrogtorCompat.touch();
 		}
 		if (QuiltLoader.isModLoaded("playerpronouns")) {
-			PlayerPronounsCompat.register();
+			PlayerPronounsCompat.touch();
 		}
 		if (QuiltLoader.isModLoaded("fabrictailor")) {
-			FabricTailorCompat.register();
+			FabricTailorCompat.touch();
 		}
 		if (QuiltLoader.isModLoaded("origins")) {
-			OriginsCompat.register();
+			OriginsCompat.touch();
 		}
 
-		LOGGER.info("Switchy Initialized! Compatibility enabled for: "+ COMPAT_MODULES.stream().map(PresetCompat::getKey).collect(Collectors.joining(", ")));
+		LOGGER.info("Switchy Initialized! Compatibility enabled for: "+ COMPAT_MODULES.stream().map((f) -> (f.get().getKey())).collect(Collectors.joining(", ")));
 	}
 
 }

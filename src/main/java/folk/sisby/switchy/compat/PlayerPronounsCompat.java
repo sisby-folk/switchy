@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class PlayerPronounsCompat extends PresetCompat {
+public class PlayerPronounsCompat extends PresetCompatModule {
 	public static final String KEY = "playerPronouns";
 
 	public static final String KEY_PRONOUNS_RAW = "pronounsRaw";
@@ -42,7 +42,7 @@ public class PlayerPronounsCompat extends PresetCompat {
 
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
-		String pronounsRaw = nbt.contains(KEY_PRONOUNS_RAW) ? nbt.getString(KEY_PRONOUNS_RAW): null;
+		String pronounsRaw = nbt.contains(KEY_PRONOUNS_RAW) ? nbt.getString(KEY_PRONOUNS_RAW) : null;
 		if (pronounsRaw != null) {
 			// Ripped logic from the command
 			Map<String, Text> pronounTexts = PronounList.get().getCalculatedPronounStrings();
@@ -59,12 +59,11 @@ public class PlayerPronounsCompat extends PresetCompat {
 		return KEY;
 	}
 
-	@Override
-	public PresetCompat getEmptyModule() {
-		return new PlayerPronounsCompat();
+	public static void touch() {
 	}
 
-	public static void register() {
-		Switchy.COMPAT_MODULES.add(new PlayerPronounsCompat());
+	// Runs on touch() - but only once.
+	static {
+		Switchy.COMPAT_MODULES.add(PlayerPronounsCompat::new);
 	}
 }

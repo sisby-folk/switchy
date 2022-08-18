@@ -8,10 +8,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-import java.util.Optional;
-
-public class DrogtorCompat extends PresetCompat {
+public class DrogtorCompat extends PresetCompatModule {
 	public static final String KEY = "drogtor";
 
 	public static final String KEY_NICKNAME = "nickname";
@@ -50,9 +47,9 @@ public class DrogtorCompat extends PresetCompat {
 
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
-		this.nickname = nbt.contains(KEY_NICKNAME) ? nbt.getString(KEY_NICKNAME): null;
-		this.namecolor = nbt.contains(KEY_NAME_COLOR) ? Formatting.byName(nbt.getString(KEY_NAME_COLOR)): null;
-		this.bio = nbt.contains(KEY_BIO) ? nbt.getString(KEY_BIO): null;
+		this.nickname = nbt.contains(KEY_NICKNAME) ? nbt.getString(KEY_NICKNAME) : null;
+		this.namecolor = nbt.contains(KEY_NAME_COLOR) ? Formatting.byName(nbt.getString(KEY_NAME_COLOR)) : null;
+		this.bio = nbt.contains(KEY_BIO) ? nbt.getString(KEY_BIO) : null;
 	}
 
 	@Override
@@ -60,12 +57,11 @@ public class DrogtorCompat extends PresetCompat {
 		return KEY;
 	}
 
-	@Override
-	public PresetCompat getEmptyModule() {
-		return new DrogtorCompat();
+	public static void touch() {
 	}
 
-	public static void register() {
-		Switchy.COMPAT_MODULES.add(new DrogtorCompat());
+	// Runs on touch() - but only once.
+	static {
+		Switchy.COMPAT_MODULES.add(DrogtorCompat::new);
 	}
 }

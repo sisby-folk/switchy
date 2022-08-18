@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class OriginsCompat extends PresetCompat {
+public class OriginsCompat extends PresetCompatModule {
 	public static final String KEY = "origins";
 
 	public static final String KEY_ORIGINS_LIST = "OriginLayers";
@@ -93,12 +93,11 @@ public class OriginsCompat extends PresetCompat {
 		return KEY;
 	}
 
-	@Override
-	public PresetCompat getEmptyModule() {
-		return new OriginsCompat();
+	public static void touch() {
 	}
 
-	public static void register() {
-		Switchy.COMPAT_MODULES.add(new OriginsCompat());
+	// Runs on touch() - but only once.
+	static {
+		Switchy.COMPAT_MODULES.add(OriginsCompat::new);
 	}
 }
