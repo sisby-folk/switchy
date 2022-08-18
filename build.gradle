@@ -74,7 +74,14 @@ dependencies {
 	// modImplementation 'me.lucko:fabric-permissions-api:0.2-SNAPSHOT'
 	modImplementation 'com.github.samolego:FabricTailor:1.9.0'
 
-	modImplementation 'com.github.apace100:origins-fabric:v1.6.2'
+
+	modCompileOnly('com.github.apace100:origins-fabric:v1.6.2')
+			{
+				exclude module: 'calio'
+				exclude module: 'apoli'
+			}
+	modImplementation files('/build/libs/Calio-1.19-1.7.0.jar') // Fix quilt incompatibility
+	modImplementation 'com.github.seeruk:apoli:1.19.1-SNAPSHOT' // Fix 1.19.2
 
 	modImplementation files('/build/libs/player-pronouns-1.5.1+1.19.jar')
 	modRuntimeOnly "eu.pb4:placeholder-api:2.0.0-beta.7+1.19"
