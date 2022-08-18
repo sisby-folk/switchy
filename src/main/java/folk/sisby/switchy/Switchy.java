@@ -1,5 +1,7 @@
 package folk.sisby.switchy;
 
+import folk.sisby.switchy.command.PresetArgumentType;
+import folk.sisby.switchy.command.SwitchyCommands;
 import folk.sisby.switchy.compat.*;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.loader.api.QuiltLoader;
@@ -13,6 +15,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Switchy implements ModInitializer {
+	public static final String MOD_ID = "switchy";
 	public static final Logger LOGGER = LoggerFactory.getLogger("Switchy");
 	public static final List<Supplier<? extends PresetCompatModule>> COMPAT_MODULES = new ArrayList<>();
 
@@ -32,6 +35,8 @@ public class Switchy implements ModInitializer {
 		if (QuiltLoader.isModLoaded("origins")) {
 			OriginsCompat.touch();
 		}
+
+		PresetArgumentType.touch();
 
 		LOGGER.info("Switchy Initialized! Compatibility enabled for: "+ COMPAT_MODULES.stream().map((f) -> (f.get().getKey())).collect(Collectors.joining(", ")));
 	}

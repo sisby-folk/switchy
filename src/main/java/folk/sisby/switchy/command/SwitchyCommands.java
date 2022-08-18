@@ -1,10 +1,11 @@
-package folk.sisby.switchy;
+package folk.sisby.switchy.command;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import folk.sisby.switchy.SwitchyPlayer;
+import folk.sisby.switchy.SwitchyPreset;
+import folk.sisby.switchy.SwitchyPresets;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -13,9 +14,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
 
-import java.util.Locale;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -32,20 +31,17 @@ public class SwitchyCommands {
 								.then(argument("preset", StringArgumentType.word())
 										.executes(SwitchyCommands::executeNew)))
 						.then(literal("set")
-								.then(argument("preset", StringArgumentType.word())
-										.suggests(SwitchyCommands::suggestPresets)
+								.then(argument("preset", PresetArgumentType.preset())
 										.executes(SwitchyCommands::executeSet)))
 						.then(literal("delete")
-								.then(argument("preset", StringArgumentType.word())
-										.suggests(SwitchyCommands::suggestPresets)
+								.then(argument("preset", PresetArgumentType.preset())
 										.executes(SwitchyCommands::executeDelete)))
 		));
 
 		// switchy set alias
 		CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, environment) -> dispatcher.register(
 				literal("switch")
-						.then(argument("preset", StringArgumentType.word())
-								.suggests(SwitchyCommands::suggestPresets)
+						.then(argument("preset", PresetArgumentType.preset())
 								.executes(SwitchyCommands::executeSet)))
 		);
 	}
@@ -70,18 +66,7 @@ public class SwitchyCommands {
 		return 1;
 	}
 
-	private static CompletableFuture<Suggestions> suggestPresets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
-		ServerPlayerEntity player = context.getSource().getPlayer();
-		String remaining = builder.getRemainingLowerCase();
 
-		if (((SwitchyPlayer) player).switchy$getPresets() != null) {
-			((SwitchyPlayer) player).switchy$getPresets().getPresetNames().stream()
-					.filter((s) -> s.toLowerCase(Locale.ROOT).startsWith(remaining))
-					.forEach(builder::suggest);
-		}
-
-		return builder.buildFuture();
-	}
 
 	private static int executeNew(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 		ServerPlayerEntity player = context.getSource().getPlayer();
