@@ -1,5 +1,6 @@
 package folk.sisby.switchy.compat;
 
+import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.SwitchyPreset;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -53,5 +54,9 @@ public class FabricTailorCompat extends PresetCompat {
 	@Override
 	public PresetCompat getEmptyModule() {
 		return new FabricTailorCompat();
+	}
+
+	public static void register() {
+		Switchy.COMPAT_MODULES.add(new FabricTailorCompat());
 	}
 }

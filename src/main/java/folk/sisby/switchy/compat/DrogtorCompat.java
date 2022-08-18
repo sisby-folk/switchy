@@ -1,6 +1,7 @@
 package folk.sisby.switchy.compat;
 
 import com.unascribed.drogtor.DrogtorPlayer;
+import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.SwitchyPreset;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -62,5 +63,9 @@ public class DrogtorCompat extends PresetCompat {
 	@Override
 	public PresetCompat getEmptyModule() {
 		return new DrogtorCompat();
+	}
+
+	public static void register() {
+		Switchy.COMPAT_MODULES.add(new DrogtorCompat());
 	}
 }
