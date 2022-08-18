@@ -20,16 +20,16 @@ public class Switchy implements ModInitializer {
 		SwitchyCommands.InitializeCommands();
 
 		if (QuiltLoader.isModLoaded("drogtor")) {
-			COMPAT_MODULES.add(new DrogtorCompat());
+			DrogtorCompat.register();
 		}
 		if (QuiltLoader.isModLoaded("playerpronouns")) {
-			COMPAT_MODULES.add(new PlayerPronounsCompat());
+			PlayerPronounsCompat.register();
 		}
 		if (QuiltLoader.isModLoaded("fabrictailor")) {
-			COMPAT_MODULES.add(new FabricTailorCompat());
+			FabricTailorCompat.register();
 		}
 		if (QuiltLoader.isModLoaded("origins")) {
-			COMPAT_MODULES.add(new OriginsCompat());
+			OriginsCompat.register();
 		}
 
 		LOGGER.info("Switchy Initialized! Compatibility enabled for: "+ COMPAT_MODULES.stream().map(PresetCompat::getKey).collect(Collectors.joining(", ")));

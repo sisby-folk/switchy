@@ -97,4 +97,8 @@ public class OriginsCompat extends PresetCompat {
 	public PresetCompat getEmptyModule() {
 		return new OriginsCompat();
 	}
+
+	public static void register() {
+		Switchy.COMPAT_MODULES.add(new OriginsCompat());
+	}
 }

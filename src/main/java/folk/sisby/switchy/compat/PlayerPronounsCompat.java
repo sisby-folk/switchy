@@ -64,4 +64,8 @@ public class PlayerPronounsCompat extends PresetCompat {
 	public PresetCompat getEmptyModule() {
 		return new PlayerPronounsCompat();
 	}
+
+	public static void register() {
+		Switchy.COMPAT_MODULES.add(new PlayerPronounsCompat());
+	}
 }
