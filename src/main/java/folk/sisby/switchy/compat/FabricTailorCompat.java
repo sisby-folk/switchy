@@ -7,7 +7,7 @@ import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.Nullable;
 import org.samo_lego.fabrictailor.casts.TailoredPlayer;
 
-public class FabricTailorCompat extends PresetCompat {
+public class FabricTailorCompat extends PresetCompatModule {
 	public static final String KEY = "fabricTailor";
 
 	public static final String KEY_SKIN_VALUE = "skinValue";
@@ -51,12 +51,11 @@ public class FabricTailorCompat extends PresetCompat {
 		return KEY;
 	}
 
-	@Override
-	public PresetCompat getEmptyModule() {
-		return new FabricTailorCompat();
+	public static void touch() {
 	}
 
-	public static void register() {
-		Switchy.COMPAT_MODULES.add(new FabricTailorCompat());
+	// Runs on touch() - but only once.
+	static {
+		Switchy.COMPAT_MODULES.add(FabricTailorCompat::new);
 	}
 }
