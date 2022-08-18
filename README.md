@@ -1,11 +1,9 @@
-# Switchy
+<p align="center"><img alt="switchy banner" src="https://user-images.githubusercontent.com/55819817/185277937-60b55666-07b9-46d3-881b-0f45ea39fb73.png" /></p>
 
-Adds an extensible preset system that allows players to quickly switch between player customizations from other mods.
+<p align="center">An extensible preset system for player customizations provided by other mods.<br/>
+Works in singleplayer and on server-side.</p>
 
-![image](https://user-images.githubusercontent.com/55819817/185186588-6bd80141-727c-4ed3-a987-815aab17d790.png)
-
-
-Works in singleplayer and on server-side.
+---
 
 Commands:
  - `/switchy help`
@@ -15,16 +13,16 @@ Commands:
  - `/switch [name]` - alias for `/switchy set`
  - `/switchy delete [name]` - delete a preset.
 
-Support player customization from:
+On its own, supports player customization from:
  - [Drogtor The Nickinator](https://modrinth.com/mod/drogtor) - player `nickname`, `bio`, and `color`
  - [Fabric Tailor](https://modrinth.com/mod/fabrictailor) - set skin
  - [Origins](https://modrinth.com/mod/origins/versions) - current origins (includes all layers, e.g. [Statures](https://modrinth.com/mod/tinkerers-statures) for player height)
 
 ## Design
 
-Switchy can be loaded with or without any of its compatible mods, and any mod can add additional compat modules by adding them to `Switchy.COMPAT_MODULES`. Only loaded modules will save/load data.
+Switchy handles all of its interactions with other mods using a **Compatibility Module** system. Any mod can add new compatibility modules to switchy, and it will work without any changes. Switchy's mod compatibility for the mods above are made in this format, and can be used as reference.
 
-Note that this means that removing a compatible mod will cause its data to be removed from presets.
+Only loaded modules will load and save data - Note that this means that removing a compatible mod will cause its data to be removed from presets.
 
 ## Further Info
 
