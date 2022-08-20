@@ -4,11 +4,13 @@ import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.SwitchyPreset;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.samo_lego.fabrictailor.casts.TailoredPlayer;
 
 public class FabricTailorCompat extends PresetCompatModule {
-	public static final String KEY = "fabricTailor";
+	private static final Identifier ID = new Identifier(Switchy.ID, "fabric_tailor");
+	private static final boolean isDefault = true;
 
 	public static final String KEY_SKIN_VALUE = "skinValue";
 	public static final String KEY_SKIN_SIGNATURE = "skinSignature";
@@ -47,8 +49,13 @@ public class FabricTailorCompat extends PresetCompatModule {
 	}
 
 	@Override
-	public String getKey() {
-		return KEY;
+	public Identifier getId() {
+		return ID;
+	}
+
+	@Override
+	public boolean isDefault() {
+		return isDefault;
 	}
 
 	public static void touch() {
@@ -56,6 +63,6 @@ public class FabricTailorCompat extends PresetCompatModule {
 
 	// Runs on touch() - but only once.
 	static {
-		Switchy.COMPAT_MODULES.add(FabricTailorCompat::new);
+		Switchy.registerModule(ID, FabricTailorCompat::new);
 	}
 }

@@ -1,56 +1,92 @@
 package folk.sisby.switchy;
 
+import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class SwitchyPresets {
 
 	private final Map<String, SwitchyPreset> presetMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+	private final Map<Identifier, Boolean> moduleToggles;
 	private final PlayerEntity player;
 	@Nullable private SwitchyPreset currentPreset;
 
 	public static final String KEY_PRESET_CURRENT = "current";
+	public static final String KEY_PRESET_MODULE_ALLOWED = "allowed";
+	public static final String KEY_PRESET_MODULE_DENIED = "denied";
 	public static final String KEY_PRESET_LIST = "list";
 
 	public NbtElement toNbt() {
 		NbtCompound outNbt = new NbtCompound();
+
+		NbtList allowedList = new NbtList();
+		NbtList deniedList = new NbtList();
+
+		this.moduleToggles.forEach((key, value) -> {
+			if (value) allowedList.add(NbtString.of(key.toString()));
+			if (!value) deniedList.add(NbtString.of(key.toString()));
+		});
+
+		outNbt.put(KEY_PRESET_MODULE_ALLOWED, allowedList);
+		outNbt.put(KEY_PRESET_MODULE_DENIED, deniedList);
+
 		NbtCompound listNbt = new NbtCompound();
 		for (SwitchyPreset preset : presetMap.values()) {
 			listNbt.put(preset.presetName, preset.toNbt());
 		}
 		outNbt.put(KEY_PRESET_LIST, listNbt);
+
 		if (this.currentPreset != null) outNbt.putString(KEY_PRESET_CURRENT, currentPreset.presetName);
 		return outNbt;
 	}
 
 	public static SwitchyPresets fromNbt(PlayerEntity player, NbtCompound nbt) {
-		SwitchyPresets outPresets = SwitchyPresets.fromEmpty(player);
+		SwitchyPresets outPresets = new SwitchyPresets(player);
+
+		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_ALLOWED, NbtType.STRING), true);
+		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_DENIED, NbtType.STRING), false);
+
 		NbtCompound listNbt = nbt.getCompound(KEY_PRESET_LIST);
 		for (String key : listNbt.getKeys()) {
-			SwitchyPreset preset = SwitchyPreset.fromNbt(key, listNbt.getCompound(key));
+			SwitchyPreset preset = SwitchyPreset.fromNbt(key, listNbt.getCompound(key), outPresets.moduleToggles);
 			if (!outPresets.addPreset(preset)) {
-				Switchy.LOGGER.warn("Player data contained duplicate preset. Data may have been lost.");
+				Switchy.LOGGER.warn("Switchy: Player data contained duplicate preset. Data may have been lost.");
 			}
 		}
+
 		if (nbt.contains(KEY_PRESET_CURRENT) && !outPresets.setCurrentPreset(nbt.getString(KEY_PRESET_CURRENT), false)) {
-			Switchy.LOGGER.warn("Unable to set current preset from data. Data may have been lost.");
+			Switchy.LOGGER.warn("Switchy: Unable to set current preset from data. Data may have been lost.");
 		}
+
 		return outPresets;
 	}
 
-	public static SwitchyPresets fromEmpty(PlayerEntity player) {
-		return new SwitchyPresets(player);
+	private void toggleModulesFromNbt(NbtList list, Boolean enabled) {
+		list.forEach((e) -> {
+			Identifier id;
+			if (e instanceof NbtString s && (id = Identifier.tryParse(s.asString())) != null && this.moduleToggles.containsKey(id)) {
+				this.moduleToggles.put(id, enabled);
+			} else {
+				Switchy.LOGGER.warn("Switchy: Unable to toggle a module - Was a module unloaded?");
+			}
+		});
 	}
 
 	private SwitchyPresets(PlayerEntity player) {
 		this.player = player;
+		this.moduleToggles = Switchy.COMPAT_REGISTRY.entrySet().stream()
+				.collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().get().isDefault()));
 	}
 
 	public boolean setCurrentPreset(String presetName, Boolean performSwitch) {
@@ -119,5 +155,27 @@ public class SwitchyPresets {
 		} else {
 			return false;
 		}
+	}
+
+	public boolean denyModule(Identifier id) {
+		if (this.moduleToggles.containsKey(id)) {
+			this.moduleToggles.put(id, false);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean allowModule(Identifier id) {
+		if (this.moduleToggles.containsKey(id)) {
+			this.moduleToggles.put(id, true);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public Map<Identifier, Boolean> getModuleToggles() {
+		return this.moduleToggles;
 	}
 }

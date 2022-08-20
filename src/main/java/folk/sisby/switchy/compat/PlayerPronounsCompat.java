@@ -9,12 +9,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
 public class PlayerPronounsCompat extends PresetCompatModule {
-	public static final String KEY = "playerPronouns";
+	private static final Identifier ID = new Identifier(Switchy.ID,  "player_pronouns");
+	private static final boolean isDefault = true;
 
 	public static final String KEY_PRONOUNS_RAW = "pronounsRaw";
 
@@ -29,7 +31,7 @@ public class PlayerPronounsCompat extends PresetCompatModule {
 	@Override
 	public void applyToPlayer(PlayerEntity player) {
 		if (!PlayerPronouns.setPronouns((ServerPlayerEntity) player, this.pronouns)) {
-			Switchy.LOGGER.error("Failed to apply Player Pronouns pronouns");
+			Switchy.LOGGER.error("Switchy: Failed to apply Player Pronouns pronouns");
 		}
 	}
 
@@ -55,8 +57,13 @@ public class PlayerPronounsCompat extends PresetCompatModule {
 	}
 
 	@Override
-	public String getKey() {
-		return KEY;
+	public Identifier getId() {
+		return ID;
+	}
+
+	@Override
+	public boolean isDefault() {
+		return isDefault;
 	}
 
 	public static void touch() {
@@ -64,6 +71,6 @@ public class PlayerPronounsCompat extends PresetCompatModule {
 
 	// Runs on touch() - but only once.
 	static {
-		Switchy.COMPAT_MODULES.add(PlayerPronounsCompat::new);
+		Switchy.registerModule(ID, PlayerPronounsCompat::new);
 	}
 }

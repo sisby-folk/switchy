@@ -83,7 +83,7 @@ dependencies {
 	modImplementation files('/build/libs/Calio-1.19-1.7.0.jar') // Fix quilt incompatibility
 	modImplementation 'com.github.seeruk:apoli:1.19.1-SNAPSHOT' // Fix 1.19.2
 
-	modImplementation files('/build/libs/player-pronouns-1.5.1+1.19.jar')
+	modImplementation files('/build/libs/player-pronouns-1.6.0+1.19.jar')
 	modRuntimeOnly "eu.pb4:placeholder-api:2.0.0-beta.7+1.19"
 	modRuntimeOnly files('/build/libs/more-codecs-0.2.2+1.18.jar')
 
