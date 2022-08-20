@@ -6,10 +6,12 @@ import folk.sisby.switchy.SwitchyPreset;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 public class DrogtorCompat extends PresetCompatModule {
-	public static final String KEY = "drogtor";
+	private static final Identifier ID = new Identifier(Switchy.ID,  "drogtor");
+	private static final boolean isDefault = true;
 
 	public static final String KEY_NICKNAME = "nickname";
 	public static final String KEY_NAME_COLOR = "nameColor";
@@ -53,8 +55,13 @@ public class DrogtorCompat extends PresetCompatModule {
 	}
 
 	@Override
-	public String getKey() {
-		return KEY;
+	public Identifier getId() {
+		return ID;
+	}
+
+	@Override
+	public boolean isDefault() {
+		return isDefault;
 	}
 
 	public static void touch() {
@@ -62,6 +69,6 @@ public class DrogtorCompat extends PresetCompatModule {
 
 	// Runs on touch() - but only once.
 	static {
-		Switchy.COMPAT_MODULES.add(DrogtorCompat::new);
+		Switchy.registerModule(ID, DrogtorCompat::new);
 	}
 }

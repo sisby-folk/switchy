@@ -20,7 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class OriginsCompat extends PresetCompatModule {
-	public static final String KEY = "origins";
+	private static final Identifier ID = new Identifier(Switchy.ID,  "origins");
+	private static final boolean isDefault = true;
 
 	public static final String KEY_ORIGINS_LIST = "OriginLayers";
 
@@ -81,7 +82,7 @@ public class OriginsCompat extends PresetCompatModule {
 						Origin origin = OriginRegistry.get(Identifier.tryParse(originId));
 						this.origins.put(layer, origin);
 					} catch (IllegalArgumentException e) {
-						Switchy.LOGGER.warn("Failed to load preset origin with layer" + layerId + " and origin " + originId);
+						Switchy.LOGGER.warn("Switchy: Failed to load preset origin with layer" + layerId + " and origin " + originId);
 					}
 				}
 			}
@@ -89,8 +90,13 @@ public class OriginsCompat extends PresetCompatModule {
 	}
 
 	@Override
-	public String getKey() {
-		return KEY;
+	public Identifier getId() {
+		return ID;
+	}
+
+	@Override
+	public boolean isDefault() {
+		return isDefault;
 	}
 
 	public static void touch() {
@@ -98,6 +104,6 @@ public class OriginsCompat extends PresetCompatModule {
 
 	// Runs on touch() - but only once.
 	static {
-		Switchy.COMPAT_MODULES.add(OriginsCompat::new);
+		Switchy.registerModule(ID, OriginsCompat::new);
 	}
 }
