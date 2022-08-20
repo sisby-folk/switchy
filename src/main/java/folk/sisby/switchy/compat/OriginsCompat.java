@@ -8,7 +8,6 @@ import io.github.apace100.origins.origin.OriginLayer;
 import io.github.apace100.origins.origin.OriginLayers;
 import io.github.apace100.origins.origin.OriginRegistry;
 import io.github.apace100.origins.registry.ModComponents;
-import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -71,8 +70,8 @@ public class OriginsCompat extends PresetCompatModule {
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
 		this.origins = new HashMap<>();
-		if (nbt.contains(KEY_ORIGINS_LIST, NbtType.LIST)) {
-			NbtList originLayerList = nbt.getList(KEY_ORIGINS_LIST, NbtType.COMPOUND);
+		if (nbt.contains(KEY_ORIGINS_LIST, NbtElement.LIST_TYPE)) {
+			NbtList originLayerList = nbt.getList(KEY_ORIGINS_LIST, NbtElement.COMPOUND_TYPE);
 			for (NbtElement layerElement : originLayerList) {
 				if (layerElement instanceof NbtCompound layerCompound) {
 					String layerId = layerCompound.getString("Layer");

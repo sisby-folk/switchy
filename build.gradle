@@ -1,6 +1,6 @@
 plugins {
 	id 'maven-publish'
-	alias(libs.plugins.quilt.loom)
+	id 'org.quiltmc.loom' version '0.12.+'
 }
 
 archivesBaseName = project.archives_base_name
@@ -8,12 +8,6 @@ version = project.version
 group = project.maven_group
 
 repositories {
-	// Add repositories to retrieve artifacts from in here.
-	// You should only use this when depending on other mods because
-	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
-	// for more information about repositories.
-
 	// Jitpack
 	maven { url 'https://jitpack.io' }
 
@@ -44,9 +38,6 @@ repositories {
 		}
 	}
 	maven {
-		url "https://jitpack.io"
-	}
-	maven {
 		url "https://maven.shedaniel.me/"
 	}
 	maven {
@@ -54,28 +45,23 @@ repositories {
 	}
 }
 
-// All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
-// See https://docs.gradle.org/current/userguide/platforms.html for information on how version catalogs work.
 dependencies {
+	// Base
 	minecraft libs.minecraft
 	mappings loom.layered {
-		addLayer quiltMappings.mappings("org.quiltmc:quilt-mappings:${libs.versions.quilt.mappings.get()}:v2")
-		// officialMojangMappings() // Uncomment if you want to use Mojang mappings as your primary mappings, falling back on QM for parameters and Javadocs
+		addLayer quiltMappings.mappings("org.quiltmc:quilt-mappings:${minecraft_version}+build.${quilt_mappings}:v2")
 	}
-	modImplementation libs.quilt.loader
+	modImplementation libs.ql
+	modImplementation libs.qsl
+	modImplementation libs.qfapi
 
-	// QSL is not a complete API; You will need Quilted Fabric API to fill in the gaps.
-	// Quilted Fabric API will automatically pull in the correct QSL version.
-	modImplementation libs.quilted.fabric.api
-	// modImplementation libs.bundles.quilted.fabric.api // If you wish to use Fabric API's deprecated modules, you can replace the above line with this one
-
+	// Compat
 	modImplementation files('/build/libs/drogtor-1.1.3+1.17.jar')
 
-	// modImplementation 'me.lucko:fabric-permissions-api:0.2-SNAPSHOT'
-	modImplementation 'com.github.samolego:FabricTailor:1.9.0-1.18.2'
+	modImplementation libs.fabrictailor
 
 	modImplementation files('/build/libs/Calio-1.18.2-1.6.0.jar') // Fix quilt incompatibility
-	modImplementation ('com.github.apace100:origins-fabric:v1.4.1') {
+	modImplementation (libs.origins) {
 		exclude module: 'calio'
 	}
 
@@ -95,17 +81,10 @@ processResources {
 
 tasks.withType(JavaCompile).configureEach {
 	it.options.encoding = "UTF-8"
-	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
 	it.options.release = 17
 }
 
 java {
-	// Still required by IDEs such as Eclipse and Visual Studio Code
-	sourceCompatibility = JavaVersion.VERSION_17
-	targetCompatibility = JavaVersion.VERSION_17
-
-	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task if it is present.
-	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 
 	// If this mod is going to be a library, then it should also generate Javadocs in order to aid with development.
@@ -113,9 +92,8 @@ java {
 	// withJavadocJar()
 }
 
-// If you plan to use a different file for the license, don't forget to change the file name here!
 jar {
-	from("LICENSE") {
+	from("LICENSE.txt") {
 		rename { "${it}_${archivesBaseName}" }
 	}
 }
@@ -130,9 +108,6 @@ publishing {
 
 	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 	repositories {
-		// Add repositories to publish to here.
-		// Notice: This block does NOT have the same function as the block in the top level.
-		// The repositories here will be used for publishing your artifact, not for
-		// retrieving dependencies.
+
 	}
 }

@@ -2,11 +2,11 @@ package folk.sisby.switchy.mixin;
 
 import folk.sisby.switchy.SwitchyPlayer;
 import folk.sisby.switchy.SwitchyPresets;
-import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,7 +32,7 @@ public abstract class MixinPlayerEntity extends LivingEntity implements SwitchyP
 
 	@Inject(at = @At("TAIL"), method = "readCustomDataFromNbt(Lnet/minecraft/nbt/NbtCompound;)V")
 	public void readCustomDataFromNbt(NbtCompound tag, CallbackInfo ci) {
-		switchy$switchyPresets = SwitchyPresets.fromNbt((PlayerEntity)(Object) this, tag.contains("switchy:presets", NbtType.COMPOUND) ? tag.getCompound("switchy:presets") : new NbtCompound());
+		switchy$switchyPresets = SwitchyPresets.fromNbt((PlayerEntity)(Object) this, tag.contains("switchy:presets", NbtElement.COMPOUND_TYPE) ? tag.getCompound("switchy:presets") : new NbtCompound());
 	}
 
 	@Override

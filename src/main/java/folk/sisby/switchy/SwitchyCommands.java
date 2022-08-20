@@ -36,7 +36,7 @@ public class SwitchyCommands {
 												.executes(SwitchyCommands::executeNew)))
 								.then(literal("set")
 										.then(argument("preset", StringArgumentType.word())
-												.suggests(SwitchyCommands::suggestPresets)
+												.suggests(SwitchyCommands::suggestOtherPresets)
 												.executes(SwitchyCommands::executeSet)))
 								.then(literal("delete")
 										.then(argument("preset", StringArgumentType.word())
@@ -57,7 +57,7 @@ public class SwitchyCommands {
 		CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, environment) -> dispatcher.register(
 				literal("switch")
 						.then(argument("preset", StringArgumentType.word())
-								.suggests(SwitchyCommands::suggestPresets)
+								.suggests(SwitchyCommands::suggestOtherPresets)
 								.executes(SwitchyCommands::executeSet)))
 		);
 	}
@@ -66,8 +66,24 @@ public class SwitchyCommands {
 		ServerPlayerEntity player = context.getSource().getPlayer();
 		String remaining = builder.getRemainingLowerCase();
 
-		if (((SwitchyPlayer) player).switchy$getPresets() != null) {
-			((SwitchyPlayer) player).switchy$getPresets().getPresetNames().stream()
+		SwitchyPresets ps;
+		if ((ps = ((SwitchyPlayer) player).switchy$getPresets()) != null) {
+			ps.getPresetNames().stream()
+					.filter((s) -> s.toLowerCase(Locale.ROOT).startsWith(remaining))
+					.forEach(builder::suggest);
+		}
+
+		return builder.buildFuture();
+	}
+
+	private static CompletableFuture<Suggestions> suggestOtherPresets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+		ServerPlayerEntity player = context.getSource().getPlayer();
+		String remaining = builder.getRemainingLowerCase();
+
+		SwitchyPresets ps;
+		if ((ps = ((SwitchyPlayer) player).switchy$getPresets()) != null) {
+			ps.getPresetNames().stream()
+					.filter((s) -> !Objects.equals(s, Objects.toString(ps.getCurrentPreset())))
 					.filter((s) -> s.toLowerCase(Locale.ROOT).startsWith(remaining))
 					.forEach(builder::suggest);
 		}

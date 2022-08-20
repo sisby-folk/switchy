@@ -1,6 +1,5 @@
 package folk.sisby.switchy;
 
-import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -54,8 +53,8 @@ public class SwitchyPresets {
 	public static SwitchyPresets fromNbt(PlayerEntity player, NbtCompound nbt) {
 		SwitchyPresets outPresets = new SwitchyPresets(player);
 
-		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_ALLOWED, NbtType.STRING), true);
-		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_DENIED, NbtType.STRING), false);
+		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_ALLOWED, NbtElement.STRING_TYPE), true);
+		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_DENIED, NbtElement.STRING_TYPE), false);
 
 		NbtCompound listNbt = nbt.getCompound(KEY_PRESET_LIST);
 		for (String key : listNbt.getKeys()) {

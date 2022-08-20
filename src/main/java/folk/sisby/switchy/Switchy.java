@@ -37,6 +37,7 @@ public class Switchy implements ModInitializer {
 		if (QuiltLoader.isModLoaded("playerpronouns")) PlayerPronounsCompat.touch();
 		if (QuiltLoader.isModLoaded("fabrictailor")) FabricTailorCompat.touch();
 		if (QuiltLoader.isModLoaded("origins")) OriginsCompat.touch();
+		InventoryCompat.touch();
 
 		LOGGER.info("Switchy: Initialized! Registered Base Modules: " + COMPAT_REGISTRY.keySet());
 	}
