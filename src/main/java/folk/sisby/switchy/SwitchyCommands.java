@@ -49,7 +49,7 @@ public class SwitchyCommands {
 												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::setPreset, new Pair<>("preset", String.class)))))
 								.then(literal("delete")
 										.then(argument("preset", StringArgumentType.word())
-												.suggests((c, b) -> suggestPresets(c, b, true))
+												.suggests((c, b) -> suggestPresets(c, b, false))
 												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::deletePreset, new Pair<>("preset", String.class)))))
 								.then(literal("rename")
 										.then(argument("preset", StringArgumentType.word())
@@ -194,6 +194,10 @@ public class SwitchyCommands {
 	private static int deletePreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
 		if (!presets.getPresetNames().contains(presetName)) {
 			tellInvalid(player, "That preset doesn't exist! Try ", "/switchy list");
+			return 0;
+		}
+		if (presetName.equalsIgnoreCase(Objects.toString(presets.getCurrentPreset(), null))) {
+			tellInvalid(player, "You can't delete your current preset! Try ", "/switchy rename");
 			return 0;
 		}
 

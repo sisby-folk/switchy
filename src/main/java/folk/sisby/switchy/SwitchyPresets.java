@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -19,7 +18,7 @@ public class SwitchyPresets {
 	private final Map<String, SwitchyPreset> presetMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 	private final Map<Identifier, Boolean> moduleToggles;
 	private final PlayerEntity player;
-	@Nullable private SwitchyPreset currentPreset;
+	private SwitchyPreset currentPreset;
 
 	public static final String KEY_PRESET_CURRENT = "current";
 	public static final String KEY_PRESET_MODULE_ENABLED = "enabled";
@@ -66,6 +65,12 @@ public class SwitchyPresets {
 
 		if (nbt.contains(KEY_PRESET_CURRENT) && !outPresets.setCurrentPreset(nbt.getString(KEY_PRESET_CURRENT), false)) {
 			Switchy.LOGGER.warn("Switchy: Unable to set current preset from data. Data may have been lost.");
+		}
+
+		if (outPresets.presetMap.isEmpty() || outPresets.getCurrentPreset() == null) {
+			// Recover current data as "Default" preset
+			outPresets.addPreset(new SwitchyPreset("default", outPresets.moduleToggles));
+			outPresets.setCurrentPreset("default", false);
 		}
 
 		return outPresets;
@@ -134,13 +139,10 @@ public class SwitchyPresets {
 	}
 
 	public void deletePreset(String presetName) {
-		if (this.presetMap.containsKey(presetName)) {
-			if (presetName.equalsIgnoreCase(Objects.toString(this.currentPreset, null))) {
-				this.currentPreset = null;
-			}
+		if (this.presetMap.containsKey(presetName) && !this.currentPreset.toString().equalsIgnoreCase(presetName)) {
 			this.presetMap.remove(presetName);
 		} else {
-			throw new IllegalArgumentException("Switchy preset doesn't exist");
+			throw new IllegalArgumentException("Switchy can't delete that preset");
 		}
 	}
 
@@ -162,9 +164,7 @@ public class SwitchyPresets {
 	public void disableModule(Identifier id) {
 		if (this.moduleToggles.containsKey(id)) {
 			this.moduleToggles.put(id, false);
-			presetMap.forEach((name, preset) -> {
-				preset.compatModules.remove(id);
-			});
+			presetMap.forEach((name, preset) -> preset.compatModules.remove(id));
 		} else {
 			throw new IllegalArgumentException("Switchy module doesn't exist");
 		}
@@ -173,9 +173,7 @@ public class SwitchyPresets {
 	public void enableModule(Identifier id) {
 		if (this.moduleToggles.containsKey(id)) {
 			this.moduleToggles.put(id, true);
-			presetMap.forEach((name, preset) -> {
-				preset.compatModules.put(id, Switchy.COMPAT_REGISTRY.get(id).get());
-			});
+			presetMap.forEach((name, preset) -> preset.compatModules.put(id, Switchy.COMPAT_REGISTRY.get(id).get()));
 		} else {
 			throw new IllegalArgumentException("Switchy module doesn't exist");
 		}
