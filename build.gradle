@@ -69,11 +69,15 @@ dependencies {
 	modLocalRuntime libs.qfapi
 	modCompileOnly files('/build/libs/Calio-1.19-1.7.0.jar') // Fix quilt incompatibility
 	modLocalRuntime files('/build/libs/Calio-1.19-1.7.0.jar') // Fix quilt incompatibility
+	modCompileOnly 'com.github.seeruk:apoli:1.19.1-SNAPSHOT' // Fix 1.19.2 incompatibility
+	modLocalRuntime 'com.github.seeruk:apoli:1.19.1-SNAPSHOT' // Fix 1.19.2 incompatibility
 	modCompileOnly (libs.origins) {
 		exclude module: 'calio'
+		exclude module: 'apoli'
 	}
 	modLocalRuntime (libs.origins) {
 		exclude module: 'calio'
+		exclude module: 'apoli'
 	}
 
 	// Player Pronouns

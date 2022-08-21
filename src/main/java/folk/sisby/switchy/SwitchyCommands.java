@@ -168,7 +168,7 @@ public class SwitchyCommands {
 			return 0;
 		}
 
-		if (!last_command.equalsIgnoreCase("/switchy delete " + presetName)) {
+		if (!last_command.equalsIgnoreCase("switchy delete " + presetName)) {
 			warn(player, "WARNING: Deleting a preset will permanently delete its data for the following modules:");
 			informWithName(player, "", presets.getModuleToggles().entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).map(Identifier::getPath).toList().toString());
 			informWithName(player, "To Confirm, please enter ", "/switchy delete " + presetName);
@@ -186,7 +186,7 @@ public class SwitchyCommands {
 			return 0;
 		}
 
-		if (!last_command.equalsIgnoreCase("/switchy module disable " + moduleId)) {
+		if (!last_command.equalsIgnoreCase("switchy module disable " + moduleId)) {
 			inform(player, "Disabling a module will delete its data from all your presets");
 			warn(player, Switchy.COMPAT_REGISTRY.get(moduleId).get().getDisableConfirmation());
 			informWithName(player, "To Confirm, please enter ", "/switchy disable " + moduleId);
