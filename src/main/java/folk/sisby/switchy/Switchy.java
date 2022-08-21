@@ -39,6 +39,6 @@ public class Switchy implements ModInitializer {
 		if (QuiltLoader.isModLoaded("fabrictailor")) FabricTailorCompat.touch();
 		if (QuiltLoader.isModLoaded("origins")) OriginsCompat.touch();
 
-		LOGGER.info("Switchy: Initialized! Registered Base Modules: " + COMPAT_REGISTRY.keySet());
+		LOGGER.info("Switchy: Initialized! Already Registered Modules: " + COMPAT_REGISTRY.keySet());
 	}
 }

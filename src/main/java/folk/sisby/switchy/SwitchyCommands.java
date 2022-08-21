@@ -173,6 +173,10 @@ public class SwitchyCommands {
 			tellInvalid(player, "That preset doesn't exist! Try ", "/switchy list");
 			return 0;
 		}
+		if (presetName.equalsIgnoreCase(Objects.toString(presets.getCurrentPreset(), null))) {
+			tellInvalid(player, "Can't swap to your current preset! Try ", "/switchy list");
+			return 0;
+		}
 
 		String oldPresetName = Objects.toString(presets.getCurrentPreset(), "<None>");
 		presets.setCurrentPreset(presetName, true);
