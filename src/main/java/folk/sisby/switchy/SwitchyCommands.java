@@ -189,7 +189,7 @@ public class SwitchyCommands {
 		if (!last_command.equalsIgnoreCase("/switchy module disable " + moduleId)) {
 			inform(player, "Disabling a module will delete its data from all your presets");
 			warn(player, Switchy.COMPAT_REGISTRY.get(moduleId).get().getDisableConfirmation());
-			informWithName(player, "To Confirm, please enter ", "/switchy disable " + moduleId);
+			informWithName(player, "To Confirm, please enter ", "/switchy module disable " + moduleId);
 			return 0;
 		} else {
 			presets.disableModule(moduleId);
