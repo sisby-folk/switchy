@@ -22,7 +22,7 @@ public class SwitchyPresets {
 
 	public static final String KEY_PRESET_CURRENT = "current";
 	public static final String KEY_PRESET_MODULE_ENABLED = "enabled";
-	public static final String KEY_PRESET_MODULE_DIABLED = "disabled";
+	public static final String KEY_PRESET_MODULE_DISABLED = "disabled";
 	public static final String KEY_PRESET_LIST = "list";
 
 	public NbtElement toNbt() {
@@ -37,7 +37,7 @@ public class SwitchyPresets {
 		});
 
 		outNbt.put(KEY_PRESET_MODULE_ENABLED, enabledList);
-		outNbt.put(KEY_PRESET_MODULE_DIABLED, disabledList);
+		outNbt.put(KEY_PRESET_MODULE_DISABLED, disabledList);
 
 		NbtCompound listNbt = new NbtCompound();
 		for (SwitchyPreset preset : presetMap.values()) {
@@ -53,7 +53,7 @@ public class SwitchyPresets {
 		SwitchyPresets outPresets = new SwitchyPresets(player);
 
 		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE), true);
-		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_DIABLED, NbtElement.STRING_TYPE), false);
+		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_DISABLED, NbtElement.STRING_TYPE), false);
 
 		NbtCompound listNbt = nbt.getCompound(KEY_PRESET_LIST);
 		for (String key : listNbt.getKeys()) {
