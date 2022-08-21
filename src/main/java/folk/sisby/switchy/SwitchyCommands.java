@@ -12,12 +12,14 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
 
+import java.text.Normalizer;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -124,117 +126,147 @@ public class SwitchyCommands {
 	}
 
 	private static int displayHelp(ServerPlayerEntity player, SwitchyPresets presets) {
-		inform(player, "Commands: new, set, delete, list");
-		inform(player, "/switchy new {name} - create a new preset");
-		inform(player, "/switch {name} OR /switchy set {name} - saves current preset and swaps to specified");
-		inform(player, "/switchy delete {name} - delete a preset");
-		inform(player, "/switchy list - list all created presets");
-		inform(player, "/switchy module enable/disable {name} - toggle compat modules");
+		tellInfo(player, "/switchy new [name]", " - create a new preset");
+		tellInfo(player, "/switchy set [name]", " - switches to specified preset");
+		tellInfo(player, "/switch [name]", " - alias of above");
+		tellInfo(player, "/switchy delete [name]", " - delete a preset permanently");
+		tellInfo(player, "/switchy list", " - list presets and show current");
+		tellInfo(player, "/switchy module enable [name]", " - enable a module for your presets");
+		tellInfo(player, "/switchy module disable [name]", " - disable a module, deleting data");
 		return 6;
 	}
 
 	private static int listPresets(ServerPlayerEntity player, SwitchyPresets presets) {
-		player.sendMessage(new LiteralText("Presets: ").append(new LiteralText(Objects.toString(presets, "[]"))), false);
-		player.sendMessage(new LiteralText("Current Preset: ").append(new LiteralText(presets != null ? Objects.toString(presets.getCurrentPreset(), "<None>") : "<None>")), false);
+		tellInfo(player, "Presets: ", Objects.toString(presets, "[]"));
+		tellInfo(player, "Current Preset: ", presets != null ? Objects.toString(presets.getCurrentPreset(), "<None>") : "<None>");
 		return 1;
 	}
 
 	private static int newPreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
 		if (presets.containsPreset(presetName)) {
-			informWithName(player, "That preset already exists! - try ", "/switchy set " + presetName);
+			tellInvalid(player, "That preset already exists! Try ", "/switchy set " + presetName);
 			return 0;
 		}
 
 		presets.addPreset(new SwitchyPreset(presetName, presets.getModuleToggles()));
-		informWithName(player, "Successfully added preset ", presetName);
+		tellSuccess(player, "Created ", presetName);
 		return 1 + setPreset(player, presets, presetName);
 	}
 
 	private static int setPreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
 		if (!presets.containsPreset(presetName)) {
-			informWithName(player, "That preset doesn't exist! - try ", "/switchy list");
+			tellInvalid(player, "That preset doesn't exist! Try ", "/switchy list");
 			return 0;
 		}
 
 		String oldPresetName = Objects.toString(presets.getCurrentPreset(), "<None>");
 		presets.setCurrentPreset(presetName, true);
-		informSwitch(player, oldPresetName, presetName);
+		tellSwitch(player, oldPresetName, presetName);
 		return 1;
 	}
 
 	private static int deletePreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
 		if (!presets.getPresetNames().contains(presetName)) {
-			informWithName(player, "That preset doesn't exist! Try", "/switchy list");
+			tellInvalid(player, "That preset doesn't exist! Try ", "/switchy list");
 			return 0;
 		}
 
 		if (!last_command.equalsIgnoreCase("/switchy delete " + presetName)) {
-			warn(player, "WARNING: Deleting a preset will permanently delete its data for the following modules:");
-			informWithName(player, "", presets.getModuleToggles().entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).map(Identifier::getPath).toList().toString());
-			informWithName(player, "To Confirm, please enter ", "/switchy delete " + presetName);
+			tellWarn(player, "WARNING: Preset data from enabled modules will be deleted.");
+			tellWarn(player, "Modules: ", presets.getModuleToggles().entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).map(Identifier::getPath).toList().toString());
+			tellInvalid(player, "Confirm using ", "/switchy delete " + presetName);
 			return 0;
 		} else {
 			presets.deletePreset(presetName);
-			informWithName(player, "Preset deleted: ", presetName);
+			tellSuccess(player, "Deleted ", presetName);
 			return 1;
 		}
 	}
 
 	private static int disableModule(ServerPlayerEntity player, SwitchyPresets presets, Identifier moduleId) {
 		if (!presets.getModuleToggles().containsKey(moduleId) || !presets.getModuleToggles().get(moduleId)) {
-			informWithName(player, "Module doesn't exist or is already disabled! - ", moduleId.toString());
+			tellInvalid(player, "Module " + (presets.getModuleToggles().containsKey(moduleId) ? "doesn't exist" : "is already disabled") + ": ", moduleId.toString());
 			return 0;
 		}
 
 		if (!last_command.equalsIgnoreCase("/switchy module disable " + moduleId)) {
-			inform(player, "Disabling a module will delete its data from all your presets");
-			warn(player, Switchy.COMPAT_REGISTRY.get(moduleId).get().getDisableConfirmation());
-			informWithName(player, "To Confirm, please enter ", "/switchy module disable " + moduleId);
+			tellWarn(player, Switchy.COMPAT_REGISTRY.get(moduleId).get().getDisableConfirmation());
+			tellInvalid(player, "Confirm using ", "/switchy module disable " + moduleId);
 			return 0;
 		} else {
 			presets.disableModule(moduleId);
-			informWithName(player, "Successfully disabled module ", moduleId.toString());
+			tellSuccess(player, "Disabled ", moduleId.toString());
 			return 1;
 		}
 	}
 
 	private static int enableModule(ServerPlayerEntity player, SwitchyPresets presets, Identifier moduleId) {
 		if (!presets.getModuleToggles().containsKey(moduleId) || presets.getModuleToggles().get(moduleId)) {
-			informWithName(player, "Module doesn't exist or is already enabled! - ", moduleId.toString());
+			tellInvalid(player, "Module " + (presets.getModuleToggles().containsKey(moduleId) ? "doesn't exist" : "is already enabled") + ": ", moduleId.toString());
 			return 0;
 		}
 
 		presets.enableModule(moduleId);
-		informWithName(player, "Successfully enabled module ", moduleId.toString());
+		tellSuccess(player, "Enabled ", moduleId.toString());
 		return 1;
 	}
 
-	private static void informSwitch(ServerPlayerEntity player, String oldPreset, String newPreset) {
-		player.sendMessage(new LiteralText("Switched from ")
-						.setStyle(Style.EMPTY.withColor(Formatting.YELLOW))
+	private static void sendMessage(ServerPlayerEntity player, Text text) {
+		player.sendMessage(new LiteralText("[Switchy] ").setStyle(Style.EMPTY.withColor(Formatting.AQUA)).append(text), false);
+	}
+
+	private static void tellSwitch(ServerPlayerEntity player, String oldPreset, String newPreset) {
+		sendMessage(player,
+				new LiteralText("")
+						.append(new LiteralText("Switched from ").setStyle(Style.EMPTY.withColor(Formatting.GREEN)))
 						.append(new LiteralText(oldPreset).setStyle(Style.EMPTY.withColor(Formatting.WHITE)))
-						.append(new LiteralText(" to "))
+						.append(new LiteralText(" to ").setStyle(Style.EMPTY.withColor(Formatting.GREEN)))
 						.append(new LiteralText(newPreset).setStyle(Style.EMPTY.withColor(Formatting.WHITE)))
-				, false);
+		);
 	}
 
-	private static void informWithName(ServerPlayerEntity player, String literal, String name) {
-		player.sendMessage(new LiteralText(literal)
-						.setStyle(Style.EMPTY.withColor(Formatting.YELLOW))
-						.append(new LiteralText(name).setStyle(Style.EMPTY.withColor(Formatting.WHITE)))
-				, false);
+	private static void tell(ServerPlayerEntity player, String literal, Style style, String literal2, Style style2) {
+		sendMessage(player,
+				new LiteralText("")
+						.append(new LiteralText(literal).setStyle(style))
+						.append(new LiteralText(literal2).setStyle(style2))
+		);
 	}
 
-	private static void inform(ServerPlayerEntity player, String literal) {
-		player.sendMessage(new LiteralText(literal)
-						.setStyle(Style.EMPTY.withColor(Formatting.YELLOW))
-				, false);
+	private static void tell(ServerPlayerEntity player, String literal, Style style) {
+		tell(player, literal, style, "", Style.EMPTY);
 	}
 
-	private static void warn(ServerPlayerEntity player, String literal) {
-		player.sendMessage(new LiteralText(literal)
-						.setStyle(Style.EMPTY.withColor(Formatting.GOLD))
-				, false);
+	private static void tellSuccess(ServerPlayerEntity player, String literal, String literal2) {
+		tell(player, literal, Style.EMPTY.withColor(Formatting.GREEN), literal2, Style.EMPTY.withColor(Formatting.WHITE).withItalic(true));
+	}
+
+	private static void tellSuccess(ServerPlayerEntity player, String literal) {
+		tell(player, literal, Style.EMPTY.withColor(Formatting.GREEN));
+	}
+
+	private static void tellInvalid(ServerPlayerEntity player, String literal, String literal2) {
+		tell(player, literal, Style.EMPTY.withColor(Formatting.YELLOW), literal2, Style.EMPTY.withColor(Formatting.WHITE).withItalic(true));
+	}
+
+	private static void tellInvalid(ServerPlayerEntity player, String literal) {
+		tell(player, literal, Style.EMPTY.withColor(Formatting.YELLOW));
+	}
+
+	private static void tellInfo(ServerPlayerEntity player, String literal, String literal2) {
+		tell(player, literal, Style.EMPTY.withColor(Formatting.GRAY).withItalic(true), literal2, Style.EMPTY.withColor(Formatting.WHITE));
+	}
+
+	private static void tellInfo(ServerPlayerEntity player, String literal) {
+		tell(player, literal, Style.EMPTY.withColor(Formatting.GRAY));
+	}
+
+	private static void tellWarn(ServerPlayerEntity player, String literal, String literal2) {
+		tell(player, literal, Style.EMPTY.withColor(Formatting.GOLD), literal2, Style.EMPTY.withColor(Formatting.GRAY));
+	}
+
+	private static void tellWarn(ServerPlayerEntity player, String literal) {
+		tell(player, literal, Style.EMPTY.withColor(Formatting.GOLD));
 	}
 
 }
