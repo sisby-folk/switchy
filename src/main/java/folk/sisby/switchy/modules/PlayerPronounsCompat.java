@@ -9,7 +9,6 @@ import io.github.ashisbored.playerpronouns.data.Pronouns;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -51,9 +50,9 @@ public class PlayerPronounsCompat implements PresetModule {
 			// Ripped logic from the command
 			Map<String, Text> pronounTexts = PronounList.get().getCalculatedPronounStrings();
 			if (pronounTexts.containsKey(pronounsRaw)) {
-				pronouns = new Pronouns(pronounsRaw, pronounTexts.get(pronounsRaw));
+				pronouns = new Pronouns(pronounsRaw, pronounTexts.get(pronounsRaw), false);
 			} else {
-				pronouns = new Pronouns(pronounsRaw, new LiteralText(pronounsRaw));
+				pronouns = new Pronouns(pronounsRaw, Text.literal(pronounsRaw), false);
 			}
 		}
 	}

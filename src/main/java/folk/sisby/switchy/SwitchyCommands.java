@@ -10,7 +10,7 @@ import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -134,8 +134,8 @@ public class SwitchyCommands {
 	}
 
 	private static int listPresets(ServerPlayerEntity player, SwitchyPresets presets) {
-		player.sendMessage(new LiteralText("Presets: ").append(new LiteralText(Objects.toString(presets, "[]"))), false);
-		player.sendMessage(new LiteralText("Current Preset: ").append(new LiteralText(presets != null ? Objects.toString(presets.getCurrentPreset(), "<None>") : "<None>")), false);
+		player.sendMessage(Text.literal("Presets: ").append(Text.literal(Objects.toString(presets, "[]"))), false);
+		player.sendMessage(Text.literal("Current Preset: ").append(Text.literal(presets != null ? Objects.toString(presets.getCurrentPreset(), "<None>") : "<None>")), false);
 		return 1;
 	}
 
@@ -210,29 +210,29 @@ public class SwitchyCommands {
 	}
 
 	private static void informSwitch(ServerPlayerEntity player, String oldPreset, String newPreset) {
-		player.sendMessage(new LiteralText("Switched from ")
+		player.sendMessage(Text.literal("Switched from ")
 						.setStyle(Style.EMPTY.withColor(Formatting.YELLOW))
-						.append(new LiteralText(oldPreset).setStyle(Style.EMPTY.withColor(Formatting.WHITE)))
-						.append(new LiteralText(" to "))
-						.append(new LiteralText(newPreset).setStyle(Style.EMPTY.withColor(Formatting.WHITE)))
+						.append(Text.literal(oldPreset).setStyle(Style.EMPTY.withColor(Formatting.WHITE)))
+						.append(Text.literal(" to "))
+						.append(Text.literal(newPreset).setStyle(Style.EMPTY.withColor(Formatting.WHITE)))
 				, false);
 	}
 
 	private static void informWithName(ServerPlayerEntity player, String literal, String name) {
-		player.sendMessage(new LiteralText(literal)
+		player.sendMessage(Text.literal(literal)
 						.setStyle(Style.EMPTY.withColor(Formatting.YELLOW))
-						.append(new LiteralText(name).setStyle(Style.EMPTY.withColor(Formatting.WHITE)))
+						.append(Text.literal(name).setStyle(Style.EMPTY.withColor(Formatting.WHITE)))
 				, false);
 	}
 
 	private static void inform(ServerPlayerEntity player, String literal) {
-		player.sendMessage(new LiteralText(literal)
+		player.sendMessage(Text.literal(literal)
 						.setStyle(Style.EMPTY.withColor(Formatting.YELLOW))
 				, false);
 	}
 
 	private static void warn(ServerPlayerEntity player, String literal) {
-		player.sendMessage(new LiteralText(literal)
+		player.sendMessage(Text.literal(literal)
 						.setStyle(Style.EMPTY.withColor(Formatting.GOLD))
 				, false);
 	}
