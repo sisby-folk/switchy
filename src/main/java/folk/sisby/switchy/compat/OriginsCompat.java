@@ -1,7 +1,8 @@
 package folk.sisby.switchy.compat;
 
 import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.SwitchyPreset;
+import folk.sisby.switchy.api.PresetCompatModule;
+import folk.sisby.switchy.api.SwitchyModuleRegistry;
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.origin.Origin;
 import io.github.apace100.origins.origin.OriginLayer;
@@ -19,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class OriginsCompat extends PresetCompatModule {
-	private static final Identifier ID = new Identifier(Switchy.ID,  "origins");
+	private static final Identifier ID = new Identifier("switchy",  "origins");
 	private static final boolean isDefault = true;
 
 	public static final String KEY_ORIGINS_LIST = "OriginLayers";
@@ -51,7 +52,7 @@ public class OriginsCompat extends PresetCompatModule {
 	}
 
 	@Override
-	public NbtCompound toNbt(SwitchyPreset preset) {
+	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		// From Origins PlayerOriginComponent
 		NbtList originLayerList = new NbtList();
@@ -103,6 +104,6 @@ public class OriginsCompat extends PresetCompatModule {
 
 	// Runs on touch() - but only once.
 	static {
-		Switchy.registerModule(ID, OriginsCompat::new);
+		SwitchyModuleRegistry.registerModule(ID, OriginsCompat::new);
 	}
 }

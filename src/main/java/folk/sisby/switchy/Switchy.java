@@ -1,5 +1,6 @@
 package folk.sisby.switchy;
 
+import folk.sisby.switchy.api.PresetCompatModule;
 import folk.sisby.switchy.compat.*;
 import net.minecraft.util.Identifier;
 import org.quiltmc.loader.api.ModContainer;

@@ -1,6 +1,5 @@
-package folk.sisby.switchy.compat;
+package folk.sisby.switchy.api;
 
-import folk.sisby.switchy.SwitchyPreset;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
@@ -11,7 +10,7 @@ public abstract class PresetCompatModule {
 
 	public abstract void applyToPlayer(PlayerEntity player);
 
-	public abstract NbtCompound toNbt(SwitchyPreset preset);
+	public abstract NbtCompound toNbt();
 
 	public abstract void fillFromNbt(NbtCompound nbt);
 

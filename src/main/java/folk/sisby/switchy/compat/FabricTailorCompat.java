@@ -1,7 +1,7 @@
 package folk.sisby.switchy.compat;
 
-import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.SwitchyPreset;
+import folk.sisby.switchy.api.PresetCompatModule;
+import folk.sisby.switchy.api.SwitchyModuleRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import org.samo_lego.fabrictailor.casts.TailoredPlayer;
 
 public class FabricTailorCompat extends PresetCompatModule {
-	private static final Identifier ID = new Identifier(Switchy.ID, "fabric_tailor");
+	private static final Identifier ID = new Identifier("switchy", "fabric_tailor");
 	private static final boolean isDefault = true;
 
 	public static final String KEY_SKIN_VALUE = "skinValue";
@@ -35,7 +35,7 @@ public class FabricTailorCompat extends PresetCompatModule {
 	}
 
 	@Override
-	public NbtCompound toNbt(SwitchyPreset preset) {
+	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		if (this.skinValue != null) outNbt.putString(KEY_SKIN_VALUE, this.skinValue);
 		if (this.skinSignature != null) outNbt.putString(KEY_SKIN_SIGNATURE, this.skinSignature);
@@ -63,6 +63,6 @@ public class FabricTailorCompat extends PresetCompatModule {
 
 	// Runs on touch() - but only once.
 	static {
-		Switchy.registerModule(ID, FabricTailorCompat::new);
+		SwitchyModuleRegistry.registerModule(ID, FabricTailorCompat::new);
 	}
 }

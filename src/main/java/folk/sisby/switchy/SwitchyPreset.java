@@ -1,6 +1,6 @@
 package folk.sisby.switchy;
 
-import folk.sisby.switchy.compat.PresetCompatModule;
+import folk.sisby.switchy.api.PresetCompatModule;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
@@ -22,7 +22,7 @@ public class SwitchyPreset {
 
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
-		this.compatModules.forEach((id, module) -> outNbt.put(id.toString(), module.toNbt(this)));
+		this.compatModules.forEach((id, module) -> outNbt.put(id.toString(), module.toNbt()));
 		return outNbt;
 	}
 

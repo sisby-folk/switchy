@@ -46,29 +46,41 @@ repositories {
 }
 
 dependencies {
-	// Base
+	// // Base // //
 	minecraft libs.minecraft
 	mappings loom.layered {
 		addLayer quiltMappings.mappings("org.quiltmc:quilt-mappings:${minecraft_version}+build.${quilt_mappings}:v2")
 	}
 	modImplementation libs.ql
 	modImplementation libs.qsl
-	modImplementation libs.qfapi
 
-	// Compat
-	modImplementation files('/build/libs/drogtor-1.1.3+1.17.jar')
+	// // Compat // //
 
-	modImplementation libs.fabrictailor
+	// Drogtor
+	modCompileOnly files('/build/libs/drogtor-1.1.3+1.17.jar')
+	modLocalRuntime files('/build/libs/drogtor-1.1.3+1.17.jar')
 
-	modImplementation files('/build/libs/Calio-1.18.2-1.6.0.jar') // Fix quilt incompatibility
-	modImplementation (libs.origins) {
+	// // Fabric Tailor
+	modCompileOnly libs.fabrictailor
+	modLocalRuntime libs.fabrictailor
+
+	// Origins
+	modCompileOnly libs.qfapi
+	modLocalRuntime libs.qfapi
+	modCompileOnly files('/build/libs/Calio-1.18.2-1.6.0.jar') // Fix quilt incompatibility
+	modLocalRuntime files('/build/libs/Calio-1.18.2-1.6.0.jar') // Fix quilt incompatibility
+	modCompileOnly (libs.origins) {
+		exclude module: 'calio'
+	}
+	modLocalRuntime (libs.origins) {
 		exclude module: 'calio'
 	}
 
-	modImplementation files('/build/libs/player-pronouns-1.6.0+1.18.jar')
-	modRuntimeOnly "eu.pb4:placeholder-api:1.1.3+1.17.1"
-	modRuntimeOnly files('/build/libs/more-codecs-0.2.2+1.18.jar')
-
+	// Player Pronouns
+	modCompileOnly files('/build/libs/player-pronouns-1.6.0+1.18.jar')
+	modLocalRuntime files('/build/libs/player-pronouns-1.6.0+1.18.jar')
+	modLocalRuntime "eu.pb4:placeholder-api:1.1.3+1.17.1"
+	modLocalRuntime files('/build/libs/more-codecs-0.2.2+1.18.jar')
 }
 
 processResources {

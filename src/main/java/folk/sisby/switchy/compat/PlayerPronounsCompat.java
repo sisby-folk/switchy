@@ -1,7 +1,8 @@
 package folk.sisby.switchy.compat;
 
 import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.SwitchyPreset;
+import folk.sisby.switchy.api.PresetCompatModule;
+import folk.sisby.switchy.api.SwitchyModuleRegistry;
 import io.github.ashisbored.playerpronouns.PlayerPronouns;
 import io.github.ashisbored.playerpronouns.data.PronounList;
 import io.github.ashisbored.playerpronouns.data.Pronouns;
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 
 public class PlayerPronounsCompat extends PresetCompatModule {
-	private static final Identifier ID = new Identifier(Switchy.ID,  "player_pronouns");
+	private static final Identifier ID = new Identifier("switchy",  "player_pronouns");
 	private static final boolean isDefault = true;
 
 	public static final String KEY_PRONOUNS_RAW = "pronounsRaw";
@@ -37,7 +38,7 @@ public class PlayerPronounsCompat extends PresetCompatModule {
 	}
 
 	@Override
-	public NbtCompound toNbt(SwitchyPreset preset) {
+	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		if (this.pronouns != null) outNbt.putString(KEY_PRONOUNS_RAW, this.pronouns.raw());
 		return outNbt;
@@ -72,6 +73,6 @@ public class PlayerPronounsCompat extends PresetCompatModule {
 
 	// Runs on touch() - but only once.
 	static {
-		Switchy.registerModule(ID, PlayerPronounsCompat::new);
+		SwitchyModuleRegistry.registerModule(ID, PlayerPronounsCompat::new);
 	}
 }

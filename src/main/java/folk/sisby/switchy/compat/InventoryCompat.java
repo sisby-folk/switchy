@@ -1,7 +1,7 @@
 package folk.sisby.switchy.compat;
 
-import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.SwitchyPreset;
+import folk.sisby.switchy.api.PresetCompatModule;
+import folk.sisby.switchy.api.SwitchyModuleRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.NbtCompound;
@@ -10,7 +10,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 
 public class InventoryCompat extends PresetCompatModule {
-	private static final Identifier ID = new Identifier(Switchy.ID,  "inventories");
+	private static final Identifier ID = new Identifier("switchy",  "inventories");
 	private static final boolean isDefault = false;
 
 	public static final String KEY_INVENTORY_LIST = "inventory";
@@ -28,7 +28,7 @@ public class InventoryCompat extends PresetCompatModule {
 	}
 
 	@Override
-	public NbtCompound toNbt(SwitchyPreset preset) {
+	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		outNbt.put(KEY_INVENTORY_LIST, inventory.writeNbt(new NbtList()));
 		return outNbt;
@@ -54,6 +54,6 @@ public class InventoryCompat extends PresetCompatModule {
 
 	// Runs on touch() - but only once.
 	static {
-		Switchy.registerModule(ID, InventoryCompat::new);
+		SwitchyModuleRegistry.registerModule(ID, InventoryCompat::new);
 	}
 }
