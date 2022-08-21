@@ -16,7 +16,7 @@ Commands:
 - `/switchy module enable [name]` - enable a module for you.
 - `/switchy delete disable [name]` - disable a module for you.
 
-On its own, supports player customization from:
+Comes packaged with modules for:
 - [Drogtor The Nickinator](https://modrinth.com/mod/drogtor) - player `nickname`, `bio`, and `color`
 - [Fabric Tailor](https://modrinth.com/mod/fabrictailor) - set skin
 - [Origins](https://modrinth.com/mod/origins/versions) - current origins (includes all layers, e.g. [Statures](https://modrinth.com/mod/tinkerers-statures) for player height)
