@@ -174,7 +174,7 @@ public class SwitchyCommands {
 			return 0;
 		}
 		if (presetName.equalsIgnoreCase(Objects.toString(presets.getCurrentPreset(), null))) {
-			tellInvalid(player, "Can't swap to your current preset! Try ", "/switchy list");
+			tellInvalid(player, "You can't swap to your current preset! Try ", "/switchy list");
 			return 0;
 		}
 
