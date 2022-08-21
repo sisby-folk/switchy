@@ -147,6 +147,7 @@ public class SwitchyPresets {
 	public void renamePreset(String oldName, String newName) {
 		if (this.presetMap.containsKey(oldName) && !this.presetMap.containsKey(newName)) {
 			SwitchyPreset preset = this.presetMap.get(oldName);
+			preset.presetName = newName;
 			this.presetMap.put(newName, preset);
 			this.presetMap.remove(oldName);
 		} else {

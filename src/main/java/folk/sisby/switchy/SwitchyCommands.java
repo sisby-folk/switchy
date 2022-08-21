@@ -6,6 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.datafixers.util.Function3;
+import com.mojang.datafixers.util.Function4;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.ServerCommandSource;
@@ -19,7 +20,6 @@ import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
 
-import java.text.Normalizer;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -51,6 +51,11 @@ public class SwitchyCommands {
 										.then(argument("preset", StringArgumentType.word())
 												.suggests((c, b) -> suggestPresets(c, b, true))
 												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::deletePreset, new Pair<>("preset", String.class)))))
+								.then(literal("rename")
+										.then(argument("preset", StringArgumentType.word())
+												.suggests((c, b) -> suggestPresets(c, b, true))
+												.then(argument("name", StringArgumentType.word())
+													.executes((c) -> unwrapAndExecute(c, SwitchyCommands::renamePreset, new Pair<>("preset", String.class), new Pair<>("name", String.class))))))
 								.then(literal("module")
 										.then(literal("enable")
 												.then(argument("module", IdentifierArgumentType.identifier())
@@ -101,7 +106,7 @@ public class SwitchyCommands {
 		return builder.buildFuture();
 	}
 
-	private static <V> int unwrapAndExecute(CommandContext<ServerCommandSource> context, Function3<ServerPlayerEntity, SwitchyPresets, V, Integer> executeFunction, @Nullable Pair<String, Class<V>> argument) {
+	private static <V, V2> int unwrapAndExecute(CommandContext<ServerCommandSource> context, Function4<ServerPlayerEntity, SwitchyPresets, V, V2, Integer> executeFunction, @Nullable Pair<String, Class<V>> argument, @Nullable Pair<String, Class<V2>> argument2) {
 		int result = 0;
 
 		// Get context and execute
@@ -111,7 +116,12 @@ public class SwitchyCommands {
 				((SwitchyPlayer) player).switchy$setPresets(SwitchyPresets.fromNbt(player, new NbtCompound()));
 			}
 			SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
-			result = executeFunction.apply(player, presets, argument != null ? context.getArgument(argument.getLeft(), argument.getRight()) : null);
+			result = executeFunction.apply(
+					player,
+					presets,
+					(argument != null ? context.getArgument(argument.getLeft(), argument.getRight()) : null),
+					(argument2 != null ? context.getArgument(argument2.getLeft(), argument2.getRight()) : null)
+			);
 		} catch (CommandSyntaxException e) {
 			Switchy.LOGGER.error("Switchy: Command wasn't called by a player! (this shouldn't happen!)");
 		}
@@ -121,8 +131,12 @@ public class SwitchyCommands {
 		return result;
 	}
 
+	private static <V> int unwrapAndExecute(CommandContext<ServerCommandSource> context, Function3<ServerPlayerEntity, SwitchyPresets, V, Integer> executeFunction,  @Nullable Pair<String, Class<V>> argument) {
+		return unwrapAndExecute(context, (player, preset, arg, ignored2) -> executeFunction.apply(player, preset, arg), argument, null);
+	}
+
 	private static int unwrapAndExecute(CommandContext<ServerCommandSource> context, BiFunction<ServerPlayerEntity, SwitchyPresets, Integer> executeFunction) {
-		return unwrapAndExecute(context, (player, preset, ignored) -> executeFunction.apply(player, preset), null);
+		return unwrapAndExecute(context, (player, preset, ignored, ignored2) -> executeFunction.apply(player, preset), null, null);
 	}
 
 	private static int displayHelp(ServerPlayerEntity player, SwitchyPresets presets) {
@@ -130,9 +144,10 @@ public class SwitchyCommands {
 		tellInfo(player, "/switchy set [name]", " - switches to specified preset");
 		tellInfo(player, "/switch [name]", " - alias of above");
 		tellInfo(player, "/switchy delete [name]", " - delete a preset permanently");
+		tellInfo(player, "/switchy rename [name] [name]", " - rename a preset");
 		tellInfo(player, "/switchy list", " - list presets and show current");
-		tellInfo(player, "/switchy module enable [name]", " - enable a module for your presets");
-		tellInfo(player, "/switchy module disable [name]", " - disable a module, deleting data");
+		tellInfo(player, "/switchy module enable [name]", " - enable a module for you");
+		tellInfo(player, "/switchy module disable [name]", " - disable a module for you");
 		return 6;
 	}
 
@@ -161,7 +176,18 @@ public class SwitchyCommands {
 
 		String oldPresetName = Objects.toString(presets.getCurrentPreset(), "<None>");
 		presets.setCurrentPreset(presetName, true);
-		tellSwitch(player, oldPresetName, presetName);
+		tellChanged(player, "Switched", oldPresetName, presetName);
+		return 1;
+	}
+
+	private static int renamePreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName, String newName) {
+		if (!presets.containsPreset(presetName) || presets.containsPreset(newName)) {
+			tellInvalid(player, "That preset " + (presets.containsPreset(newName) ? "already exists" : "doesn't exist") + "! Try ", "/switchy list");
+			return 0;
+		}
+
+		presets.renamePreset(presetName, newName);
+		tellChanged(player, "Renamed preset ", presetName, newName);
 		return 1;
 	}
 
@@ -215,13 +241,13 @@ public class SwitchyCommands {
 		player.sendMessage(new LiteralText("[Switchy] ").setStyle(Style.EMPTY.withColor(Formatting.AQUA)).append(text), false);
 	}
 
-	private static void tellSwitch(ServerPlayerEntity player, String oldPreset, String newPreset) {
+	private static void tellChanged(ServerPlayerEntity player, String action, String oldLiteral, String newLiteral) {
 		sendMessage(player,
 				new LiteralText("")
-						.append(new LiteralText("Switched from ").setStyle(Style.EMPTY.withColor(Formatting.GREEN)))
-						.append(new LiteralText(oldPreset).setStyle(Style.EMPTY.withColor(Formatting.WHITE)))
+						.append(new LiteralText(action + " from ").setStyle(Style.EMPTY.withColor(Formatting.GREEN)))
+						.append(new LiteralText(oldLiteral).setStyle(Style.EMPTY.withColor(Formatting.WHITE)))
 						.append(new LiteralText(" to ").setStyle(Style.EMPTY.withColor(Formatting.GREEN)))
-						.append(new LiteralText(newPreset).setStyle(Style.EMPTY.withColor(Formatting.WHITE)))
+						.append(new LiteralText(newLiteral).setStyle(Style.EMPTY.withColor(Formatting.WHITE)))
 		);
 	}
 
