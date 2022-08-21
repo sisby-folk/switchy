@@ -168,9 +168,9 @@ public class SwitchyCommands {
 			return 0;
 		}
 
-		if (!last_command.equals("/switchy delete " + presetName)) {
-			inform(player, "Deleting a preset will permanently delete its data for the following modules:");
-			informWithName(player, "", presets.getModuleToggles().entrySet().stream().filter(Map.Entry::getValue).toList().toString());
+		if (!last_command.equalsIgnoreCase("/switchy delete " + presetName)) {
+			warn(player, "WARNING: Deleting a preset will permanently delete its data for the following modules:");
+			informWithName(player, "", presets.getModuleToggles().entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).map(Identifier::getPath).toList().toString());
 			informWithName(player, "To Confirm, please enter ", "/switchy delete " + presetName);
 			return 0;
 		} else {
@@ -186,9 +186,9 @@ public class SwitchyCommands {
 			return 0;
 		}
 
-		if (!last_command.equals("/switchy disable " + moduleId)) {
+		if (!last_command.equalsIgnoreCase("/switchy module disable " + moduleId)) {
 			inform(player, "Disabling a module will delete its data from all your presets");
-			inform(player, Switchy.COMPAT_REGISTRY.get(moduleId).get().getDisableConfirmation());
+			warn(player, Switchy.COMPAT_REGISTRY.get(moduleId).get().getDisableConfirmation());
 			informWithName(player, "To Confirm, please enter ", "/switchy disable " + moduleId);
 			return 0;
 		} else {
@@ -228,6 +228,12 @@ public class SwitchyCommands {
 	private static void inform(ServerPlayerEntity player, String literal) {
 		player.sendMessage(new LiteralText(literal)
 						.setStyle(Style.EMPTY.withColor(Formatting.YELLOW))
+				, false);
+	}
+
+	private static void warn(ServerPlayerEntity player, String literal) {
+		player.sendMessage(new LiteralText(literal)
+						.setStyle(Style.EMPTY.withColor(Formatting.GOLD))
 				, false);
 	}
 
