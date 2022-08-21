@@ -17,7 +17,7 @@ public interface PresetModule {
 	Identifier getId();
 
 	default String getDisableConfirmation() {
-		return "Warning: Module data will be immediately lost.";
+		return "Warning: Module data will be deleted for all presets.";
 	}
 
 	boolean isDefault();
