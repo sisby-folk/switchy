@@ -1,6 +1,6 @@
 package folk.sisby.switchy;
 
-import folk.sisby.switchy.api.PresetCompatModule;
+import folk.sisby.switchy.api.PresetModule;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SwitchyPreset {
-	public final Map<Identifier, PresetCompatModule> compatModules;
+	public final Map<Identifier, PresetModule> compatModules;
 
 	public String presetName;
 

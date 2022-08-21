@@ -1,8 +1,8 @@
-package folk.sisby.switchy.compat;
+package folk.sisby.switchy.modules;
 
 import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.api.PresetCompatModule;
-import folk.sisby.switchy.api.SwitchyModuleRegistry;
+import folk.sisby.switchy.api.PresetModule;
+import folk.sisby.switchy.api.PresetModuleRegistry;
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.origin.Origin;
 import io.github.apace100.origins.origin.OriginLayer;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class OriginsCompat extends PresetCompatModule {
+public class OriginsCompat implements PresetModule {
 	private static final Identifier ID = new Identifier("switchy",  "origins");
 	private static final boolean isDefault = true;
 
@@ -104,6 +104,6 @@ public class OriginsCompat extends PresetCompatModule {
 
 	// Runs on touch() - but only once.
 	static {
-		SwitchyModuleRegistry.registerModule(ID, OriginsCompat::new);
+		PresetModuleRegistry.registerModule(ID, OriginsCompat::new);
 	}
 }

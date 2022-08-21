@@ -1,14 +1,14 @@
-package folk.sisby.switchy.compat;
+package folk.sisby.switchy.modules;
 
-import folk.sisby.switchy.api.PresetCompatModule;
-import folk.sisby.switchy.api.SwitchyModuleRegistry;
+import folk.sisby.switchy.api.PresetModule;
+import folk.sisby.switchy.api.PresetModuleRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.samo_lego.fabrictailor.casts.TailoredPlayer;
 
-public class FabricTailorCompat extends PresetCompatModule {
+public class FabricTailorCompat implements PresetModule {
 	private static final Identifier ID = new Identifier("switchy", "fabric_tailor");
 	private static final boolean isDefault = true;
 
@@ -63,6 +63,6 @@ public class FabricTailorCompat extends PresetCompatModule {
 
 	// Runs on touch() - but only once.
 	static {
-		SwitchyModuleRegistry.registerModule(ID, FabricTailorCompat::new);
+		PresetModuleRegistry.registerModule(ID, FabricTailorCompat::new);
 	}
 }

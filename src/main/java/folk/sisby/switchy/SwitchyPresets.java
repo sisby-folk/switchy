@@ -22,23 +22,23 @@ public class SwitchyPresets {
 	@Nullable private SwitchyPreset currentPreset;
 
 	public static final String KEY_PRESET_CURRENT = "current";
-	public static final String KEY_PRESET_MODULE_ALLOWED = "allowed";
-	public static final String KEY_PRESET_MODULE_DENIED = "denied";
+	public static final String KEY_PRESET_MODULE_ENABLED = "enabled";
+	public static final String KEY_PRESET_MODULE_DIABLED = "disabled";
 	public static final String KEY_PRESET_LIST = "list";
 
 	public NbtElement toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 
-		NbtList allowedList = new NbtList();
-		NbtList deniedList = new NbtList();
+		NbtList enabledList = new NbtList();
+		NbtList disabledList = new NbtList();
 
 		this.moduleToggles.forEach((key, value) -> {
-			if (value) allowedList.add(NbtString.of(key.toString()));
-			if (!value) deniedList.add(NbtString.of(key.toString()));
+			if (value) enabledList.add(NbtString.of(key.toString()));
+			if (!value) disabledList.add(NbtString.of(key.toString()));
 		});
 
-		outNbt.put(KEY_PRESET_MODULE_ALLOWED, allowedList);
-		outNbt.put(KEY_PRESET_MODULE_DENIED, deniedList);
+		outNbt.put(KEY_PRESET_MODULE_ENABLED, enabledList);
+		outNbt.put(KEY_PRESET_MODULE_DIABLED, disabledList);
 
 		NbtCompound listNbt = new NbtCompound();
 		for (SwitchyPreset preset : presetMap.values()) {
@@ -53,8 +53,8 @@ public class SwitchyPresets {
 	public static SwitchyPresets fromNbt(PlayerEntity player, NbtCompound nbt) {
 		SwitchyPresets outPresets = new SwitchyPresets(player);
 
-		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_ALLOWED, NbtElement.STRING_TYPE), true);
-		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_DENIED, NbtElement.STRING_TYPE), false);
+		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE), true);
+		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_DIABLED, NbtElement.STRING_TYPE), false);
 
 		NbtCompound listNbt = nbt.getCompound(KEY_PRESET_LIST);
 		for (String key : listNbt.getKeys()) {
@@ -133,44 +133,50 @@ public class SwitchyPresets {
 		return presetMap.keySet().stream().sorted().toList();
 	}
 
-	public boolean deletePreset(String presetName) {
+	public void deletePreset(String presetName) {
 		if (this.presetMap.containsKey(presetName)) {
 			if (presetName.equalsIgnoreCase(Objects.toString(this.currentPreset, null))) {
 				this.currentPreset = null;
 			}
 			this.presetMap.remove(presetName);
-			return true;
 		} else {
-			return false;
+			throw new IllegalArgumentException("Switchy preset doesn't exist");
 		}
 	}
 
-	public boolean renamePreset(String oldName, String newName) {
+	public void renamePreset(String oldName, String newName) {
 		if (this.presetMap.containsKey(oldName) && !this.presetMap.containsKey(newName)) {
 			SwitchyPreset preset = this.presetMap.get(oldName);
 			this.presetMap.put(newName, preset);
 			this.presetMap.remove(oldName);
-			return true;
 		} else {
-			return false;
+			throw new IllegalArgumentException("Switchy rename not valid");
 		}
 	}
 
-	public boolean denyModule(Identifier id) {
+	public boolean containsPreset(String presetName) {
+		return this.presetMap.containsKey(presetName); // Case Insensitive
+	}
+
+	public void disableModule(Identifier id) {
 		if (this.moduleToggles.containsKey(id)) {
 			this.moduleToggles.put(id, false);
-			return true;
+			presetMap.forEach((name, preset) -> {
+				preset.compatModules.remove(id);
+			});
 		} else {
-			return false;
+			throw new IllegalArgumentException("Switchy module doesn't exist");
 		}
 	}
 
-	public boolean allowModule(Identifier id) {
+	public void enableModule(Identifier id) {
 		if (this.moduleToggles.containsKey(id)) {
 			this.moduleToggles.put(id, true);
-			return true;
+			presetMap.forEach((name, preset) -> {
+				preset.compatModules.put(id, Switchy.COMPAT_REGISTRY.get(id).get());
+			});
 		} else {
-			return false;
+			throw new IllegalArgumentException("Switchy module doesn't exist");
 		}
 	}
 

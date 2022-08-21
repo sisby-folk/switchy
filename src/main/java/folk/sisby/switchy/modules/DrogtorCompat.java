@@ -1,15 +1,15 @@
-package folk.sisby.switchy.compat;
+package folk.sisby.switchy.modules;
 
 import com.unascribed.drogtor.DrogtorPlayer;
-import folk.sisby.switchy.api.PresetCompatModule;
-import folk.sisby.switchy.api.SwitchyModuleRegistry;
+import folk.sisby.switchy.api.PresetModule;
+import folk.sisby.switchy.api.PresetModuleRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-public class DrogtorCompat extends PresetCompatModule {
+public class DrogtorCompat implements PresetModule {
 	private static final Identifier ID = new Identifier("switchy",  "drogtor");
 	private static final boolean isDefault = true;
 
@@ -69,6 +69,6 @@ public class DrogtorCompat extends PresetCompatModule {
 
 	// Runs on touch() - but only once.
 	static {
-		SwitchyModuleRegistry.registerModule(ID, DrogtorCompat::new);
+		PresetModuleRegistry.registerModule(ID, DrogtorCompat::new);
 	}
 }

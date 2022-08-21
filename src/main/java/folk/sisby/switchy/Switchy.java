@@ -1,7 +1,7 @@
 package folk.sisby.switchy;
 
-import folk.sisby.switchy.api.PresetCompatModule;
-import folk.sisby.switchy.compat.*;
+import folk.sisby.switchy.api.PresetModule;
+import folk.sisby.switchy.modules.*;
 import net.minecraft.util.Identifier;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.loader.api.QuiltLoader;
@@ -19,9 +19,9 @@ public class Switchy implements ModInitializer {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
 
-	static final Map<Identifier, Supplier<? extends PresetCompatModule>> COMPAT_REGISTRY = new HashMap<>();
+	static final Map<Identifier, Supplier<? extends PresetModule>> COMPAT_REGISTRY = new HashMap<>();
 
-	public static void registerModule(Identifier moduleId, Supplier<? extends PresetCompatModule> moduleConstructor) {
+	public static void registerModule(Identifier moduleId, Supplier<? extends PresetModule> moduleConstructor) {
 		if (!COMPAT_REGISTRY.containsKey(moduleId)) {
 			COMPAT_REGISTRY.put(moduleId, moduleConstructor);
 			LOGGER.info("Switchy: Registered module " + moduleId);
