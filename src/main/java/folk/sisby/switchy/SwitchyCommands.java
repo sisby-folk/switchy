@@ -187,7 +187,7 @@ public class SwitchyCommands {
 		}
 
 		presets.renamePreset(presetName, newName);
-		tellChanged(player, "Renamed preset ", presetName, newName);
+		tellChanged(player, "Renamed preset", presetName, newName);
 		return 1;
 	}
 
