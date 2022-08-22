@@ -25,6 +25,10 @@ Further modules can be added from these addons:
 - [Switchy Inventories](https://modrinth.com/mod/switchy-inventories) - Addon for minecraft. Gives each preset a separate inventory.
   - Highly recommended - Comes disabled by default and can be enabled on a per-player basis.
 
+## Showcase
+
+<iframe width="934" height="534" src="https://www.youtube.com/embed/_hXYjbNfd7Y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Design - Modules
 
 Switchy, at its core, is a mod that gives you a list of empty presets. You can add to the list, set what preset is "current", and so on, but none of these presets *do* anything.
@@ -50,6 +54,12 @@ Otherwise, all an addon mod needs to do is create a module class that implements
 ## Further Info
 
 All mods are built on the work of many others.
+
+![Created for ModFest: Singularity](https://blob.jortage.com/blobs/5/d4d/5d4d14d96db2e2024d87cf5606cb7ce6421633a002e328947f85d210ba250ecb9f86de8df210dd031be2d4eafb0980494e7a1e8e99590a550abaa42d82768b9f)
+
+We made this mod (up to v1.2.1) for Modfest: Singularity! However, we intend to maintain this mod into the future.
+
+This mod is included in [Tinkerer's Quilt](https://modrinth.com/modpack/tinkerers-quilt) - our modpack all about ease of play and ease of expression.
 
 We're primarily modpack developers - not mod developers! If you want to port this mod, do it yourself!
 
