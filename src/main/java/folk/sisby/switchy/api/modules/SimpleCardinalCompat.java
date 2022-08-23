@@ -1,4 +1,4 @@
-package folk.sisby.switchy.modules;
+package folk.sisby.switchy.api.modules;
 
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.CopyableComponent;
