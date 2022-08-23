@@ -22,7 +22,7 @@ repositories {
 
 	// Origins
 	maven {
-		name = "Ladysnake Libs"
+		name = 'Ladysnake Mods'
 		url = 'https://ladysnake.jfrog.io/artifactory/mods'
 	}
 	maven {
@@ -81,6 +81,10 @@ dependencies {
 	modLocalRuntime files('/build/libs/player-pronouns-1.6.0+1.18.jar')
 	modLocalRuntime "eu.pb4:placeholder-api:1.1.3+1.17.1"
 	modLocalRuntime files('/build/libs/more-codecs-0.2.2+1.18.jar')
+
+	// Cardinal Components
+	modApi libs.cardinal
+	modCompileOnly libs.cardinalEntity
 }
 
 processResources {
