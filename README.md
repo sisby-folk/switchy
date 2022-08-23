@@ -61,6 +61,9 @@ We made this mod (up to v1.2.1) for Modfest: Singularity! However, we intend to 
 
 This mod is included in [Tinkerer's Quilt](https://modrinth.com/modpack/tinkerers-quilt) - our modpack all about ease of play and ease of expression.
 
+This mod is primarily motivated for improving game accessibility for [plural systems](https://morethanone.info).    
+We support the [Plural Respect Document](https://bit.ly/pluralrespect) - its perspectives largely reflect our own. 
+
 We're primarily modpack developers - not mod developers! If you want to port this mod, do it yourself!
 
 Though feel free to let us know if we can spruce anything on the implementation side - PRs and issues with code snippets are welcome as long as you can help us understand them.
