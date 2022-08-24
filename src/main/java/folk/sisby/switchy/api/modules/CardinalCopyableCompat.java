@@ -9,9 +9,9 @@ import net.minecraft.util.Identifier;
 
 import java.util.function.Supplier;
 
-public class SimpleCardinalCompat<T1 extends CopyableComponent<T1>>  implements PresetModule {
+public class CardinalCopyableCompat<T1 extends CopyableComponent<T1>>  implements PresetModule {
 	private final Identifier ID;
-	private static final boolean isDefault = true;
+	private final boolean isDefault;
 
 	// Generic Fields
 	private final ComponentKey<T1> registryKey;
@@ -51,9 +51,10 @@ public class SimpleCardinalCompat<T1 extends CopyableComponent<T1>>  implements 
 		return isDefault;
 	}
 
-	public SimpleCardinalCompat(ComponentKey<T1> registryKey, Identifier id, Supplier<T1> componentFactory) {
-		this.registryKey = registryKey;
+	public CardinalCopyableCompat(Identifier id, ComponentKey<T1> registryKey, Supplier<T1> componentFactory, Boolean isDefault) {
 		this.ID = id;
+		this.registryKey = registryKey;
 		this.component = componentFactory.get();
+		this.isDefault = isDefault;
 	}
 }

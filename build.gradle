@@ -83,7 +83,7 @@ dependencies {
 	modLocalRuntime files('/build/libs/more-codecs-0.2.2+1.18.jar')
 
 	// Cardinal Components
-	modApi libs.cardinal
+	modCompileOnly libs.cardinal
 	modCompileOnly libs.cardinalEntity
 }
 

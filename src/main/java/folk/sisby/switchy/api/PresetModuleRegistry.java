@@ -6,7 +6,7 @@ import net.minecraft.util.Identifier;
 import java.util.function.Supplier;
 
 public class PresetModuleRegistry {
-	public static void registerModule(Identifier moduleId, Supplier<? extends PresetModule> moduleConstructor) {
+	public static void registerModule(Identifier moduleId, Supplier<PresetModule> moduleConstructor) {
 		Switchy.registerModule(moduleId, moduleConstructor);
 	}
 }
