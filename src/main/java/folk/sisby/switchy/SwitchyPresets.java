@@ -6,7 +6,6 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -105,10 +104,7 @@ public class SwitchyPresets {
 	}
 
 	private void switchPreset(SwitchyPreset oldPreset, SwitchyPreset newPreset) {
-		if (oldPreset != null) {
-			// Preserve current values into preset before swapping
-			oldPreset.updateFromPlayer(player);
-		}
+		oldPreset.updateFromPlayer(player);
 		newPreset.applyToPlayer(player);
 	}
 
@@ -116,7 +112,7 @@ public class SwitchyPresets {
 		if (this.currentPreset != null) this.currentPreset.updateFromPlayer(player);
 	}
 
-	public @Nullable SwitchyPreset getCurrentPreset() {
+	public SwitchyPreset getCurrentPreset() {
 		return currentPreset;
 	}
 
