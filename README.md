@@ -24,10 +24,11 @@ Comes packaged with modules for:
 Further modules can be added from these addons:
 - [Switchy Inventories](https://modrinth.com/mod/switchy-inventories) - Addon for minecraft. Gives each preset a separate inventory.
   - Highly recommended - Comes disabled by default and can be enabled on a per-player basis.
+  - Includes a separate module for trinket inventories - perfect for cosmetic trinkets.
 
 ## Showcase
 
-<iframe width="896" height="504" src="https://www.youtube.com/embed/_hXYjbNfd7Y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="896" height="504" src="https://www.youtube.com/embed/gkOGZUJOtR4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Design - Modules
 
@@ -61,8 +62,8 @@ We made this mod (up to v1.2.1) for Modfest: Singularity! However, we intend to 
 
 This mod is included in [Tinkerer's Quilt](https://modrinth.com/modpack/tinkerers-quilt) - our modpack all about ease of play and ease of expression.
 
-This mod is primarily motivated for improving game accessibility for [plural systems](https://morethanone.info).    
-We support the [Plural Respect Document](https://bit.ly/pluralrespect) - its perspectives largely reflect our own. 
+This mod is primarily motivated for improving game accessibility for [plural systems](https://morethanone.info).
+We support the [Plural Respect Document](https://bit.ly/pluralrespect) - its perspectives largely reflect our own.
 
 We're primarily modpack developers - not mod developers! If you want to port this mod, do it yourself!
 
