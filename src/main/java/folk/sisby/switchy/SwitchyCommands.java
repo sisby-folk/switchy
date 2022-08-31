@@ -11,66 +11,71 @@ import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
 
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
+import net.minecraft.server.command.CommandManager;
 
 public class SwitchyCommands {
+	private static final Pair<Style, Style> FORMAT_SUCCESS = new Pair<>(Style.EMPTY.withColor(Formatting.GREEN), Style.EMPTY.withColor(Formatting.WHITE).withItalic(true));
+	private static final Pair<Style, Style> FORMAT_INVALID = new Pair<>(Style.EMPTY.withColor(Formatting.YELLOW), Style.EMPTY.withColor(Formatting.WHITE).withItalic(true));
+	private static final Pair<Style, Style> FORMAT_INFO = new Pair<>(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true), Style.EMPTY.withColor(Formatting.WHITE));
+	private static final Pair<Style, Style> FORMAT_WARN = new Pair<>(Style.EMPTY.withColor(Formatting.GOLD), Style.EMPTY.withColor(Formatting.GRAY));
+	private static final Pair<Style, Style> FORMAT_COMMAND = new Pair<>(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true), Style.EMPTY.withColor(Formatting.GRAY).withItalic(true));
+	private static final Pair<Style, Style> FORMAT_HELP = new Pair<>(Style.EMPTY.withColor(Formatting.WHITE), Style.EMPTY.withColor(Formatting.WHITE));
+
 	private static String last_command = "";
 
 	public static void InitializeCommands() {
 		CommandRegistrationCallback.EVENT.register(
 				(dispatcher, buildContext, environment) -> dispatcher.register(
-						literal("switchy")
-								.then(literal("help")
+						CommandManager.literal("switchy")
+								.then(CommandManager.literal("help")
 										.executes((c) -> unwrapAndExecute(c, SwitchyCommands::displayHelp)))
-								.then(literal("list")
+								.then(CommandManager.literal("list")
 										.executes((c) -> unwrapAndExecute(c, SwitchyCommands::listPresets)))
-								.then(literal("new")
-										.then(argument("preset", StringArgumentType.word())
+								.then(CommandManager.literal("new")
+										.then(CommandManager.argument("preset", StringArgumentType.word())
 												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::newPreset, new Pair<>("preset", String.class)))))
-								.then(literal("set")
-										.then(argument("preset", StringArgumentType.word())
+								.then(CommandManager.literal("set")
+										.then(CommandManager.argument("preset", StringArgumentType.word())
 												.suggests((c, b) -> suggestPresets(c, b, false))
 												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::setPreset, new Pair<>("preset", String.class)))))
-								.then(literal("delete")
-										.then(argument("preset", StringArgumentType.word())
+								.then(CommandManager.literal("delete")
+										.then(CommandManager.argument("preset", StringArgumentType.word())
 												.suggests((c, b) -> suggestPresets(c, b, false))
 												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::deletePreset, new Pair<>("preset", String.class)))))
-								.then(literal("rename")
-										.then(argument("preset", StringArgumentType.word())
+								.then(CommandManager.literal("rename")
+										.then(CommandManager.argument("preset", StringArgumentType.word())
 												.suggests((c, b) -> suggestPresets(c, b, true))
-												.then(argument("name", StringArgumentType.word())
-													.executes((c) -> unwrapAndExecute(c, SwitchyCommands::renamePreset, new Pair<>("preset", String.class), new Pair<>("name", String.class))))))
-								.then(literal("module")
-										.then(literal("enable")
-												.then(argument("module", IdentifierArgumentType.identifier())
+												.then(CommandManager.argument("name", StringArgumentType.word())
+														.executes((c) -> unwrapAndExecute(c, SwitchyCommands::renamePreset, new Pair<>("preset", String.class), new Pair<>("name", String.class))))))
+								.then(CommandManager.literal("module")
+										.then(CommandManager.literal("enable")
+												.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
 														.suggests((c, b) -> suggestModules(c, b, false))
 														.executes((c) -> unwrapAndExecute(c, SwitchyCommands::enableModule, new Pair<>("module", Identifier.class)))))
-										.then(literal("disable")
-												.then(argument("module", IdentifierArgumentType.identifier())
+										.then(CommandManager.literal("disable")
+												.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
 														.suggests((c, b) -> suggestModules(c, b, true))
 														.executes((c) -> unwrapAndExecute(c, SwitchyCommands::disableModule, new Pair<>("module", Identifier.class)))))
 								)));
 
 		// switchy set alias
 		CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, environment) -> dispatcher.register(
-				literal("switch")
-						.then(argument("preset", StringArgumentType.word())
+				CommandManager.literal("switch")
+						.then(CommandManager.argument("preset", StringArgumentType.word())
 								.suggests((c, b) -> suggestPresets(c, b, false))
 								.executes((c) -> unwrapAndExecute(c, SwitchyCommands::setPreset, new Pair<>("preset", String.class)))))
 		);
@@ -131,7 +136,7 @@ public class SwitchyCommands {
 		return result;
 	}
 
-	private static <V> int unwrapAndExecute(CommandContext<ServerCommandSource> context, Function3<ServerPlayerEntity, SwitchyPresets, V, Integer> executeFunction,  @Nullable Pair<String, Class<V>> argument) {
+	private static <V> int unwrapAndExecute(CommandContext<ServerCommandSource> context, Function3<ServerPlayerEntity, SwitchyPresets, V, Integer> executeFunction, @Nullable Pair<String, Class<V>> argument) {
 		return unwrapAndExecute(context, (player, preset, arg, ignored2) -> executeFunction.apply(player, preset, arg), argument, null);
 	}
 
@@ -140,108 +145,109 @@ public class SwitchyCommands {
 	}
 
 	private static int displayHelp(ServerPlayerEntity player, SwitchyPresets presets) {
-		tellInfo(player, "/switchy new [name]", " - create a new preset");
-		tellInfo(player, "/switchy set [name]", " - switches to specified preset");
-		tellInfo(player, "/switch [name]", " - alias of above");
-		tellInfo(player, "/switchy delete [name]", " - delete a preset permanently");
-		tellInfo(player, "/switchy rename [name] [name]", " - rename a preset");
-		tellInfo(player, "/switchy list", " - list presets and show current");
-		tellInfo(player, "/switchy module enable [name]", " - enable a module for you");
-		tellInfo(player, "/switchy module disable [name]", " - disable a module for you");
-		return 6;
+		tellHelp(player, "commands.switchy.help.help", "commands.switchy.help.command");
+		tellHelp(player, "commands.switchy.list.help", "commands.switchy.list.command");
+		tellHelp(player, "commands.switchy.new.help", "commands.switchy.new.command", "commands.switchy.placeholder.preset");
+		tellHelp(player, "commands.switchy.set.help", "commands.switchy.set.command", "commands.switchy.placeholder.preset");
+		tellHelp(player, "commands.switchy.switch.help", "commands.switchy.switch.command", "commands.switchy.placeholder.preset");
+		tellHelp(player, "commands.switchy.delete.help", "commands.switchy.delete.command", "commands.switchy.placeholder.preset");
+		tellHelp(player, "commands.switchy.rename.help", "commands.switchy.rename.command", "commands.switchy.placeholder.preset", "commands.switchy.placeholder.preset");
+		tellHelp(player, "commands.switchy.module.enable.help", "commands.switchy.module.enable.command", "commands.switchy.placeholder.module");
+		tellHelp(player, "commands.switchy.module.disable.help", "commands.switchy.module.disable.command", "commands.switchy.placeholder.module");
+		return 7;
 	}
 
 	private static int listPresets(ServerPlayerEntity player, SwitchyPresets presets) {
-		tellInfo(player, "Presets: ", Objects.toString(presets, "[]"));
-		tellInfo(player, "Current Preset: ", presets != null ? Objects.toString(presets.getCurrentPreset(), "<None>") : "<None>");
+		sendMessage(player, translatableWithArgs("commands.switchy.list.presets", FORMAT_INFO, literal(Objects.toString(presets, "[]"))));
+		sendMessage(player, translatableWithArgs("commands.switchy.list.current", FORMAT_INFO, literal(presets != null ? Objects.toString(presets.getCurrentPreset(), "<None>") : "<None>")));
 		return 1;
 	}
 
 	private static int newPreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
 		if (presets.containsPreset(presetName)) {
-			tellInvalid(player, "That preset already exists! Try ", "/switchy set " + presetName);
+			tellInvalidTry(player, "commands.switchy.invalid.preset.exists", "commands.switchy.set.command", literal(presetName));
 			return 0;
 		}
 
 		presets.addPreset(new SwitchyPreset(presetName, presets.getModuleToggles()));
-		tellSuccess(player, "Created ", presetName);
+		tellSuccess(player, "commands.switchy.new.success", literal(presetName));
 		return 1 + setPreset(player, presets, presetName);
 	}
 
 	private static int setPreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
 		if (!presets.containsPreset(presetName)) {
-			tellInvalid(player, "That preset doesn't exist! Try ", "/switchy list");
+			tellInvalidTry(player, "commands.switchy.invalid.preset.missing", "commands.switchy.list.command");
 			return 0;
 		}
 		if (presetName.equalsIgnoreCase(Objects.toString(presets.getCurrentPreset(), null))) {
-			tellInvalid(player, "You can't swap to your current preset! Try ", "/switchy list");
+			tellInvalidTry(player, "commands.switchy.invalid.preset.current.set", "commands.switchy.list.command");
 			return 0;
 		}
 
 		String oldPresetName = Objects.toString(presets.getCurrentPreset(), "<None>");
 		presets.setCurrentPreset(presetName, true);
-		tellChanged(player, "Switched", oldPresetName, presetName);
+		tellSuccess(player, "commands.switchy.set.success", literal(oldPresetName), literal(presetName));
 		return 1;
 	}
 
 	private static int renamePreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName, String newName) {
 		if (!presets.containsPreset(presetName) || presets.containsPreset(newName)) {
-			tellInvalid(player, "That preset " + (presets.containsPreset(newName) ? "already exists" : "doesn't exist") + "! Try ", "/switchy list");
+			tellInvalidTry(player, "commands.switchy.invalid.preset." + (presets.containsPreset(newName) ? "exists" : "missing"), "commands.switchy.list.command");
 			return 0;
 		}
 
 		presets.renamePreset(presetName, newName);
-		tellChanged(player, "Renamed preset", presetName, newName);
+		tellSuccess(player, "commands.switchy.rename.success", literal(presetName), literal(newName));
 		return 1;
 	}
 
 	private static int deletePreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
 		if (!presets.getPresetNames().contains(presetName)) {
-			tellInvalid(player, "That preset doesn't exist! Try ", "/switchy list");
+			tellInvalidTry(player, "commands.switchy.invalid.preset.missing", "commands.switchy.list.command");
 			return 0;
 		}
 		if (presetName.equalsIgnoreCase(Objects.toString(presets.getCurrentPreset(), null))) {
-			tellInvalid(player, "You can't delete your current preset! Try ", "/switchy rename");
+			tellInvalidTry(player, "commands.switchy.invalid.preset.current.delete", "commands.switchy.rename.command", literal(""), literal(""));
 			return 0;
 		}
 
 		if (!last_command.equalsIgnoreCase("/switchy delete " + presetName)) {
-			tellWarn(player, "WARNING: Preset data from enabled modules will be deleted.");
-			tellWarn(player, "Modules: ", presets.getModuleToggles().entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).map(Identifier::getPath).toList().toString());
-			tellInvalid(player, "Confirm using ", "/switchy delete " + presetName);
+			tellWarn(player, "commands.switchy.delete.warn");
+			tellWarn(player, "commands.switchy.list.modules", literal(presets.getModuleToggles().entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).map(Identifier::getPath).toList().toString()));
+			tellInvalidTry(player, "commands.switchy.invalid.confirm", "commands.switchy.delete.command", literal(presetName));
 			return 0;
 		} else {
 			presets.deletePreset(presetName);
-			tellSuccess(player, "Deleted ", presetName);
+			tellSuccess(player, "commands.switchy.delete.success", literal(presetName));
 			return 1;
 		}
 	}
 
 	private static int disableModule(ServerPlayerEntity player, SwitchyPresets presets, Identifier moduleId) {
 		if (!presets.getModuleToggles().containsKey(moduleId) || !presets.getModuleToggles().get(moduleId)) {
-			tellInvalid(player, "Module " + (presets.getModuleToggles().containsKey(moduleId) ? "doesn't exist" : "is already disabled") + ": ", moduleId.toString());
+			tellInvalid(player, "commands.switchy.invalid.module." + (presets.getModuleToggles().containsKey(moduleId) ? "disabled" : "missing"), literal(moduleId.toString()));
 			return 0;
 		}
 
 		if (!last_command.equalsIgnoreCase("/switchy module disable " + moduleId)) {
-			tellWarn(player, Switchy.COMPAT_REGISTRY.get(moduleId).get().getDisableConfirmation());
-			tellInvalid(player, "Confirm using ", "/switchy module disable " + moduleId);
+			sendMessage(player, Switchy.COMPAT_REGISTRY.get(moduleId).get().getDisableConfirmation().setStyle(FORMAT_WARN.getLeft()));
+			tellInvalidTry(player, "commands.switchy.invalid.confirm", "commands.switchy.module.disable.command", literal(moduleId.toString()));
 			return 0;
 		} else {
 			presets.disableModule(moduleId);
-			tellSuccess(player, "Disabled ", moduleId.toString());
+			tellSuccess(player, "commands.switchy.module.disable.success", literal(moduleId.toString()));
 			return 1;
 		}
 	}
 
 	private static int enableModule(ServerPlayerEntity player, SwitchyPresets presets, Identifier moduleId) {
 		if (!presets.getModuleToggles().containsKey(moduleId) || presets.getModuleToggles().get(moduleId)) {
-			tellInvalid(player, "Module " + (presets.getModuleToggles().containsKey(moduleId) ? "doesn't exist" : "is already enabled") + ": ", moduleId.toString());
+			tellInvalid(player, "commands.switchy.invalid.module." + (presets.getModuleToggles().containsKey(moduleId) ? "enabled" : "missing"), literal(moduleId.toString()));
 			return 0;
 		}
 
 		presets.enableModule(moduleId);
-		tellSuccess(player, "Enabled ", moduleId.toString());
+		tellSuccess(player, "commands.switchy.module.enable.success", literal(moduleId.toString()));
 		return 1;
 	}
 
@@ -249,58 +255,45 @@ public class SwitchyCommands {
 		player.sendMessage(new LiteralText("[Switchy] ").setStyle(Style.EMPTY.withColor(Formatting.AQUA)).append(text), false);
 	}
 
-	private static void tellChanged(ServerPlayerEntity player, String action, String oldLiteral, String newLiteral) {
-		sendMessage(player,
-				new LiteralText("")
-						.append(new LiteralText(action + " from ").setStyle(Style.EMPTY.withColor(Formatting.GREEN)))
-						.append(new LiteralText(oldLiteral).setStyle(Style.EMPTY.withColor(Formatting.WHITE)))
-						.append(new LiteralText(" to ").setStyle(Style.EMPTY.withColor(Formatting.GREEN)))
-						.append(new LiteralText(newLiteral).setStyle(Style.EMPTY.withColor(Formatting.WHITE)))
-		);
+	private static void tellHelp(ServerPlayerEntity player, String keyHelp, String keyCommand, String... keyArgs) {
+		sendMessage(player, translatableWithArgs("commands.switchy.format.help", translatableWithArgs(keyCommand, FORMAT_COMMAND, translatable(keyArgs)), translatableWithArgs(keyHelp, FORMAT_HELP)));
 	}
 
-	private static void tell(ServerPlayerEntity player, String literal, Style style, String literal2, Style style2) {
-		sendMessage(player,
-				new LiteralText("")
-						.append(new LiteralText(literal).setStyle(style))
-						.append(new LiteralText(literal2).setStyle(style2))
-		);
+	private static void tellInvalidTry(ServerPlayerEntity player, String keyFail, String keyCommand, MutableText... commandArgs) {
+		sendMessage(player, translatableWithArgs(keyFail, FORMAT_INVALID, translatableWithArgs(keyCommand, commandArgs)));
 	}
 
-	private static void tell(ServerPlayerEntity player, String literal, Style style) {
-		tell(player, literal, style, "", Style.EMPTY);
+	private static void tellInvalid(ServerPlayerEntity player, String key, MutableText... args) {
+		sendMessage(player, translatableWithArgs(key, FORMAT_INVALID, args));
 	}
 
-	private static void tellSuccess(ServerPlayerEntity player, String literal, String literal2) {
-		tell(player, literal, Style.EMPTY.withColor(Formatting.GREEN), literal2, Style.EMPTY.withColor(Formatting.WHITE).withItalic(true));
+	private static void tellSuccess(ServerPlayerEntity player, String key, MutableText... args) {
+		sendMessage(player, translatableWithArgs(key, FORMAT_SUCCESS, args));
 	}
 
-	private static void tellSuccess(ServerPlayerEntity player, String literal) {
-		tell(player, literal, Style.EMPTY.withColor(Formatting.GREEN));
+	private static void tellWarn(ServerPlayerEntity player, String key, MutableText... args) {
+		sendMessage(player, translatableWithArgs(key, FORMAT_WARN, args));
 	}
 
-	private static void tellInvalid(ServerPlayerEntity player, String literal, String literal2) {
-		tell(player, literal, Style.EMPTY.withColor(Formatting.YELLOW), literal2, Style.EMPTY.withColor(Formatting.WHITE).withItalic(true));
+	private static MutableText translatable(String key) {
+		return new TranslatableText(key);
 	}
 
-	private static void tellInvalid(ServerPlayerEntity player, String literal) {
-		tell(player, literal, Style.EMPTY.withColor(Formatting.YELLOW));
+	private static MutableText[] translatable(String... keys) {
+		return Arrays.stream(keys).map(SwitchyCommands::translatable).toArray(MutableText[]::new);
 	}
 
-	private static void tellInfo(ServerPlayerEntity player, String literal, String literal2) {
-		tell(player, literal, Style.EMPTY.withColor(Formatting.GRAY).withItalic(true), literal2, Style.EMPTY.withColor(Formatting.WHITE));
+	private static MutableText literal(String string) {
+		return new LiteralText(string);
 	}
 
-	private static void tellInfo(ServerPlayerEntity player, String literal) {
-		tell(player, literal, Style.EMPTY.withColor(Formatting.GRAY));
+	private static MutableText translatableWithArgs(String key, MutableText... args) {
+		return new TranslatableText(key, (Object[]) args);
 	}
 
-	private static void tellWarn(ServerPlayerEntity player, String literal, String literal2) {
-		tell(player, literal, Style.EMPTY.withColor(Formatting.GOLD), literal2, Style.EMPTY.withColor(Formatting.GRAY));
+	private static MutableText translatableWithArgs(String key, Pair<Style, Style> formatStyle, MutableText... args) {
+		return new TranslatableText(key, Arrays.stream(args).map(text -> (text.setStyle(formatStyle.getRight()))).toArray()).setStyle(formatStyle.getLeft());
 	}
 
-	private static void tellWarn(ServerPlayerEntity player, String literal) {
-		tell(player, literal, Style.EMPTY.withColor(Formatting.GOLD));
-	}
 
 }

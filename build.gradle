@@ -54,6 +54,10 @@ dependencies {
 	modImplementation libs.ql
 	modImplementation libs.qsl
 
+	// // Libraries // //
+	modImplementation libs.serverTranslationsApi
+	include libs.serverTranslationsApi
+
 	// // Compat // //
 
 	// Drogtor

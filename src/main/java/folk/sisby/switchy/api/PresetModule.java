@@ -2,6 +2,8 @@ package folk.sisby.switchy.api;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 public interface PresetModule {
@@ -16,8 +18,8 @@ public interface PresetModule {
 
 	Identifier getId();
 
-	default String getDisableConfirmation() {
-		return "Warning: Module data will be deleted for all presets.";
+	default MutableText getDisableConfirmation() {
+		return new TranslatableText("commands.switchy.module.warn.default");
 	}
 
 	boolean isDefault();
