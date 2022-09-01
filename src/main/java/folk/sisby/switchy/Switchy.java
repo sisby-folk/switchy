@@ -2,6 +2,7 @@ package folk.sisby.switchy;
 
 import folk.sisby.switchy.api.PresetModule;
 import folk.sisby.switchy.modules.*;
+import folk.sisby.switchy.modules.modfest.ModfestCardinalsCompat;
 import net.minecraft.util.Identifier;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.loader.api.QuiltLoader;
@@ -38,6 +39,7 @@ public class Switchy implements ModInitializer {
 		if (QuiltLoader.isModLoaded("playerpronouns")) PlayerPronounsCompat.touch();
 		if (QuiltLoader.isModLoaded("fabrictailor")) FabricTailorCompat.touch();
 		if (QuiltLoader.isModLoaded("origins")) OriginsCompat.touch();
+		ModfestCardinalsCompat.touch(); // Does its own checks
 
 		LOGGER.info("Switchy: Initialized! Already Registered Modules: " + COMPAT_REGISTRY.keySet());
 	}

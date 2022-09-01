@@ -1,7 +1,7 @@
 package folk.sisby.switchy.api.modules;
 
+import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import folk.sisby.switchy.api.PresetModule;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.function.BiConsumer;
 
-public class CardinalSerializerCompat<T1 extends ComponentV3>  implements PresetModule {
+public class CardinalSerializerCompat<T1 extends Component>  implements PresetModule {
 	private final Identifier ID;
 	private final boolean isDefault;
 
