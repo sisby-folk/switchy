@@ -3,7 +3,7 @@ package folk.sisby.switchy.api;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public interface PresetModule {
@@ -19,7 +19,7 @@ public interface PresetModule {
 	Identifier getId();
 
 	default MutableText getDisableConfirmation() {
-		return new TranslatableText("commands.switchy.module.warn.default");
+		return Text.translatable("commands.switchy.module.warn.default");
 	}
 
 	boolean isDefault();

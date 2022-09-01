@@ -32,7 +32,7 @@ dependencyResolutionManagement {
 			version('fabrictailor', "1.9.0")
 			version('origins', "v1.6.2")
 			version('cardinal', "5.0.1")
-			version('serverTranslationsApi', "1.4.12+${mc}")
+			version('serverTranslationsApi', "1.4.17+${mc}")
 
 			library('fabrictailor', 'com.github.samolego', 'FabricTailor').versionRef('fabrictailor')
 			library('origins', 'com.github.apace100', 'origins-fabric').versionRef('origins')
