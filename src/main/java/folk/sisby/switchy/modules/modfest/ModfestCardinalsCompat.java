@@ -16,6 +16,13 @@ public class ModfestCardinalsCompat {
 			PresetModuleRegistry.registerModule(arcModuleId, () -> new CardinalSerializerCompat<>(arcModuleId, ComponentRegistry.get(arcId), (a, b) -> {}, (a, b) -> {}, false));
 		}
 
+		// Lanyard
+		Identifier lanyardModuleId = new Identifier(Switchy.ID, "lanyard");
+		Identifier lanyardId = new Identifier("lanyard", "profiles");
+		if (ComponentRegistry.stream().anyMatch(key -> key.getId() == lanyardId)) {
+			PresetModuleRegistry.registerModule(lanyardModuleId, () -> new CardinalSerializerCompat<>(lanyardModuleId, ComponentRegistry.get(lanyardId), (a, b) -> {}, (a, b) -> {}, false));
+		}
+
 
 	}
 
