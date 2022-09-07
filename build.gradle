@@ -93,6 +93,10 @@ dependencies {
 	// Cardinal Components
 	modCompileOnly libs.cardinal
 	modCompileOnly libs.cardinalEntity
+
+	// Pehkui
+	modCompileOnly libs.pehkui
+	modLocalRuntime libs.pehkui
 }
 
 processResources {

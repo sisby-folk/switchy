@@ -39,6 +39,7 @@ public class Switchy implements ModInitializer {
 		if (QuiltLoader.isModLoaded("playerpronouns")) PlayerPronounsCompat.touch();
 		if (QuiltLoader.isModLoaded("fabrictailor")) FabricTailorCompat.touch();
 		if (QuiltLoader.isModLoaded("origins")) OriginsCompat.touch();
+		if (QuiltLoader.isModLoaded("pehkui")) PehkuiCompat.touch();
 		ModfestCardinalsCompat.touch(); // Does its own checks
 
 		LOGGER.info("Switchy: Initialized! Already Registered Modules: " + COMPAT_REGISTRY.keySet());
