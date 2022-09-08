@@ -1,8 +1,8 @@
 package folk.sisby.switchy.api.modules;
 
+import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import folk.sisby.switchy.api.PresetModule;
 import folk.sisby.switchy.api.PresetModuleRegistry;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,7 +12,7 @@ import org.apache.logging.log4j.util.TriConsumer;
 
 import java.util.Optional;
 
-public class CardinalAutoSyncCompat<T1 extends AutoSyncedComponent> implements PresetModule {
+public class CardinalSerializerCompat<T1 extends Component> implements PresetModule {
 	private final Identifier ID;
 	private final boolean isDefault;
 
@@ -60,7 +60,7 @@ public class CardinalAutoSyncCompat<T1 extends AutoSyncedComponent> implements P
 		return isDefault;
 	}
 
-	public CardinalAutoSyncCompat(Identifier id, ComponentKey<T1> registryKey, Boolean isDefault, TriConsumer<ComponentKey<T1>, T1, PlayerEntity> preApplyClear, TriConsumer<ComponentKey<T1>, T1, PlayerEntity> postApplySync) {
+	public CardinalSerializerCompat(Identifier id, ComponentKey<T1> registryKey, Boolean isDefault, TriConsumer<ComponentKey<T1>, T1, PlayerEntity> preApplyClear, TriConsumer<ComponentKey<T1>, T1, PlayerEntity> postApplySync) {
 		this.registryKey = registryKey;
 		this.ID = id;
 		this.isDefault = isDefault;
@@ -68,21 +68,15 @@ public class CardinalAutoSyncCompat<T1 extends AutoSyncedComponent> implements P
 		this.postApplySync = postApplySync;
 	}
 
-	public CardinalAutoSyncCompat(Identifier id, ComponentKey<T1> registryKey, Boolean isDefault) {
-		this(id, registryKey, isDefault, (k, c, p) -> {
-		}, (k, c, p) -> {
-		});
+	public CardinalSerializerCompat(Identifier id, ComponentKey<T1> registryKey, Boolean isDefault) {
+		this(id, registryKey, isDefault, (k, c, p) -> {}, (k, c, p) -> {});
 	}
 
-	public static Optional<ComponentKey<? extends AutoSyncedComponent>> keyFromId(Identifier id) {
-		try {
-			return Optional.ofNullable((ComponentKey<? extends AutoSyncedComponent>) ComponentRegistry.get(id));
-		} catch (ClassCastException e) {
-			return Optional.empty();
-		}
+	public static Optional<ComponentKey<? extends Component>> keyFromId(Identifier id) {
+		return Optional.ofNullable(ComponentRegistry.get(id));
 	}
 
 	public static void tryRegister(Identifier moduleId, Identifier componentKeyId, Boolean isDefault) {
-		keyFromId(componentKeyId).ifPresent((key) -> PresetModuleRegistry.registerModule(moduleId, () -> new CardinalAutoSyncCompat<>(moduleId, key, isDefault)));
+		keyFromId(componentKeyId).ifPresent((key) -> PresetModuleRegistry.registerModule(moduleId, () -> new CardinalSerializerCompat<>(moduleId, key, isDefault)));
 	}
 }
