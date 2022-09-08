@@ -53,6 +53,16 @@
 				"id": "origins",
 				"versions": ">=1.6.2",
 				"optional": true
+			},
+			{
+				"id": "lanyard",
+				"versions": ">=1.1.0",
+				"optional": true
+			},
+			{
+				"id": "arcpocalypse",
+				"versions": ">=1.1.0",
+				"optional": true
 			}
 		]
 	},
