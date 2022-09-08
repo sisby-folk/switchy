@@ -53,6 +53,11 @@
 				"id": "origins",
 				"versions": ">=1.4.1",
 				"optional": true
+			},
+			{
+				"id": "pehkui",
+				"versions": ">=3.4.2",
+				"optional": true
 			}
 		]
 	},
