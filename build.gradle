@@ -108,6 +108,10 @@ dependencies {
 	// Pehkui
 	modCompileOnly libs.pehkui
 	modLocalRuntime libs.pehkui
+
+	// Modfest
+	modCompileOnly libs.arcpocalypse
+	modCompileOnly libs.lanyard
 }
 
 processResources {
