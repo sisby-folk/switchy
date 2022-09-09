@@ -22,6 +22,7 @@ public class PehkuiCompat implements PresetModule {
 	@Override
 	public void updateFromPlayer(PlayerEntity player) {
 		this.scaleHeight = ScaleTypes.HEIGHT.getScaleData(player).getTargetScale();
+		this.scaleWidth = ScaleTypes.WIDTH.getScaleData(player).getTargetScale();
 	}
 
 	@Override
