@@ -63,6 +63,11 @@
 				"id": "arcpocalypse",
 				"versions": ">=1.0.0",
 				"optional": true
+			},
+			{
+				"id": "pehkui",
+				"versions": ">=3.4.2",
+				"optional": true
 			}
 		]
 	},
