@@ -33,11 +33,25 @@ public class SwitchyPreset {
 	}
 
 	public void updateFromPlayer(PlayerEntity player) {
-		this.compatModules.forEach((id, module) -> module.updateFromPlayer(player));
+		this.compatModules.forEach((id, module) -> {
+			try {
+				module.updateFromPlayer(player);
+			} catch (Exception ex) {
+				Switchy.LOGGER.error("Switchy: Module " + module.getId() + " failed to update! Error:");
+				Switchy.LOGGER.error(ex.toString());
+			}
+		});
 	}
 
 	public void applyToPlayer(PlayerEntity player) {
-		this.compatModules.forEach((id, module) -> module.applyToPlayer(player));
+		this.compatModules.forEach((id, module) -> {
+			try {
+				module.applyToPlayer(player);
+			} catch (Exception ex) {
+				Switchy.LOGGER.error("Switchy: Module " + module.getId() + " failed to apply! Error:");
+				Switchy.LOGGER.error(ex.toString());
+			}
+		});
 	}
 
 	@Override

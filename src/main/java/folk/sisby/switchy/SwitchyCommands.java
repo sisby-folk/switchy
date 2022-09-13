@@ -186,6 +186,7 @@ public class SwitchyCommands {
 
 		String oldPresetName = Objects.toString(presets.getCurrentPreset(), "<None>");
 		presets.setCurrentPreset(presetName, true);
+		Switchy.LOGGER.info("[Switchy] Player switch: '" + oldPresetName + "' -> '" + presetName + "' [" + player.getUuid() + "]");
 		tellSuccess(player, "commands.switchy.set.success", literal(oldPresetName), literal(presetName));
 		return 1;
 	}
