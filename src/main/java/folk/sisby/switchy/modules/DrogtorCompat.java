@@ -34,7 +34,7 @@ public class DrogtorCompat implements PresetModule {
 	@Override
 	public void applyToPlayer(PlayerEntity player) {
 		DrogtorPlayer drogtorPlayer = (DrogtorPlayer) player;
-		Switchy.LOGGER.info("[Switchy] Player Nickname Change: '" + player.getDisplayName() + "' -> '" + this.nickname + "'");
+		Switchy.LOGGER.info("[Switchy] Player Nickname Change: '" + player.getDisplayName().getString() + "' -> '" + this.nickname + "' [" + player.getGameProfile().getName() + "]");
 		drogtorPlayer.drogtor$setNickname(this.nickname);
 		drogtorPlayer.drogtor$setNameColor(this.namecolor);
 		drogtorPlayer.drogtor$setBio(this.bio);
