@@ -1,6 +1,7 @@
 package folk.sisby.switchy.modules;
 
 import com.unascribed.drogtor.DrogtorPlayer;
+import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.PresetModule;
 import folk.sisby.switchy.api.PresetModuleRegistry;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,6 +34,7 @@ public class DrogtorCompat implements PresetModule {
 	@Override
 	public void applyToPlayer(PlayerEntity player) {
 		DrogtorPlayer drogtorPlayer = (DrogtorPlayer) player;
+		Switchy.LOGGER.info("[Switchy] Player Nickname Change: '" + player.getDisplayName() + "' -> '" + this.nickname + "'");
 		drogtorPlayer.drogtor$setNickname(this.nickname);
 		drogtorPlayer.drogtor$setNameColor(this.namecolor);
 		drogtorPlayer.drogtor$setBio(this.bio);
