@@ -10,6 +10,8 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public class DrogtorCompat implements PresetModule {
 	private static final Identifier ID = new Identifier("switchy",  "drogtor");
 	private static final boolean isDefault = true;
@@ -34,7 +36,7 @@ public class DrogtorCompat implements PresetModule {
 	@Override
 	public void applyToPlayer(PlayerEntity player) {
 		DrogtorPlayer drogtorPlayer = (DrogtorPlayer) player;
-		Switchy.LOGGER.info("[Switchy] Player Nickname Change: '" + player.getDisplayName().getString() + "' -> '" + this.nickname + "' [" + player.getGameProfile().getName() + "]");
+		Switchy.LOGGER.info("[Switchy] Player Nickname Change: '" + player.getDisplayName().getString() + "' -> '" + Objects.requireNonNullElse(this.nickname, player.getGameProfile().getName())+ "' [" + player.getGameProfile().getName() + "]");
 		drogtorPlayer.drogtor$setNickname(this.nickname);
 		drogtorPlayer.drogtor$setNameColor(this.namecolor);
 		drogtorPlayer.drogtor$setBio(this.bio);
