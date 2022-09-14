@@ -16,7 +16,6 @@ public class SwitchyPresets {
 
 	private final Map<String, SwitchyPreset> presetMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 	private final Map<Identifier, Boolean> moduleToggles;
-	private final PlayerEntity player;
 	private SwitchyPreset currentPreset;
 
 	public static final String KEY_PRESET_CURRENT = "current";
@@ -24,7 +23,7 @@ public class SwitchyPresets {
 	public static final String KEY_PRESET_MODULE_DISABLED = "disabled";
 	public static final String KEY_PRESET_LIST = "list";
 
-	public NbtElement toNbt() {
+	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 
 		NbtList enabledList = new NbtList();
@@ -62,14 +61,14 @@ public class SwitchyPresets {
 			}
 		}
 
-		if (nbt.contains(KEY_PRESET_CURRENT) && !outPresets.setCurrentPreset(nbt.getString(KEY_PRESET_CURRENT), false)) {
+		if (nbt.contains(KEY_PRESET_CURRENT) && !outPresets.setCurrentPreset(player, nbt.getString(KEY_PRESET_CURRENT), false)) {
 			Switchy.LOGGER.warn("Switchy: Unable to set current preset from data. Data may have been lost.");
 		}
 
 		if (outPresets.presetMap.isEmpty() || outPresets.getCurrentPreset() == null) {
 			// Recover current data as "Default" preset
 			outPresets.addPreset(new SwitchyPreset("default", outPresets.moduleToggles));
-			outPresets.setCurrentPreset("default", false);
+			outPresets.setCurrentPreset(player, "default", false);
 		}
 
 		return outPresets;
@@ -87,15 +86,14 @@ public class SwitchyPresets {
 	}
 
 	private SwitchyPresets(PlayerEntity player) {
-		this.player = player;
 		this.moduleToggles = Switchy.COMPAT_REGISTRY.entrySet().stream()
 				.collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().get().isDefault()));
 	}
 
-	public boolean setCurrentPreset(String presetName, Boolean performSwitch) {
+	public boolean setCurrentPreset(PlayerEntity player, String presetName, Boolean performSwitch) {
 		if (this.presetMap.containsKey(presetName)) {
 			SwitchyPreset newPreset = this.presetMap.get(presetName);
-			if (performSwitch) this.switchPreset(currentPreset, newPreset);
+			if (performSwitch) this.switchPreset(player, currentPreset, newPreset);
 			this.currentPreset = newPreset;
 			return true;
 		} else {
@@ -103,12 +101,12 @@ public class SwitchyPresets {
 		}
 	}
 
-	private void switchPreset(SwitchyPreset oldPreset, SwitchyPreset newPreset) {
+	private void switchPreset(PlayerEntity player, SwitchyPreset oldPreset, SwitchyPreset newPreset) {
 		oldPreset.updateFromPlayer(player);
 		newPreset.applyToPlayer(player);
 	}
 
-	public void saveCurrentPreset() {
+	public void saveCurrentPreset(PlayerEntity player) {
 		if (this.currentPreset != null) this.currentPreset.updateFromPlayer(player);
 	}
 
