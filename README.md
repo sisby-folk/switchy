@@ -5,26 +5,43 @@ Works in singleplayer and on server-side.</p>
 
 ---
 
-Commands:
-- `/switchy help`
-- `/switchy list` - list your created presets, and the current one.
-- `/switchy new [name]` - create a new preset from your active customizations.
-- `/switchy set [name]` - switch to another preset.
-- `/switch [name]` - alias for `/switchy set`
-- `/switchy rename [name] [name]` - rename a preset.
-- `/switchy delete [name]` - delete a preset.
-- `/switchy module enable [name]` - enable a module for you.
-- `/switchy delete disable [name]` - disable a module for you.
+## What is Switchy?
 
-Comes packaged with modules for:
+Switchy is a mod that lets you make presets using commands.
+The presets don't do anything.
+
+Thankfully, Switchy allows is loaded with modules that make presets do things. Mostly things from other mods.
+
+## How do you use it?
+
+Use `/switchy list` to see your current presets.
+
+Then, use `/switchy rename default [name]` to give your starting preset a name.
+
+`/switchy new [name]` will create and switch to a new preset.
+
+`/switchy set [name]` or `/switch [name]` will switch between existing presets
+
+When a module is **Enabled**, it makes things "switch" per-preset.
+Using `/switchy module enable/disable [name]` allows you to toggle this behaviour for just your presets.
+
+Switchy provides no ability for server owners to enable or disable modules server-wide.
+
+For more commands, type `/switchy help`
+
+## Modules
+
+Switchy itself comes packaged with modules for:
 - [Drogtor The Nickinator](https://modrinth.com/mod/drogtor) - player `nickname`, `bio`, and `color`
 - [Fabric Tailor](https://modrinth.com/mod/fabrictailor) - set skin
 - [Origins](https://modrinth.com/mod/origins/versions) - current origins (includes all layers, e.g. [Statures](https://modrinth.com/mod/tinkerers-statures) for player height)
+- [Pehkui](https://modrinth.com/mod/pehkui) - pehkui `width` and `height` properties.
+- (1.19) [Lanyard](https://modrinth.com/mod/lanyard) - lanyard name, pronouns, and bio.
 
 Further modules can be added from these addons:
-- [Switchy Inventories](https://modrinth.com/mod/switchy-inventories) - Addon for minecraft. Gives each preset a separate inventory.
-  - Highly recommended - Comes disabled by default and can be enabled on a per-player basis.
-  - Includes a separate module for trinket inventories - perfect for cosmetic trinkets.
+- [Switchy Inventories](https://modrinth.com/mod/switchy-inventories) - Addon for minecraft.
+  - Allows for separate inventories, ender chests, and trinket inventories.
+  - Each module is disabled by default, allowing players to enable them individually.
 
 ## Showcase
 
@@ -48,7 +65,7 @@ We hope players and developers find this useful.
 
 ## Developing Addons
 
-If you'd like to develop your own addon module, feel free to fork the [Inventories Module](https://github.com/sisby-folk/switchy-inventories) to get started.
+If you'd like to develop your own addon module, feel free to clone the [Inventories Module](https://github.com/sisby-folk/switchy-inventories) to get started.
 
 Otherwise, all an addon mod needs to do is create a module class that implements `api.PresetModule` and registers itself using the `api.PresetModuleRegistry` - Go wild!
 
