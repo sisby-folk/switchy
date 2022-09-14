@@ -10,9 +10,11 @@ Works in singleplayer and on server-side.</p>
 Switchy is a mod that lets you make presets using commands.
 The presets don't do anything.
 
-Thankfully, Switchy allows is loaded with modules that make presets do things. Mostly things from other mods.
+Thankfully, Switchy is loaded with modules that make presets do things. Mostly things from other mods.
 
 ## How do you use it?
+
+First, install a vanilla add-on or any compatible mod (see modules).
 
 Use `/switchy list` to see your current presets.
 
