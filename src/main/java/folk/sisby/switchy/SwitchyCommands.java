@@ -211,7 +211,7 @@ public class SwitchyCommands {
 			return 0;
 		}
 
-		if (!last_command.get(player.getUuid()).equalsIgnoreCase("switchy delete " + presetName)) {
+		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase("switchy delete " + presetName)) {
 			tellWarn(player, "commands.switchy.delete.warn");
 			tellWarn(player, "commands.switchy.list.modules", literal(presets.getModuleToggles().entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).map(Identifier::getPath).toList().toString()));
 			tellInvalidTry(player, "commands.switchy.invalid.confirm", "commands.switchy.delete.command", literal(presetName));
@@ -229,7 +229,7 @@ public class SwitchyCommands {
 			return 0;
 		}
 
-		if (!last_command.get(player.getUuid()).equalsIgnoreCase("switchy module disable " + moduleId)) {
+		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase("switchy module disable " + moduleId)) {
 			sendMessage(player, Switchy.COMPAT_REGISTRY.get(moduleId).get().getDisableConfirmation().setStyle(FORMAT_WARN.getLeft()));
 			tellInvalidTry(player, "commands.switchy.invalid.confirm", "commands.switchy.module.disable.command", literal(moduleId.toString()));
 			return 0;
