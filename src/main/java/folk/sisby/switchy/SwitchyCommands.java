@@ -20,10 +20,7 @@ import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
 
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 
@@ -37,7 +34,7 @@ public class SwitchyCommands {
 	private static final Pair<Style, Style> FORMAT_COMMAND = new Pair<>(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true), Style.EMPTY.withColor(Formatting.GRAY).withItalic(true));
 	private static final Pair<Style, Style> FORMAT_HELP = new Pair<>(Style.EMPTY.withColor(Formatting.WHITE), Style.EMPTY.withColor(Formatting.WHITE));
 
-	private static String last_command = "";
+	private static final Map<UUID, String> last_command = new HashMap<>();
 
 	public static void InitializeCommands() {
 		CommandRegistrationCallback.EVENT.register(
@@ -129,12 +126,12 @@ public class SwitchyCommands {
 					(argument != null ? context.getArgument(argument.getLeft(), argument.getRight()) : null),
 					(argument2 != null ? context.getArgument(argument2.getLeft(), argument2.getRight()) : null)
 			);
+			// Record previous command (for confirmations)
+			last_command.put(player.getUuid(), context.getInput());
 		} catch (CommandSyntaxException e) {
 			Switchy.LOGGER.error("Switchy: Command wasn't called by a player! (this shouldn't happen!)");
 		}
 
-		// Record previous command (for confirmations)
-		last_command = context.getInput();
 		return result;
 	}
 
@@ -214,7 +211,7 @@ public class SwitchyCommands {
 			return 0;
 		}
 
-		if (!last_command.equalsIgnoreCase("switchy delete " + presetName)) {
+		if (!last_command.get(player.getUuid()).equalsIgnoreCase("switchy delete " + presetName)) {
 			tellWarn(player, "commands.switchy.delete.warn");
 			tellWarn(player, "commands.switchy.list.modules", literal(presets.getModuleToggles().entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).map(Identifier::getPath).toList().toString()));
 			tellInvalidTry(player, "commands.switchy.invalid.confirm", "commands.switchy.delete.command", literal(presetName));
@@ -232,7 +229,7 @@ public class SwitchyCommands {
 			return 0;
 		}
 
-		if (!last_command.equalsIgnoreCase("switchy module disable " + moduleId)) {
+		if (!last_command.get(player.getUuid()).equalsIgnoreCase("switchy module disable " + moduleId)) {
 			sendMessage(player, Switchy.COMPAT_REGISTRY.get(moduleId).get().getDisableConfirmation().setStyle(FORMAT_WARN.getLeft()));
 			tellInvalidTry(player, "commands.switchy.invalid.confirm", "commands.switchy.module.disable.command", literal(moduleId.toString()));
 			return 0;
