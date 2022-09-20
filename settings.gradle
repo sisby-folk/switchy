@@ -34,6 +34,7 @@ dependencyResolutionManagement {
 			version('cardinal', "5.0.1")
 			version('serverTranslationsApi', "1.4.12+${mc}")
 			version('pehkui', "3.4.2")
+			version('fabrication', "3.0.2+${mc_major}")
 
 			library('fabrictailor', 'com.github.samolego', 'FabricTailor').versionRef('fabrictailor')
 			library('origins', 'com.github.apace100', 'origins-fabric').versionRef('origins')
@@ -41,6 +42,7 @@ dependencyResolutionManagement {
 			library('cardinalEntity', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-entity').versionRef('cardinal')
 			library('serverTranslationsApi', 'fr.catcore', 'server-translations-api').versionRef('serverTranslationsApi')
 			library('pehkui', 'com.github.Virtuoel', 'Pehkui').versionRef('pehkui')
+			library('fabrication', 'maven.modrinth', 'fabrication').versionRef('fabrication')
 		}
 	}
 }

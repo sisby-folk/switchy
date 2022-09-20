@@ -104,6 +104,9 @@ dependencies {
 	// Pehkui
 	modCompileOnly libs.pehkui
 	modLocalRuntime libs.pehkui
+
+	// Fabrication
+	modCompileOnly libs.fabrication
 }
 
 processResources {

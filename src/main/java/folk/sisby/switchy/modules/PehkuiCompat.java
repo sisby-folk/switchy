@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import virtuoel.pehkui.api.ScaleTypes;
 
 public class PehkuiCompat implements PresetModule {
-	private static final Identifier ID = new Identifier("switchy", "pehkui");
+	public static final Identifier ID = new Identifier("switchy", "pehkui");
 	private static final boolean isDefault = true;
 
 	public static final String KEY_SCALE_WIDTH = "scaleWidth";

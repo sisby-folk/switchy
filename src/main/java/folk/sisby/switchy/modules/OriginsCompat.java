@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class OriginsCompat implements PresetModule {
-	private static final Identifier ID = new Identifier("switchy",  "origins");
+	public static final Identifier ID = new Identifier("switchy",  "origins");
 	private static final boolean isDefault = true;
 
 	public static final String KEY_ORIGINS_LIST = "OriginLayers";

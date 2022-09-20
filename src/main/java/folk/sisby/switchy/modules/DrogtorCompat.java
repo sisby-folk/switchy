@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public class DrogtorCompat implements PresetModule {
-	private static final Identifier ID = new Identifier("switchy",  "drogtor");
+	public static final Identifier ID = new Identifier("switchy",  "drogtor");
 	private static final boolean isDefault = true;
 
 	public static final String KEY_NICKNAME = "nickname";

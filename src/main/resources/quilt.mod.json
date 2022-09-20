@@ -58,6 +58,11 @@
 				"id": "pehkui",
 				"versions": ">=3.4.2",
 				"optional": true
+			},
+			{
+				"id": "fabrication",
+				"versions": ">=3.0.2",
+				"optional": true
 			}
 		]
 	},
