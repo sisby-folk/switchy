@@ -33,20 +33,21 @@ public class FabricationArmorCompat implements PresetModule {
 
 	@Override
 	public void updateFromPlayer(PlayerEntity player) {
-		this.suppressedSlots = new HashSet<>();
-		this.suppressedSlots.addAll(((GetSuppressedSlots) player).fabrication$getSuppressedSlots());
+		if (player instanceof GetSuppressedSlots gss) {
+			this.suppressedSlots = new HashSet<>();
+			this.suppressedSlots.addAll(gss.fabrication$getSuppressedSlots());
+		}
 	}
 
 	@Override
 	public void applyToPlayer(PlayerEntity player) {
-		if (this.suppressedSlots != null) {
-			Set<EquipmentSlot> playerSuppressed = ((GetSuppressedSlots) player).fabrication$getSuppressedSlots();
-			playerSuppressed.clear();
-			playerSuppressed.addAll(suppressedSlots);
+		if (this.suppressedSlots != null && player instanceof GetSuppressedSlots gss) {
+			gss.fabrication$getSuppressedSlots().clear();
+			gss.fabrication$getSuppressedSlots().addAll(suppressedSlots);
 
 			// Sketchily copied from feature
 			((ServerWorld) player.world).getChunkManager().sendToOtherNearbyPlayers(player, new EntityEquipmentUpdateS2CPacket(player.getId(), Arrays.stream(EquipmentSlot.values()).map((es) ->
-					Pair.of(es, playerSuppressed.contains(es) ? ItemStack.EMPTY : player.getEquippedStack(es))).toList()));
+					Pair.of(es, gss.fabrication$getSuppressedSlots().contains(es) ? ItemStack.EMPTY : player.getEquippedStack(es))).toList()));
 			FeatureHideArmor.sendSuppressedSlotsForSelf((ServerPlayerEntity) player);
 		}
 	}
