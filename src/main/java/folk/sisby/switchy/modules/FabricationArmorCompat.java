@@ -2,6 +2,7 @@ package folk.sisby.switchy.modules;
 
 import com.google.common.base.Enums;
 import com.mojang.datafixers.util.Pair;
+import com.unascribed.fabrication.FabConf;
 import com.unascribed.fabrication.features.FeatureHideArmor;
 import com.unascribed.fabrication.interfaces.GetSuppressedSlots;
 import folk.sisby.switchy.Switchy;
@@ -33,13 +34,15 @@ public class FabricationArmorCompat implements PresetModule {
 
 	@Override
 	public void updateFromPlayer(PlayerEntity player) {
-		this.suppressedSlots = new HashSet<>();
-		this.suppressedSlots.addAll(((GetSuppressedSlots) player).fabrication$getSuppressedSlots());
+		if (FabConf.isEnabled("*.hide_armor")) {
+			this.suppressedSlots = new HashSet<>();
+			this.suppressedSlots.addAll(((GetSuppressedSlots) player).fabrication$getSuppressedSlots());
+		}
 	}
 
 	@Override
 	public void applyToPlayer(PlayerEntity player) {
-		if (this.suppressedSlots != null) {
+		if (this.suppressedSlots != null && FabConf.isEnabled("*.hide_armor")) {
 			Set<EquipmentSlot> playerSuppressed = ((GetSuppressedSlots) player).fabrication$getSuppressedSlots();
 			playerSuppressed.clear();
 			playerSuppressed.addAll(suppressedSlots);
@@ -98,6 +101,6 @@ public class FabricationArmorCompat implements PresetModule {
 
 	// Runs on touch() - but only once.
 	static {
-		PresetModuleRegistry.registerModule(ID, FabricationArmorCompat::new);
+		if (FabConf.isEnabled("*.hide_armor")) PresetModuleRegistry.registerModule(ID, FabricationArmorCompat::new);
 	}
 }
