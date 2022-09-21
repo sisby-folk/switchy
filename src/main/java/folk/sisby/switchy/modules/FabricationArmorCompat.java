@@ -2,7 +2,6 @@ package folk.sisby.switchy.modules;
 
 import com.google.common.base.Enums;
 import com.mojang.datafixers.util.Pair;
-import com.unascribed.fabrication.FabConf;
 import com.unascribed.fabrication.features.FeatureHideArmor;
 import com.unascribed.fabrication.interfaces.GetSuppressedSlots;
 import folk.sisby.switchy.Switchy;
@@ -34,22 +33,21 @@ public class FabricationArmorCompat implements PresetModule {
 
 	@Override
 	public void updateFromPlayer(PlayerEntity player) {
-		if (FabConf.isEnabled("*.hide_armor")) {
+		if (player instanceof GetSuppressedSlots gss) {
 			this.suppressedSlots = new HashSet<>();
-			this.suppressedSlots.addAll(((GetSuppressedSlots) player).fabrication$getSuppressedSlots());
+			this.suppressedSlots.addAll(gss.fabrication$getSuppressedSlots());
 		}
 	}
 
 	@Override
 	public void applyToPlayer(PlayerEntity player) {
-		if (this.suppressedSlots != null && FabConf.isEnabled("*.hide_armor")) {
-			Set<EquipmentSlot> playerSuppressed = ((GetSuppressedSlots) player).fabrication$getSuppressedSlots();
-			playerSuppressed.clear();
-			playerSuppressed.addAll(suppressedSlots);
+		if (this.suppressedSlots != null && player instanceof GetSuppressedSlots gss) {
+			gss.fabrication$getSuppressedSlots().clear();
+			gss.fabrication$getSuppressedSlots().addAll(suppressedSlots);
 
 			// Sketchily copied from feature
 			((ServerWorld) player.world).getChunkManager().sendToOtherNearbyPlayers(player, new EntityEquipmentUpdateS2CPacket(player.getId(), Arrays.stream(EquipmentSlot.values()).map((es) ->
-					Pair.of(es, playerSuppressed.contains(es) ? ItemStack.EMPTY : player.getEquippedStack(es))).toList()));
+					Pair.of(es, gss.fabrication$getSuppressedSlots().contains(es) ? ItemStack.EMPTY : player.getEquippedStack(es))).toList()));
 			FeatureHideArmor.sendSuppressedSlotsForSelf((ServerPlayerEntity) player);
 		}
 	}
@@ -101,6 +99,6 @@ public class FabricationArmorCompat implements PresetModule {
 
 	// Runs on touch() - but only once.
 	static {
-		if (FabConf.isEnabled("*.hide_armor")) PresetModuleRegistry.registerModule(ID, FabricationArmorCompat::new);
+		PresetModuleRegistry.registerModule(ID, FabricationArmorCompat::new);
 	}
 }
