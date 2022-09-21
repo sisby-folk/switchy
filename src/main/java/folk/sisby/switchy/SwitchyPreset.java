@@ -5,7 +5,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SwitchyPreset {
@@ -43,15 +43,22 @@ public class SwitchyPreset {
 		});
 	}
 
-	public void applyToPlayer(PlayerEntity player) {
-		this.compatModules.forEach((id, module) -> {
+	private static void tryApplyModule(Map<Identifier, PresetModule> modules, Identifier id, PlayerEntity player, Set<Identifier> registeredModules) {
+		if (!registeredModules.contains(id)) {
 			try {
+				PresetModule module = modules.get(id);
+				module.getApplyDependencies().forEach((depId) -> tryApplyModule(modules, depId, player, registeredModules));
 				module.applyToPlayer(player);
 			} catch (Exception ex) {
-				Switchy.LOGGER.error("Switchy: Module " + module.getId() + " failed to apply! Error:");
+				Switchy.LOGGER.error("Switchy: Module " + id + " failed to apply! Error:");
 				Switchy.LOGGER.error(ex.toString());
 			}
-		});
+			registeredModules.add(id);
+		}
+	}
+
+	public void applyToPlayer(PlayerEntity player) {
+		this.compatModules.forEach((id, module) -> tryApplyModule(compatModules, id, player, new HashSet<>()));
 	}
 
 	@Override

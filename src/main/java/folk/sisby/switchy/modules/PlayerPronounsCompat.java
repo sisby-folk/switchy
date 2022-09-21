@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 
 public class PlayerPronounsCompat implements PresetModule {
-	private static final Identifier ID = new Identifier("switchy",  "player_pronouns");
+	public static final Identifier ID = new Identifier("switchy",  "player_pronouns");
 	private static final boolean isDefault = true;
 
 	public static final String KEY_PRONOUNS_RAW = "pronounsRaw";

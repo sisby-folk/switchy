@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import org.samo_lego.fabrictailor.casts.TailoredPlayer;
 
 public class FabricTailorCompat implements PresetModule {
-	private static final Identifier ID = new Identifier("switchy", "fabric_tailor");
+	public static final Identifier ID = new Identifier("switchy", "fabric_tailor");
 	private static final boolean isDefault = true;
 
 	public static final String KEY_SKIN_VALUE = "skinValue";

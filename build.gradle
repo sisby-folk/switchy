@@ -112,6 +112,9 @@ dependencies {
 	// Modfest
 	modCompileOnly libs.arcpocalypse
 	modCompileOnly libs.lanyard
+
+	// Fabrication
+	modCompileOnly libs.fabrication
 }
 
 processResources {
