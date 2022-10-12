@@ -18,29 +18,37 @@ dependencyResolutionManagement {
 		libs {
 			def mc_major = '1.18'
 			def mc = mc_major + '.2'
+
+			// // Base // //
 			version('minecraft', mc)
 			version('ql', "0.17.3")
 			version('qsl', "1.1.0-beta.26+${mc}")
-			version('qfapi', "1.0.0-beta.24+0.58.0-${mc}")
 
 			library('minecraft', 'mojang', 'minecraft').versionRef('minecraft')
 			library('ql', 'org.quiltmc', 'quilt-loader').versionRef('ql')
 			library('qsl', 'org.quiltmc', 'qsl').versionRef('qsl')
-			library('qfapi', 'org.quiltmc.quilted-fabric-api', 'quilted-fabric-api', ).versionRef('qfapi')
 
-			// Compat
+			// // Libraries // //
+			version('serverTranslationsApi', "1.4.12+${mc}")
+
+			library('serverTranslationsApi', 'fr.catcore', 'server-translations-api').versionRef('serverTranslationsApi')
+
+
+			// // Compat // //
+			version('drogtor', "1.1.3${mc_major == '1.18' ? '' : "+${mc_major}"}")
 			version('fabrictailor', "1.9.0-${mc}")
+			version('qfapi', "1.0.0-beta.24+0.58.0-${mc}")
 			version('origins', "v1.4.1")
 			version('cardinal', "5.0.1")
-			version('serverTranslationsApi', "1.4.12+${mc}")
 			version('pehkui', "3.4.2")
 			version('fabrication', "3.0.2+${mc_major}")
 
+			library('drogtor', 'maven.modrinth', 'drogtor').versionRef('drogtor')
 			library('fabrictailor', 'com.github.samolego', 'FabricTailor').versionRef('fabrictailor')
+			library('qfapi', 'org.quiltmc.quilted-fabric-api', 'quilted-fabric-api', ).versionRef('qfapi')
 			library('origins', 'com.github.apace100', 'origins-fabric').versionRef('origins')
 			library('cardinal', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-base').versionRef('cardinal')
 			library('cardinalEntity', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-entity').versionRef('cardinal')
-			library('serverTranslationsApi', 'fr.catcore', 'server-translations-api').versionRef('serverTranslationsApi')
 			library('pehkui', 'com.github.Virtuoel', 'Pehkui').versionRef('pehkui')
 			library('fabrication', 'maven.modrinth', 'fabrication').versionRef('fabrication')
 		}

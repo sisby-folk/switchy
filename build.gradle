@@ -92,8 +92,8 @@ dependencies {
 	// // Compat // //
 
 	// Drogtor
-	modCompileOnly files('/build/libs/drogtor-1.1.3+1.17.jar')
-	modLocalRuntime files('/build/libs/drogtor-1.1.3+1.17.jar')
+	modCompileOnly libs.drogtor
+	modLocalRuntime libs.drogtor
 
 	// // Fabric Tailor
 	modCompileOnly libs.fabrictailor
@@ -110,12 +110,6 @@ dependencies {
 	modLocalRuntime (libs.origins) {
 		exclude module: 'calio'
 	}
-
-	// Player Pronouns
-	modCompileOnly files('/build/libs/player-pronouns-1.6.0+1.18.jar')
-	modLocalRuntime files('/build/libs/player-pronouns-1.6.0+1.18.jar')
-	modLocalRuntime "eu.pb4:placeholder-api:1.1.3+1.17.1"
-	modLocalRuntime files('/build/libs/more-codecs-0.2.2+1.18.jar')
 
 	// Cardinal Components
 	modCompileOnly libs.cardinal
