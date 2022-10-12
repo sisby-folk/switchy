@@ -36,7 +36,6 @@ public class Switchy implements ModInitializer {
 		SwitchyCommands.InitializeCommands();
 
 		if (QuiltLoader.isModLoaded("drogtor")) DrogtorCompat.touch();
-		if (QuiltLoader.isModLoaded("playerpronouns")) PlayerPronounsCompat.touch();
 		if (QuiltLoader.isModLoaded("fabrictailor")) FabricTailorCompat.touch();
 		if (QuiltLoader.isModLoaded("origins")) OriginsCompat.touch();
 		if (QuiltLoader.isModLoaded("pehkui")) PehkuiCompat.touch();

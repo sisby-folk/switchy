@@ -22,9 +22,12 @@ if (System.getenv("GITHUB_TOKEN")) {
 
 archivesBaseName = project.archives_base_name
 
-version = project.version
+def mc_major = '1.19'
+def mc = mc_major + '.2'
+def default_branch = '1.18'
+
 def origVersion = project.version
-version = project.version+"+1.19"
+project.version = project.version+ "+" + mc_major
 group = project.maven_group
 
 repositories {
@@ -173,10 +176,10 @@ if (System.getenv("MODRINTH_TOKEN")) {
 		token = System.getenv("MODRINTH_TOKEN")
 		projectId = 'switchy'
 		versionNumber = project.version
-		versionName = 'v'+origVersion
+		versionName = origVersion
 		versionType = 'release'
 		uploadFile = remapJar
-		gameVersions = ['1.19.2']
+		gameVersions = [mc]
 		loaders = ['quilt']
 		detectLoaders = false
 		dependencies {
@@ -197,8 +200,8 @@ if (System.getenv("GITHUB_TOKEN")) {
 		owner "sisby-folk"
 		repo "switchy"
 		tagName 'v'+origVersion
-		releaseName 'v'+origVersion
-		targetCommitish "1.18"
+		releaseName origVersion
+		targetCommitish default_branch
 		draft false
 		prerelease false
 		releaseAssets remapJar.archiveFile
