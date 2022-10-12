@@ -1,10 +1,30 @@
+buildscript {
+	repositories {
+		gradlePluginPortal()
+	}
+	dependencies {
+		classpath 'com.modrinth.minotaur:Minotaur:2.4.3'
+		classpath "com.github.breadmoirai:github-release:2.4.1"
+	}
+}
+
 plugins {
 	id 'maven-publish'
 	id 'org.quiltmc.loom' version '0.12.+'
 }
 
+if (System.getenv("MODRINTH_TOKEN")) {
+	apply plugin: "com.modrinth.minotaur"
+}
+if (System.getenv("GITHUB_TOKEN")) {
+	apply plugin: "com.github.breadmoirai.github-release"
+}
+
 archivesBaseName = project.archives_base_name
+
 version = project.version
+def origVersion = project.version
+version = project.version+"+1.18"
 group = project.maven_group
 
 repositories {
@@ -148,4 +168,44 @@ publishing {
 	repositories {
 
 	}
+}
+
+if (System.getenv("MODRINTH_TOKEN")) {
+	modrinth {
+		token = System.getenv("MODRINTH_TOKEN")
+		projectId = 'switchy'
+		versionNumber = project.version
+		versionName = 'v'+origVersion
+		versionType = 'release'
+		uploadFile = remapJar
+		gameVersions = ['1.18.2']
+		loaders = ['quilt']
+		detectLoaders = false
+		dependencies {
+			required.project "qsl"
+			optional.project "drogtor"
+			optional.project "fabrictailor"
+			optional.project "pehkui"
+			optional.project "origins"
+			optional.project "fabrication"
+		}
+		changelog = "Changelog: https://github.com/sisby-folk/switchy/releases/tag/v"+origVersion
+	}
+}
+
+if (System.getenv("GITHUB_TOKEN")) {
+	githubRelease {
+		token System.getenv("GITHUB_TOKEN")
+		owner "sisby-folk"
+		repo "switchy"
+		tagName 'v'+origVersion
+		releaseName 'v'+origVersion
+		targetCommitish "1.18"
+		draft false
+		prerelease false
+		releaseAssets remapJar.archiveFile
+		allowUploadToExisting true
+		generateReleaseNotes true
+	}
+	tasks.githubRelease.dependsOn remapJar
 }
