@@ -18,31 +18,39 @@ dependencyResolutionManagement {
 		libs {
 			def mc_major = '1.19'
 			def mc = mc_major + '.2'
+
+			// // Base // //
 			version('minecraft', mc)
 			version('ql', "0.17.3")
 			version('qsl', "3.0.0-beta.14+${mc}")
-			version('qfapi', "4.0.0-beta.9+0.60.0-${mc}")
 
 			library('minecraft', 'mojang', 'minecraft').versionRef('minecraft')
 			library('ql', 'org.quiltmc', 'quilt-loader').versionRef('ql')
 			library('qsl', 'org.quiltmc', 'qsl').versionRef('qsl')
-			library('qfapi', 'org.quiltmc.quilted-fabric-api', 'quilted-fabric-api', ).versionRef('qfapi')
 
-			// Compat
+			// // Libraries // //
+			version('serverTranslationsApi', "1.4.17+${mc}")
+
+			library('serverTranslationsApi', 'fr.catcore', 'server-translations-api').versionRef('serverTranslationsApi')
+
+
+			// // Compat // //
+			version('drogtor', "1.1.3${mc_major == '1.18' ? '' : "+${mc_major}"}")
 			version('fabrictailor', "1.9.0")
+			version('qfapi', "4.0.0-beta.9+0.60.0-${mc}")
 			version('origins', "v1.6.2")
 			version('cardinal', "5.0.1")
-			version('serverTranslationsApi', "1.4.17+${mc}")
 			version('pehkui', "3.4.2")
+			version('fabrication', "3.0.2+${mc_major}")
 			version('arcpocalypse', "1.0.0")
 			version('lanyard', "1.1.0+${mc}")
-			version('fabrication', "3.0.2+${mc_major}")
 
+			library('drogtor', 'maven.modrinth', 'drogtor').versionRef('drogtor')
 			library('fabrictailor', 'com.github.samolego', 'FabricTailor').versionRef('fabrictailor')
+			library('qfapi', 'org.quiltmc.quilted-fabric-api', 'quilted-fabric-api', ).versionRef('qfapi')
 			library('origins', 'com.github.apace100', 'origins-fabric').versionRef('origins')
 			library('cardinal', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-base').versionRef('cardinal')
 			library('cardinalEntity', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-entity').versionRef('cardinal')
-			library('serverTranslationsApi', 'fr.catcore', 'server-translations-api').versionRef('serverTranslationsApi')
 			library('pehkui', 'com.github.Virtuoel', 'Pehkui').versionRef('pehkui')
 			library('fabrication', 'maven.modrinth', 'fabrication').versionRef('fabrication')
 			library('arcpocalypse', 'maven.modrinth', 'arcpocalypse').versionRef('arcpocalypse')
