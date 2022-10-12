@@ -44,7 +44,7 @@ public class SwitchyPreset {
 	}
 
 	private static void tryApplyModule(Map<Identifier, PresetModule> modules, Identifier id, PlayerEntity player, Set<Identifier> registeredModules) {
-		if (!registeredModules.contains(id)) {
+		if (!registeredModules.contains(id) && modules.containsKey(id)) {
 			try {
 				PresetModule module = modules.get(id);
 				module.getApplyDependencies().forEach((depId) -> tryApplyModule(modules, depId, player, registeredModules));

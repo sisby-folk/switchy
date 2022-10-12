@@ -19,12 +19,14 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
+import org.quiltmc.loader.api.QuiltLoader;
 
 import java.util.*;
 
 public class FabricationArmorCompat implements PresetModule {
 	public static final Identifier ID = new Identifier("switchy", "fabrication_hidearmor");
 	private static final boolean isDefault = true;
+	private static final Collection<Identifier> applyDependencies = new ArrayList<>();
 
 	public static final String KEY_SUPPRESSED_SLOTS = "suppressedSlots";
 
@@ -91,7 +93,7 @@ public class FabricationArmorCompat implements PresetModule {
 
 	@Override
 	public Collection<Identifier> getApplyDependencies() {
-		return List.of(FabricTailorCompat.ID);
+		return applyDependencies;
 	}
 
 	public static void touch() {
@@ -100,5 +102,8 @@ public class FabricationArmorCompat implements PresetModule {
 	// Runs on touch() - but only once.
 	static {
 		PresetModuleRegistry.registerModule(ID, FabricationArmorCompat::new);
+		if (QuiltLoader.isModLoaded("fabrictailor")) {
+			applyDependencies.add(FabricTailorCompat.ID);
+		}
 	}
 }
