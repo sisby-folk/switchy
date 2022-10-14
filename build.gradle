@@ -106,7 +106,6 @@ dependencies {
 	modImplementation libs.lib39Core
 	include libs.lib39Core
 
-
 	modImplementation libs.lib39Dessicant
 	include libs.lib39Dessicant
 
