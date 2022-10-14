@@ -1,53 +1,79 @@
 {
-  "commands.switchy.placeholder.preset": "[name]",
-  "commands.switchy.placeholder.module": "[name]",
-  "commands.switchy.format.help": "%1$s - %2$s",
+  "lib39:enable_enhanced_lang": true,
 
-  "commands.switchy.invalid.confirm": "Confirm using %s",
-  "commands.switchy.invalid.preset.exists": "That preset already exists! Try %s",
-  "commands.switchy.invalid.preset.missing": "That preset doesn't exist! Try %s",
-  "commands.switchy.invalid.preset.current.set": "You can't switch to your current preset! Try %s",
-  "commands.switchy.invalid.preset.current.delete": "You can't delete your current preset! Try %s",
-  "commands.switchy.invalid.module.missing": "Module '%s' doesn't exist!",
-  "commands.switchy.invalid.module.enabled": "Module %s is already enabled!",
-  "commands.switchy.invalid.module.disabled": "Module %s is already disabled!",
+  "commands.switchy": {
+    "placeholder.preset": "[name]",
+    "placeholder.module": "[name]",
+    "format.help": "{1} - {2}",
 
-  "commands.switchy.help.command": "/switchy help",
-  "commands.switchy.help.help": "lists available commands",
+    "invalid": {
+      "confirm": "Confirm using {}",
+      "preset.exists": "That preset already exists! Try {}",
+      "preset.missing": "That preset doesn't exist! Try {}",
+      "preset.current.set": "You can't switch to your current preset! Try {}",
+      "preset.current.delete": "You can't delete your current preset! Try {}",
+      "module.missing": "Module '{}' doesn't exist!",
+      "module.enabled": "Module {} is already enabled!",
+      "module.disabled": "Module {} is already disabled!"
+    },
 
-  "commands.switchy.list.command": "/switchy list",
-  "commands.switchy.list.help": "list your presets",
-  "commands.switchy.list.presets": "Presets: %s",
-  "commands.switchy.list.modules": "Modules: %s",
-  "commands.switchy.list.current": "Current Preset: %s",
+    "help": {
+      "command": "/switchy help",
+      "help": "lists available commands"
+    },
 
-  "commands.switchy.new.command": "/switchy new %s",
-  "commands.switchy.new.help": "create a new preset",
-  "commands.switchy.new.success": "Preset %s created",
+    "list": {
+      "command": "/switchy list",
+      "help": "list your presets",
+      "presets": "Presets: {}",
+      "modules": "Modules: {}",
+      "current": "Current Preset: {}"
+    },
 
-  "commands.switchy.set.command": "/switchy set %s",
-  "commands.switchy.set.help": "switches to specified preset",
-  "commands.switchy.set.success": "Switched from %1$s to %2$s",
+    "new": {
+      "command": "/switchy new {}",
+      "help": "create a new preset",
+      "success": "Preset {} created"
+    },
 
-  "commands.switchy.switch.command": "/switch %s",
-  "commands.switchy.switch.help": "alias of previous",
+    "set": {
+      "command": "/switchy set {}",
+      "help": "switches to specified preset",
+      "success": "Switched from {1} to {2}"
+    },
 
-  "commands.switchy.delete.command": "/switchy delete %s",
-  "commands.switchy.delete.help": "delete a preset permanently",
-  "commands.switchy.delete.success": "Deleted preset %s",
-  "commands.switchy.delete.warn": "WARNING: Preset data from enabled modules will be deleted.",
+    "switch": {
+      "command": "/switch {}",
+      "help": "alias of previous"
+    },
 
-  "commands.switchy.rename.command": "/switchy rename %1$s %2$s",
-  "commands.switchy.rename.help": "rename a preset",
-  "commands.switchy.rename.success": "Renamed preset from %1$s to %2$s",
+    "delete": {
+      "command": "/switchy delete {}",
+      "help": "delete a preset permanently",
+      "success": "Deleted preset {}",
+      "warn": "WARNING: Preset data from enabled modules will be deleted."
+    },
 
-  "commands.switchy.module.enable.command": "/switchy module enable %s",
-  "commands.switchy.module.enable.help": "enable a module",
-  "commands.switchy.module.enable.success": "Enabled %s",
+    "rename": {
+      "command": "/switchy rename {1} {2}",
+      "help": "rename a preset",
+      "success": "Renamed preset from {1} to {2}"
+    },
 
-  "commands.switchy.module.disable.command": "/switchy module disable %s",
-  "commands.switchy.module.disable.help": "disable a module",
-  "commands.switchy.module.disable.success": "Disabled %s",
-
-  "commands.switchy.module.warn.default": "Warning: Module data will be deleted for all presets."
+    "module": {
+      "enable": {
+        "command": "/switchy module enable {}",
+        "help": "enable a module",
+        "success": "Enabled {}"
+      },
+      "disable": {
+        "command": "/switchy module disable {}",
+        "help": "disable a module",
+        "success": "Disabled {}"
+      },
+      "warn": {
+        "default": "Warning: Module data will be deleted for all presets."
+      }
+    }
+  }
 }

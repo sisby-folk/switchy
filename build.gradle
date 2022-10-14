@@ -35,6 +35,18 @@ repositories {
 	// Jitpack
 	maven { url 'https://jitpack.io' }
 
+	// Sleeping Town
+	maven {
+		url 'https://repo.sleeping.town'
+		content {
+			includeGroup 'com.unascribed'
+			includeGroup 'gay.lemmaeof'
+		}
+	}
+
+	// Unascribed (Kdl4j)
+	maven { url "https://repo.unascribed.com" }
+
 	// Player Pronouns
 	maven {
 		name = "NucleoidMC"
@@ -90,6 +102,16 @@ dependencies {
 	// // Libraries // //
 	modImplementation libs.serverTranslationsApi
 	include libs.serverTranslationsApi
+
+	modImplementation libs.lib39Core
+	include libs.lib39Core
+
+
+	modImplementation libs.lib39Dessicant
+	include libs.lib39Dessicant
+
+	modImplementation libs.kdlyData
+	include libs.kdlyData
 
 	// // Compat // //
 

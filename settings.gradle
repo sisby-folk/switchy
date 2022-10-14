@@ -33,9 +33,13 @@ dependencyResolutionManagement {
 
 			// // Libraries // //
 			version('serverTranslationsApi', "1.4.17+${mc}")
+			version('lib39', "1.3.1")
+			version('kdlyData', "1.0.0+${mc}")
 
 			library('serverTranslationsApi', 'fr.catcore', 'server-translations-api').versionRef('serverTranslationsApi')
-
+			library('lib39Core', 'com.unascribed', 'lib39-core').versionRef('lib39')
+			library('lib39Dessicant', 'com.unascribed', 'lib39-dessicant').versionRef('lib39')
+			library('kdlyData', 'gay.lemmaeof', 'KdlyData').versionRef('kdlyData')
 
 			// // Compat // //
 			version('drogtor', "1.1.3${mc_major == '1.18' ? '' : "+${mc_major}"}")
