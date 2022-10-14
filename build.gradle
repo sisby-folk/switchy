@@ -25,9 +25,10 @@ archivesBaseName = project.archives_base_name
 def mc_major = '1.19'
 def mc = mc_major + '.2'
 def default_branch = '1.18'
+def quilt_mappings = 19
 
 def origVersion = project.version
-project.version = project.version+ "+" + mc_major
+project.version = project.version + "+" + mc_major
 group = project.maven_group
 
 repositories {
@@ -83,7 +84,7 @@ dependencies {
 	// // Base // //
 	minecraft libs.minecraft
 	mappings loom.layered {
-		addLayer quiltMappings.mappings("org.quiltmc:quilt-mappings:${minecraft_version}+build.${quilt_mappings}:v2")
+		addLayer quiltMappings.mappings("org.quiltmc:quilt-mappings:${mc}+build.${quilt_mappings}:v2")
 	}
 	modImplementation libs.ql
 	modImplementation libs.qsl
@@ -110,7 +111,7 @@ dependencies {
 	modCompileOnly (libs.origins) {
 		exclude module: 'calio'
 	}
-	modLocalRuntime (libs.origins) {
+	modLocalRuntime(libs.origins) {
 		exclude module: 'calio'
 	}
 
@@ -192,7 +193,7 @@ if (System.getenv("MODRINTH_TOKEN")) {
 			optional.project "arcpocalypse"
 			optional.project "lanyard"
 		}
-		changelog = "Changelog: https://github.com/sisby-folk/switchy/releases/tag/v"+origVersion
+		changelog = "Changelog: https://github.com/sisby-folk/switchy/releases/tag/v" + origVersion
 	}
 }
 
@@ -201,7 +202,7 @@ if (System.getenv("GITHUB_TOKEN")) {
 		token System.getenv("GITHUB_TOKEN")
 		owner "sisby-folk"
 		repo "switchy"
-		tagName 'v'+origVersion
+		tagName 'v' + origVersion
 		releaseName origVersion
 		targetCommitish default_branch
 		draft false
