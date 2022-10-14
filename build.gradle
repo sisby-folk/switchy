@@ -83,9 +83,7 @@ repositories {
 dependencies {
 	// // Base // //
 	minecraft libs.minecraft
-	mappings loom.layered {
-		addLayer quiltMappings.mappings("org.quiltmc:quilt-mappings:${mc}+build.${quilt_mappings}:v2")
-	}
+	mappings variantOf(libs.quiltMappings) { classifier "intermediary-v2" }
 	modImplementation libs.ql
 	modImplementation libs.qsl
 
