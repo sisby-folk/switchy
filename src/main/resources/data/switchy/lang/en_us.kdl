@@ -1,78 +1,91 @@
 lib39:enable_enhanced_lang true
 
-commands.switchy {
-    placeholder.preset "[name]"
-    placeholder.module "[name]"
-    format.help "{1} - {2}"
+commands {
+    switchy {
+        help {
+            command "/switchy help"
+            help "lists available commands"
+            line "{1} - {2}"
+            placeholder.module "[name]"
+            placeholder.preset "[name]"
+        }
 
-    invalid {
-        confirm "Confirm using {}"
-        preset.exists "That preset already exists! Try {}"
-        preset.missing "That preset doesn't exist! Try {}"
-        preset.current.set "You can't switch to your current preset! Try {}"
-        preset.current.delete "You can't delete your current preset! Try {}"
-        module.missing "Module '{}' doesn't exist!"
-        module.enabled "Module {} is already enabled!"
-        module.disabled "Module {} is already disabled!"
+        list {
+            command "/switchy list"
+            help "list your presets"
+            presets "Presets {}"
+            modules "Modules {}"
+            current "Current Preset {}"
+        }
+
+        new {
+            command "/switchy new {}"
+            help "create a new preset"
+            success "Preset {} created"
+            fail {
+                exists "That preset already exists! Try {}"
+            }
+        }
+
+        set {
+            command "/switchy set {}"
+            help "switches to specified preset"
+            success "Switched from {1} to {2}"
+            fail {
+                missing "That preset doesn't exist! Try {}"
+                current "You can't switch to your current preset! Try {}"
+            }
+        }
+
+        delete {
+            command "/switchy delete {}"
+            help "delete a preset permanently"
+            warn "WARNING: Preset data from enabled modules will be deleted."
+            confirmation "Confirm using {}"
+            success "Deleted preset {}"
+            fail {
+                missing "That preset doesn't exist! Try {}"
+                current "You can't delete your current preset! Try {}"
+            }
+        }
+
+        rename {
+            command "/switchy rename {1} {2}"
+            help "rename a preset"
+            success "Renamed preset from {1} to {2}"
+            fail {
+                exists "That preset already exists! Try {}"
+                missing "That preset doesn't exist! Try {}"
+            }
+        }
+
+        module {
+            enable {
+                command "/switchy module enable {}"
+                help "enable a module"
+                success "Enabled {}"
+                fail {
+                    missing "Module '{}' doesn't exist!"
+                    enabled "Module {} is already enabled!"
+                }
+            }
+            disable {
+                command "/switchy module disable {}"
+                help "disable a module"
+                warn "Warning: Module data will be deleted for all presets."
+                confirmation "Confirm using {}"
+                success "Disabled {}"
+                fail {
+                    missing "Module '{}' doesn't exist!"
+                    disabled "Module {} is already disabled!"
+                }
+            }
+        }
     }
-
-    help {
-        command "/switchy help"
-        help "lists available commands"
-    }
-
-    list {
-        command "/switchy list"
-        help "list your presets"
-        presets "Presets {}"
-        modules "Modules {}"
-        current "Current Preset {}"
-    }
-
-    new {
-        command "/switchy new {}"
-        help "create a new preset"
-        success "Preset {} created"
-    }
-
-    set {
-        command "/switchy set {}"
-        help "switches to specified preset"
-        success "Switched from {1} to {2}"
-    }
-
     switch {
         command "/switch {}"
-        help "alias of previous"
-    }
-
-    delete {
-        command "/switchy delete {}"
-        help "delete a preset permanently"
-        success "Deleted preset {}"
-        warn "WARNING: Preset data from enabled modules will be deleted."
-    }
-
-    rename {
-        command "/switchy rename {1} {2}"
-        help "rename a preset"
-        success "Renamed preset from {1} to {2}"
-    }
-
-    module {
-        enable {
-            command "/switchy module enable {}"
-            help "enable a module"
-            success "Enabled {}"
-        }
-        disable {
-            command "/switchy module disable {}"
-            help "disable a module"
-            success "Disabled {}"
-        }
-        warn {
-            default "Warning: Module data will be deleted for all presets."
-        }
+        help "alias of above"
     }
 }
+
 
