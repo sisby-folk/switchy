@@ -41,7 +41,7 @@ Switchy itself comes packaged with modules for:
 - (1.19) [Lanyard](https://modrinth.com/mod/lanyard) - lanyard name, pronouns, and bio.
 
 You can add more modules from these first-party add-ons:
-- [Switchy Inventories](https://modrinth.com/mod/switchy-inventories) - first-party addon for minecraft.
+- [Switchy Inventories](https://modrinth.com/mod/switchy-inventories) - addon for minecraft.
   - Allows for separate inventories, ender chests, and trinket inventories.
   - Each module is disabled by default, allowing players to enable them individually.
 
