@@ -1,8 +1,12 @@
 package folk.sisby.switchy.modules;
 
 import folk.sisby.switchy.Switchy;
+import folk.sisby.switchy.SwitchyPlayer;
+import folk.sisby.switchy.SwitchyPresets;
 import folk.sisby.switchy.api.PresetModule;
 import folk.sisby.switchy.api.PresetModuleRegistry;
+import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.apace100.apoli.power.InventoryPower;
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.origin.Origin;
 import io.github.apace100.origins.origin.OriginLayer;
@@ -10,14 +14,14 @@ import io.github.apace100.origins.origin.OriginLayers;
 import io.github.apace100.origins.origin.OriginRegistry;
 import io.github.apace100.origins.registry.ModComponents;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class OriginsCompat implements PresetModule {
 	public static final Identifier ID = new Identifier("switchy",  "origins");
@@ -32,6 +36,9 @@ public class OriginsCompat implements PresetModule {
 	public void updateFromPlayer(PlayerEntity player) {
 		OriginComponent originComponent = ModComponents.ORIGIN.get(player);
 		this.origins = new HashMap<>(originComponent.getOrigins());
+		if (!((SwitchyPlayer)player).switchy$getPresets().getModuleToggles().get(ApoliCompat.ID)) {
+			dropInventories(player, PowerHolderComponent.getPowers(player, InventoryPower.class));
+		}
 	}
 
 	@Override
@@ -49,6 +56,15 @@ public class OriginsCompat implements PresetModule {
 		OriginComponent.sync(player);
 		boolean hadOriginBefore = component.hadOriginBefore();
 		OriginComponent.partialOnChosen(player, hadOriginBefore, origin);
+	}
+
+	private static void dropInventories(PlayerEntity player, List<InventoryPower> powers) {
+		for (InventoryPower power : powers) {
+			for (int i = 0; i < power.size(); ++i) {
+				ItemStack stack = power.getStack(i);
+				player.getInventory().offerOrDrop(stack);
+			}
+		}
 	}
 
 	@Override
