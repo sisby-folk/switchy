@@ -40,10 +40,16 @@ Switchy itself comes packaged with modules for:
 - [Pehkui](https://modrinth.com/mod/pehkui) - pehkui `width` and `height` properties.
 - (1.19) [Lanyard](https://modrinth.com/mod/lanyard) - lanyard name, pronouns, and bio.
 
-Further modules can be added from these addons:
-- [Switchy Inventories](https://modrinth.com/mod/switchy-inventories) - Addon for minecraft.
+You can add more modules from these first-party add-ons:
+- [Switchy Inventories](https://modrinth.com/mod/switchy-inventories) - addon for minecraft.
   - Allows for separate inventories, ender chests, and trinket inventories.
   - Each module is disabled by default, allowing players to enable them individually.
+
+.. And these third-party add-ons!:
+- [Switchy Teleport](https://modrinth.com/mod/switchy-teleport) - addon for minecraft.
+  - Modules for keeping player position and spawn point separate between presets. 
+  - Both modues are disabled by default. 
+ 
 
 ## Showcase
 
