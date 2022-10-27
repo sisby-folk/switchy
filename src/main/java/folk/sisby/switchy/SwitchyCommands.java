@@ -144,11 +144,11 @@ public class SwitchyCommands {
 	private static int displayHelp(ServerPlayerEntity player, SwitchyPresets presets) {
 		tellHelp(player, "commands.switchy.help.help", "commands.switchy.help.command");
 		tellHelp(player, "commands.switchy.list.help", "commands.switchy.list.command");
-		tellHelp(player, "commands.switchy.new.help", "commands.switchy.new.command", "commands.switchy.placeholder.preset");
-		tellHelp(player, "commands.switchy.set.help", "commands.switchy.set.command", "commands.switchy.placeholder.preset");
-		tellHelp(player, "commands.switch.help", "commands.switch.command", "commands.switchy.placeholder.preset");
-		tellHelp(player, "commands.switchy.delete.help", "commands.switchy.delete.command", "commands.switchy.placeholder.preset");
-		tellHelp(player, "commands.switchy.rename.help", "commands.switchy.rename.command", "commands.switchy.placeholder.preset", "commands.switchy.placeholder.preset");
+		tellHelp(player, "commands.switchy.new.help", "commands.switchy.new.command", "commands.switchy.help.placeholder.preset");
+		tellHelp(player, "commands.switchy.set.help", "commands.switchy.set.command", "commands.switchy.help.placeholder.preset");
+		tellHelp(player, "commands.switch.help", "commands.switch.command", "commands.switchy.help.placeholder.preset");
+		tellHelp(player, "commands.switchy.delete.help", "commands.switchy.delete.command", "commands.switchy.help.placeholder.preset");
+		tellHelp(player, "commands.switchy.rename.help", "commands.switchy.rename.command", "commands.switchy.help.placeholder.preset", "commands.switchy.help.placeholder.preset");
 		tellHelp(player, "commands.switchy.module.enable.help", "commands.switchy.module.enable.command", "commands.switchy.help.placeholder.module");
 		tellHelp(player, "commands.switchy.module.disable.help", "commands.switchy.module.disable.command", "commands.switchy.help.placeholder.module");
 		return 7;
