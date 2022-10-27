@@ -144,13 +144,13 @@ public class SwitchyCommands {
 	private static int displayHelp(ServerPlayerEntity player, SwitchyPresets presets) {
 		tellHelp(player, "commands.switchy.help.help", "commands.switchy.help.command");
 		tellHelp(player, "commands.switchy.list.help", "commands.switchy.list.command");
-		tellHelp(player, "commands.switchy.new.help", "commands.switchy.new.command", "commands.switchy.placeholder.preset");
-		tellHelp(player, "commands.switchy.set.help", "commands.switchy.set.command", "commands.switchy.placeholder.preset");
-		tellHelp(player, "commands.switchy.switch.help", "commands.switchy.switch.command", "commands.switchy.placeholder.preset");
-		tellHelp(player, "commands.switchy.delete.help", "commands.switchy.delete.command", "commands.switchy.placeholder.preset");
-		tellHelp(player, "commands.switchy.rename.help", "commands.switchy.rename.command", "commands.switchy.placeholder.preset", "commands.switchy.placeholder.preset");
-		tellHelp(player, "commands.switchy.module.enable.help", "commands.switchy.module.enable.command", "commands.switchy.placeholder.module");
-		tellHelp(player, "commands.switchy.module.disable.help", "commands.switchy.module.disable.command", "commands.switchy.placeholder.module");
+		tellHelp(player, "commands.switchy.new.help", "commands.switchy.new.command", "commands.switchy.help.placeholder.preset");
+		tellHelp(player, "commands.switchy.set.help", "commands.switchy.set.command", "commands.switchy.help.placeholder.preset");
+		tellHelp(player, "commands.switch.help", "commands.switch.command", "commands.switchy.help.placeholder.preset");
+		tellHelp(player, "commands.switchy.delete.help", "commands.switchy.delete.command", "commands.switchy.help.placeholder.preset");
+		tellHelp(player, "commands.switchy.rename.help", "commands.switchy.rename.command", "commands.switchy.help.placeholder.preset", "commands.switchy.help.placeholder.preset");
+		tellHelp(player, "commands.switchy.module.enable.help", "commands.switchy.module.enable.command", "commands.switchy.help.placeholder.module");
+		tellHelp(player, "commands.switchy.module.disable.help", "commands.switchy.module.disable.command", "commands.switchy.help.placeholder.module");
 		return 7;
 	}
 
@@ -162,7 +162,7 @@ public class SwitchyCommands {
 
 	private static int newPreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
 		if (presets.containsPreset(presetName)) {
-			tellInvalidTry(player, "commands.switchy.invalid.preset.exists", "commands.switchy.set.command", literal(presetName));
+			tellInvalidTry(player, "commands.switchy.new.fail.exists", "commands.switchy.set.command", literal(presetName));
 			return 0;
 		}
 
@@ -173,11 +173,11 @@ public class SwitchyCommands {
 
 	private static int setPreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
 		if (!presets.containsPreset(presetName)) {
-			tellInvalidTry(player, "commands.switchy.invalid.preset.missing", "commands.switchy.list.command");
+			tellInvalidTry(player, "commands.switchy.set.fail.missing", "commands.switchy.list.command");
 			return 0;
 		}
 		if (presetName.equalsIgnoreCase(Objects.toString(presets.getCurrentPreset(), null))) {
-			tellInvalidTry(player, "commands.switchy.invalid.preset.current.set", "commands.switchy.list.command");
+			tellInvalidTry(player, "commands.switchy.set.fail.current", "commands.switchy.list.command");
 			return 0;
 		}
 
@@ -190,7 +190,7 @@ public class SwitchyCommands {
 
 	private static int renamePreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName, String newName) {
 		if (!presets.containsPreset(presetName) || presets.containsPreset(newName)) {
-			tellInvalidTry(player, "commands.switchy.invalid.preset." + (presets.containsPreset(newName) ? "exists" : "missing"), "commands.switchy.list.command");
+			tellInvalidTry(player, "commands.switchy.rename.fail." + (presets.containsPreset(newName) ? "exists" : "missing"), "commands.switchy.list.command");
 			return 0;
 		}
 
@@ -201,18 +201,18 @@ public class SwitchyCommands {
 
 	private static int deletePreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
 		if (!presets.getPresetNames().contains(presetName)) {
-			tellInvalidTry(player, "commands.switchy.invalid.preset.missing", "commands.switchy.list.command");
+			tellInvalidTry(player, "commands.switchy.delete.fail.missing", "commands.switchy.list.command");
 			return 0;
 		}
 		if (presetName.equalsIgnoreCase(Objects.toString(presets.getCurrentPreset(), null))) {
-			tellInvalidTry(player, "commands.switchy.invalid.preset.current.delete", "commands.switchy.rename.command", literal(""), literal(""));
+			tellInvalidTry(player, "commands.switchy.delete.fail.current", "commands.switchy.rename.command", literal(""), literal(""));
 			return 0;
 		}
 
 		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase("/switchy delete " + presetName)) {
 			tellWarn(player, "commands.switchy.delete.warn");
 			tellWarn(player, "commands.switchy.list.modules", literal(presets.getModuleToggles().entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).map(Identifier::getPath).toList().toString()));
-			tellInvalidTry(player, "commands.switchy.invalid.confirm", "commands.switchy.delete.command", literal(presetName));
+			tellInvalidTry(player, "commands.switchy.delete.confirmation", "commands.switchy.delete.command", literal(presetName));
 			return 0;
 		} else {
 			presets.deletePreset(presetName);
@@ -223,13 +223,13 @@ public class SwitchyCommands {
 
 	private static int disableModule(ServerPlayerEntity player, SwitchyPresets presets, Identifier moduleId) {
 		if (!presets.getModuleToggles().containsKey(moduleId) || !presets.getModuleToggles().get(moduleId)) {
-			tellInvalid(player, "commands.switchy.invalid.module." + (presets.getModuleToggles().containsKey(moduleId) ? "disabled" : "missing"), literal(moduleId.toString()));
+			tellInvalid(player, "commands.switchy.module.disable.fail." + (presets.getModuleToggles().containsKey(moduleId) ? "disabled" : "missing"), literal(moduleId.toString()));
 			return 0;
 		}
 
 		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase("/switchy module disable " + moduleId)) {
 			sendMessage(player, Switchy.COMPAT_REGISTRY.get(moduleId).get().getDisableConfirmation().setStyle(FORMAT_WARN.getLeft()));
-			tellInvalidTry(player, "commands.switchy.invalid.confirm", "commands.switchy.module.disable.command", literal(moduleId.toString()));
+			tellInvalidTry(player, "commands.switchy.module.disable.confirmation", "commands.switchy.module.disable.command", literal(moduleId.toString()));
 			return 0;
 		} else {
 			presets.disableModule(moduleId);
@@ -240,7 +240,7 @@ public class SwitchyCommands {
 
 	private static int enableModule(ServerPlayerEntity player, SwitchyPresets presets, Identifier moduleId) {
 		if (!presets.getModuleToggles().containsKey(moduleId) || presets.getModuleToggles().get(moduleId)) {
-			tellInvalid(player, "commands.switchy.invalid.module." + (presets.getModuleToggles().containsKey(moduleId) ? "enabled" : "missing"), literal(moduleId.toString()));
+			tellInvalid(player, "commands.switchy.module.enable.fail." + (presets.getModuleToggles().containsKey(moduleId) ? "enabled" : "missing"), literal(moduleId.toString()));
 			return 0;
 		}
 
@@ -254,7 +254,7 @@ public class SwitchyCommands {
 	}
 
 	private static void tellHelp(ServerPlayerEntity player, String keyHelp, String keyCommand, String... keyArgs) {
-		sendMessage(player, translatableWithArgs("commands.switchy.format.help", translatableWithArgs(keyCommand, FORMAT_COMMAND, translatable(keyArgs)), translatableWithArgs(keyHelp, FORMAT_HELP)));
+		sendMessage(player, translatableWithArgs("commands.switchy.help.line", translatableWithArgs(keyCommand, FORMAT_COMMAND, translatable(keyArgs)), translatableWithArgs(keyHelp, FORMAT_HELP)));
 	}
 
 	private static void tellInvalidTry(ServerPlayerEntity player, String keyFail, String keyCommand, MutableText... commandArgs) {
@@ -292,6 +292,4 @@ public class SwitchyCommands {
 	private static MutableText translatableWithArgs(String key, Pair<Style, Style> formatStyle, MutableText... args) {
 		return new TranslatableText(key, Arrays.stream(args).map(text -> (text.setStyle(formatStyle.getRight()))).toArray()).setStyle(formatStyle.getLeft());
 	}
-
-
 }

@@ -5,6 +5,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Set;
@@ -12,6 +13,10 @@ import java.util.Set;
 public interface PresetModule {
 
 	void updateFromPlayer(PlayerEntity player);
+
+	default void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
+		updateFromPlayer(player);
+	}
 
 	void applyToPlayer(PlayerEntity player);
 
@@ -27,7 +32,7 @@ public interface PresetModule {
 	}
 
 	default MutableText getDisableConfirmation() {
-		return new TranslatableText("commands.switchy.module.warn.default");
+		return new TranslatableText("commands.switchy.module.disable.warn");
 	}
 
 	boolean isDefault();
