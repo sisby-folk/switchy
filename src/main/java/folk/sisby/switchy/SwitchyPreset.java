@@ -32,10 +32,10 @@ public class SwitchyPreset {
 		return outPreset;
 	}
 
-	public void updateFromPlayer(PlayerEntity player) {
+	public void updateFromPlayer(PlayerEntity player, String nextPreset) {
 		this.compatModules.forEach((id, module) -> {
 			try {
-				module.updateFromPlayer(player);
+				module.updateFromPlayer(player, nextPreset);
 			} catch (Exception ex) {
 				Switchy.LOGGER.error("Switchy: Module " + module.getId() + " failed to update! Error:");
 				Switchy.LOGGER.error(ex.toString());
