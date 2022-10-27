@@ -25,7 +25,6 @@ archivesBaseName = project.archives_base_name
 def mc_major = '1.19'
 def mc = mc_major + '.2'
 def default_branch = '1.18'
-def quilt_mappings = 19
 
 def origVersion = project.version
 project.version = project.version + "+" + mc_major
@@ -125,14 +124,8 @@ dependencies {
 	// Origins
 	modCompileOnly libs.qfapi
 	modLocalRuntime libs.qfapi
-	modCompileOnly files('/build/libs/Calio-1.19-1.7.0.jar') // Fix quilt incompatibility
-	modLocalRuntime files('/build/libs/Calio-1.19-1.7.0.jar') // Fix quilt incompatibility
-	modCompileOnly (libs.origins) {
-		exclude module: 'calio'
-	}
-	modLocalRuntime(libs.origins) {
-		exclude module: 'calio'
-	}
+	modCompileOnly (libs.origins)
+	modLocalRuntime(libs.origins)
 
 	// Cardinal Components
 	modCompileOnly libs.cardinal
