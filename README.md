@@ -1,4 +1,4 @@
-<p align="center"><img alt="switchy banner" src="https://user-images.githubusercontent.com/55819817/185277937-60b55666-07b9-46d3-881b-0f45ea39fb73.png" /></p>
+<p align="center"><img alt="switchy banner" src="https://user-images.githubusercontent.com/55819817/198199613-a5eca7d2-02e5-4bf1-8f4d-074e4d15ebef.png" /></p>
 
 <p align="center">An extensible preset system for player customizations provided by other mods.<br/>
 Works in singleplayer and on server-side.</p>
