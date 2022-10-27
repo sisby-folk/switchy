@@ -48,7 +48,7 @@ public class SwitchyPresets {
 	}
 
 	public static SwitchyPresets fromNbt(PlayerEntity player, NbtCompound nbt) {
-		SwitchyPresets outPresets = new SwitchyPresets(player);
+		SwitchyPresets outPresets = new SwitchyPresets();
 
 		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE), true);
 		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_DISABLED, NbtElement.STRING_TYPE), false);
@@ -85,7 +85,7 @@ public class SwitchyPresets {
 		});
 	}
 
-	private SwitchyPresets(PlayerEntity player) {
+	private SwitchyPresets() {
 		this.moduleToggles = Switchy.COMPAT_REGISTRY.entrySet().stream()
 				.collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().get().isDefault()));
 	}
@@ -102,12 +102,12 @@ public class SwitchyPresets {
 	}
 
 	private void switchPreset(PlayerEntity player, SwitchyPreset oldPreset, SwitchyPreset newPreset) {
-		oldPreset.updateFromPlayer(player);
+		oldPreset.updateFromPlayer(player, newPreset.presetName);
 		newPreset.applyToPlayer(player);
 	}
 
 	public void saveCurrentPreset(PlayerEntity player) {
-		if (this.currentPreset != null) this.currentPreset.updateFromPlayer(player);
+		if (this.currentPreset != null) this.currentPreset.updateFromPlayer(player, null);
 	}
 
 	public SwitchyPreset getCurrentPreset() {
