@@ -43,7 +43,7 @@ public class OriginsCompat implements PresetModule {
 				for (PowerType<?> powerType : this.origins.get(layer).getPowerTypes()) {
 					Power power = powerType.get(player);
 					if (power instanceof InventoryPower inventoryPower) {
-						dropInventories(player, inventoryPower);
+						dropInventory(player, inventoryPower);
 					}
 				}
 			}
@@ -67,7 +67,7 @@ public class OriginsCompat implements PresetModule {
 		OriginComponent.partialOnChosen(player, hadOriginBefore, origin);
 	}
 
-	private static void dropInventories(PlayerEntity player, InventoryPower power) {
+	private static void dropInventory(PlayerEntity player, InventoryPower power) {
 		for (int i = 0; i < power.size(); ++i) {
 			ItemStack stack = power.getStack(i);
 			player.getInventory().offerOrDrop(stack);
