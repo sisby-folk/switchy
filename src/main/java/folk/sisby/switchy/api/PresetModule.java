@@ -32,7 +32,7 @@ public interface PresetModule {
 	}
 
 	default MutableText getDisableConfirmation() {
-		return new TranslatableText("commands.switchy.module.warn.default");
+		return new TranslatableText("commands.switchy.module.disable.warn");
 	}
 
 	boolean isDefault();
