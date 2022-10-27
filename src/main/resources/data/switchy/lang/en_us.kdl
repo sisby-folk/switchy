@@ -13,9 +13,9 @@ commands {
         list {
             command "/switchy list"
             help "list your presets"
-            presets "Presets {}"
-            modules "Modules {}"
-            current "Current Preset {}"
+            presets "Presets: {}"
+            modules "Modules: {}"
+            current "Current Preset: {}"
         }
 
         new {
