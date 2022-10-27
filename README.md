@@ -1,9 +1,10 @@
-<p align="center"><img alt="switchy banner" src="https://user-images.githubusercontent.com/55819817/198199613-a5eca7d2-02e5-4bf1-8f4d-074e4d15ebef.png" /></p>
+<p align="center"><img alt="switchy banner" src="https://user-images.githubusercontent.com/55819817/198210616-eb37be12-cd96-40c8-a941-68a96b2aadfc.pn" /></p>
 
 <p align="center">An extensible preset system for player customizations provided by other mods.<br/>
 Works in singleplayer and on server-side.</p>
 
 ---
+
 
 ## What is Switchy?
 
