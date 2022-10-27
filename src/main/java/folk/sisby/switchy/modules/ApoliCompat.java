@@ -39,14 +39,7 @@ public class ApoliCompat implements PresetModule {
 	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
 		this.updateFromPlayer(player);
 		if (nextPreset != null) {
-			List<Power> powers = PowerHolderComponent.KEY.get(player).getPowers();
-			for (Power power : powers) {
-				if (power instanceof InventoryPower) {
-					for (int i = 0; i < ((InventoryPower) power).size(); ++i) {
-						((InventoryPower) power).removeStack(i);
-					}
-				}
-			}
+			clearInventories(PowerHolderComponent.getPowers(player, InventoryPower.class));
 		}
 	}
 
@@ -58,6 +51,14 @@ public class ApoliCompat implements PresetModule {
 				if (power != null) {
 					power.fromTag(entry.getValue());
 				}
+			}
+		}
+	}
+
+	private static void clearInventories(List<InventoryPower> powers) {
+		for (InventoryPower power : powers) {
+			for (int i = 0; i < power.size(); ++i) {
+				power.removeStack(i);
 			}
 		}
 	}
