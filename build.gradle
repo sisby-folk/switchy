@@ -125,14 +125,8 @@ dependencies {
 	// Origins
 	modCompileOnly libs.qfapi
 	modLocalRuntime libs.qfapi
-	modCompileOnly files('/build/libs/Calio-1.19-1.7.0.jar') // Fix quilt incompatibility
-	modLocalRuntime files('/build/libs/Calio-1.19-1.7.0.jar') // Fix quilt incompatibility
-	modCompileOnly (libs.origins) {
-		exclude module: 'calio'
-	}
-	modLocalRuntime(libs.origins) {
-		exclude module: 'calio'
-	}
+	modCompileOnly (libs.origins)
+	modLocalRuntime(libs.origins)
 
 	// Cardinal Components
 	modCompileOnly libs.cardinal
