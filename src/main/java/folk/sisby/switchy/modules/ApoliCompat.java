@@ -1,17 +1,22 @@
 package folk.sisby.switchy.modules;
 
 import folk.sisby.switchy.Switchy;
+import folk.sisby.switchy.SwitchyPlayer;
+import folk.sisby.switchy.SwitchyPresets;
 import folk.sisby.switchy.api.PresetModule;
 import folk.sisby.switchy.api.PresetModuleRegistry;
 import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.apace100.apoli.power.InventoryPower;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.PowerTypeRegistry;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -34,6 +39,14 @@ public class ApoliCompat implements PresetModule {
 	}
 
 	@Override
+	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
+		updateFromPlayer(player);
+		if (nextPreset != null) {
+			clearInventories(PowerHolderComponent.getPowers(player, InventoryPower.class));
+		}
+	}
+
+	@Override
 	public void applyToPlayer(PlayerEntity player) {
 		if (this.powerNbt != null) {
 			for (Map.Entry<PowerType<?>, NbtElement> entry : powerNbt.entrySet()) {
@@ -41,6 +54,14 @@ public class ApoliCompat implements PresetModule {
 				if (power != null) {
 					power.fromTag(entry.getValue());
 				}
+			}
+		}
+	}
+
+	private static void clearInventories(List<InventoryPower> powers) {
+		for (InventoryPower power : powers) {
+			for (int i = 0; i < power.size(); ++i) {
+				power.removeStack(i);
 			}
 		}
 	}

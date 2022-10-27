@@ -5,8 +5,9 @@ import folk.sisby.switchy.SwitchyPlayer;
 import folk.sisby.switchy.SwitchyPresets;
 import folk.sisby.switchy.api.PresetModule;
 import folk.sisby.switchy.api.PresetModuleRegistry;
-import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.InventoryPower;
+import io.github.apace100.apoli.power.Power;
+import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.origin.Origin;
 import io.github.apace100.origins.origin.OriginLayer;
@@ -36,8 +37,16 @@ public class OriginsCompat implements PresetModule {
 	public void updateFromPlayer(PlayerEntity player) {
 		OriginComponent originComponent = ModComponents.ORIGIN.get(player);
 		this.origins = new HashMap<>(originComponent.getOrigins());
-		if (!((SwitchyPlayer)player).switchy$getPresets().getModuleToggles().get(ApoliCompat.ID)) {
-			dropInventories(player, PowerHolderComponent.getPowers(player, InventoryPower.class));
+		SwitchyPresets presets = ((SwitchyPlayer)player).switchy$getPresets();
+		if (!presets.getModuleToggles().get(ApoliCompat.ID)) {
+			for (OriginLayer layer : this.origins.keySet()) {
+				for (PowerType<?> powerType : this.origins.get(layer).getPowerTypes()) {
+					Power power = powerType.get(player);
+					if (power instanceof InventoryPower inventoryPower) {
+						dropInventories(player, inventoryPower);
+					}
+				}
+			}
 		}
 	}
 
@@ -58,12 +67,10 @@ public class OriginsCompat implements PresetModule {
 		OriginComponent.partialOnChosen(player, hadOriginBefore, origin);
 	}
 
-	private static void dropInventories(PlayerEntity player, List<InventoryPower> powers) {
-		for (InventoryPower power : powers) {
-			for (int i = 0; i < power.size(); ++i) {
-				ItemStack stack = power.getStack(i);
-				player.getInventory().offerOrDrop(stack);
-			}
+	private static void dropInventories(PlayerEntity player, InventoryPower power) {
+		for (int i = 0; i < power.size(); ++i) {
+			ItemStack stack = power.getStack(i);
+			player.getInventory().offerOrDrop(stack);
 		}
 	}
 
