@@ -37,7 +37,7 @@ public class ApoliCompat implements PresetModule {
 
 	@Override
 	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
-		updateFromPlayer(player);
+		this.updateFromPlayer(player);
 		if (nextPreset != null) {
 			clearInventories(PowerHolderComponent.getPowers(player, InventoryPower.class));
 		}
