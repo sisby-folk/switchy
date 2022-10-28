@@ -38,6 +38,7 @@ Switchy itself comes packaged with modules for:
 - [Drogtor The Nickinator](https://modrinth.com/mod/drogtor) - player `nickname`, `bio`, and `color`
 - [Fabric Tailor](https://modrinth.com/mod/fabrictailor) - set skin
 - [Origins](https://modrinth.com/mod/origins/versions) - current origins (includes all layers, e.g. [Statures](https://modrinth.com/mod/tinkerers-statures) for player height)
+- [Apoli](https://github.com/apace100/apoli) (by [MerchantPug](https://github.com/MerchantPug)) - current power state (including origin powers)
 - [Pehkui](https://modrinth.com/mod/pehkui) - pehkui `width` and `height` properties.
 - (1.19) [Lanyard](https://modrinth.com/mod/lanyard) - lanyard name, pronouns, and bio.
 
