@@ -81,6 +81,7 @@ public class SwitchyPresets {
 				this.moduleToggles.put(id, enabled);
 			} else {
 				Switchy.LOGGER.warn("Switchy: Unable to toggle a module - Was a module unloaded?");
+				Switchy.LOGGER.warn("Switchy: NBT Element:" + e.asString());
 			}
 		});
 	}
