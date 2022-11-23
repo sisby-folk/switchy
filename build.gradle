@@ -108,8 +108,8 @@ dependencies {
 	modImplementation libs.lib39Dessicant
 	include libs.lib39Dessicant
 
-	modImplementation libs.kdlyData
-	include libs.kdlyData
+	// modImplementation libs.kdlyData // FTB Quests issue
+	// include libs.kdlyData
 
 	// // Compat // //
 
