@@ -35,12 +35,12 @@ public class SwitchyClient implements ClientModInitializer {
 			try {
 				NbtCompound presetNbt = buf.readNbt();
 				if (presetNbt != null) {
-					new File("config/switchy_exports/").mkdirs();
-					String filename = new SimpleDateFormat("MMM-dd-HH-mm-ss-SS").format(new java.util.Date());
-					File exportFile = new File("config/switchy_exports/" + filename + ".dat");
+					String filename = (client.isInSingleplayer() ? "Singleplayer_" : "Multiplayer_") + new SimpleDateFormat("MMM-dd_HH-mm-ss").format(new java.util.Date());
+					File exportFile = new File("config/switchy/" + filename + ".dat");
+					exportFile.getParentFile().mkdirs();
 					NbtIo.writeCompressed(presetNbt, exportFile);
 					if (client.player != null) {
-						sendClientMessage(client.player, SwitchyCommands.translatableWithArgs("commands.switchy.export.success.client", SwitchyCommands.FORMAT_SUCCESS, SwitchyCommands.literal("config/switchy_exports/" + filename + ".dat")));
+						sendClientMessage(client.player, SwitchyCommands.translatableWithArgs("commands.switchy.export.success.client", SwitchyCommands.FORMAT_SUCCESS, SwitchyCommands.literal("config/switchy/" + filename + ".dat")));
 					}
 				}
 			} catch (IOException e) {
