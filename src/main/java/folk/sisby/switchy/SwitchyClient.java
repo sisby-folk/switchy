@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 import static folk.sisby.switchy.Switchy.S2C_EXPORT;
 
@@ -35,7 +36,7 @@ public class SwitchyClient implements ClientModInitializer {
 				NbtCompound presetNbt = buf.readNbt();
 				if (presetNbt != null) {
 					new File("config/switchy_exports/").mkdirs();
-					long filename = System.currentTimeMillis();
+					String filename = new SimpleDateFormat("MMM-dd-HH-mm-ss-SS").format(new java.util.Date());
 					File exportFile = new File("config/switchy_exports/" + filename + ".dat");
 					NbtIo.writeCompressed(presetNbt, exportFile);
 					if (client.player != null) {

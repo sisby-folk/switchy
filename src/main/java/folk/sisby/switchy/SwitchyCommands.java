@@ -165,7 +165,6 @@ public class SwitchyCommands {
 			ServerPlayNetworking.send(player, Switchy.S2C_EXPORT, presetsBuf);
 			return 1;
 		} catch (Exception ex) {
-			// TODO: Log all command errors from unwrap?
 			Switchy.LOGGER.error(ex.toString());
 			Switchy.LOGGER.error(ex.getMessage());
 			sendMessage(player, translatableWithArgs("commands.switchy.export.fail", FORMAT_INVALID));
