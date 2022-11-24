@@ -58,10 +58,10 @@ public class Feedback {
 	}
 
 	public static MutableText translatableWithArgs(String key, MutableText... args) {
-		return new TranslatableText(key, (Object[]) args);
+		return Text.translatable(key, (Object[]) args);
 	}
 
 	public static MutableText literal(String string) {
-		return new LiteralText(string);
+		return Text.literal(string);
 	}
 }

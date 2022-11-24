@@ -1,4 +1,11 @@
 {
-  "commands.switchy.export.success.client": "Presets saved to %s",
-  "commands.switchy.export.fail.client": "Saving to file failed! See log for details"
+  "lib39:enable_enhanced_lang": true,
+  "commands": {
+    "switchy": {
+      "export": {
+        "success": "Presets saved to %s",
+        "fail": "Saving to file failed! See log for details"
+      }
+    }
+  }
 }
