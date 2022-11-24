@@ -154,6 +154,7 @@ public class SwitchyCommands {
 
 	private static int exportPresets(ServerPlayerEntity player, SwitchyPresets presets) {
 		try {
+			presets.saveCurrentPreset(player);
 			PacketByteBuf presetsBuf = PacketByteBufs.create().writeNbt(presets.toNbt());
 			ServerPlayNetworking.send(player, Switchy.S2C_EXPORT, presetsBuf);
 			return 1;
