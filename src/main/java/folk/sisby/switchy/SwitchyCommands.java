@@ -13,8 +13,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.*;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -26,14 +24,9 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 
-public class SwitchyCommands {
-	public static final Pair<Style, Style> FORMAT_SUCCESS = new Pair<>(Style.EMPTY.withColor(Formatting.GREEN), Style.EMPTY.withColor(Formatting.WHITE).withItalic(true));
-	public static final Pair<Style, Style> FORMAT_INVALID = new Pair<>(Style.EMPTY.withColor(Formatting.YELLOW), Style.EMPTY.withColor(Formatting.WHITE).withItalic(true));
-	public static final Pair<Style, Style> FORMAT_INFO = new Pair<>(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true), Style.EMPTY.withColor(Formatting.WHITE));
-	public static final Pair<Style, Style> FORMAT_WARN = new Pair<>(Style.EMPTY.withColor(Formatting.GOLD), Style.EMPTY.withColor(Formatting.GRAY));
-	public static final Pair<Style, Style> FORMAT_COMMAND = new Pair<>(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true), Style.EMPTY.withColor(Formatting.GRAY).withItalic(true));
-	public static final Pair<Style, Style> FORMAT_HELP = new Pair<>(Style.EMPTY.withColor(Formatting.WHITE), Style.EMPTY.withColor(Formatting.WHITE));
+import static folk.sisby.switchy.util.Feedback.*;
 
+public class SwitchyCommands {
 	private static final Map<UUID, String> last_command = new HashMap<>();
 
 	public static void InitializeCommands() {
@@ -265,49 +258,5 @@ public class SwitchyCommands {
 		presets.enableModule(moduleId);
 		tellSuccess(player, "commands.switchy.module.enable.success", literal(moduleId.toString()));
 		return 1;
-	}
-
-	private static void sendMessage(ServerPlayerEntity player, Text text) {
-		player.sendMessage(new LiteralText("[Switchy] ").setStyle(Style.EMPTY.withColor(Formatting.AQUA)).append(text), false);
-	}
-
-	private static void tellHelp(ServerPlayerEntity player, String keyHelp, String keyCommand, String... keyArgs) {
-		sendMessage(player, translatableWithArgs("commands.switchy.help.line", translatableWithArgs(keyCommand, FORMAT_COMMAND, translatable(keyArgs)), translatableWithArgs(keyHelp, FORMAT_HELP)));
-	}
-
-	private static void tellInvalidTry(ServerPlayerEntity player, String keyFail, String keyCommand, MutableText... commandArgs) {
-		sendMessage(player, translatableWithArgs(keyFail, FORMAT_INVALID, translatableWithArgs(keyCommand, commandArgs)));
-	}
-
-	private static void tellInvalid(ServerPlayerEntity player, String key, MutableText... args) {
-		sendMessage(player, translatableWithArgs(key, FORMAT_INVALID, args));
-	}
-
-	private static void tellSuccess(ServerPlayerEntity player, String key, MutableText... args) {
-		sendMessage(player, translatableWithArgs(key, FORMAT_SUCCESS, args));
-	}
-
-	private static void tellWarn(ServerPlayerEntity player, String key, MutableText... args) {
-		sendMessage(player, translatableWithArgs(key, FORMAT_WARN, args));
-	}
-
-	public static MutableText translatable(String key) {
-		return new TranslatableText(key);
-	}
-
-	public static MutableText[] translatable(String... keys) {
-		return Arrays.stream(keys).map(SwitchyCommands::translatable).toArray(MutableText[]::new);
-	}
-
-	public static MutableText literal(String string) {
-		return new LiteralText(string);
-	}
-
-	public static MutableText translatableWithArgs(String key, MutableText... args) {
-		return new TranslatableText(key, (Object[]) args);
-	}
-
-	public static MutableText translatableWithArgs(String key, Pair<Style, Style> formatStyle, MutableText... args) {
-		return new TranslatableText(key, Arrays.stream(args).map(text -> (text.setStyle(formatStyle.getRight()))).toArray()).setStyle(formatStyle.getLeft());
 	}
 }

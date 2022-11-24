@@ -3,12 +3,13 @@ package folk.sisby.switchy.api;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Set;
+
+import static folk.sisby.switchy.util.Feedback.translatable;
 
 public interface PresetModule {
 
@@ -32,7 +33,7 @@ public interface PresetModule {
 	}
 
 	default MutableText getDisableConfirmation() {
-		return new TranslatableText("commands.switchy.module.disable.warn");
+		return translatable("commands.switchy.module.disable.warn");
 	}
 
 	boolean isDefault();
