@@ -67,11 +67,13 @@ public class ApoliCompat implements PresetModule {
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		NbtList powerNbtList = new NbtList();
-		for (Map.Entry<PowerType<?>, NbtElement> entry : powerNbt.entrySet()) {
-			NbtCompound powerTag = new NbtCompound();
-			powerTag.putString("PowerType", entry.getKey().getIdentifier().toString());
-			powerTag.put("Data", entry.getValue());
-			powerNbtList.add(powerTag);
+		if (this.powerNbt != null) {
+			for (Map.Entry<PowerType<?>, NbtElement> entry : powerNbt.entrySet()) {
+				NbtCompound powerTag = new NbtCompound();
+				powerTag.putString("PowerType", entry.getKey().getIdentifier().toString());
+				powerTag.put("Data", entry.getValue());
+				powerNbtList.add(powerTag);
+			}
 		}
 		outNbt.put(KEY_POWER_DATA_LIST, powerNbtList);
 		return outNbt;
