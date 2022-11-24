@@ -19,6 +19,7 @@ public class Switchy implements ModInitializer {
 	public static final String ID = "switchy";
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
+	public static final Identifier S2C_EXPORT = new Identifier(Switchy.ID, "s2c_export");
 
 	static final Map<Identifier, Supplier<? extends PresetModule>> COMPAT_REGISTRY = new HashMap<>();
 

@@ -74,6 +74,11 @@
             "disabled": "Module {} is already disabled!"
           }
         }
+      },
+      "export": {
+        "command": "/switchy export",
+        "help": "Exports data to a Switchy client",
+        "fail": "Sending to client failed! See log for details"
       }
     },
     "switch": {
