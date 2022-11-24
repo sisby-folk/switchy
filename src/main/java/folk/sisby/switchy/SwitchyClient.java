@@ -32,7 +32,7 @@ public class SwitchyClient implements ClientModInitializer {
 					exportFile.getParentFile().mkdirs();
 					NbtIo.writeCompressed(presetNbt, exportFile);
 					if (client.player != null) {
-						sendClientMessage(client.player, translatableWithArgs("commands.switchy.export.success.client", FORMAT_SUCCESS, literal("config/switchy/" + filename + ".dat")));
+						sendClientMessage(client.player, translatableWithArgs("commands.switchy.export.success", FORMAT_SUCCESS, literal("config/switchy/" + filename + ".dat")));
 					}
 				}
 			} catch (IOException e) {
