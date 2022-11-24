@@ -3,7 +3,7 @@
   "commands": {
     "switchy": {
       "export": {
-        "success": "Presets saved to %s",
+        "success": "Presets saved to {}",
         "fail": "Saving to file failed! See log for details"
       }
     }
