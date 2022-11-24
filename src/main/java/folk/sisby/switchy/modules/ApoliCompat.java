@@ -24,11 +24,11 @@ public class ApoliCompat implements PresetModule {
 
 	public static final String KEY_POWER_DATA_LIST = "PowerData";
 
-	public Map<PowerType<?>, NbtElement> powerNbt;
+	public Map<PowerType<?>, NbtElement> powerNbt = new HashMap<>();;
 
 	@Override
 	public void updateFromPlayer(PlayerEntity player) {
-		this.powerNbt = new HashMap<>();
+		powerNbt.clear();
 		List<Power> powers = PowerHolderComponent.KEY.get(player).getPowers();
 		for (Power power : powers) {
 			this.powerNbt.put(power.getType(), power.toTag());
@@ -45,12 +45,10 @@ public class ApoliCompat implements PresetModule {
 
 	@Override
 	public void applyToPlayer(PlayerEntity player) {
-		if (this.powerNbt != null) {
-			for (Map.Entry<PowerType<?>, NbtElement> entry : powerNbt.entrySet()) {
-				Power power = PowerHolderComponent.KEY.get(player).getPower(entry.getKey());
-				if (power != null) {
-					power.fromTag(entry.getValue());
-				}
+		for (Map.Entry<PowerType<?>, NbtElement> entry : powerNbt.entrySet()) {
+			Power power = PowerHolderComponent.KEY.get(player).getPower(entry.getKey());
+			if (power != null) {
+				power.fromTag(entry.getValue());
 			}
 		}
 	}
@@ -67,13 +65,11 @@ public class ApoliCompat implements PresetModule {
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		NbtList powerNbtList = new NbtList();
-		if (this.powerNbt != null) {
-			for (Map.Entry<PowerType<?>, NbtElement> entry : powerNbt.entrySet()) {
-				NbtCompound powerTag = new NbtCompound();
-				powerTag.putString("PowerType", entry.getKey().getIdentifier().toString());
-				powerTag.put("Data", entry.getValue());
-				powerNbtList.add(powerTag);
-			}
+		for (Map.Entry<PowerType<?>, NbtElement> entry : powerNbt.entrySet()) {
+			NbtCompound powerTag = new NbtCompound();
+			powerTag.putString("PowerType", entry.getKey().getIdentifier().toString());
+			powerTag.put("Data", entry.getValue());
+			powerNbtList.add(powerTag);
 		}
 		outNbt.put(KEY_POWER_DATA_LIST, powerNbtList);
 		return outNbt;
@@ -81,7 +77,7 @@ public class ApoliCompat implements PresetModule {
 
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
-		this.powerNbt = new HashMap<>();
+		this.powerNbt.clear();
 		if (nbt.contains(KEY_POWER_DATA_LIST, NbtElement.LIST_TYPE)) {
 			NbtList powerDataList = nbt.getList(KEY_POWER_DATA_LIST, NbtElement.COMPOUND_TYPE);
 			for (NbtElement dataElement : powerDataList) {
