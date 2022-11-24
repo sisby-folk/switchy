@@ -9,6 +9,8 @@ import com.mojang.datafixers.util.Function3;
 import com.mojang.datafixers.util.Function4;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
@@ -17,20 +19,20 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
+import org.quiltmc.qsl.networking.api.PacketByteBufs;
+import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 
-import net.minecraft.server.command.CommandManager;
-
 public class SwitchyCommands {
-	private static final Pair<Style, Style> FORMAT_SUCCESS = new Pair<>(Style.EMPTY.withColor(Formatting.GREEN), Style.EMPTY.withColor(Formatting.WHITE).withItalic(true));
-	private static final Pair<Style, Style> FORMAT_INVALID = new Pair<>(Style.EMPTY.withColor(Formatting.YELLOW), Style.EMPTY.withColor(Formatting.WHITE).withItalic(true));
-	private static final Pair<Style, Style> FORMAT_INFO = new Pair<>(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true), Style.EMPTY.withColor(Formatting.WHITE));
-	private static final Pair<Style, Style> FORMAT_WARN = new Pair<>(Style.EMPTY.withColor(Formatting.GOLD), Style.EMPTY.withColor(Formatting.GRAY));
-	private static final Pair<Style, Style> FORMAT_COMMAND = new Pair<>(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true), Style.EMPTY.withColor(Formatting.GRAY).withItalic(true));
-	private static final Pair<Style, Style> FORMAT_HELP = new Pair<>(Style.EMPTY.withColor(Formatting.WHITE), Style.EMPTY.withColor(Formatting.WHITE));
+	public static final Pair<Style, Style> FORMAT_SUCCESS = new Pair<>(Style.EMPTY.withColor(Formatting.GREEN), Style.EMPTY.withColor(Formatting.WHITE).withItalic(true));
+	public static final Pair<Style, Style> FORMAT_INVALID = new Pair<>(Style.EMPTY.withColor(Formatting.YELLOW), Style.EMPTY.withColor(Formatting.WHITE).withItalic(true));
+	public static final Pair<Style, Style> FORMAT_INFO = new Pair<>(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true), Style.EMPTY.withColor(Formatting.WHITE));
+	public static final Pair<Style, Style> FORMAT_WARN = new Pair<>(Style.EMPTY.withColor(Formatting.GOLD), Style.EMPTY.withColor(Formatting.GRAY));
+	public static final Pair<Style, Style> FORMAT_COMMAND = new Pair<>(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true), Style.EMPTY.withColor(Formatting.GRAY).withItalic(true));
+	public static final Pair<Style, Style> FORMAT_HELP = new Pair<>(Style.EMPTY.withColor(Formatting.WHITE), Style.EMPTY.withColor(Formatting.WHITE));
 
 	private static final Map<UUID, String> last_command = new HashMap<>();
 
@@ -66,8 +68,10 @@ public class SwitchyCommands {
 										.then(CommandManager.literal("disable")
 												.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
 														.suggests((c, b) -> suggestModules(c, b, true))
-														.executes((c) -> unwrapAndExecute(c, SwitchyCommands::disableModule, new Pair<>("module", Identifier.class)))))
-								)));
+														.executes((c) -> unwrapAndExecute(c, SwitchyCommands::disableModule, new Pair<>("module", Identifier.class))))))
+								.then(CommandManager.literal("export")
+										.executes((c) -> unwrapAndExecute(c, SwitchyCommands::exportPresets)))
+				));
 
 		// switchy set alias
 		CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, environment) -> dispatcher.register(
@@ -151,7 +155,22 @@ public class SwitchyCommands {
 		tellHelp(player, "commands.switchy.rename.help", "commands.switchy.rename.command", "commands.switchy.help.placeholder.preset", "commands.switchy.help.placeholder.preset");
 		tellHelp(player, "commands.switchy.module.enable.help", "commands.switchy.module.enable.command", "commands.switchy.help.placeholder.module");
 		tellHelp(player, "commands.switchy.module.disable.help", "commands.switchy.module.disable.command", "commands.switchy.help.placeholder.module");
+		tellHelp(player, "commands.switchy.export.help", "commands.switchy.export.command");
 		return 7;
+	}
+
+	private static int exportPresets(ServerPlayerEntity player, SwitchyPresets presets) {
+		try {
+			PacketByteBuf presetsBuf = PacketByteBufs.create().writeNbt(presets.toNbt());
+			ServerPlayNetworking.send(player, Switchy.S2C_EXPORT, presetsBuf);
+			return 1;
+		} catch (Exception ex) {
+			// TODO: Log all command errors from unwrap?
+			Switchy.LOGGER.error(ex.toString());
+			Switchy.LOGGER.error(ex.getMessage());
+			sendMessage(player, translatableWithArgs("commands.switchy.export.fail", FORMAT_INVALID));
+			return 0;
+		}
 	}
 
 	private static int listPresets(ServerPlayerEntity player, SwitchyPresets presets) {
@@ -273,23 +292,23 @@ public class SwitchyCommands {
 		sendMessage(player, translatableWithArgs(key, FORMAT_WARN, args));
 	}
 
-	private static MutableText translatable(String key) {
+	public static MutableText translatable(String key) {
 		return new TranslatableText(key);
 	}
 
-	private static MutableText[] translatable(String... keys) {
+	public static MutableText[] translatable(String... keys) {
 		return Arrays.stream(keys).map(SwitchyCommands::translatable).toArray(MutableText[]::new);
 	}
 
-	private static MutableText literal(String string) {
+	public static MutableText literal(String string) {
 		return new LiteralText(string);
 	}
 
-	private static MutableText translatableWithArgs(String key, MutableText... args) {
+	public static MutableText translatableWithArgs(String key, MutableText... args) {
 		return new TranslatableText(key, (Object[]) args);
 	}
 
-	private static MutableText translatableWithArgs(String key, Pair<Style, Style> formatStyle, MutableText... args) {
+	public static MutableText translatableWithArgs(String key, Pair<Style, Style> formatStyle, MutableText... args) {
 		return new TranslatableText(key, Arrays.stream(args).map(text -> (text.setStyle(formatStyle.getRight()))).toArray()).setStyle(formatStyle.getLeft());
 	}
 }

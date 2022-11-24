@@ -50,6 +50,12 @@
   "commands.switchy.module.disable.fail.missing": "Module '%s' doesn't exist!",
   "commands.switchy.module.disable.fail.disabled": "Module %s is already disabled!",
 
+  "commands.switchy.export.command": "/switchy export",
+  "commands.switchy.export.help": "Exports data to a Switchy client",
+  "commands.switchy.export.success": "Sending presets to client..",
+  "commands.switchy.export.success.client": "Presets saved to %s",
+  "commands.switchy.export.fail": "Data export failed! See log for details.",
+
   "commands.switch.command": "/switch %s",
   "commands.switch.help": "alias of above"
 }
