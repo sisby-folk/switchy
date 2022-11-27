@@ -36,7 +36,7 @@ public class SwitchyCommandsClient {
 	private static final Map<UUID, String> last_command = new HashMap<>();
 
 	public static void InitializeCommands() {
-		ClientCommandRegistrationCallback.EVENT.register((dispatcher) -> dispatcher.register(
+		ClientCommandRegistrationCallback.EVENT.register((dispatcher, cbc, reg) -> dispatcher.register(
 				ClientCommandManager.literal("switchy_client")
 						.then(ClientCommandManager.literal("import")
 								.then(ClientCommandManager.argument("file", StringArgumentType.word())

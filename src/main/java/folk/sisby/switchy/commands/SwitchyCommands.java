@@ -112,12 +112,12 @@ public class SwitchyCommands {
 					(key) -> presets.getModuleToggles().containsKey(key) && importedPresets.getModuleToggles().containsKey(key) // && contained in flags + configs module list
 			).toList();
 
-			if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase("/switchy_client import " + filename)) {
+			if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase("switchy_client import " + filename)) {
 				tellWarn(player, "commands.switchy_client.import.warn", literal(String.valueOf(importedPresets.getPresetNames().size())), literal(String.valueOf(modules.size())));
 				tellWarn(player, "commands.switchy.list.presets", literal(importedPresets.getPresetNames().toString()));
 				tellWarn(player, "commands.switchy.list.modules", literal(modules.toString()));
 				tellInvalidTry(player, "commands.switchy_client.import.confirmation", "commands.switchy_client.import.command", literal(filename));
-				last_command.put(player.getUuid(), "/switchy_client import " + filename);
+				last_command.put(player.getUuid(), "switchy_client import " + filename);
 				return;
 			}
 
