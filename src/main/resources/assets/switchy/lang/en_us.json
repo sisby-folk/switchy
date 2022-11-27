@@ -1,4 +1,8 @@
 {
   "commands.switchy.export.success": "Presets saved to %s",
-  "commands.switchy.export.fail": "Saving to file failed! See log for details"
+  "commands.switchy.export.fail": "Saving to file failed! See log for details",
+
+  "commands.switchy.import.success": "Presets sent to server",
+  "commands.switchy.import.fail.read": "Failed to read file %s",
+  "commands.switchy.import.fail.parse": "Failed to parse presets from %s"
 }

@@ -37,8 +37,16 @@ public class Feedback {
 		sendMessage(player, translatableWithArgs(key, FORMAT_INVALID, args));
 	}
 
+	public static void tellInvalid(ClientPlayerEntity player, String key, MutableText... args) {
+		sendClientMessage(player, translatableWithArgs(key, FORMAT_INVALID, args));
+	}
+
 	public static void tellSuccess(ServerPlayerEntity player, String key, MutableText... args) {
 		sendMessage(player, translatableWithArgs(key, FORMAT_SUCCESS, args));
+	}
+
+	public static void tellSuccess(ClientPlayerEntity player, String key, MutableText... args) {
+		sendClientMessage(player, translatableWithArgs(key, FORMAT_SUCCESS, args));
 	}
 
 	public static void tellWarn(ServerPlayerEntity player, String key, MutableText... args) {

@@ -1,4 +1,4 @@
-package folk.sisby.switchy;
+package folk.sisby.switchy.commands;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -7,6 +7,10 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.datafixers.util.Function3;
 import com.mojang.datafixers.util.Function4;
+import folk.sisby.switchy.Switchy;
+import folk.sisby.switchy.SwitchyPlayer;
+import folk.sisby.switchy.SwitchyPreset;
+import folk.sisby.switchy.SwitchyPresets;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -23,7 +27,9 @@ import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
+import static folk.sisby.switchy.Switchy.C2S_IMPORT;
 import static folk.sisby.switchy.util.Feedback.*;
 
 public class SwitchyCommands {
@@ -75,6 +81,32 @@ public class SwitchyCommands {
 		);
 	}
 
+	public static void InitializeReceivers() {
+		ServerPlayNetworking.registerGlobalReceiver(C2S_IMPORT, (server, player, handler, buf, sender) -> {
+			if (player.hasPermissionLevel(2)) {
+				NbtCompound presetNbt = buf.readNbt();
+				if (presetNbt != null) {
+					SwitchyPresets importedPresets = SwitchyPresets.fromNbt(presetNbt, null);
+					if (((SwitchyPlayer) player).switchy$getPresets() == null) {
+						((SwitchyPlayer) player).switchy$setPresets(SwitchyPresets.fromNbt(new NbtCompound(), player));
+					}
+					SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
+					if (presets.importFromOther(importedPresets)) {
+						tellSuccess(player, "commands.switchy.import.success", literal(String.valueOf(importedPresets.getPresetNames().size())));
+					} else {
+						String collisionPresets = presets.getPresetNames().stream()
+								.filter(importedPresets.getPresetNames()::contains)
+								.collect(Collectors.joining(", "));
+						tellInvalid(player, "commands.switchy.import.fail.collision", literal(collisionPresets));
+					}
+				}
+			}
+			else {
+				tellInvalid(player, "commands.switchy.import.fail.permission");
+			}
+		});
+	}
+
 	private static CompletableFuture<Suggestions> suggestPresets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, boolean allowCurrent) throws CommandSyntaxException {
 		ServerPlayerEntity player = context.getSource().getPlayer();
 		String remaining = builder.getRemainingLowerCase();
@@ -112,7 +144,7 @@ public class SwitchyCommands {
 		try {
 			ServerPlayerEntity player = context.getSource().getPlayer();
 			if (((SwitchyPlayer) player).switchy$getPresets() == null) {
-				((SwitchyPlayer) player).switchy$setPresets(SwitchyPresets.fromNbt(player, new NbtCompound()));
+				((SwitchyPlayer) player).switchy$setPresets(SwitchyPresets.fromNbt(new NbtCompound(), player));
 			}
 			SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 			result = executeFunction.apply(

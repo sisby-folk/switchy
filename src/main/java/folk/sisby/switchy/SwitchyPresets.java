@@ -6,6 +6,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,7 @@ public class SwitchyPresets {
 		return outNbt;
 	}
 
-	public static SwitchyPresets fromNbt(PlayerEntity player, NbtCompound nbt) {
+	public static SwitchyPresets fromNbt(NbtCompound nbt, @Nullable PlayerEntity player) {
 		SwitchyPresets outPresets = new SwitchyPresets();
 
 		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE), true);
@@ -61,17 +62,38 @@ public class SwitchyPresets {
 			}
 		}
 
-		if (nbt.contains(KEY_PRESET_CURRENT) && !outPresets.setCurrentPreset(player, nbt.getString(KEY_PRESET_CURRENT), false)) {
-			Switchy.LOGGER.warn("Switchy: Unable to set current preset from data. Data may have been lost.");
-		}
+		if (player != null) {
+			if (nbt.contains(KEY_PRESET_CURRENT) && !outPresets.setCurrentPreset(player, nbt.getString(KEY_PRESET_CURRENT), false)) {
+				Switchy.LOGGER.warn("Switchy: Unable to set current preset from data. Data may have been lost.");
+			}
 
-		if (outPresets.presetMap.isEmpty() || outPresets.getCurrentPreset() == null) {
-			// Recover current data as "Default" preset
-			outPresets.addPreset(new SwitchyPreset("default", outPresets.moduleToggles));
-			outPresets.setCurrentPreset(player, "default", false);
+			if (outPresets.presetMap.isEmpty() || outPresets.getCurrentPreset() == null) {
+				// Recover current data as "Default" preset
+				outPresets.addPreset(new SwitchyPreset("default", outPresets.moduleToggles));
+				outPresets.setCurrentPreset(player, "default", false);
+			}
 		}
 
 		return outPresets;
+	}
+
+	public boolean importFromOther(SwitchyPresets presets) {
+		// Remove modules that aren't already enabled
+		this.moduleToggles.forEach((key, enabled) -> {
+			if (enabled && !presets.getModuleToggles().get(key)) {
+				presets.enableModule(key);
+			} else if (!enabled && presets.getModuleToggles().get(key)) {
+				Switchy.LOGGER.info("Removed " + key + " module data from import");
+				presets.disableModule(key);
+			}
+		});
+
+		if (presets.getPresetNames().stream().noneMatch((name) -> this.getPresetNames().contains(name))) {
+			presets.presetMap.values().forEach(this::addPreset);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private void toggleModulesFromNbt(NbtList list, Boolean enabled) {

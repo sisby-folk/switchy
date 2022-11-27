@@ -51,8 +51,16 @@
   "commands.switchy.module.disable.fail.disabled": "Module %s is already disabled!",
 
   "commands.switchy.export.command": "/switchy export",
-  "commands.switchy.export.help": "Exports data to a Switchy client",
+  "commands.switchy.export.help": "save presets to a file (req. client)",
   "commands.switchy.export.fail": "Sending to client failed! See log for details",
+
+  "commands.switchy.import.command": "/switchyclient import %s",
+  "commands.switchy.import.help": "load presets from a file (req. client)",
+  "commands.switchy.import.success": "Imported %s presets",
+  "commands.switchy.import.fail.collision": "Import failed due to existing presets: %s",
+  "commands.switchy.import.fail.permission": "You must have operator level 2 to perform this command",
+
+  "commands.switchy.import.fail.parse": "Saving to file failed! See log for details",
 
   "commands.switch.command": "/switch %s",
   "commands.switch.help": "alias of above"
