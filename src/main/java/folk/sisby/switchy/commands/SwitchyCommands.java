@@ -83,26 +83,50 @@ public class SwitchyCommands {
 
 	public static void InitializeReceivers() {
 		ServerPlayNetworking.registerGlobalReceiver(C2S_IMPORT, (server, player, handler, buf, sender) -> {
-			if (player.hasPermissionLevel(2)) {
-				NbtCompound presetNbt = buf.readNbt();
-				if (presetNbt != null) {
-					SwitchyPresets importedPresets = SwitchyPresets.fromNbt(presetNbt, null);
-					if (((SwitchyPlayer) player).switchy$getPresets() == null) {
-						((SwitchyPlayer) player).switchy$setPresets(SwitchyPresets.fromNbt(new NbtCompound(), player));
-					}
-					SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
-					if (presets.importFromOther(importedPresets)) {
-						tellSuccess(player, "commands.switchy.import.success", literal(String.valueOf(importedPresets.getPresetNames().size())));
-					} else {
-						String collisionPresets = presets.getPresetNames().stream()
-								.filter(importedPresets.getPresetNames()::contains)
-								.collect(Collectors.joining(", "));
-						tellInvalid(player, "commands.switchy.import.fail.collision", literal(collisionPresets));
-					}
-				}
-			} else {
+			if (!player.hasPermissionLevel(2)) {
 				tellInvalid(player, "commands.switchy.import.fail.permission");
+				return;
 			}
+
+			NbtCompound presetNbt = buf.readNbt();
+			if (presetNbt == null || !presetNbt.contains("filename")) {
+				tellInvalid(player, "commands.switchy.import.fail.parse");
+				return;
+			}
+			String filename = presetNbt.getString("filename");
+
+			SwitchyPresets importedPresets;
+			try {
+				importedPresets = SwitchyPresets.fromNbt(presetNbt, null);
+			} catch (Exception e) {
+				tellInvalid(player, "commands.switchy.import.fail.construct");
+				return;
+			}
+
+			if (((SwitchyPlayer) player).switchy$getPresets() == null) {
+				((SwitchyPlayer) player).switchy$setPresets(SwitchyPresets.fromNbt(new NbtCompound(), player));
+			}
+			SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
+
+			if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase("/switchy_client import " + filename)) {
+				List<Identifier> modules = presets.getModuleToggles().keySet().stream().toList();
+				tellWarn(player, "commands.switchy_client.import.warn", literal(String.valueOf(importedPresets.getPresetNames().size())), literal(String.valueOf(modules.size())));
+				tellWarn(player, "commands.switchy.list.presets", literal(importedPresets.getPresetNames().toString()));
+				tellWarn(player, "commands.switchy.list.modules", literal(modules.toString()));
+				tellInvalidTry(player, "commands.switchy_client.import.confirmation", "commands.switchy_client.import.command", literal(filename));
+				last_command.put(player.getUuid(), "/switchy_client import " + filename);
+				return;
+			}
+
+			if (presets.importFromOther(importedPresets)) {
+				tellSuccess(player, "commands.switchy.import.success", literal(String.valueOf(importedPresets.getPresetNames().size())));
+			} else {
+				String collisionPresets = presets.getPresetNames().stream()
+						.filter(importedPresets.getPresetNames()::contains)
+						.collect(Collectors.joining(", "));
+				tellInvalid(player, "commands.switchy.import.fail.collision", literal(collisionPresets));
+			}
+
 		});
 	}
 

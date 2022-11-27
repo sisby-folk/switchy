@@ -3,8 +3,6 @@
   "commands.switchy_client.export.fail": "Saving to file failed! See log for details",
 
   "commands.switchy_client.import.command": "/switchy_client import %s",
-  "commands.switchy_client.import.warn": "This adds all presets limited to your enabled modules",
-  "commands.switchy_client.import.confirmation": "Confirm using %s",
   "commands.switchy_client.import.success": "Presets sent to server",
   "commands.switchy_client.import.fail.read": "Failed to read file %s",
   "commands.switchy_client.import.fail.parse": "Failed to parse presets from %s"

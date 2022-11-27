@@ -57,11 +57,13 @@
 
   "commands.switchy.import.command": "/switchy_client import %s",
   "commands.switchy.import.help": "load exported presets",
+  "commands.switchy_client.import.warn": "You are about to import %s presets with %s modules:",
+  "commands.switchy_client.import.confirmation": "Confirm using %s",
   "commands.switchy.import.success": "Imported %s presets",
+  "commands.switchy.import.fail.permission": "Only level 2 operators can perform this command",
+  "commands.switchy.import.fail.parse": "Failed to parse imported NBT",
+  "commands.switchy.import.fail.construct": "Failed to construct Presets from NBT",
   "commands.switchy.import.fail.collision": "Import failed due to existing presets: %s",
-  "commands.switchy.import.fail.permission": "Only operators (level 2) can perform this command",
-
-  "commands.switchy.import.fail.parse": "Saving to file failed! See log for details",
 
   "commands.switch.command": "/switch %s",
   "commands.switch.help": "alias of above"

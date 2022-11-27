@@ -105,16 +105,11 @@ public class SwitchyCommandsClient {
 		File importFile = new File(filePath);
 		if (importFile.exists()) {
 			try {
-				if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase("switchy_client import " + file)) {
-					tellWarn(player, "commands.switchy_client.import.warn");
-					tellInvalidTry(player, "commands.switchy_client.import.confirmation", "commands.switchy_client.import.command", literal(file));
-					return 0;
-				} else {
-					NbtCompound presetNbt = NbtIo.readCompressed(importFile);
-					ClientPlayNetworking.send(Switchy.C2S_IMPORT, PacketByteBufs.create().writeNbt(presetNbt));
-					tellSuccess(player, "commands.switchy_client.import.success");
-					return 1;
-				}
+				NbtCompound presetNbt = NbtIo.readCompressed(importFile);
+				presetNbt.putString("filename", file);
+				ClientPlayNetworking.send(Switchy.C2S_IMPORT, PacketByteBufs.create().writeNbt(presetNbt));
+				tellSuccess(player, "commands.switchy_client.import.success");
+				return 1;
 			} catch (IOException e) {
 				tellInvalid(player, "commands.switchy_client.import.fail.parse", literal(file));
 				return 0;
