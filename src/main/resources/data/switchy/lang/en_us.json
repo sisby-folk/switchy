@@ -4,6 +4,7 @@
   "commands.switchy.help.line": "%1$s - %2$s",
   "commands.switchy.help.placeholder.module": "[name]",
   "commands.switchy.help.placeholder.preset": "[name]",
+  "commands.switchy.help.placeholder.file": "[file]",
 
   "commands.switchy.list.command": "/switchy list",
   "commands.switchy.list.help": "list your presets",
@@ -55,10 +56,10 @@
   "commands.switchy.export.fail": "Sending to client failed! See log for details",
 
   "commands.switchy.import.command": "/switchy_client import %s",
-  "commands.switchy.import.help": "load presets from a file (req. client)",
+  "commands.switchy.import.help": "load exported presets",
   "commands.switchy.import.success": "Imported %s presets",
   "commands.switchy.import.fail.collision": "Import failed due to existing presets: %s",
-  "commands.switchy.import.fail.permission": "You must have operator level 2 to perform this command",
+  "commands.switchy.import.fail.permission": "Only operators (level 2) can perform this command",
 
   "commands.switchy.import.fail.parse": "Saving to file failed! See log for details",
 

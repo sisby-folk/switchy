@@ -100,8 +100,7 @@ public class SwitchyCommands {
 						tellInvalid(player, "commands.switchy.import.fail.collision", literal(collisionPresets));
 					}
 				}
-			}
-			else {
+			} else {
 				tellInvalid(player, "commands.switchy.import.fail.permission");
 			}
 		});
@@ -181,7 +180,8 @@ public class SwitchyCommands {
 		tellHelp(player, "commands.switchy.module.enable.help", "commands.switchy.module.enable.command", "commands.switchy.help.placeholder.module");
 		tellHelp(player, "commands.switchy.module.disable.help", "commands.switchy.module.disable.command", "commands.switchy.help.placeholder.module");
 		tellHelp(player, "commands.switchy.export.help", "commands.switchy.export.command");
-		return 7;
+		tellHelp(player, "commands.switchy.import.help", "commands.switchy.import.command", "commands.switchy.help.placeholder.file");
+		return 11;
 	}
 
 	private static int exportPresets(ServerPlayerEntity player, SwitchyPresets presets) {
