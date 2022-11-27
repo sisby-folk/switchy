@@ -51,8 +51,8 @@ public class SwitchyPresets {
 	public static SwitchyPresets fromNbt(NbtCompound nbt, @Nullable PlayerEntity player) {
 		SwitchyPresets outPresets = new SwitchyPresets();
 
-		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE), true);
-		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_DISABLED, NbtElement.STRING_TYPE), false);
+		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE), true, player == null);
+		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_DISABLED, NbtElement.STRING_TYPE), false, player == null);
 
 		NbtCompound listNbt = nbt.getCompound(KEY_PRESET_LIST);
 		for (String key : listNbt.getKeys()) {
@@ -96,14 +96,14 @@ public class SwitchyPresets {
 		}
 	}
 
-	private void toggleModulesFromNbt(NbtList list, Boolean enabled) {
+	private void toggleModulesFromNbt(NbtList list, Boolean enabled, Boolean silent) {
 		list.forEach((e) -> {
 			Identifier id;
 			if (e instanceof NbtString s && (id = Identifier.tryParse(s.asString())) != null && this.moduleToggles.containsKey(id)) {
 				this.moduleToggles.put(id, enabled);
-			} else {
+			} else if (!silent) {
 				Switchy.LOGGER.warn("Switchy: Unable to toggle a module - Was a module unloaded?");
-				Switchy.LOGGER.warn("Switchy: NBT Element:" + e.asString());
+				Switchy.LOGGER.warn("Switchy: NBT Element: " + e.asString());
 			}
 		});
 	}
