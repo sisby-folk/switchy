@@ -108,8 +108,11 @@ public class SwitchyCommands {
 			}
 			SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 
+			List<Identifier> modules = Switchy.COMPAT_REGISTRY.keySet().stream().filter(
+					(key) -> presets.getModuleToggles().containsKey(key) && importedPresets.getModuleToggles().containsKey(key) // && contained in flags + configs module list
+			).toList();
+
 			if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase("/switchy_client import " + filename)) {
-				List<Identifier> modules = presets.getModuleToggles().keySet().stream().toList();
 				tellWarn(player, "commands.switchy_client.import.warn", literal(String.valueOf(importedPresets.getPresetNames().size())), literal(String.valueOf(modules.size())));
 				tellWarn(player, "commands.switchy.list.presets", literal(importedPresets.getPresetNames().toString()));
 				tellWarn(player, "commands.switchy.list.modules", literal(modules.toString()));
@@ -118,7 +121,7 @@ public class SwitchyCommands {
 				return;
 			}
 
-			if (presets.importFromOther(importedPresets)) {
+			if (presets.importFromOther(importedPresets, modules)) {
 				tellSuccess(player, "commands.switchy.import.success", literal(String.valueOf(importedPresets.getPresetNames().size())));
 			} else {
 				String collisionPresets = presets.getPresetNames().stream()

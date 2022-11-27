@@ -77,18 +77,22 @@ public class SwitchyPresets {
 		return outPresets;
 	}
 
-	public boolean importFromOther(SwitchyPresets presets) {
-		// Remove modules that aren't already enabled
-		this.moduleToggles.forEach((key, enabled) -> {
-			if (enabled && !presets.getModuleToggles().get(key)) {
-				presets.enableModule(key);
-			} else if (!enabled && presets.getModuleToggles().get(key)) {
-				Switchy.LOGGER.info("Removed " + key + " module data from import");
-				presets.disableModule(key);
-			}
-		});
-
+	public boolean importFromOther(SwitchyPresets presets, List<Identifier> modules) {
 		if (presets.getPresetNames().stream().noneMatch((name) -> this.getPresetNames().contains(name))) {
+			// Remove modules that shouldn't be imported
+			Switchy.COMPAT_REGISTRY.keySet().forEach((key) -> {
+				if ((!modules.contains(key) || !this.moduleToggles.containsKey(key)) && presets.getModuleToggles().get(key)) {
+					presets.disableModule(key);
+				}
+			});
+
+			// Re-enable missing empty modules
+			this.moduleToggles.forEach((key, enabled) -> {
+				if (enabled && !presets.getModuleToggles().get(key)) {
+					presets.enableModule(key);
+				}
+			});
+
 			presets.presetMap.values().forEach(this::addPreset);
 			return true;
 		} else {
