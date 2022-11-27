@@ -37,7 +37,7 @@ public class SwitchyCommandsClient {
 
 	public static void InitializeCommands() {
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher) -> dispatcher.register(
-				ClientCommandManager.literal("switchyclient")
+				ClientCommandManager.literal("switchy_client")
 						.then(ClientCommandManager.literal("import")
 								.then(ClientCommandManager.argument("file", StringArgumentType.word())
 										.suggests(SwitchyCommandsClient::suggestExportFiles)
@@ -54,13 +54,13 @@ public class SwitchyCommandsClient {
 					exportFile.getParentFile().mkdirs();
 					NbtIo.writeCompressed(presetNbt, exportFile);
 					if (client.player != null) {
-						tellSuccess(client.player, "commands.switchy.export.success", literal("config/switchy/" + filename + ".dat"));
+						tellSuccess(client.player, "commands.switchy_client.export.success", literal("config/switchy/" + filename + ".dat"));
 					}
 				}
 			} catch (IOException e) {
 				SwitchyClient.LOGGER.error("IO error when copying default configuration", e);
 				if (client.player != null) {
-					tellInvalid(client.player, "commands.switchy.export.fail");
+					tellInvalid(client.player, "commands.switchy_client.export.fail");
 				}
 			}
 		});
@@ -105,16 +105,22 @@ public class SwitchyCommandsClient {
 		File importFile = new File(filePath);
 		if (importFile.exists()) {
 			try {
-				NbtCompound presetNbt = NbtIo.readCompressed(importFile);
-				ClientPlayNetworking.send(Switchy.C2S_IMPORT, PacketByteBufs.create().writeNbt(presetNbt));
-				tellSuccess(player, "commands.switchy.import.success");
-				return 1;
+				if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase("switchy_client import " + file)) {
+					tellWarn(player, "commands.switchy_client.import.warn");
+					tellInvalidTry(player, "commands.switchy_client.import.confirmation", "commands.switchy_client.import.command", literal(file));
+					return 0;
+				} else {
+					NbtCompound presetNbt = NbtIo.readCompressed(importFile);
+					ClientPlayNetworking.send(Switchy.C2S_IMPORT, PacketByteBufs.create().writeNbt(presetNbt));
+					tellSuccess(player, "commands.switchy_client.import.success");
+					return 1;
+				}
 			} catch (IOException e) {
-				tellInvalid(player, "commands.switchy.import.fail.parse", literal(file));
+				tellInvalid(player, "commands.switchy_client.import.fail.parse", literal(file));
 				return 0;
 			}
 		} else {
-			tellInvalid(player, "commands.switchy.import.fail.read", literal(file));
+			tellInvalid(player, "commands.switchy_client.import.fail.read", literal(file));
 			return 0;
 		}
 	}
