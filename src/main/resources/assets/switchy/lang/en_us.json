@@ -1,10 +1,18 @@
 {
   "lib39:enable_enhanced_lang": true,
   "commands": {
-    "switchy": {
+    "switchy_client": {
       "export": {
         "success": "Presets saved to {}",
         "fail": "Saving to file failed! See log for details"
+      },
+      "import": {
+        "command": "/switchy_client import {}",
+        "success": "Presets sent to server",
+        "fail": {
+          "read": "Failed to read file {}",
+          "parse": "Failed to parse presets from {}"
+        }
       }
     }
   }

@@ -6,8 +6,11 @@
         "command": "/switchy help",
         "help": "lists available commands",
         "line": "{1} - {2}",
-        "placeholder.module": "[name]",
-        "placeholder.preset": "[name]"
+        "placeholder": {
+          "module": "[name]",
+          "preset": "[name]",
+          "file": "[file]"
+        }
       },
       "list": {
         "command": "/switchy list",
@@ -77,8 +80,21 @@
       },
       "export": {
         "command": "/switchy export",
-        "help": "Exports data to a Switchy client",
+        "help": "save presets to a file (req. client)",
         "fail": "Sending to client failed! See log for details"
+      },
+      "import": {
+        "command": "/switchy_client import {}",
+        "help": "load exported presets",
+        "warn": "You are about to import {} presets with {} modules:",
+        "confirmation": "Confirm using {}",
+        "success": "Imported {} presets",
+        "fail" : {
+          "permission": "Only level 2 operators can perform this command",
+          "parse": "Failed to parse imported NBT",
+          "construct": "Failed to construct Presets from NBT",
+          "collision": "Import failed due to existing presets: {}"
+        }
       }
     },
     "switch": {

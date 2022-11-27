@@ -33,16 +33,32 @@ public class Feedback {
 		sendMessage(player, translatableWithArgs(keyFail, FORMAT_INVALID, translatableWithArgs(keyCommand, commandArgs)));
 	}
 
+	public static void tellInvalidTry(ClientPlayerEntity player, String keyFail, String keyCommand, MutableText... commandArgs) {
+		sendClientMessage(player, translatableWithArgs(keyFail, FORMAT_INVALID, translatableWithArgs(keyCommand, commandArgs)));
+	}
+
 	public static void tellInvalid(ServerPlayerEntity player, String key, MutableText... args) {
 		sendMessage(player, translatableWithArgs(key, FORMAT_INVALID, args));
+	}
+
+	public static void tellInvalid(ClientPlayerEntity player, String key, MutableText... args) {
+		sendClientMessage(player, translatableWithArgs(key, FORMAT_INVALID, args));
 	}
 
 	public static void tellSuccess(ServerPlayerEntity player, String key, MutableText... args) {
 		sendMessage(player, translatableWithArgs(key, FORMAT_SUCCESS, args));
 	}
 
+	public static void tellSuccess(ClientPlayerEntity player, String key, MutableText... args) {
+		sendClientMessage(player, translatableWithArgs(key, FORMAT_SUCCESS, args));
+	}
+
 	public static void tellWarn(ServerPlayerEntity player, String key, MutableText... args) {
 		sendMessage(player, translatableWithArgs(key, FORMAT_WARN, args));
+	}
+
+	public static void tellWarn(ClientPlayerEntity player, String key, MutableText... args) {
+		sendClientMessage(player, translatableWithArgs(key, FORMAT_WARN, args));
 	}
 
 	public static MutableText translatable(String key) {

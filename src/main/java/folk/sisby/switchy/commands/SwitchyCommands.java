@@ -1,4 +1,4 @@
-package folk.sisby.switchy;
+package folk.sisby.switchy.commands;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -7,6 +7,10 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.datafixers.util.Function3;
 import com.mojang.datafixers.util.Function4;
+import folk.sisby.switchy.Switchy;
+import folk.sisby.switchy.SwitchyPlayer;
+import folk.sisby.switchy.SwitchyPreset;
+import folk.sisby.switchy.SwitchyPresets;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -23,7 +27,9 @@ import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
+import static folk.sisby.switchy.Switchy.C2S_IMPORT;
 import static folk.sisby.switchy.util.Feedback.*;
 
 public class SwitchyCommands {
@@ -75,6 +81,58 @@ public class SwitchyCommands {
 		);
 	}
 
+	public static void InitializeReceivers() {
+		ServerPlayNetworking.registerGlobalReceiver(C2S_IMPORT, (server, player, handler, buf, sender) -> {
+			if (!player.hasPermissionLevel(2)) {
+				tellInvalid(player, "commands.switchy.import.fail.permission");
+				return;
+			}
+
+			NbtCompound presetNbt = buf.readNbt();
+			if (presetNbt == null || !presetNbt.contains("filename")) {
+				tellInvalid(player, "commands.switchy.import.fail.parse");
+				return;
+			}
+			String filename = presetNbt.getString("filename");
+
+			SwitchyPresets importedPresets;
+			try {
+				importedPresets = SwitchyPresets.fromNbt(presetNbt, null);
+			} catch (Exception e) {
+				tellInvalid(player, "commands.switchy.import.fail.construct");
+				return;
+			}
+
+			if (((SwitchyPlayer) player).switchy$getPresets() == null) {
+				((SwitchyPlayer) player).switchy$setPresets(SwitchyPresets.fromNbt(new NbtCompound(), player));
+			}
+			SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
+
+			List<Identifier> modules = Switchy.COMPAT_REGISTRY.keySet().stream().filter(
+					(key) -> presets.getModuleToggles().containsKey(key) && importedPresets.getModuleToggles().containsKey(key) // && contained in flags + configs module list
+			).toList();
+
+			if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase("/switchy_client import " + filename)) {
+				tellWarn(player, "commands.switchy_client.import.warn", literal(String.valueOf(importedPresets.getPresetNames().size())), literal(String.valueOf(modules.size())));
+				tellWarn(player, "commands.switchy.list.presets", literal(importedPresets.getPresetNames().toString()));
+				tellWarn(player, "commands.switchy.list.modules", literal(modules.toString()));
+				tellInvalidTry(player, "commands.switchy_client.import.confirmation", "commands.switchy_client.import.command", literal(filename));
+				last_command.put(player.getUuid(), "/switchy_client import " + filename);
+				return;
+			}
+
+			if (presets.importFromOther(importedPresets, modules)) {
+				tellSuccess(player, "commands.switchy.import.success", literal(String.valueOf(importedPresets.getPresetNames().size())));
+			} else {
+				String collisionPresets = presets.getPresetNames().stream()
+						.filter(importedPresets.getPresetNames()::contains)
+						.collect(Collectors.joining(", "));
+				tellInvalid(player, "commands.switchy.import.fail.collision", literal(collisionPresets));
+			}
+
+		});
+	}
+
 	private static CompletableFuture<Suggestions> suggestPresets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, boolean allowCurrent) throws CommandSyntaxException {
 		ServerPlayerEntity player = context.getSource().getPlayer();
 		String remaining = builder.getRemainingLowerCase();
@@ -112,7 +170,7 @@ public class SwitchyCommands {
 		try {
 			ServerPlayerEntity player = context.getSource().getPlayer();
 			if (((SwitchyPlayer) player).switchy$getPresets() == null) {
-				((SwitchyPlayer) player).switchy$setPresets(SwitchyPresets.fromNbt(player, new NbtCompound()));
+				((SwitchyPlayer) player).switchy$setPresets(SwitchyPresets.fromNbt(new NbtCompound(), player));
 			}
 			SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 			result = executeFunction.apply(
@@ -149,7 +207,8 @@ public class SwitchyCommands {
 		tellHelp(player, "commands.switchy.module.enable.help", "commands.switchy.module.enable.command", "commands.switchy.help.placeholder.module");
 		tellHelp(player, "commands.switchy.module.disable.help", "commands.switchy.module.disable.command", "commands.switchy.help.placeholder.module");
 		tellHelp(player, "commands.switchy.export.help", "commands.switchy.export.command");
-		return 7;
+		tellHelp(player, "commands.switchy.import.help", "commands.switchy.import.command", "commands.switchy.help.placeholder.file");
+		return 11;
 	}
 
 	private static int exportPresets(ServerPlayerEntity player, SwitchyPresets presets) {

@@ -6,6 +6,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -47,11 +48,11 @@ public class SwitchyPresets {
 		return outNbt;
 	}
 
-	public static SwitchyPresets fromNbt(PlayerEntity player, NbtCompound nbt) {
+	public static SwitchyPresets fromNbt(NbtCompound nbt, @Nullable PlayerEntity player) {
 		SwitchyPresets outPresets = new SwitchyPresets();
 
-		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE), true);
-		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_DISABLED, NbtElement.STRING_TYPE), false);
+		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE), true, player == null);
+		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_DISABLED, NbtElement.STRING_TYPE), false, player == null);
 
 		NbtCompound listNbt = nbt.getCompound(KEY_PRESET_LIST);
 		for (String key : listNbt.getKeys()) {
@@ -61,27 +62,52 @@ public class SwitchyPresets {
 			}
 		}
 
-		if (nbt.contains(KEY_PRESET_CURRENT) && !outPresets.setCurrentPreset(player, nbt.getString(KEY_PRESET_CURRENT), false)) {
-			Switchy.LOGGER.warn("Switchy: Unable to set current preset from data. Data may have been lost.");
-		}
+		if (player != null) {
+			if (nbt.contains(KEY_PRESET_CURRENT) && !outPresets.setCurrentPreset(player, nbt.getString(KEY_PRESET_CURRENT), false)) {
+				Switchy.LOGGER.warn("Switchy: Unable to set current preset from data. Data may have been lost.");
+			}
 
-		if (outPresets.presetMap.isEmpty() || outPresets.getCurrentPreset() == null) {
-			// Recover current data as "Default" preset
-			outPresets.addPreset(new SwitchyPreset("default", outPresets.moduleToggles));
-			outPresets.setCurrentPreset(player, "default", false);
+			if (outPresets.presetMap.isEmpty() || outPresets.getCurrentPreset() == null) {
+				// Recover current data as "Default" preset
+				outPresets.addPreset(new SwitchyPreset("default", outPresets.moduleToggles));
+				outPresets.setCurrentPreset(player, "default", false);
+			}
 		}
 
 		return outPresets;
 	}
 
-	private void toggleModulesFromNbt(NbtList list, Boolean enabled) {
+	public boolean importFromOther(SwitchyPresets presets, List<Identifier> modules) {
+		if (presets.getPresetNames().stream().noneMatch((name) -> this.getPresetNames().contains(name))) {
+			// Remove modules that shouldn't be imported
+			Switchy.COMPAT_REGISTRY.keySet().forEach((key) -> {
+				if ((!modules.contains(key) || !this.moduleToggles.containsKey(key)) && presets.getModuleToggles().get(key)) {
+					presets.disableModule(key);
+				}
+			});
+
+			// Re-enable missing empty modules
+			this.moduleToggles.forEach((key, enabled) -> {
+				if (enabled && !presets.getModuleToggles().get(key)) {
+					presets.enableModule(key);
+				}
+			});
+
+			presets.presetMap.values().forEach(this::addPreset);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private void toggleModulesFromNbt(NbtList list, Boolean enabled, Boolean silent) {
 		list.forEach((e) -> {
 			Identifier id;
 			if (e instanceof NbtString s && (id = Identifier.tryParse(s.asString())) != null && this.moduleToggles.containsKey(id)) {
 				this.moduleToggles.put(id, enabled);
-			} else {
+			} else if (!silent) {
 				Switchy.LOGGER.warn("Switchy: Unable to toggle a module - Was a module unloaded?");
-				Switchy.LOGGER.warn("Switchy: NBT Element:" + e.asString());
+				Switchy.LOGGER.warn("Switchy: NBT Element: " + e.asString());
 			}
 		});
 	}
