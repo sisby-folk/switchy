@@ -16,7 +16,7 @@ import java.util.Objects;
 public class DrogtorCompat implements PresetModule {
 	public static final Identifier ID = new Identifier("switchy",  "drogtor");
 	private static final boolean isDefault = true;
-	private static final ModuleImportable importable = ModuleImportable.ALWAYS;
+	private static final ModuleImportable importable = ModuleImportable.ALWAYS_ALLOWED;
 
 
 	public static final String KEY_NICKNAME = "nickname";

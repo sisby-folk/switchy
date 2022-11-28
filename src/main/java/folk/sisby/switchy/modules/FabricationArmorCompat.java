@@ -27,7 +27,7 @@ import java.util.*;
 public class FabricationArmorCompat implements PresetModule {
 	public static final Identifier ID = new Identifier("switchy", "fabrication_hidearmor");
 	private static final boolean isDefault = true;
-	private static final ModuleImportable importable = ModuleImportable.DEFAULT;
+	private static final ModuleImportable importable = ModuleImportable.ALLOWED;
 	private static final Collection<Identifier> applyDependencies = new ArrayList<>();
 
 	public static final String KEY_SUPPRESSED_SLOTS = "suppressedSlots";

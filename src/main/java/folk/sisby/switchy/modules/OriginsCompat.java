@@ -28,7 +28,7 @@ import java.util.*;
 public class OriginsCompat implements PresetModule {
 	public static final Identifier ID = new Identifier("switchy",  "origins");
 	private static final boolean isDefault = true;
-	private static final ModuleImportable importable = ModuleImportable.DEFAULT;
+	private static final ModuleImportable importable = ModuleImportable.ALLOWED;
 
 	public static final String KEY_ORIGINS_LIST = "OriginLayers";
 

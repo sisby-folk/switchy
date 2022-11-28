@@ -12,7 +12,7 @@ import org.samo_lego.fabrictailor.casts.TailoredPlayer;
 public class FabricTailorCompat implements PresetModule {
 	public static final Identifier ID = new Identifier("switchy", "fabric_tailor");
 	private static final boolean isDefault = true;
-	private static final ModuleImportable importable = ModuleImportable.ALWAYS;
+	private static final ModuleImportable importable = ModuleImportable.ALWAYS_ALLOWED;
 
 	public static final String KEY_SKIN_VALUE = "skinValue";
 	public static final String KEY_SKIN_SIGNATURE = "skinSignature";

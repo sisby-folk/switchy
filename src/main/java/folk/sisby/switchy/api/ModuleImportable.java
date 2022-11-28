@@ -1,8 +1,8 @@
 package folk.sisby.switchy.api;
 
 public enum ModuleImportable {
-	ALWAYS,
-	DEFAULT,
+	ALWAYS_ALLOWED,
+	ALLOWED,
 	OPERATOR,
 	NEVER
 }
