@@ -3,6 +3,7 @@ package folk.sisby.switchy.modules;
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.SwitchyPlayer;
 import folk.sisby.switchy.SwitchyPresets;
+import folk.sisby.switchy.api.ModuleImportable;
 import folk.sisby.switchy.api.PresetModule;
 import folk.sisby.switchy.api.PresetModuleRegistry;
 import io.github.apace100.apoli.power.InventoryPower;
@@ -27,6 +28,7 @@ import java.util.*;
 public class OriginsCompat implements PresetModule {
 	public static final Identifier ID = new Identifier("switchy",  "origins");
 	private static final boolean isDefault = true;
+	private static final ModuleImportable importable = ModuleImportable.DEFAULT;
 
 	public static final String KEY_ORIGINS_LIST = "OriginLayers";
 
@@ -120,6 +122,11 @@ public class OriginsCompat implements PresetModule {
 	@Override
 	public boolean isDefault() {
 		return isDefault;
+	}
+
+	@Override
+	public ModuleImportable getImportable() {
+		return importable;
 	}
 
 	public static void touch() {

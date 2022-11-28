@@ -1,5 +1,6 @@
 package folk.sisby.switchy.modules;
 
+import folk.sisby.switchy.api.ModuleImportable;
 import folk.sisby.switchy.api.PresetModule;
 import folk.sisby.switchy.api.PresetModuleRegistry;
 import net.minecraft.entity.player.PlayerEntity;
@@ -11,6 +12,7 @@ import org.samo_lego.fabrictailor.casts.TailoredPlayer;
 public class FabricTailorCompat implements PresetModule {
 	public static final Identifier ID = new Identifier("switchy", "fabric_tailor");
 	private static final boolean isDefault = true;
+	private static final ModuleImportable importable = ModuleImportable.ALWAYS;
 
 	public static final String KEY_SKIN_VALUE = "skinValue";
 	public static final String KEY_SKIN_SIGNATURE = "skinSignature";
@@ -57,6 +59,12 @@ public class FabricTailorCompat implements PresetModule {
 	public boolean isDefault() {
 		return isDefault;
 	}
+
+	@Override
+	public ModuleImportable getImportable() {
+		return importable;
+	}
+
 
 	public static void touch() {
 	}
