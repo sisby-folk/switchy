@@ -84,6 +84,13 @@ public class SwitchyCommands {
 		);
 	}
 
+	public static SwitchyPresets getOrDefaultPresets(ServerPlayerEntity player) {
+		if (((SwitchyPlayer) player).switchy$getPresets() == null) {
+			((SwitchyPlayer) player).switchy$setPresets(SwitchyPresets.fromNbt(new NbtCompound(), player));
+		}
+		return ((SwitchyPlayer) player).switchy$getPresets();
+	}
+
 	public static void InitializeReceivers() {
 		ServerPlayNetworking.registerGlobalReceiver(C2S_IMPORT, (server, player, handler, buf, sender) -> {
 			// Parse as NBT
@@ -119,10 +126,7 @@ public class SwitchyCommands {
 			}
 
 			// Get player presets
-			if (((SwitchyPlayer) player).switchy$getPresets() == null) {
-				((SwitchyPlayer) player).switchy$setPresets(SwitchyPresets.fromNbt(new NbtCompound(), player));
-			}
-			SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
+			SwitchyPresets presets = getOrDefaultPresets(player);
 
 			// Generate Importable List
 			Map<Identifier, ModuleImportable> configuredImportable = Switchy.COMPAT_REGISTRY.entrySet().stream().collect(Collectors.toMap(
@@ -198,10 +202,7 @@ public class SwitchyCommands {
 		// Get context and execute
 		try {
 			ServerPlayerEntity player = context.getSource().getPlayer();
-			if (((SwitchyPlayer) player).switchy$getPresets() == null) {
-				((SwitchyPlayer) player).switchy$setPresets(SwitchyPresets.fromNbt(new NbtCompound(), player));
-			}
-			SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
+			SwitchyPresets presets = getOrDefaultPresets(player);
 			result = executeFunction.apply(
 					player,
 					presets,
