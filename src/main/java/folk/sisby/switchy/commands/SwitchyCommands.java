@@ -125,9 +125,6 @@ public class SwitchyCommands {
 				return;
 			}
 
-			// Get player presets
-			SwitchyPresets presets = getOrDefaultPresets(player);
-
 			// Generate Importable List
 			Map<Identifier, ModuleImportable> configuredImportable = Switchy.COMPAT_REGISTRY.entrySet().stream().collect(Collectors.toMap(
 					Map.Entry::getKey,
@@ -135,8 +132,15 @@ public class SwitchyCommands {
 			));
 
 			// Warn user about any disallowed flags
+			List<Identifier> disallowedFlags = Switchy.COMPAT_REGISTRY.keySet().stream().filter(
+					(key) -> configuredImportable.get(key) == ModuleImportable.OPERATOR && player.hasPermissionLevel(2) && addModules.contains(key)
+			).toList();
+			if (!disallowedFlags.isEmpty()) {
+				tellWarn(player, "commands.switchy.import.warn.permission", literal(disallowedFlags.toString()));
+			}
 
 			// Generate list of modules being imported
+			SwitchyPresets presets = getOrDefaultPresets(player);
 			List<Identifier> modules = Switchy.COMPAT_REGISTRY.keySet().stream().filter(
 					(key) -> presets.getModuleToggles().containsKey(key) && importedPresets.getModuleToggles().containsKey(key)
 							&& (((configuredImportable.get(key) == ModuleImportable.ALLOWED || configuredImportable.get(key) == ModuleImportable.ALWAYS_ALLOWED) && !removeModules.contains(key)) ||

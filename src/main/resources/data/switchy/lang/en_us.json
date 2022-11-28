@@ -60,7 +60,7 @@
   "commands.switchy.import.warn": "You are about to import %s presets with %s modules:",
   "commands.switchy.import.confirmation": "Confirm using %s",
   "commands.switchy.import.success": "Imported %s presets",
-  "commands.switchy.import.fail.permission": "Only level 2 operators can perform this command",
+  "commands.switchy.import.warn.permission": "Some modules were removed for requiring operator: %s",
   "commands.switchy.import.fail.parse": "Failed to parse imported NBT",
   "commands.switchy.import.fail.construct": "Failed to construct Presets from NBT",
   "commands.switchy.import.fail.collision": "Import failed due to existing presets: %s",
