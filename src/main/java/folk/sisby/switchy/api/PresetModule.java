@@ -27,7 +27,6 @@ public interface PresetModule {
 
 	Identifier getId();
 
-
 	default Collection<Identifier> getApplyDependencies() {
 		return Set.of();
 	}
@@ -37,4 +36,6 @@ public interface PresetModule {
 	}
 
 	boolean isDefault();
+
+	default ModuleImportable getImportable() {return ModuleImportable.OPERATOR;}
 }

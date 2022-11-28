@@ -87,10 +87,10 @@
         "command": "/switchy_client import {}",
         "help": "load exported presets",
         "warn": "You are about to import {} presets with {} modules:",
+        "warn.permission": "Some modules were removed for requiring operator: {}",
         "confirmation": "Confirm using {}",
         "success": "Imported {} presets",
         "fail" : {
-          "permission": "Only level 2 operators can perform this command",
           "parse": "Failed to parse imported NBT",
           "construct": "Failed to construct Presets from NBT",
           "collision": "Import failed due to existing presets: {}"

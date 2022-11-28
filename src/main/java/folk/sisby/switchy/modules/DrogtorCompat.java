@@ -2,6 +2,7 @@ package folk.sisby.switchy.modules;
 
 import com.unascribed.drogtor.DrogtorPlayer;
 import folk.sisby.switchy.Switchy;
+import folk.sisby.switchy.api.ModuleImportable;
 import folk.sisby.switchy.api.PresetModule;
 import folk.sisby.switchy.api.PresetModuleRegistry;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,6 +16,8 @@ import java.util.Objects;
 public class DrogtorCompat implements PresetModule {
 	public static final Identifier ID = new Identifier("switchy",  "drogtor");
 	private static final boolean isDefault = true;
+	private static final ModuleImportable importable = ModuleImportable.ALWAYS_ALLOWED;
+
 
 	public static final String KEY_NICKNAME = "nickname";
 	public static final String KEY_NAME_COLOR = "nameColor";
@@ -68,6 +71,11 @@ public class DrogtorCompat implements PresetModule {
 	@Override
 	public boolean isDefault() {
 		return isDefault;
+	}
+
+	@Override
+	public ModuleImportable getImportable() {
+		return importable;
 	}
 
 	public static void touch() {

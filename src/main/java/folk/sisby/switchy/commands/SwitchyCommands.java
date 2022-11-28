@@ -11,13 +11,16 @@ import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.SwitchyPlayer;
 import folk.sisby.switchy.SwitchyPreset;
 import folk.sisby.switchy.SwitchyPresets;
+import folk.sisby.switchy.api.ModuleImportable;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
@@ -81,13 +84,16 @@ public class SwitchyCommands {
 		);
 	}
 
+	public static SwitchyPresets getOrDefaultPresets(ServerPlayerEntity player) {
+		if (((SwitchyPlayer) player).switchy$getPresets() == null) {
+			((SwitchyPlayer) player).switchy$setPresets(SwitchyPresets.fromNbt(new NbtCompound(), player));
+		}
+		return ((SwitchyPlayer) player).switchy$getPresets();
+	}
+
 	public static void InitializeReceivers() {
 		ServerPlayNetworking.registerGlobalReceiver(C2S_IMPORT, (server, player, handler, buf, sender) -> {
-			if (!player.hasPermissionLevel(2)) {
-				tellInvalid(player, "commands.switchy.import.fail.permission");
-				return;
-			}
-
+			// Parse as NBT
 			NbtCompound presetNbt = buf.readNbt();
 			if (presetNbt == null || !presetNbt.contains("filename")) {
 				tellInvalid(player, "commands.switchy.import.fail.parse");
@@ -95,6 +101,24 @@ public class SwitchyCommands {
 			}
 			String filename = presetNbt.getString("filename");
 
+			// Parse Identifier Flags
+			List<Identifier> addModules = new ArrayList<>();
+			List<Identifier> removeModules = new ArrayList<>();
+			try {
+				presetNbt.getList("addModules", NbtElement.STRING_TYPE).forEach(
+						e -> addModules.add(new Identifier(e.asString()))
+				);
+				presetNbt.getList("removeModules", NbtElement.STRING_TYPE).forEach(
+						e -> removeModules.add(new Identifier(e.asString()))
+				);
+			} catch (InvalidIdentifierException e) {
+				tellInvalid(player, "commands.switchy.import.fail.parse");
+				return;
+			}
+
+			String command = "switchy_client import " + filename + (addModules.isEmpty() ? "" : (" " + addModules.toString().substring(1, addModules.toString().length() - 1)));
+
+			// Construct presets from NBT
 			SwitchyPresets importedPresets;
 			try {
 				importedPresets = SwitchyPresets.fromNbt(presetNbt, null);
@@ -103,24 +127,38 @@ public class SwitchyCommands {
 				return;
 			}
 
-			if (((SwitchyPlayer) player).switchy$getPresets() == null) {
-				((SwitchyPlayer) player).switchy$setPresets(SwitchyPresets.fromNbt(new NbtCompound(), player));
-			}
-			SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
+			// Generate Importable List
+			Map<Identifier, ModuleImportable> configuredImportable = new HashMap<>();
+			Switchy.COMPAT_REGISTRY.forEach(
+					(key, val) -> configuredImportable.put(key, Switchy.IMPORTABLE_CONFIGURABLE.contains(val.get().getImportable()) ? Switchy.CONFIG.moduleImportable.get(key.toString()) : val.get().getImportable())
+			);
 
+			// Warn user about any disallowed flags
+			List<Identifier> disallowedFlags = Switchy.COMPAT_REGISTRY.keySet().stream().filter(
+					(key) -> configuredImportable.get(key) == ModuleImportable.OPERATOR && !player.hasPermissionLevel(2) && addModules.contains(key)
+			).toList();
+			if (!disallowedFlags.isEmpty()) {
+				tellWarn(player, "commands.switchy.import.warn.permission", literal(disallowedFlags.toString()));
+			}
+
+			// Generate list of modules being imported
+			SwitchyPresets presets = getOrDefaultPresets(player);
 			List<Identifier> modules = Switchy.COMPAT_REGISTRY.keySet().stream().filter(
-					(key) -> presets.getModuleToggles().containsKey(key) && importedPresets.getModuleToggles().containsKey(key) // && contained in flags + configs module list
+					(key) -> presets.getModuleToggles().containsKey(key) && importedPresets.getModuleToggles().containsKey(key)
+							&& (((configuredImportable.get(key) == ModuleImportable.ALLOWED || configuredImportable.get(key) == ModuleImportable.ALWAYS_ALLOWED) && !removeModules.contains(key)) ||
+							(configuredImportable.get(key) == ModuleImportable.OPERATOR && player.hasPermissionLevel(2) && addModules.contains(key)))
 			).toList();
 
-			if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase("switchy_client import " + filename)) {
+			if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command)) {
 				tellWarn(player, "commands.switchy.import.warn", literal(String.valueOf(importedPresets.getPresetNames().size())), literal(String.valueOf(modules.size())));
 				tellWarn(player, "commands.switchy.list.presets", literal(importedPresets.getPresetNames().toString()));
 				tellWarn(player, "commands.switchy.list.modules", literal(modules.toString()));
 				tellInvalidTry(player, "commands.switchy.import.confirmation", "commands.switchy.import.command", literal(filename));
-				last_command.put(player.getUuid(), "switchy_client import " + filename);
+				last_command.put(player.getUuid(), command);
 				return;
 			}
 
+			// Actually attempt to import
 			if (presets.importFromOther(importedPresets, modules)) {
 				tellSuccess(player, "commands.switchy.import.success", literal(String.valueOf(importedPresets.getPresetNames().size())));
 			} else {
@@ -169,10 +207,7 @@ public class SwitchyCommands {
 		// Get context and execute
 		try {
 			ServerPlayerEntity player = context.getSource().getPlayer();
-			if (((SwitchyPlayer) player).switchy$getPresets() == null) {
-				((SwitchyPlayer) player).switchy$setPresets(SwitchyPresets.fromNbt(new NbtCompound(), player));
-			}
-			SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
+			SwitchyPresets presets = getOrDefaultPresets(player);
 			result = executeFunction.apply(
 					player,
 					presets,

@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import com.unascribed.fabrication.features.FeatureHideArmor;
 import com.unascribed.fabrication.interfaces.GetSuppressedSlots;
 import folk.sisby.switchy.Switchy;
+import folk.sisby.switchy.api.ModuleImportable;
 import folk.sisby.switchy.api.PresetModule;
 import folk.sisby.switchy.api.PresetModuleRegistry;
 import net.fabricmc.fabric.api.util.NbtType;
@@ -26,6 +27,7 @@ import java.util.*;
 public class FabricationArmorCompat implements PresetModule {
 	public static final Identifier ID = new Identifier("switchy", "fabrication_hidearmor");
 	private static final boolean isDefault = true;
+	private static final ModuleImportable importable = ModuleImportable.ALLOWED;
 	private static final Collection<Identifier> applyDependencies = new ArrayList<>();
 
 	public static final String KEY_SUPPRESSED_SLOTS = "suppressedSlots";
@@ -94,6 +96,11 @@ public class FabricationArmorCompat implements PresetModule {
 	@Override
 	public Collection<Identifier> getApplyDependencies() {
 		return applyDependencies;
+	}
+
+	@Override
+	public ModuleImportable getImportable() {
+		return importable;
 	}
 
 	public static void touch() {
