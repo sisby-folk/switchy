@@ -27,7 +27,7 @@ public class Switchy implements ModInitializer {
 	public static final Identifier C2S_IMPORT = new Identifier(Switchy.ID, "c2s_import");
 
 	public static final SwitchyConfig CONFIG = QuiltConfig.create(ID, "config", SwitchyConfig.class);
-	public static final List<ModuleImportable> IMPORTABLE_CONFIGURABLE = List.of(ModuleImportable.NEVER, ModuleImportable.ALWAYS_ALLOWED);
+	public static final List<ModuleImportable> IMPORTABLE_CONFIGURABLE = List.of(ModuleImportable.ALLOWED, ModuleImportable.OPERATOR);
 
 	public static final Map<Identifier, Supplier<? extends PresetModule>> COMPAT_REGISTRY = new HashMap<>();
 
@@ -37,7 +37,7 @@ public class Switchy implements ModInitializer {
 			ModuleImportable importable = moduleConstructor.get().getImportable();
 			ModuleImportable configImportable = CONFIG.moduleImportable.get(moduleId.toString());
 
-			if (!IMPORTABLE_CONFIGURABLE.contains(importable)) { // Load default config values
+			if (IMPORTABLE_CONFIGURABLE.contains(importable)) { // Load default config values
 				if (configImportable == null || !IMPORTABLE_CONFIGURABLE.contains(configImportable)) {
 					CONFIG.moduleImportable.put(moduleId.toString(), moduleConstructor.get().getImportable());
 				}

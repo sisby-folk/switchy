@@ -10,6 +10,10 @@ import folk.sisby.switchy.SwitchyClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.command.api.client.ClientCommandManager;
@@ -41,7 +45,13 @@ public class SwitchyCommandsClient {
 						.then(ClientCommandManager.literal("import")
 								.then(ClientCommandManager.argument("file", StringArgumentType.word())
 										.suggests(SwitchyCommandsClient::suggestExportFiles)
-										.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", String.class)))))));
+										.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", String.class)))
+										.then(ClientCommandManager.argument("addModules", StringArgumentType.greedyString())
+												.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", String.class), new Pair<>("addModules", String.class)))
+										)
+								)
+						)
+		));
 	}
 
 	public static void InitializeReceivers() {
@@ -100,13 +110,21 @@ public class SwitchyCommandsClient {
 		return builder.buildFuture();
 	}
 
-	private static int importPresets(ClientPlayerEntity player, String file) {
+	private static int importPresets(ClientPlayerEntity player, String file, String addModules) {
 		String filePath = SwitchyClient.EXPORT_PATH + "/" + file;
 		File importFile = new File(filePath);
 		if (importFile.exists()) {
 			try {
 				NbtCompound presetNbt = NbtIo.readCompressed(importFile);
 				presetNbt.putString("filename", file);
+				NbtList addModulesNbt = new NbtList();
+				try {
+					addModulesNbt.addAll(Arrays.stream(addModules.split(",")).map((id) -> NbtString.of(new Identifier(id).toString())).toList());
+				} catch (InvalidIdentifierException e) {
+					tellInvalid(player, "commands.switchy_client.import.fail.parse", literal(addModules));
+					return 0;
+				}
+				presetNbt.put("addModules", addModulesNbt);
 				ClientPlayNetworking.send(Switchy.C2S_IMPORT, PacketByteBufs.create().writeNbt(presetNbt));
 				tellSuccess(player, "commands.switchy_client.import.success");
 				return 1;
@@ -120,4 +138,7 @@ public class SwitchyCommandsClient {
 		}
 	}
 
+	private static int importPresets(ClientPlayerEntity player, String file) {
+		return importPresets(player, file, "");
+	}
 }

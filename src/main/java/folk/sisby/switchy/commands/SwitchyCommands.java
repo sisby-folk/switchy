@@ -116,6 +116,8 @@ public class SwitchyCommands {
 				return;
 			}
 
+			String command = "/switchy_client import " + filename + (addModules.isEmpty() ? "" : (" " + addModules.toString().substring(1, addModules.toString().length() - 1)));
+
 			// Construct presets from NBT
 			SwitchyPresets importedPresets;
 			try {
@@ -126,14 +128,14 @@ public class SwitchyCommands {
 			}
 
 			// Generate Importable List
-			Map<Identifier, ModuleImportable> configuredImportable = Switchy.COMPAT_REGISTRY.entrySet().stream().collect(Collectors.toMap(
-					Map.Entry::getKey,
-					entry -> Switchy.IMPORTABLE_CONFIGURABLE.contains(entry.getValue().get().getImportable()) ? Switchy.CONFIG.moduleImportable.get(entry.getKey().toString()) : entry.getValue().get().getImportable()
-			));
+			Map<Identifier, ModuleImportable> configuredImportable = new HashMap<>();
+			Switchy.COMPAT_REGISTRY.forEach(
+					(key, val) -> configuredImportable.put(key, Switchy.IMPORTABLE_CONFIGURABLE.contains(val.get().getImportable()) ? Switchy.CONFIG.moduleImportable.get(key.toString()) : val.get().getImportable())
+			);
 
 			// Warn user about any disallowed flags
 			List<Identifier> disallowedFlags = Switchy.COMPAT_REGISTRY.keySet().stream().filter(
-					(key) -> configuredImportable.get(key) == ModuleImportable.OPERATOR && player.hasPermissionLevel(2) && addModules.contains(key)
+					(key) -> configuredImportable.get(key) == ModuleImportable.OPERATOR && !player.hasPermissionLevel(2) && addModules.contains(key)
 			).toList();
 			if (!disallowedFlags.isEmpty()) {
 				tellWarn(player, "commands.switchy.import.warn.permission", literal(disallowedFlags.toString()));
@@ -148,12 +150,12 @@ public class SwitchyCommands {
 			).toList();
 
 			// Print and check command confirmation
-			if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase("/switchy_client import " + filename)) {
+			if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command)) {
 				tellWarn(player, "commands.switchy.import.warn", literal(String.valueOf(importedPresets.getPresetNames().size())), literal(String.valueOf(modules.size())));
 				tellWarn(player, "commands.switchy.list.presets", literal(importedPresets.getPresetNames().toString()));
 				tellWarn(player, "commands.switchy.list.modules", literal(modules.toString()));
 				tellInvalidTry(player, "commands.switchy.import.confirmation", "commands.switchy.import.command", literal(filename));
-				last_command.put(player.getUuid(), "/switchy_client import " + filename);
+				last_command.put(player.getUuid(), command);
 				return;
 			}
 
