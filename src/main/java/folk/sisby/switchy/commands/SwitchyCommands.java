@@ -318,7 +318,7 @@ public class SwitchyCommands {
 				.filter(importedPresets.modules::get)
 				.filter(key -> !removeModules.contains(key))
 				.filter((key) -> IMPORTABLE_OP.contains(importable.get(key)))
-				.filter((key) -> player.hasPermissionLevel(2) || IMPORTABLE_NON_OP.contains(importable.get(key)))
+				.filter((key) -> (addModules.contains(key) && player.hasPermissionLevel(2)) || IMPORTABLE_NON_OP.contains(importable.get(key)))
 		.toList();
 
 		// Print and check command confirmation
