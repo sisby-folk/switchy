@@ -5,6 +5,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+
+import static folk.sisby.switchy.util.Feedback.literal;
 
 public class SwitchyPresets {
 
@@ -206,6 +211,15 @@ public class SwitchyPresets {
 
 	public List<String> getEnabledModuleNames() {
 		return getEnabledModules().stream().map(Identifier::getPath).toList();
+	}
+
+	public MutableText getEnabledModuleText() {
+		MutableText outText = literal("[");
+		getEnabledModules().stream().map(id -> literal(id.getPath()).setStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, literal(id.toString()))))).forEach(
+				outText::append
+		);
+		outText.append(literal("]"));
+		return outText;
 	}
 
 	public List<Identifier> getDisabledModules() {

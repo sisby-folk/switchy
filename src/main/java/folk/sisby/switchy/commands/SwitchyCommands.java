@@ -170,7 +170,7 @@ public class SwitchyCommands {
 
 	private static int listPresets(ServerPlayerEntity player, SwitchyPresets presets) {
 		sendMessage(player, translatableWithArgs("commands.switchy.list.presets", FORMAT_INFO, literal(presets.toString())));
-		sendMessage(player, translatableWithArgs("commands.switchy.list.modules", FORMAT_INFO, literal(presets.getEnabledModuleNames().toString())));
+		sendMessage(player, translatableWithArgs("commands.switchy.list.modules", FORMAT_INFO, presets.getEnabledModuleText()));
 		sendMessage(player, translatableWithArgs("commands.switchy.list.current", FORMAT_INFO, literal(presets.getCurrentPreset().toString())));
 		return 1;
 	}
@@ -226,7 +226,7 @@ public class SwitchyCommands {
 
 		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase("/switchy delete " + presetName)) {
 			tellWarn(player, "commands.switchy.delete.warn");
-			tellWarn(player, "commands.switchy.list.modules", literal(presets.getEnabledModuleNames().toString()));
+			tellWarn(player, "commands.switchy.list.modules", presets.getEnabledModuleText());
 			tellInvalidTry(player, "commands.switchy.delete.confirmation", "commands.switchy.delete.command", literal(presetName));
 			return 0;
 		} else {
@@ -325,7 +325,7 @@ public class SwitchyCommands {
 		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command)) {
 			tellWarn(player, "commands.switchy.import.warn", literal(String.valueOf(importedPresets.getPresetNames().size())), literal(String.valueOf(modules.size())));
 			tellWarn(player, "commands.switchy.list.presets", literal(importedPresets.getPresetNames().toString()));
-			tellWarn(player, "commands.switchy.list.modules", literal(modules.stream().map(Identifier::getPath).toList().toString()));
+			tellWarn(player, "commands.switchy.list.modules", presets.getEnabledModuleText());
 			tellInvalidTry(player, "commands.switchy.import.confirmation", "commands.switchy.import.command", literal(filename));
 			last_command.put(player.getUuid(), command);
 			return;
