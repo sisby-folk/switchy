@@ -6,6 +6,7 @@ import folk.sisby.switchy.api.PresetModule;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
@@ -20,7 +21,7 @@ public class CardinalCopyableCompat<T1 extends CopyableComponent<T1>>  implement
 	private final T1 component;
 
 	@Override
-	public void updateFromPlayer(PlayerEntity player) {
+	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
 		this.component.copyFrom(registryKey.get(player));
 	}
 

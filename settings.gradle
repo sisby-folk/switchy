@@ -51,6 +51,10 @@ dependencyResolutionManagement {
 			version('fabrication', "3.0.2+${mc_major}")
 			version('arcpocalypse', "1.0.0")
 			version('lanyard', "1.1.0+${mc}")
+			version('placeholderApi', "2.0.0-pre.1+${mc}")
+			version('playerDataApi', "0.2.2+${mc}")
+			version('styledNicknames', "1.1.2+${mc_major}")
+			version('styledPlayerList', "2.2.2+1.19.1")
 
 			library('drogtor', 'maven.modrinth', 'drogtor').versionRef('drogtor')
 			library('fabrictailor', 'com.github.samolego', 'FabricTailor').versionRef('fabrictailor')
@@ -62,6 +66,10 @@ dependencyResolutionManagement {
 			library('fabrication', 'maven.modrinth', 'fabrication').versionRef('fabrication')
 			library('arcpocalypse', 'maven.modrinth', 'arcpocalypse').versionRef('arcpocalypse')
 			library('lanyard', 'maven.modrinth', 'lanyard').versionRef('lanyard')
+			library('placeholderApi', 'eu.pb4', 'placeholder-api').versionRef('placeholderApi')
+			library('playerDataApi', 'eu.pb4', 'player-data-api').versionRef('playerDataApi')
+			library('styledNicknames', 'maven.modrinth', 'styled-nicknames').versionRef('styledNicknames')
+			library('styledPlayerList', 'maven.modrinth', 'styledplayerlist').versionRef('styledPlayerList')
 		}
 	}
 }

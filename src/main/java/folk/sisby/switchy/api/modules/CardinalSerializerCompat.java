@@ -9,6 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.util.TriConsumer;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -25,7 +26,7 @@ public class CardinalSerializerCompat<T1 extends Component> implements PresetMod
 	private NbtCompound componentTag = new NbtCompound();
 
 	@Override
-	public void updateFromPlayer(PlayerEntity player) {
+	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
 		T1 component = registryKey.get(player);
 		this.componentTag = new NbtCompound();
 		component.writeToNbt(componentTag);

@@ -3,9 +3,11 @@
   "minVersion": "0.8",
   "package": "folk.sisby.switchy.mixin",
   "compatibilityLevel": "JAVA_17",
+  "plugin": "folk.sisby.switchy.mixin.compat.MixinCompatPlugin",
   "mixins": [
     "MixinPlayerEntity",
-    "MixinServerPlayerEntity"
+    "MixinServerPlayerEntity",
+    "compat.styled_nicknames.ConfigManagerMixin"
   ],
   "client": [
   ],

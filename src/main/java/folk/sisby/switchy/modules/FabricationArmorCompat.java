@@ -36,7 +36,7 @@ public class FabricationArmorCompat implements PresetModule {
 	private @Nullable Set<EquipmentSlot> suppressedSlots;
 
 	@Override
-	public void updateFromPlayer(PlayerEntity player) {
+	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
 		if (player instanceof GetSuppressedSlots gss) {
 			this.suppressedSlots = new HashSet<>();
 			this.suppressedSlots.addAll(gss.fabrication$getSuppressedSlots());

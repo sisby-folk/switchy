@@ -8,6 +8,7 @@ import com.mojang.datafixers.util.Function3;
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.SwitchyClient;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.command.CommandSource;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtList;
@@ -25,10 +26,7 @@ import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -98,14 +96,9 @@ public class SwitchyCommandsClient {
 	}
 
 	private static CompletableFuture<Suggestions> suggestExportFiles(CommandContext<QuiltClientCommandSource> context, SuggestionsBuilder builder) {
-		String remaining = builder.getRemainingLowerCase();
-		File exportPath = new File(SwitchyClient.EXPORT_PATH);
-		File[] exportFiles = exportPath.listFiles((dir, name) -> name.toLowerCase().endsWith(".dat"));
+		File[] exportFiles = new File(SwitchyClient.EXPORT_PATH).listFiles((dir, name) -> name.toLowerCase().endsWith(".dat"));
 		if (exportFiles != null) {
-			Arrays.stream(exportFiles)
-					.map(File::getName)
-					.filter((s) -> s.toLowerCase().startsWith(remaining))
-					.forEach(builder::suggest);
+			CommandSource.suggestMatching(Arrays.stream(exportFiles).map(File::getName), builder);
 		}
 		return builder.buildFuture();
 	}

@@ -1,7 +1,7 @@
 package folk.sisby.switchy.mixin;
 
 import com.mojang.authlib.GameProfile;
-import folk.sisby.switchy.SwitchyPlayer;
+import folk.sisby.switchy.api.SwitchyPlayer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.server.network.ServerPlayerEntity;

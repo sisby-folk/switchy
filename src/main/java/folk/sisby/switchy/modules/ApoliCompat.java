@@ -24,20 +24,15 @@ public class ApoliCompat implements PresetModule {
 
 	public static final String KEY_POWER_DATA_LIST = "PowerData";
 
-	public Map<PowerType<?>, NbtElement> powerNbt = new HashMap<>();;
+	public Map<PowerType<?>, NbtElement> powerNbt = new HashMap<>();
 
 	@Override
-	public void updateFromPlayer(PlayerEntity player) {
+	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
 		powerNbt.clear();
 		List<Power> powers = PowerHolderComponent.KEY.get(player).getPowers();
 		for (Power power : powers) {
 			this.powerNbt.put(power.getType(), power.toTag());
 		}
-	}
-
-	@Override
-	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
-		this.updateFromPlayer(player);
 		if (nextPreset != null) {
 			clearInventories(PowerHolderComponent.getPowers(player, InventoryPower.class));
 		}
