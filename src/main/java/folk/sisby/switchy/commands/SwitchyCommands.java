@@ -325,7 +325,7 @@ public class SwitchyCommands {
 		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command)) {
 			tellWarn(player, "commands.switchy.import.warn", literal(String.valueOf(importedPresets.getPresetNames().size())), literal(String.valueOf(modules.size())));
 			tellWarn(player, "commands.switchy.list.presets", literal(importedPresets.getPresetNames().toString()));
-			tellWarn(player, "commands.switchy.list.modules", literal(modules.stream().map(Identifier::getPath).toString()));
+			tellWarn(player, "commands.switchy.list.modules", literal(modules.stream().map(Identifier::getPath).toList().toString()));
 			tellInvalidTry(player, "commands.switchy.import.confirmation", "commands.switchy.import.command", literal(filename));
 			last_command.put(player.getUuid(), command);
 			return;
