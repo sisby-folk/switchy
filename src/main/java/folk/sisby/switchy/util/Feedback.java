@@ -4,9 +4,11 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class Feedback {
 	public static final Pair<Style, Style> FORMAT_SUCCESS = new Pair<>(Style.EMPTY.withColor(Formatting.GREEN), Style.EMPTY.withColor(Formatting.WHITE).withItalic(true));
@@ -79,5 +81,13 @@ public class Feedback {
 
 	public static MutableText literal(String string) {
 		return new LiteralText(string);
+	}
+
+	public static MutableText getIdText(List<Identifier> identifiers) {
+		return literal("[").append(Texts.join(
+				identifiers,
+				literal(", "),
+				id -> literal(id.getPath()).setStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, literal(id.toString()))))
+		)).append(literal("]"));
 	}
 }
