@@ -97,7 +97,7 @@ dependencies {
 
 	// Drogtor
 	modCompileOnly libs.drogtor
-	modLocalRuntime libs.drogtor
+//	modLocalRuntime libs.drogtor
 
 	// // Fabric Tailor
 	modCompileOnly libs.fabrictailor
@@ -125,6 +125,13 @@ dependencies {
 
 	// Fabrication
 	modCompileOnly libs.fabrication
+
+	// Styled Nicknames
+	modCompileOnly libs.styledNicknames
+	modLocalRuntime libs.playerDataApi
+	modLocalRuntime libs.placeholderApi
+	modLocalRuntime libs.styledNicknames
+	modLocalRuntime libs.styledPlayerList
 }
 
 processResources {

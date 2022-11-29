@@ -42,6 +42,10 @@ dependencyResolutionManagement {
 			version('cardinal', "5.0.1")
 			version('pehkui', "3.4.2")
 			version('fabrication', "3.0.2+${mc_major}")
+			version('placeholderApi', "1.1.3+1.17.1")
+			version('playerDataApi', "0.1.0+1.18")
+			version('styledNicknames', "1.0.4+1.18.1")
+			version('styledPlayerList', "2.1.3+1.18")
 
 			library('drogtor', 'maven.modrinth', 'drogtor').versionRef('drogtor')
 			library('fabrictailor', 'com.github.samolego', 'FabricTailor').versionRef('fabrictailor')
@@ -51,6 +55,10 @@ dependencyResolutionManagement {
 			library('cardinalEntity', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-entity').versionRef('cardinal')
 			library('pehkui', 'com.github.Virtuoel', 'Pehkui').versionRef('pehkui')
 			library('fabrication', 'maven.modrinth', 'fabrication').versionRef('fabrication')
+			library('placeholderApi', 'eu.pb4', 'placeholder-api').versionRef('placeholderApi')
+			library('playerDataApi', 'eu.pb4', 'player-data-api').versionRef('playerDataApi')
+			library('styledNicknames', 'maven.modrinth', 'styled-nicknames').versionRef('styledNicknames')
+			library('styledPlayerList', 'maven.modrinth', 'styledplayerlist').versionRef('styledPlayerList')
 		}
 	}
 }
