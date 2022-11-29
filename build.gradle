@@ -193,6 +193,7 @@ if (System.getenv("MODRINTH_TOKEN")) {
 			optional.project "pehkui"
 			optional.project "origins"
 			optional.project "fabrication"
+			optional.project "styled-nicknames"
 		}
 		changelog = "Changelog: https://github.com/sisby-folk/switchy/releases/tag/v" + origVersion
 		syncBodyFrom = rootProject.file("README.md").text
