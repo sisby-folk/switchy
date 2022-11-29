@@ -8,6 +8,7 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
+import net.minecraft.text.Texts;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -214,16 +215,11 @@ public class SwitchyPresets {
 	}
 
 	public MutableText getEnabledModuleText() {
-		MutableText outText = literal("[");
-		List<Identifier> enabledModules = getEnabledModules();
-		for (int i = 0; i < enabledModules.size(); i++) {
-			outText.append(literal(enabledModules.get(i).getPath()).setStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, literal(enabledModules.get(i).toString())))));
-			if (i < enabledModules.size() - 1) {
-				outText.append(", ");
-			}
-		}
-		outText.append(literal("]"));
-		return outText;
+		return Texts.join(
+				getEnabledModules(),
+				literal(", "),
+				id -> literal(id.getPath()).setStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, literal(id.toString()))))
+		);
 	}
 
 	public List<Identifier> getDisabledModules() {
