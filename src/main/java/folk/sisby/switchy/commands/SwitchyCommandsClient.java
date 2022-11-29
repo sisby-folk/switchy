@@ -9,10 +9,7 @@ import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.SwitchyClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.command.CommandSource;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
+import net.minecraft.nbt.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.Pair;
@@ -110,14 +107,22 @@ public class SwitchyCommandsClient {
 			try {
 				NbtCompound presetNbt = NbtIo.readCompressed(importFile);
 				presetNbt.putString("filename", file);
-				NbtList addModulesNbt = new NbtList();
-				try {
-					addModulesNbt.addAll(Arrays.stream(addModules.split(",")).map((id) -> NbtString.of(new Identifier(id).toString())).toList());
-				} catch (InvalidIdentifierException e) {
-					tellInvalid(player, "commands.switchy_client.import.fail.parse", literal(addModules));
-					return 0;
+				if (!addModules.isEmpty()) {
+					NbtList addModulesNbt = new NbtList();
+					try {
+						addModulesNbt.addAll(Arrays.stream(addModules.split(","))
+								// .filter(s -> presetNbt.getList("enabled", NbtElement.STRING_TYPE).contains(s))
+								.map((id) -> NbtString.of(new Identifier(id).toString()))
+								.toList()
+						);
+					} catch (InvalidIdentifierException e) {
+						tellInvalid(player, "commands.switchy_client.import.fail.parse", literal(addModules));
+						return 0;
+					}
+					if (!addModulesNbt.isEmpty()) {
+						presetNbt.put("addModules", addModulesNbt);
+					}
 				}
-				presetNbt.put("addModules", addModulesNbt);
 				ClientPlayNetworking.send(Switchy.C2S_IMPORT, PacketByteBufs.create().writeNbt(presetNbt));
 				tellSuccess(player, "commands.switchy_client.import.success");
 				return 1;

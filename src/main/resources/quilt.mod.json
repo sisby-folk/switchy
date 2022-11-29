@@ -6,9 +6,9 @@
 		"version": "${version}",
 		"metadata": {
 			"name": "Switchy",
-			"description": "Combines player personalization features from other mods into presets",
+			"description": "Commands for switching between nothing - including nicknames, skins, and more.",
 			"contributors": {
-				"Sisby Folk": "Owner"
+				"Sisby folk": "Co-Authors"
 			},
 			"contact": {
 				"homepage": "https://modrinth.com/mod/switchy",
@@ -38,6 +38,11 @@
 			{
 				"id": "drogtor",
 				"versions": ">=1.1.3",
+				"optional": true
+			},
+			{
+				"id": "styled-nicknames",
+				"versions": ">=1.0.4",
 				"optional": true
 			},
 			{

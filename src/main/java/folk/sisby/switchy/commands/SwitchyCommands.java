@@ -170,7 +170,7 @@ public class SwitchyCommands {
 
 	private static int listPresets(ServerPlayerEntity player, SwitchyPresets presets) {
 		sendMessage(player, translatableWithArgs("commands.switchy.list.presets", FORMAT_INFO, literal(presets.toString())));
-		sendMessage(player, translatableWithArgs("commands.switchy.list.modules", FORMAT_INFO, literal(presets.getEnabledModuleNames().toString())));
+		sendMessage(player, translatableWithArgs("commands.switchy.list.modules", FORMAT_INFO, presets.getEnabledModuleText()));
 		sendMessage(player, translatableWithArgs("commands.switchy.list.current", FORMAT_INFO, literal(presets.getCurrentPreset().toString())));
 		return 1;
 	}
@@ -226,7 +226,7 @@ public class SwitchyCommands {
 
 		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase("switchy delete " + presetName)) {
 			tellWarn(player, "commands.switchy.delete.warn");
-			tellWarn(player, "commands.switchy.list.modules", literal(presets.getEnabledModuleNames().toString()));
+			tellWarn(player, "commands.switchy.list.modules", presets.getEnabledModuleText());
 			tellInvalidTry(player, "commands.switchy.delete.confirmation", "commands.switchy.delete.command", literal(presetName));
 			return 0;
 		} else {
@@ -272,8 +272,8 @@ public class SwitchyCommands {
 		String filename = presetNbt.getString("filename");
 
 		// Parse Identifier Flags
-		List<Identifier> addModules = new ArrayList<>();
-		List<Identifier> removeModules = new ArrayList<>();
+		Set<Identifier> addModules = new HashSet<>();
+		Set<Identifier> removeModules = new HashSet<>();
 		try {
 			presetNbt.getList("addModules", NbtElement.STRING_TYPE).forEach(
 					e -> addModules.add(new Identifier(e.asString()))
@@ -286,7 +286,8 @@ public class SwitchyCommands {
 			return;
 		}
 
-		String command = "switchy_client import " + filename + (addModules.isEmpty() ? "" : (" " + addModules.toString().substring(1, addModules.toString().length() - 1)));
+		String command_args = filename + (addModules.isEmpty() ? "" : (" " + addModules.stream().map(Identifier::toString).collect(Collectors.joining(","))));
+		String command = "switchy_client import " + command_args;
 
 		// Construct presets from NBT
 		SwitchyPresets importedPresets;
@@ -318,15 +319,15 @@ public class SwitchyCommands {
 				.filter(importedPresets.modules::get)
 				.filter(key -> !removeModules.contains(key))
 				.filter((key) -> IMPORTABLE_OP.contains(importable.get(key)))
-				.filter((key) -> player.hasPermissionLevel(2) || IMPORTABLE_NON_OP.contains(importable.get(key)))
+				.filter((key) -> (addModules.contains(key) && player.hasPermissionLevel(2)) || IMPORTABLE_NON_OP.contains(importable.get(key)))
 		.toList();
 
 		// Print and check command confirmation
 		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command)) {
 			tellWarn(player, "commands.switchy.import.warn", literal(String.valueOf(importedPresets.getPresetNames().size())), literal(String.valueOf(modules.size())));
 			tellWarn(player, "commands.switchy.list.presets", literal(importedPresets.getPresetNames().toString()));
-			tellWarn(player, "commands.switchy.list.modules", literal(modules.stream().map(Identifier::getPath).toList().toString()));
-			tellInvalidTry(player, "commands.switchy.import.confirmation", "commands.switchy.import.command", literal(filename));
+			tellWarn(player, "commands.switchy.list.modules", getIdText(modules));
+			tellInvalidTry(player, "commands.switchy.import.confirmation", "commands.switchy.import.command", literal(command_args));
 			last_command.put(player.getUuid(), command);
 			return;
 		}
