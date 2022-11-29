@@ -8,16 +8,20 @@ Works in singleplayer and on server-side.</p>
 
 ## What is Switchy?
 
-Switchy is a mod that lets you make presets using commands.
-The presets don't do anything.
+Switchy lets you use commands make ***presets*** that are stored with your player data.
 
-Thankfully, Switchy is loaded with modules that make presets do things. Mostly things from other mods.
+Switchy will load ***modules*** that tell presets what to store.
+
+When you ***switch*** presets, your data is saved to the old preset, then loaded from the new one.
+
+Modules define what this data is: items, nicknames, player skins, player position, you name it.
+They don't even have to implement functionality (like nicknames) themselves - they can just interact with an existing mod.
 
 ## How do you use it?
 
 First, install a vanilla add-on or any compatible mod (see modules).
 
-Use `/switchy list` to see your current presets.
+Use `/switchy list` any time to see your current presets.
 
 Then, use `/switchy rename default [name]` to give your starting preset a name.
 
@@ -25,59 +29,57 @@ Then, use `/switchy rename default [name]` to give your starting preset a name.
 
 `/switchy set [name]` or `/switch [name]` will switch between existing presets
 
-When a module is **Enabled**, it makes things "switch" per-preset.
-Using `/switchy module enable/disable [name]` allows you to toggle this behaviour for just your presets.
+When a module is **Enabled**, it makes things "switch" (load and save) per-preset.
+Using `/switchy module enable/disable [name]` toggles this behaviour for your own presets.
 
-Switchy provides no ability for server owners to enable or disable modules server-wide.
+Modules cannot (and will never) be able to be enabled or disabled server-wide.
 
-For more commands, type `/switchy help`
+For more commands, including `export` and `import` (client required), type `/switchy help`
 
 ## Modules
 
+Most modules require installing another mod to work! Be sure to follow the links below.
+
 Switchy itself comes packaged with modules for:
 - [Drogtor The Nickinator](https://modrinth.com/mod/drogtor) - player `nickname`, `bio`, and `color`
-- [Fabric Tailor](https://modrinth.com/mod/fabrictailor) - set skin
+- [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) - nicknames. Recommended config WIP
+  - Note: Using Switchy with Styled Nicknames disables permissions for self-assigning nicknames
+- [Fabric Tailor](https://modrinth.com/mod/fabrictailor) - player skin
 - [Origins](https://modrinth.com/mod/origins/versions) - current origins (includes all layers, e.g. [Statures](https://modrinth.com/mod/tinkerers-statures) for player height)
-- [Apoli](https://github.com/apace100/apoli) (by [MerchantPug](https://github.com/MerchantPug)) - current power state (e.g. Inventory powers, Resources/Cooldowns - enhances origins module.)
+  - [Apoli](https://github.com/apace100/apoli) (by [MerchantPug](https://github.com/MerchantPug)) - current power state (e.g. Inventories, Resources/Cooldowns)
 - [Pehkui](https://modrinth.com/mod/pehkui) - pehkui `width` and `height` properties.
-- (1.19) [Lanyard](https://modrinth.com/mod/lanyard) - lanyard name, pronouns, and bio.
+- [Lanyard](https://modrinth.com/mod/lanyard) - lanyard name, pronouns, and bio.
 
 You can add more modules from these first-party add-ons:
 - [Switchy Inventories](https://modrinth.com/mod/switchy-inventories) - addon for minecraft.
-  - Allows for separate inventories, ender chests, and trinket inventories.
-  - Each module is disabled by default, allowing players to enable them individually.
+  - Modules for separate inventories, ender chests, and trinket inventories.
+  - All modules are disabled by default.
 
 .. And these third-party add-ons!:
 - [Switchy Teleport](https://modrinth.com/mod/switchy-teleport) - addon for minecraft.
-  - Modules for keeping player position and spawn point separate between presets. 
-  - Both modues are disabled by default. 
- 
+  - Modules for keeping player position and spawn point separate between presets.
+  - All modules are disabled by default.
+
 
 ## Showcase
 
 <iframe width="896" height="504" src="https://www.youtube.com/embed/gkOGZUJOtR4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-## Design - Modules
-
-Switchy, at its core, is a mod that gives you a list of empty presets. You can add to the list, set what preset is "current", and so on, but none of these presets *do* anything.
-
-> At its core - Switchy is a mod that **does nothing** - and that's key to its design.
+## Developers
 
 Switchy modules provide switchy with all of its practical functionality, but despite this, they're only required to do four things:
- - Save themselves to an NBT Compound.
- - Load themselves from an NBT Compound.
- - Read data to themselves from the player.
- - Apply data from themselves to the player.
+- Save themselves to NBT.
+- Load themselves from NBT.
+- Save data to themselves from the player.
+- Load data from themselves to the player.
 
-Because mods, and minecraft itself, often have to do these things already, compatibility modules are often extremely simple to write (the *Switchy Inventories* module took **[5 lines of code](https://github.com/sisby-folk/switchy-inventories/blob/1.18/src/main/java/folk/sisby/switchy_inventories/compat/InventoryCompat.java)**.)
+Because mods (and minecraft) often have to do these things already, modules can be extremely simple.
 
-We hope players and developers find this useful.
+If you'd like to develop your own addon module, feel free to use [Switchy Inventories](https://github.com/sisby-folk/switchy-inventories) as an example.
 
-## Developing Addons
+To make a module, just implement `api.PresetModule` and register it using `api.PresetModuleRegistry`.
 
-If you'd like to develop your own addon module, feel free to clone the [Inventories Module](https://github.com/sisby-folk/switchy-inventories) to get started.
-
-Otherwise, all an addon mod needs to do is create a module class that implements `api.PresetModule` and registers itself using the `api.PresetModuleRegistry` - Go wild!
+There's also an API for basic operations like getting the name of a player's presets, and switching to a specific preset.
 
 ## Further Info
 
@@ -87,11 +89,9 @@ All mods are built on the work of many others.
 
 We made this mod (up to v1.2.1) for Modfest: Singularity! However, we intend to maintain this mod into the future.
 
-This mod is included in [Tinkerer's Quilt](https://modrinth.com/modpack/tinkerers-quilt) - our modpack all about ease of play and ease of expression.
+This mod is included in [Tinkerer's Quilt](https://modrinth.com/modpack/tinkerers-quilt) - our modpack about ease of play and self-expression.
 
 This mod is primarily motivated by improving accessibility for [plural systems](https://morethanone.info).
-We support the [Plural Respect Document](https://bit.ly/pluralrespect) - its perspectives largely reflect our own.
+Check out the [Plural Respect Document](https://bit.ly/pluralrespect).
 
-We're primarily modpack developers - not mod developers! If you want to port this mod, do it yourself!
-
-Though feel free to let us know if we can spruce anything on the implementation side - PRs and issues with code snippets are welcome as long as you can help us understand them.
+We're always open to suggestions for how to implement code snippets better - if you see a wonky method and have an idea - let us know.
