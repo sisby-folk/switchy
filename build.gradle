@@ -195,6 +195,7 @@ if (System.getenv("MODRINTH_TOKEN")) {
 			optional.project "fabrication"
 		}
 		changelog = "Changelog: https://github.com/sisby-folk/switchy/releases/tag/v" + origVersion
+		syncBodyFrom = rootProject.file("README.md").text
 	}
 }
 
