@@ -215,9 +215,13 @@ public class SwitchyPresets {
 
 	public MutableText getEnabledModuleText() {
 		MutableText outText = literal("[");
-		getEnabledModules().stream().map(id -> literal(id.getPath()).setStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, literal(id.toString()))))).forEach(
-				outText::append
-		);
+		List<Identifier> enabledModules = getEnabledModules();
+		for (int i = 0; i < enabledModules.size(); i++) {
+			outText.append(literal(enabledModules.get(i).getPath()).setStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, literal(enabledModules.get(i).toString())))));
+			if (i < enabledModules.size() - 1) {
+				outText.append(", ");
+			}
+		}
 		outText.append(literal("]"));
 		return outText;
 	}
