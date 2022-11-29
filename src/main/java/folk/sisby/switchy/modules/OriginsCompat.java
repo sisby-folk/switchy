@@ -31,7 +31,7 @@ public class OriginsCompat implements PresetModule {
 	@Nullable public Map<OriginLayer, Origin> origins;
 
 	@Override
-	public void updateFromPlayer(PlayerEntity player) {
+	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
 		OriginComponent originComponent = ModComponents.ORIGIN.get(player);
 		this.origins = new HashMap<>(originComponent.getOrigins());
 	}
