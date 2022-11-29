@@ -14,7 +14,9 @@ import static folk.sisby.switchy.util.Feedback.translatable;
 public interface PresetModule {
 
 	@Deprecated
-	void updateFromPlayer(PlayerEntity player);
+	default void updateFromPlayer(PlayerEntity player) {
+		updateFromPlayer(player, null);
+	}
 
 	default void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
 		updateFromPlayer(player);
