@@ -1,4 +1,6 @@
-package folk.sisby.switchy;
+package folk.sisby.switchy.api;
+
+import folk.sisby.switchy.SwitchyPresets;
 
 public interface SwitchyPlayer {
 

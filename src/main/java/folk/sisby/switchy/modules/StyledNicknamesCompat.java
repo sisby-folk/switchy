@@ -23,7 +23,7 @@ public class StyledNicknamesCompat implements PresetModule {
 	@Nullable public String styled_nickname;
 
 	@Override
-	public void updateFromPlayer(PlayerEntity player) {
+	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
 		NicknameHolder holder = NicknameHolder.of(player);
 		this.styled_nickname = holder.sn_get();
 	}

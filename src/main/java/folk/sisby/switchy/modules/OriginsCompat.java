@@ -1,8 +1,6 @@
 package folk.sisby.switchy.modules;
 
 import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.SwitchyPlayer;
-import folk.sisby.switchy.SwitchyPresets;
 import folk.sisby.switchy.api.ModuleImportable;
 import folk.sisby.switchy.api.PresetModule;
 import folk.sisby.switchy.api.PresetModuleRegistry;
@@ -23,7 +21,10 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import static folk.sisby.switchy.api.PlayerPresets.getPlayerPresetModules;
 
 public class OriginsCompat implements PresetModule {
 	public static final Identifier ID = new Identifier("switchy",  "origins");
@@ -36,11 +37,9 @@ public class OriginsCompat implements PresetModule {
 	@Nullable public Map<OriginLayer, Origin> origins;
 
 	@Override
-	public void updateFromPlayer(PlayerEntity player) {
-		OriginComponent originComponent = ModComponents.ORIGIN.get(player);
-		this.origins = new HashMap<>(originComponent.getOrigins());
-		SwitchyPresets presets = ((SwitchyPlayer)player).switchy$getPresets();
-		if (!presets.getModuleToggles().get(ApoliCompat.ID)) {
+	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
+		this.origins = new HashMap<>(ModComponents.ORIGIN.get(player).getOrigins());
+		if (!getPlayerPresetModules(player).get(ApoliCompat.ID) && nextPreset != null) {
 			for (OriginLayer layer : this.origins.keySet()) {
 				for (PowerType<?> powerType : this.origins.get(layer).getPowerTypes()) {
 					Power power = powerType.get(player);

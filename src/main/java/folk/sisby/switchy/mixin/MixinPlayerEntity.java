@@ -1,6 +1,6 @@
 package folk.sisby.switchy.mixin;
 
-import folk.sisby.switchy.SwitchyPlayer;
+import folk.sisby.switchy.api.SwitchyPlayer;
 import folk.sisby.switchy.SwitchyPresets;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;

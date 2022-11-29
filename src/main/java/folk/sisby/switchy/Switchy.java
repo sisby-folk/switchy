@@ -28,6 +28,8 @@ public class Switchy implements ModInitializer {
 
 	public static final SwitchyConfig CONFIG = QuiltConfig.create(ID, "config", SwitchyConfig.class);
 	public static final List<ModuleImportable> IMPORTABLE_CONFIGURABLE = List.of(ModuleImportable.ALLOWED, ModuleImportable.OPERATOR);
+	public static final List<ModuleImportable> IMPORTABLE_NON_OP = List.of(ModuleImportable.ALLOWED, ModuleImportable.ALWAYS_ALLOWED);
+	public static final List<ModuleImportable> IMPORTABLE_OP = List.of(ModuleImportable.ALLOWED, ModuleImportable.ALWAYS_ALLOWED, ModuleImportable.OPERATOR);
 
 	public static final Map<Identifier, Supplier<? extends PresetModule>> COMPAT_REGISTRY = new HashMap<>();
 

@@ -13,11 +13,7 @@ import static folk.sisby.switchy.util.Feedback.translatable;
 
 public interface PresetModule {
 
-	void updateFromPlayer(PlayerEntity player);
-
-	default void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
-		updateFromPlayer(player);
-	}
+	void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset);
 
 	void applyToPlayer(PlayerEntity player);
 

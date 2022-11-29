@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class SwitchyPresets {
 
 	private final Map<String, SwitchyPreset> presetMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-	private final Map<Identifier, Boolean> moduleToggles;
+	public final Map<Identifier, Boolean> modules;
 	private SwitchyPreset currentPreset;
 
 	public static final String KEY_PRESET_CURRENT = "current";
@@ -30,7 +30,7 @@ public class SwitchyPresets {
 		NbtList enabledList = new NbtList();
 		NbtList disabledList = new NbtList();
 
-		this.moduleToggles.forEach((key, value) -> {
+		this.modules.forEach((key, value) -> {
 			if (value) enabledList.add(NbtString.of(key.toString()));
 			if (!value) disabledList.add(NbtString.of(key.toString()));
 		});
@@ -56,7 +56,7 @@ public class SwitchyPresets {
 
 		NbtCompound listNbt = nbt.getCompound(KEY_PRESET_LIST);
 		for (String key : listNbt.getKeys()) {
-			SwitchyPreset preset = SwitchyPreset.fromNbt(key, listNbt.getCompound(key), outPresets.moduleToggles);
+			SwitchyPreset preset = SwitchyPreset.fromNbt(key, listNbt.getCompound(key), outPresets.modules);
 			if (!outPresets.addPreset(preset)) {
 				Switchy.LOGGER.warn("Switchy: Player data contained duplicate preset. Data may have been lost.");
 			}
@@ -69,7 +69,7 @@ public class SwitchyPresets {
 
 			if (outPresets.presetMap.isEmpty() || outPresets.getCurrentPreset() == null) {
 				// Recover current data as "Default" preset
-				outPresets.addPreset(new SwitchyPreset("default", outPresets.moduleToggles));
+				outPresets.addPreset(new SwitchyPreset("default", outPresets.modules));
 				outPresets.setCurrentPreset(player, "default", false);
 			}
 		}
@@ -77,23 +77,23 @@ public class SwitchyPresets {
 		return outPresets;
 	}
 
-	public boolean importFromOther(SwitchyPresets presets, List<Identifier> modules) {
-		if (presets.getPresetNames().stream().noneMatch((name) -> this.getPresetNames().contains(name))) {
+	public boolean importFromOther(SwitchyPresets other, List<Identifier> importModules) {
+		if (other.getPresetNames().stream().noneMatch((name) -> this.getPresetNames().contains(name))) {
 			// Remove modules that shouldn't be imported
-			Switchy.COMPAT_REGISTRY.keySet().forEach((key) -> {
-				if ((!modules.contains(key) || !this.moduleToggles.containsKey(key)) && presets.getModuleToggles().get(key)) {
-					presets.disableModule(key);
+			this.modules.forEach((key, enabled) -> {
+				if (other.modules.get(key) && (!importModules.contains(key) || !enabled)) {
+					other.disableModule(key);
 				}
 			});
 
 			// Re-enable missing empty modules
-			this.moduleToggles.forEach((key, enabled) -> {
-				if (enabled && !presets.getModuleToggles().get(key)) {
-					presets.enableModule(key);
+			this.modules.forEach((key, enabled) -> {
+				if (enabled && !other.modules.get(key)) {
+					other.enableModule(key);
 				}
 			});
 
-			presets.presetMap.values().forEach(this::addPreset);
+			other.presetMap.values().forEach(this::addPreset);
 			return true;
 		} else {
 			return false;
@@ -103,8 +103,8 @@ public class SwitchyPresets {
 	private void toggleModulesFromNbt(NbtList list, Boolean enabled, Boolean silent) {
 		list.forEach((e) -> {
 			Identifier id;
-			if (e instanceof NbtString s && (id = Identifier.tryParse(s.asString())) != null && this.moduleToggles.containsKey(id)) {
-				this.moduleToggles.put(id, enabled);
+			if (e instanceof NbtString s && (id = Identifier.tryParse(s.asString())) != null && this.modules.containsKey(id)) {
+				this.modules.put(id, enabled);
 			} else if (!silent) {
 				Switchy.LOGGER.warn("Switchy: Unable to toggle a module - Was a module unloaded?");
 				Switchy.LOGGER.warn("Switchy: NBT Element: " + e.asString());
@@ -113,7 +113,7 @@ public class SwitchyPresets {
 	}
 
 	private SwitchyPresets() {
-		this.moduleToggles = Switchy.COMPAT_REGISTRY.entrySet().stream()
+		this.modules = Switchy.COMPAT_REGISTRY.entrySet().stream()
 				.collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().get().isDefault()));
 	}
 
@@ -183,8 +183,8 @@ public class SwitchyPresets {
 	}
 
 	public void disableModule(Identifier id) {
-		if (this.moduleToggles.containsKey(id)) {
-			this.moduleToggles.put(id, false);
+		if (this.modules.containsKey(id)) {
+			this.modules.put(id, false);
 			presetMap.forEach((name, preset) -> preset.compatModules.remove(id));
 		} else {
 			throw new IllegalArgumentException("Switchy module doesn't exist");
@@ -192,15 +192,23 @@ public class SwitchyPresets {
 	}
 
 	public void enableModule(Identifier id) {
-		if (this.moduleToggles.containsKey(id)) {
-			this.moduleToggles.put(id, true);
+		if (this.modules.containsKey(id)) {
+			this.modules.put(id, true);
 			presetMap.forEach((name, preset) -> preset.compatModules.put(id, Switchy.COMPAT_REGISTRY.get(id).get()));
 		} else {
 			throw new IllegalArgumentException("Switchy module doesn't exist");
 		}
 	}
 
-	public Map<Identifier, Boolean> getModuleToggles() {
-		return this.moduleToggles;
+	public List<Identifier> getEnabledModules() {
+		return this.modules.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).toList();
+	}
+
+	public List<String> getEnabledModuleNames() {
+		return getEnabledModules().stream().map(Identifier::getPath).toList();
+	}
+
+	public List<Identifier> getDisabledModules() {
+		return this.modules.entrySet().stream().filter((e) -> !e.getValue()).map(Map.Entry::getKey).toList();
 	}
 }

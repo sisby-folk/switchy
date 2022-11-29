@@ -22,7 +22,7 @@ public class FabricTailorCompat implements PresetModule {
 	@Nullable public String skinSignature;
 
 	@Override
-	public void updateFromPlayer(PlayerEntity player) {
+	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
 		TailoredPlayer tailoredPlayer = (TailoredPlayer) player;
 		this.skinValue = tailoredPlayer.getSkinValue();
 		this.skinSignature = tailoredPlayer.getSkinSignature();

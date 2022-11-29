@@ -29,7 +29,7 @@ public class DrogtorCompat implements PresetModule {
 	@Nullable public String bio;
 
 	@Override
-	public void updateFromPlayer(PlayerEntity player) {
+	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
 		DrogtorPlayer drogtorPlayer = (DrogtorPlayer) player;
 		this.nickname = drogtorPlayer.drogtor$getNickname();
 		this.namecolor = drogtorPlayer.drogtor$getNameColor();
