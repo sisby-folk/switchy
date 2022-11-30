@@ -1,6 +1,5 @@
 package folk.sisby.switchy.commands;
 
-import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -16,6 +15,8 @@ import java.io.FilenameFilter;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
+import static folk.sisby.switchy.util.Feedback.translatable;
+
 public class FileArgumentType implements ArgumentType<File> {
 	private final File folder;
 	private final String extension;
@@ -24,7 +25,7 @@ public class FileArgumentType implements ArgumentType<File> {
 		return (dir, name) -> FileNameUtils.getExtension(name).toLowerCase().equals(extension);
 	}
 
-	private FileArgumentType(final File folder, final String extension) {
+	protected FileArgumentType(final File folder, final String extension) {
 		this.folder = folder;
 		this.extension = extension;
 	}
@@ -33,7 +34,7 @@ public class FileArgumentType implements ArgumentType<File> {
 		return new FileArgumentType(folder, extension);
 	}
 
-	private static final SimpleCommandExceptionType FILE_NOT_FOUND = new SimpleCommandExceptionType(new LiteralMessage("File not found"));
+	private static final SimpleCommandExceptionType FILE_NOT_FOUND = new SimpleCommandExceptionType(translatable("command.exception.file.not_found"));
 
 	@Override
 	public File parse(StringReader reader) throws CommandSyntaxException {

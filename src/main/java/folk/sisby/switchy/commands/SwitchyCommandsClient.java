@@ -11,7 +11,6 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
-import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.command.api.client.ClientCommandManager;
 import org.quiltmc.qsl.command.api.client.ClientCommandRegistrationCallback;
@@ -39,10 +38,10 @@ public class SwitchyCommandsClient {
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher) -> dispatcher.register(
 				ClientCommandManager.literal("switchy_client")
 						.then(ClientCommandManager.literal("import")
-								.then(ClientCommandManager.argument("file", FileArgumentType.create(new File(SwitchyClient.EXPORT_PATH), "dat"))
-										.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", File.class)))
+								.then(ClientCommandManager.argument("file", NbtFileArgumentType.create(new File(SwitchyClient.EXPORT_PATH)))
+										.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class)))
 										.then(ClientCommandManager.argument("addModules", new IdentifiersArgumentType())
-												.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", File.class), new Pair<>("addModules", List.class)))
+												.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class), new Pair<>("addModules", List.class)))
 										)
 								)
 						)
@@ -92,26 +91,18 @@ public class SwitchyCommandsClient {
 		return unwrapAndExecute(context, (player, ignored, ignored2) -> executeFunction.apply(player), null, null);
 	}
 
-	private static int importPresets(ClientPlayerEntity player, File file, List<Identifier> addModules) {
-		String filename = FilenameUtils.getBaseName(file.getName());
-		try {
-			NbtCompound presetNbt = NbtIo.readCompressed(file);
-			presetNbt.putString("filename", filename);
-			if (!addModules.isEmpty()) {
-				NbtList addModulesNbt = new NbtList();
-				addModules.stream().map(Identifier::toString).map(NbtString::of).forEach(addModulesNbt::add);
-				presetNbt.put("addModules", addModulesNbt);
-			}
-			ClientPlayNetworking.send(Switchy.C2S_IMPORT, PacketByteBufs.create().writeNbt(presetNbt));
-			tellSuccess(player, "commands.switchy_client.import.success");
-			return 1;
-		} catch (IOException e) {
-			tellInvalid(player, "commands.switchy_client.import.fail.parse", literal(filename));
-			return 0;
+	private static int importPresets(ClientPlayerEntity player, NbtCompound presetsNbt, List<Identifier> addModules) {
+		if (!addModules.isEmpty()) {
+			NbtList addModulesNbt = new NbtList();
+			addModules.stream().map(Identifier::toString).map(NbtString::of).forEach(addModulesNbt::add);
+			presetsNbt.put("addModules", addModulesNbt);
 		}
+		ClientPlayNetworking.send(Switchy.C2S_IMPORT, PacketByteBufs.create().writeNbt(presetsNbt));
+		tellSuccess(player, "commands.switchy_client.import.success");
+		return 1;
 	}
 
-	private static int importPresets(ClientPlayerEntity player, File file) {
-		return importPresets(player, file, List.of());
+	private static int importPresets(ClientPlayerEntity player, NbtCompound presetsNbt) {
+		return importPresets(player, presetsNbt, List.of());
 	}
 }
