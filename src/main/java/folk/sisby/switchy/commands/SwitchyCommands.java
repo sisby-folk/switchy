@@ -272,11 +272,11 @@ public class SwitchyCommands {
 		String filename = presetNbt.getString("filename");
 
 		// Parse Identifier Flags
-		Set<Identifier> addModules = new HashSet<>();
+		Set<Identifier> opModules = new HashSet<>();
 		Set<Identifier> removeModules = new HashSet<>();
 		try {
-			presetNbt.getList("addModules", NbtElement.STRING_TYPE).forEach(
-					e -> addModules.add(new Identifier(e.asString()))
+			presetNbt.getList("opModules", NbtElement.STRING_TYPE).forEach(
+					e -> opModules.add(new Identifier(e.asString()))
 			);
 			presetNbt.getList("removeModules", NbtElement.STRING_TYPE).forEach(
 					e -> removeModules.add(new Identifier(e.asString()))
@@ -286,7 +286,7 @@ public class SwitchyCommands {
 			return;
 		}
 
-		String command_args = filename + (addModules.isEmpty() ? "" : (" " + addModules.stream().map(Identifier::toString).collect(Collectors.joining(","))));
+		String command_args = filename + (opModules.isEmpty() ? "" : (" " + opModules.stream().map(Identifier::toString).collect(Collectors.joining(","))));
 		String command = "/switchy_client import " + command_args;
 
 		// Construct presets from NBT
@@ -306,7 +306,7 @@ public class SwitchyCommands {
 
 		// Warn user about any disallowed flags
 		List<Identifier> disallowedFlags = Switchy.COMPAT_REGISTRY.keySet().stream().filter(
-				(key) -> importable.get(key) == ModuleImportable.OPERATOR && !player.hasPermissionLevel(2) && addModules.contains(key)
+				(key) -> importable.get(key) == ModuleImportable.OPERATOR && !player.hasPermissionLevel(2) && opModules.contains(key)
 		).toList();
 		if (!disallowedFlags.isEmpty()) {
 			tellWarn(player, "commands.switchy.import.warn.permission", literal(disallowedFlags.toString()));
@@ -319,7 +319,7 @@ public class SwitchyCommands {
 				.filter(importedPresets.modules::get)
 				.filter(key -> !removeModules.contains(key))
 				.filter((key) -> IMPORTABLE_OP.contains(importable.get(key)))
-				.filter((key) -> (addModules.contains(key) && player.hasPermissionLevel(2)) || IMPORTABLE_NON_OP.contains(importable.get(key)))
+				.filter((key) -> (opModules.contains(key) && player.hasPermissionLevel(2)) || IMPORTABLE_NON_OP.contains(importable.get(key)))
 		.toList();
 
 		// Print and check command confirmation

@@ -40,8 +40,8 @@ public class SwitchyCommandsClient {
 						.then(ClientCommandManager.literal("import")
 								.then(ClientCommandManager.argument("file", NbtFileArgumentType.create(new File(SwitchyClient.EXPORT_PATH)))
 										.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class)))
-										.then(ClientCommandManager.argument("addModules", IdentifiersFromNbtArgArgumentType.create("file", "enabled"))
-												.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class), new Pair<>("addModules", List.class)))
+										.then(ClientCommandManager.argument("opModules", IdentifiersFromNbtArgArgumentType.create("file", "enabled"))
+												.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class), new Pair<>("opModules", List.class)))
 										)
 								)
 						)
@@ -91,11 +91,11 @@ public class SwitchyCommandsClient {
 		return unwrapAndExecute(context, (player, ignored, ignored2) -> executeFunction.apply(player), null, null);
 	}
 
-	private static int importPresets(ClientPlayerEntity player, NbtCompound presetsNbt, List<Identifier> addModules) {
-		if (!addModules.isEmpty()) {
-			NbtList addModulesNbt = new NbtList();
-			addModules.stream().map(Identifier::toString).map(NbtString::of).forEach(addModulesNbt::add);
-			presetsNbt.put("addModules", addModulesNbt);
+	private static int importPresets(ClientPlayerEntity player, NbtCompound presetsNbt, List<Identifier> opModules) {
+		if (!opModules.isEmpty()) {
+			NbtList opModulesNbt = new NbtList();
+			opModules.stream().map(Identifier::toString).map(NbtString::of).forEach(opModulesNbt::add);
+			presetsNbt.put("opModules", opModulesNbt);
 		}
 		ClientPlayNetworking.send(Switchy.C2S_IMPORT, PacketByteBufs.create().writeNbt(presetsNbt));
 		tellSuccess(player, "commands.switchy_client.import.success");
