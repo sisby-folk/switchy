@@ -8,11 +8,19 @@
       },
       "import": {
         "command": "/switchy_client import {}",
-        "success": "Presets sent to server",
-        "fail": {
-          "read": "Failed to read file {}",
-          "parse": "Failed to parse presets from {}"
-        }
+        "success": "Presets sent to server"
+      }
+    }
+  },
+  "command": {
+    "exception": {
+      "identifiers": {
+        "expected_namespace": "Expected namespace to begin after separator",
+        "expected_path": "Expected path to begin after namespace"
+      },
+      "file": {
+        "not_found": "File not found",
+        "invalid_nbt": "File contained invalid NBT"
       }
     }
   }
