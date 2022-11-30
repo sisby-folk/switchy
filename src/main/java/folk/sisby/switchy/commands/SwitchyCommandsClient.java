@@ -40,7 +40,7 @@ public class SwitchyCommandsClient {
 						.then(ClientCommandManager.literal("import")
 								.then(ClientCommandManager.argument("file", NbtFileArgumentType.create(new File(SwitchyClient.EXPORT_PATH)))
 										.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class)))
-										.then(ClientCommandManager.argument("addModules", new IdentifiersArgumentType())
+										.then(ClientCommandManager.argument("addModules", IdentifiersFromNbtArgArgumentType.create("file", "enabled"))
 												.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class), new Pair<>("addModules", List.class)))
 										)
 								)

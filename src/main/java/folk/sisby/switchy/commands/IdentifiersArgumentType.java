@@ -18,6 +18,13 @@ import static folk.sisby.switchy.util.Feedback.translatable;
 
 public class IdentifiersArgumentType implements ArgumentType<List<Identifier>> {
 
+	protected IdentifiersArgumentType() {
+	}
+
+	public static IdentifiersArgumentType create() {
+		return new IdentifiersArgumentType();
+	}
+
 	private static boolean isPathCharacterValid(char character) {
 		return character == '_'
 				|| character == '-'
