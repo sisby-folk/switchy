@@ -55,9 +55,11 @@ public class IdentifiersFromNbtArgArgumentType implements ArgumentType<List<Iden
 		try {
 			List<String> usedIds = identifiersArgumentType.parse(new StringReader(builder.getRemaining())).stream().map(Identifier::toString).toList();
 			String currentValidString = usedIds.stream().filter(suggestions::contains).collect(Collectors.joining(","));
-			suggestions.stream().filter(
-					s -> !usedIds.contains(s)
-			).map(s -> currentValidString + "," + s).forEach(builder::suggest);
+			if (!currentValidString.isBlank()) {
+				suggestions.stream().filter(
+						s -> !usedIds.contains(s)
+				).map(s -> currentValidString + "," + s).forEach(builder::suggest);
+			}
 		} catch (CommandSyntaxException ignored) {
 		}
 		return builder.buildFuture();

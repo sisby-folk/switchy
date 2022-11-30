@@ -45,6 +45,7 @@ public class IdentifiersArgumentType implements ArgumentType<List<Identifier>> {
 	public List<Identifier> parse(StringReader reader) throws CommandSyntaxException {
 		List<Identifier> outList = new ArrayList<>();
 		if (reader.canRead() && reader.peek() == '~') {
+			reader.skip();
 			return outList;
 		}
 		while (true) {
