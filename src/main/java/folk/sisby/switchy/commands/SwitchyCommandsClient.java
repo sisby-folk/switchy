@@ -1,18 +1,17 @@
 package folk.sisby.switchy.commands;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.datafixers.util.Function3;
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.SwitchyClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.command.CommandSource;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.Pair;
+import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.command.api.client.ClientCommandManager;
 import org.quiltmc.qsl.command.api.client.ClientCommandRegistrationCallback;
@@ -23,8 +22,10 @@ import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -38,11 +39,10 @@ public class SwitchyCommandsClient {
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher) -> dispatcher.register(
 				ClientCommandManager.literal("switchy_client")
 						.then(ClientCommandManager.literal("import")
-								.then(ClientCommandManager.argument("file", StringArgumentType.word())
-										.suggests(SwitchyCommandsClient::suggestExportFiles)
-										.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", String.class)))
-										.then(ClientCommandManager.argument("addModules", StringArgumentType.greedyString())
-												.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", String.class), new Pair<>("addModules", String.class)))
+								.then(ClientCommandManager.argument("file", FileArgumentType.create(new File(SwitchyClient.EXPORT_PATH), "dat"))
+										.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", File.class)))
+										.then(ClientCommandManager.argument("addModules", new IdentifiersArgumentType())
+												.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", File.class), new Pair<>("addModules", List.class)))
 										)
 								)
 						)
@@ -92,51 +92,26 @@ public class SwitchyCommandsClient {
 		return unwrapAndExecute(context, (player, ignored, ignored2) -> executeFunction.apply(player), null, null);
 	}
 
-	private static CompletableFuture<Suggestions> suggestExportFiles(CommandContext<QuiltClientCommandSource> context, SuggestionsBuilder builder) {
-		File[] exportFiles = new File(SwitchyClient.EXPORT_PATH).listFiles((dir, name) -> name.toLowerCase().endsWith(".dat"));
-		if (exportFiles != null) {
-			CommandSource.suggestMatching(Arrays.stream(exportFiles).map(File::getName), builder);
-		}
-		return builder.buildFuture();
-	}
-
-	private static int importPresets(ClientPlayerEntity player, String file, String addModules) {
-		String filePath = SwitchyClient.EXPORT_PATH + "/" + file;
-		File importFile = new File(filePath);
-		if (importFile.exists()) {
-			try {
-				NbtCompound presetNbt = NbtIo.readCompressed(importFile);
-				presetNbt.putString("filename", file);
-				if (!addModules.isEmpty()) {
-					NbtList addModulesNbt = new NbtList();
-					try {
-						addModulesNbt.addAll(Arrays.stream(addModules.split(","))
-								// .filter(s -> presetNbt.getList("enabled", NbtElement.STRING_TYPE).contains(s))
-								.map((id) -> NbtString.of(new Identifier(id).toString()))
-								.toList()
-						);
-					} catch (InvalidIdentifierException e) {
-						tellInvalid(player, "commands.switchy_client.import.fail.parse", literal(addModules));
-						return 0;
-					}
-					if (!addModulesNbt.isEmpty()) {
-						presetNbt.put("addModules", addModulesNbt);
-					}
-				}
-				ClientPlayNetworking.send(Switchy.C2S_IMPORT, PacketByteBufs.create().writeNbt(presetNbt));
-				tellSuccess(player, "commands.switchy_client.import.success");
-				return 1;
-			} catch (IOException e) {
-				tellInvalid(player, "commands.switchy_client.import.fail.parse", literal(file));
-				return 0;
+	private static int importPresets(ClientPlayerEntity player, File file, List<Identifier> addModules) {
+		String filename = FilenameUtils.getBaseName(file.getName());
+		try {
+			NbtCompound presetNbt = NbtIo.readCompressed(file);
+			presetNbt.putString("filename", filename);
+			if (!addModules.isEmpty()) {
+				NbtList addModulesNbt = new NbtList();
+				addModules.stream().map(Identifier::toString).map(NbtString::of).forEach(addModulesNbt::add);
+				presetNbt.put("addModules", addModulesNbt);
 			}
-		} else {
-			tellInvalid(player, "commands.switchy_client.import.fail.read", literal(file));
+			ClientPlayNetworking.send(Switchy.C2S_IMPORT, PacketByteBufs.create().writeNbt(presetNbt));
+			tellSuccess(player, "commands.switchy_client.import.success");
+			return 1;
+		} catch (IOException e) {
+			tellInvalid(player, "commands.switchy_client.import.fail.parse", literal(filename));
 			return 0;
 		}
 	}
 
-	private static int importPresets(ClientPlayerEntity player, String file) {
-		return importPresets(player, file, "");
+	private static int importPresets(ClientPlayerEntity player, File file) {
+		return importPresets(player, file, List.of());
 	}
 }
