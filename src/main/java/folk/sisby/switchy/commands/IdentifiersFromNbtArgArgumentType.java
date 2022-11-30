@@ -37,8 +37,8 @@ public class IdentifiersFromNbtArgArgumentType implements ArgumentType<List<Iden
 	}
 
 	@Override
-	public CompletableFuture<Suggestions> listSuggestions(CommandContext context, SuggestionsBuilder builder) {
-		NbtCompound nbt = (NbtCompound) context.getArgument(nbtArgument, NbtCompound.class);
+	public <V> CompletableFuture<Suggestions> listSuggestions(CommandContext<V> context, SuggestionsBuilder builder) {
+		NbtCompound nbt = context.getArgument(nbtArgument, NbtCompound.class);
 		if (nbt != null) {
 			CommandSource.suggestMatching(nbt.getList(nbtListKey, NbtElement.STRING_TYPE).stream().map(NbtElement::asString), builder);
 		}
