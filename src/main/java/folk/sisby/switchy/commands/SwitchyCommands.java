@@ -273,13 +273,13 @@ public class SwitchyCommands {
 
 		// Parse Identifier Flags
 		Set<Identifier> opModules = new HashSet<>();
-		Set<Identifier> removeModules = new HashSet<>();
+		Set<Identifier> excludeModules = new HashSet<>();
 		try {
 			presetNbt.getList("opModules", NbtElement.STRING_TYPE).forEach(
 					e -> opModules.add(new Identifier(e.asString()))
 			);
-			presetNbt.getList("removeModules", NbtElement.STRING_TYPE).forEach(
-					e -> removeModules.add(new Identifier(e.asString()))
+			presetNbt.getList("excludeModules", NbtElement.STRING_TYPE).forEach(
+					e -> excludeModules.add(new Identifier(e.asString()))
 			);
 		} catch (InvalidIdentifierException e) {
 			tellInvalid(player, "commands.switchy.import.fail.parse");
@@ -287,7 +287,7 @@ public class SwitchyCommands {
 		}
 
 		String command_args = filename +
-				(removeModules.isEmpty() ? "" : (" " + removeModules.stream().map(Identifier::toString).collect(Collectors.joining(",")))) +
+				(excludeModules.isEmpty() ? "" : (" " + excludeModules.stream().map(Identifier::toString).collect(Collectors.joining(",")))) +
 				(opModules.isEmpty() ? "" : (" " + opModules.stream().map(Identifier::toString).collect(Collectors.joining(","))));
 		String command = "/switchy_client import " + command_args;
 
@@ -319,7 +319,7 @@ public class SwitchyCommands {
 		List<Identifier> modules = Switchy.COMPAT_REGISTRY.keySet().stream()
 				.filter(presets.modules::get)
 				.filter(importedPresets.modules::get)
-				.filter(key -> !removeModules.contains(key))
+				.filter(key -> !excludeModules.contains(key))
 				.filter((key) -> IMPORTABLE_OP.contains(importable.get(key)))
 				.filter((key) -> (opModules.contains(key) && player.hasPermissionLevel(2)) || IMPORTABLE_NON_OP.contains(importable.get(key)))
 		.toList();

@@ -44,10 +44,10 @@ public class IdentifiersArgumentType implements ArgumentType<List<Identifier>> {
 	@Override
 	public List<Identifier> parse(StringReader reader) throws CommandSyntaxException {
 		List<Identifier> outList = new ArrayList<>();
-		if (reader.peek() == '~') {
+		if (reader.canRead() && reader.peek() == '~') {
 			return outList;
 		}
-		do {
+		while (true) {
 			if(reader.canRead() && reader.peek() == ',') {
 				reader.skip();
 			}
@@ -65,8 +65,15 @@ public class IdentifiersArgumentType implements ArgumentType<List<Identifier>> {
 				reader.skip();
 			}
 			outList.add(new Identifier(reader.getString().substring(start, reader.getCursor())));
-		} while (reader.canRead() && reader.peek() == ',');
-		return outList;
+			if (reader.canRead() && reader.peek() == ',') {
+				reader.skip();
+				if (!reader.canRead() || reader.peek() == ' ') {
+					return outList;
+				}
+			} else {
+				return outList;
+			}
+		}
 	}
 
 	@Override

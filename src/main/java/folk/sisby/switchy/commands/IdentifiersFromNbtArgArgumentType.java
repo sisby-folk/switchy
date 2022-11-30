@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class IdentifiersFromNbtArgArgumentType implements ArgumentType<List<Identifier>> {
 	private final IdentifiersArgumentType identifiersArgumentType;
@@ -52,7 +53,11 @@ public class IdentifiersFromNbtArgArgumentType implements ArgumentType<List<Iden
 		List<String> suggestions = nbt.getList(nbtListKey, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).filter(s -> !excludeIds.contains(s)).toList();
 		CommandSource.suggestMatching(suggestions, builder);
 		try {
-			identifiersArgumentType.parse(new StringReader(builder.getRemaining())).stream().map(Identifier::toString).filter(suggestions::contains).forEach(builder::suggest);
+			List<String> usedIds = identifiersArgumentType.parse(new StringReader(builder.getRemaining())).stream().map(Identifier::toString).toList();
+			String currentValidString = usedIds.stream().filter(suggestions::contains).collect(Collectors.joining(","));
+			suggestions.stream().filter(
+					s -> !usedIds.contains(s)
+			).map(s -> currentValidString + "," + s).forEach(builder::suggest);
 		} catch (CommandSyntaxException ignored) {
 		}
 		return builder.buildFuture();
