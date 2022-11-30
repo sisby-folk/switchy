@@ -49,7 +49,12 @@ public class IdentifiersFromNbtArgArgumentType implements ArgumentType<List<Iden
 			List<Identifier> idArgs = context.getArgument(excludeArgument, List.class);
 			excludeIds.addAll(idArgs.stream().map(Identifier::toString).toList());
 		}
-		CommandSource.suggestMatching(nbt.getList(nbtListKey, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).filter(s -> !excludeIds.contains(s)), builder);
+		List<String> suggestions = nbt.getList(nbtListKey, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).filter(s -> !excludeIds.contains(s)).toList();
+		CommandSource.suggestMatching(suggestions, builder);
+		try {
+			identifiersArgumentType.parse(new StringReader(builder.getRemaining())).stream().map(Identifier::toString).filter(suggestions::contains).forEach(builder::suggest);
+		} catch (CommandSyntaxException ignored) {
+		}
 		return builder.buildFuture();
 	}
 }
