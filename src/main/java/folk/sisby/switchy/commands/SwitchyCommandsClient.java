@@ -40,8 +40,11 @@ public class SwitchyCommandsClient {
 						.then(ClientCommandManager.literal("import")
 								.then(ClientCommandManager.argument("file", NbtFileArgumentType.create(new File(SwitchyClient.EXPORT_PATH)))
 										.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class)))
-										.then(ClientCommandManager.argument("opModules", IdentifiersFromNbtArgArgumentType.create("file", "enabled"))
+										.then(ClientCommandManager.argument("excludeModules", IdentifiersFromNbtArgArgumentType.create("file", null, "enabled"))
 												.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class), new Pair<>("opModules", List.class)))
+												.then(ClientCommandManager.argument("opModules", IdentifiersFromNbtArgArgumentType.create("file", "excludeModules", "enabled"))
+														.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class), new Pair<>("opModules", List.class)))
+												)
 										)
 								)
 						)
@@ -91,7 +94,12 @@ public class SwitchyCommandsClient {
 		return unwrapAndExecute(context, (player, ignored, ignored2) -> executeFunction.apply(player), null, null);
 	}
 
-	private static int importPresets(ClientPlayerEntity player, NbtCompound presetsNbt, List<Identifier> opModules) {
+	private static int importPresets(ClientPlayerEntity player, NbtCompound presetsNbt, List<Identifier> excludeModules, List<Identifier> opModules) {
+		if (!excludeModules.isEmpty()) {
+			NbtList excludeModulesNbt = new NbtList();
+			excludeModules.stream().map(Identifier::toString).map(NbtString::of).forEach(excludeModulesNbt::add);
+			presetsNbt.put("excludeModules", excludeModulesNbt);
+		}
 		if (!opModules.isEmpty()) {
 			NbtList opModulesNbt = new NbtList();
 			opModules.stream().map(Identifier::toString).map(NbtString::of).forEach(opModulesNbt::add);
@@ -102,7 +110,11 @@ public class SwitchyCommandsClient {
 		return 1;
 	}
 
+	private static int importPresets(ClientPlayerEntity player, NbtCompound presetsNbt, List<Identifier> excludeModules) {
+		return importPresets(player, presetsNbt, excludeModules, List.of());
+	}
+
 	private static int importPresets(ClientPlayerEntity player, NbtCompound presetsNbt) {
-		return importPresets(player, presetsNbt, List.of());
+		return importPresets(player, presetsNbt, List.of(), List.of());
 	}
 }

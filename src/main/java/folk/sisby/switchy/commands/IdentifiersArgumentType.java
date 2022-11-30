@@ -48,6 +48,9 @@ public class IdentifiersArgumentType implements ArgumentType<List<Identifier>> {
 			return outList;
 		}
 		do {
+			if(reader.canRead() && reader.peek() == ',') {
+				reader.skip();
+			}
 			final int start = reader.getCursor();
 			if (!reader.canRead() || !isNamespaceCharacterValid(reader.peek())) {
 				throw EXPECTED_NAMESPACE.createWithContext(reader);
@@ -62,7 +65,7 @@ public class IdentifiersArgumentType implements ArgumentType<List<Identifier>> {
 				reader.skip();
 			}
 			outList.add(new Identifier(reader.getString().substring(start, reader.getCursor())));
-		} while (reader.canRead() && reader.read() == ',');
+		} while (reader.canRead() && reader.peek() == ',');
 		return outList;
 	}
 
