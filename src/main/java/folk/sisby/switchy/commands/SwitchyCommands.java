@@ -286,7 +286,9 @@ public class SwitchyCommands {
 			return;
 		}
 
-		String command_args = filename + (opModules.isEmpty() ? "" : (" " + opModules.stream().map(Identifier::toString).collect(Collectors.joining(","))));
+		String command_args = filename +
+				(removeModules.isEmpty() ? "" : (" " + removeModules.stream().map(Identifier::toString).collect(Collectors.joining(",")))) +
+				(opModules.isEmpty() ? "" : (" " + opModules.stream().map(Identifier::toString).collect(Collectors.joining(","))));
 		String command = "/switchy_client import " + command_args;
 
 		// Construct presets from NBT

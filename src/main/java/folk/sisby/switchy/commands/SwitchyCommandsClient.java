@@ -2,6 +2,7 @@ package folk.sisby.switchy.commands;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.datafixers.util.Function3;
+import com.mojang.datafixers.util.Function4;
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.SwitchyClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -41,9 +42,9 @@ public class SwitchyCommandsClient {
 								.then(ClientCommandManager.argument("file", NbtFileArgumentType.create(new File(SwitchyClient.EXPORT_PATH)))
 										.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class)))
 										.then(ClientCommandManager.argument("excludeModules", IdentifiersFromNbtArgArgumentType.create("file", null, "enabled"))
-												.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class), new Pair<>("opModules", List.class)))
+												.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class), new Pair<>("excludeModules", List.class)))
 												.then(ClientCommandManager.argument("opModules", IdentifiersFromNbtArgArgumentType.create("file", "excludeModules", "enabled"))
-														.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class), new Pair<>("opModules", List.class)))
+														.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class), new Pair<>("excludeModules", List.class), new Pair<>("opModules", List.class)))
 												)
 										)
 								)
@@ -72,26 +73,35 @@ public class SwitchyCommandsClient {
 			}
 		});
 	}
-
-	private static <V, V2> int unwrapAndExecute(CommandContext<QuiltClientCommandSource> context, Function3<ClientPlayerEntity, V, V2, Integer> executeFunction, @Nullable Pair<String, Class<V>> argument, @Nullable Pair<String, Class<V2>> argument2) {
+	private static <V, V2, V3> int unwrapAndExecute(CommandContext<QuiltClientCommandSource> context,
+												Function4<ClientPlayerEntity, V, V2, V3, Integer> executeFunction,
+												@Nullable Pair<String, Class<V>> argument,
+												@Nullable Pair<String, Class<V2>> argument2,
+												@Nullable Pair<String, Class<V3>> argument3
+	) {
 		// Get context and execute
 		ClientPlayerEntity player = context.getSource().getPlayer();
 		int result = executeFunction.apply(
 				player,
 				(argument != null ? context.getArgument(argument.getLeft(), argument.getRight()) : null),
-				(argument2 != null ? context.getArgument(argument2.getLeft(), argument2.getRight()) : null)
+				(argument2 != null ? context.getArgument(argument2.getLeft(), argument2.getRight()) : null),
+				(argument3 != null ? context.getArgument(argument3.getLeft(), argument3.getRight()) : null)
 		);
 		// Record previous command (for confirmations)
 		last_command.put(player.getUuid(), context.getInput());
 		return result;
 	}
 
+	private static <V, V2> int unwrapAndExecute(CommandContext<QuiltClientCommandSource> context, Function3<ClientPlayerEntity, V, V2, Integer> executeFunction, @Nullable Pair<String, Class<V>> argument, @Nullable Pair<String, Class<V2>> argument2) {
+		return unwrapAndExecute(context, (player, arg, arg2, ignored) -> executeFunction.apply(player, arg, arg2), argument, argument2, null);
+	}
+
 	private static <V> int unwrapAndExecute(CommandContext<QuiltClientCommandSource> context, BiFunction<ClientPlayerEntity, V, Integer> executeFunction, @Nullable Pair<String, Class<V>> argument) {
-		return unwrapAndExecute(context, (player, arg, ignored2) -> executeFunction.apply(player, arg), argument, null);
+		return unwrapAndExecute(context, (player, arg, ignored) -> executeFunction.apply(player, arg), argument, null);
 	}
 
 	private static int unwrapAndExecute(CommandContext<QuiltClientCommandSource> context, Function<ClientPlayerEntity, Integer> executeFunction) {
-		return unwrapAndExecute(context, (player, ignored, ignored2) -> executeFunction.apply(player), null, null);
+		return unwrapAndExecute(context, (player, ignored) -> executeFunction.apply(player), null);
 	}
 
 	private static int importPresets(ClientPlayerEntity player, NbtCompound presetsNbt, List<Identifier> excludeModules, List<Identifier> opModules) {
