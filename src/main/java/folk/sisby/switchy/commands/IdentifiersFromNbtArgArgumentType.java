@@ -13,6 +13,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -39,6 +40,11 @@ public class IdentifiersFromNbtArgArgumentType implements ArgumentType<List<Iden
 	@Override
 	public List<Identifier> parse(StringReader reader) throws CommandSyntaxException {
 		return identifiersArgumentType.parse(reader);
+	}
+
+	@Override
+	public Collection<String> getExamples() {
+		return List.of("~");
 	}
 
 	@Override
