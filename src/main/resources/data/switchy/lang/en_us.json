@@ -1,70 +1,105 @@
 {
-  "commands.switchy.help.command": "/switchy help",
-  "commands.switchy.help.help": "lists available commands",
-  "commands.switchy.help.line": "%1$s - %2$s",
-  "commands.switchy.help.placeholder.module": "[name]",
-  "commands.switchy.help.placeholder.preset": "[name]",
-  "commands.switchy.help.placeholder.file": "[file]",
-
-  "commands.switchy.list.command": "/switchy list",
-  "commands.switchy.list.help": "list your presets",
-  "commands.switchy.list.presets": "Presets: %s",
-  "commands.switchy.list.modules": "Modules: %s",
-  "commands.switchy.list.current": "Current Preset: %s",
-
-  "commands.switchy.new.command": "/switchy new %s",
-  "commands.switchy.new.help": "create a new preset",
-  "commands.switchy.new.success": "Preset %s created",
-  "commands.switchy.new.fail.exists": "That preset already exists! Try %s",
-
-  "commands.switchy.set.command": "/switchy set %s",
-  "commands.switchy.set.help": "switches to specified preset",
-  "commands.switchy.set.success": "Switched from %1$s to %2$s",
-  "commands.switchy.set.fail.missing": "That preset doesn't exist! Try %s",
-  "commands.switchy.set.fail.current": "You can't switch to your current preset! Try %s",
-
-  "commands.switchy.delete.command": "/switchy delete %s",
-  "commands.switchy.delete.help": "delete a preset permanently",
-  "commands.switchy.delete.warn": "WARNING: Preset data from enabled modules will be deleted.",
-  "commands.switchy.delete.confirmation": "Confirm using %s",
-  "commands.switchy.delete.success": "Deleted preset %s",
-  "commands.switchy.delete.fail.missing": "That preset doesn't exist! Try %s",
-  "commands.switchy.delete.fail.current": "You can't delete your current preset! Try %s",
-
-  "commands.switchy.rename.command": "/switchy rename %1$s %2$s",
-  "commands.switchy.rename.help": "rename a preset",
-  "commands.switchy.rename.success": "Renamed preset from %1$s to %2$s",
-  "commands.switchy.rename.fail.exists": "That preset already exists! Try %s",
-  "commands.switchy.rename.fail.missing": "That preset doesn't exist! Try %s",
-
-  "commands.switchy.module.enable.command": "/switchy module enable %s",
-  "commands.switchy.module.enable.help": "enable a module",
-  "commands.switchy.module.enable.success": "Enabled %s",
-  "commands.switchy.module.enable.fail.missing": "Module '%s' doesn't exist!",
-  "commands.switchy.module.enable.fail.enabled": "Module %s is already enabled!",
-
-  "commands.switchy.module.disable.command": "/switchy module disable %s",
-  "commands.switchy.module.disable.help": "disable a module",
-  "commands.switchy.module.disable.warn": "Warning: Module data will be deleted for all presets.",
-  "commands.switchy.module.disable.confirmation": "Confirm using %s",
-  "commands.switchy.module.disable.success": "Disabled %s",
-  "commands.switchy.module.disable.fail.missing": "Module '%s' doesn't exist!",
-  "commands.switchy.module.disable.fail.disabled": "Module %s is already disabled!",
-
-  "commands.switchy.export.command": "/switchy export",
-  "commands.switchy.export.help": "save presets to a file (req. client)",
-  "commands.switchy.export.fail": "Sending to client failed! See log for details",
-
-  "commands.switchy.import.command": "/switchy_client import %s",
-  "commands.switchy.import.help": "load exported presets",
-  "commands.switchy.import.warn": "You are about to import %s presets with %s modules:",
-  "commands.switchy.import.confirmation": "Confirm using %s",
-  "commands.switchy.import.success": "Imported %s presets",
-  "commands.switchy.import.warn.permission": "Some modules were removed for requiring operator: %s",
-  "commands.switchy.import.fail.parse": "Failed to parse imported NBT",
-  "commands.switchy.import.fail.construct": "Failed to construct Presets from NBT",
-  "commands.switchy.import.fail.collision": "Import failed due to existing presets: %s",
-
-  "commands.switch.command": "/switch %s",
-  "commands.switch.help": "alias of above"
+  "lib39:enable_enhanced_lang": true,
+  "commands": {
+    "switchy": {
+      "help": {
+        "command": "/switchy help",
+        "help": "lists available commands",
+        "line": "{1} - {2}",
+        "placeholder": {
+          "module": "[name]",
+          "preset": "[name]",
+          "file": "[file]"
+        }
+      },
+      "list": {
+        "command": "/switchy list",
+        "help": "list your presets",
+        "presets": "Presets: {}",
+        "modules": "Modules: {}",
+        "current": "Current Preset: {}"
+      },
+      "new": {
+        "command": "/switchy new {}",
+        "help": "create a new preset",
+        "success": "Preset {} created",
+        "fail": {
+          "exists": "That preset already exists! Try {}"
+        }
+      },
+      "set": {
+        "command": "/switchy set {}",
+        "help": "switches to specified preset",
+        "success": "Switched from {1} to {2}",
+        "fail": {
+          "missing": "That preset doesn't exist! Try {}",
+          "current": "You can't switch to your current preset! Try {}"
+        }
+      },
+      "delete": {
+        "command": "/switchy delete {}",
+        "help": "delete a preset permanently",
+        "warn": "WARNING: Preset data from enabled modules will be deleted.",
+        "confirmation": "Confirm using {}",
+        "success": "Deleted preset {}",
+        "fail": {
+          "missing": "That preset doesn't exist! Try {}",
+          "current": "You can't delete your current preset! Try {}"
+        }
+      },
+      "rename": {
+        "command": "/switchy rename {1} {2}",
+        "help": "rename a preset",
+        "success": "Renamed preset from {1} to {2}",
+        "fail": {
+          "exists": "That preset already exists! Try {}",
+          "missing": "That preset doesn't exist! Try {}"
+        }
+      },
+      "module": {
+        "enable": {
+          "command": "/switchy module enable {}",
+          "help": "enable a module",
+          "success": "Enabled {}",
+          "fail": {
+            "missing": "Module '{}' doesn't exist!",
+            "enabled": "Module {} is already enabled!"
+          }
+        },
+        "disable": {
+          "command": "/switchy module disable {}",
+          "help": "disable a module",
+          "warn": "Warning: Module data will be deleted for all presets.",
+          "confirmation": "Confirm using {}",
+          "success": "Disabled {}",
+          "fail": {
+            "missing": "Module '{}' doesn't exist!",
+            "disabled": "Module {} is already disabled!"
+          }
+        }
+      },
+      "export": {
+        "command": "/switchy export",
+        "help": "save presets to a file (req. client)",
+        "fail": "Sending to client failed! See log for details"
+      },
+      "import": {
+        "command": "/switchy_client import {}",
+        "help": "load exported presets",
+        "warn": "You are about to import {} presets with {} modules:",
+        "warn.permission": "Some modules were removed for requiring operator: {}",
+        "confirmation": "Confirm using {}",
+        "success": "Imported {} presets",
+        "fail" : {
+          "parse": "Failed to parse imported NBT",
+          "construct": "Failed to construct Presets from NBT",
+          "collision": "Import failed due to existing presets: {}"
+        }
+      }
+    },
+    "switch": {
+      "command": "/switch {}",
+      "help": "alias of above"
+    }
+  }
 }

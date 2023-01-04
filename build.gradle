@@ -35,7 +35,19 @@ repositories {
 	// Jitpack
 	maven { url 'https://jitpack.io' }
 
-	// Player Pronouns
+	// Sleeping Town
+	maven {
+		url 'https://repo.sleeping.town'
+		content {
+			includeGroup 'com.unascribed'
+			includeGroup 'gay.lemmaeof'
+		}
+	}
+
+	// unascribed (Kdl4j)
+	maven { url "https://repo.unascribed.com" }
+
+	// Nucleoid
 	maven {
 		name = "NucleoidMC"
 		url = uri("https://maven.nucleoid.xyz/")
@@ -93,6 +105,15 @@ dependencies {
 	modImplementation libs.serverTranslationsApi
 	include libs.serverTranslationsApi
 
+	modImplementation libs.lib39Core
+	include libs.lib39Core
+
+	modImplementation libs.lib39Dessicant
+	include libs.lib39Dessicant
+
+	// modImplementation libs.kdlyData // FTB Quests issue
+	// include libs.kdlyData
+
 	// // Compat // //
 
 	// Drogtor
@@ -106,14 +127,14 @@ dependencies {
 	// Origins
 	modCompileOnly libs.qfapi
 	modLocalRuntime libs.qfapi
-	modCompileOnly files('/build/libs/Calio-1.18.2-1.6.0.jar') // Fix quilt incompatibility
+	modCompileOnly(libs.origins){
+		exclude module: 'AdditionalEntityAttributes'
+	}
+	modLocalRuntime(libs.origins){
+		exclude module: 'calio'
+		exclude module: 'AdditionalEntityAttributes'
+	}
 	modLocalRuntime files('/build/libs/Calio-1.18.2-1.6.0.jar') // Fix quilt incompatibility
-	modCompileOnly(libs.origins) {
-		exclude module: 'calio'
-	}
-	modLocalRuntime(libs.origins) {
-		exclude module: 'calio'
-	}
 
 	// Cardinal Components
 	modCompileOnly libs.cardinal

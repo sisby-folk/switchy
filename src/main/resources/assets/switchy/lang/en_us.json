@@ -1,13 +1,27 @@
 {
-  "commands.switchy_client.export.success": "Presets saved to %s",
-  "commands.switchy_client.export.fail": "Saving to file failed! See log for details",
-
-  "commands.switchy_client.import.command": "/switchy_client import %s",
-  "commands.switchy_client.import.success": "Presets sent to server",
-
-  "command.exception.identifiers.expected_namespace": "Expected namespace to begin after separator",
-  "command.exception.identifiers.expected_path": "Expected path to begin after namespace",
-
-  "command.exception.file.not_found": "File not found",
-  "command.exception.file.invalid_nbt": "File contained invalid NBT"
+  "lib39:enable_enhanced_lang": true,
+  "commands": {
+    "switchy_client": {
+      "export": {
+        "success": "Presets saved to {}",
+        "fail": "Saving to file failed! See log for details"
+      },
+      "import": {
+        "command": "/switchy_client import {}",
+        "success": "Presets sent to server"
+      }
+    }
+  },
+  "command": {
+    "exception": {
+      "identifiers": {
+        "expected_namespace": "Expected namespace to begin after separator",
+        "expected_path": "Expected path to begin after namespace"
+      },
+      "file": {
+        "not_found": "File not found",
+        "invalid_nbt": "File contained invalid NBT"
+      }
+    }
+  }
 }
