@@ -83,6 +83,17 @@ There's also an API for basic operations like getting the name of a player's pre
 
 ## Further Info
 
+This mod is primarily motivated by improving accessibility for [plural systems](https://morethanone.info).
+Check out the [Plural Respect Document](https://bit.ly/pluralrespect).
+
+### Fabric?
+
+Switchy is inevitably a plural mod. It's made for plural systems as the core userbase, and it's made and maintained by a plural system.
+
+The quilt development community is safe for plural systems. The fabric development community isn't. End of.
+
+### Afterword
+
 All mods are built on the work of many others.
 
 ![Created for ModFest: Singularity](https://blob.jortage.com/blobs/5/d4d/5d4d14d96db2e2024d87cf5606cb7ce6421633a002e328947f85d210ba250ecb9f86de8df210dd031be2d4eafb0980494e7a1e8e99590a550abaa42d82768b9f)
@@ -91,7 +102,7 @@ We made this mod (up to v1.2.1) for Modfest: Singularity! However, we intend to 
 
 This mod is included in [Tinkerer's Quilt](https://modrinth.com/modpack/tinkerers-quilt) - our modpack about ease of play and self-expression.
 
-This mod is primarily motivated by improving accessibility for [plural systems](https://morethanone.info).
-Check out the [Plural Respect Document](https://bit.ly/pluralrespect).
+
 
 We're always open to suggestions for how to implement code snippets better - if you see a wonky method and have an idea - let us know.
+
