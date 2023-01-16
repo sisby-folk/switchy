@@ -65,7 +65,6 @@ public class FabricTailorCompat implements PresetModule {
 		return importable;
 	}
 
-
 	public static void touch() {
 	}
 

@@ -4,12 +4,14 @@ import folk.sisby.switchy.api.ModuleImportable;
 import folk.sisby.switchy.api.PresetModule;
 import folk.sisby.switchy.commands.SwitchyCommands;
 import folk.sisby.switchy.modules.*;
-import folk.sisby.switchy.modules.modfest.ModfestCardinalsCompat;
+import folk.sisby.switchy.modules.cardinal.CardinalModuleLoader;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.loader.api.config.QuiltConfig;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
+import org.quiltmc.qsl.resource.loader.api.ResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +66,8 @@ public class Switchy implements ModInitializer {
 		if (QuiltLoader.isModLoaded("apoli")) ApoliCompat.touch();
 		if (QuiltLoader.isModLoaded("pehkui")) PehkuiCompat.touch();
 		if (QuiltLoader.isModLoaded("fabrication")) FabricationArmorCompat.touch();
-		ModfestCardinalsCompat.touch(); // Does its own checks
+		ResourceLoader.get(ResourceType.SERVER_DATA).registerReloader(CardinalModuleLoader.INSTANCE);
+
 
 		LOGGER.info("Switchy: Initialized! Already Registered Modules: " + COMPAT_REGISTRY.keySet());
 	}
