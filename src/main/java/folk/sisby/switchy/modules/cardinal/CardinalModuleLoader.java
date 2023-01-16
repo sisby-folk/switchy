@@ -43,7 +43,7 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 					continue;
 				}
 				try {
-					ModuleImportable componentImportable = ModuleImportable.valueOf(componentOptions.get("default").getAsString());
+					ModuleImportable componentImportable = ModuleImportable.valueOf(componentOptions.get("importable").getAsString());
 					boolean componentDefault = componentOptions.get("default").getAsBoolean();
 					CardinalSerializerCompat.tryRegister(moduleId, componentId, componentDefault, componentImportable);
 				} catch (UnsupportedOperationException e) {
