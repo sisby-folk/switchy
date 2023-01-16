@@ -94,13 +94,13 @@ public class FabricationArmorCompat implements PresetModule {
 	}
 
 	@Override
-	public Collection<Identifier> getApplyDependencies() {
-		return applyDependencies;
+	public ModuleImportable getImportable() {
+		return importable;
 	}
 
 	@Override
-	public ModuleImportable getImportable() {
-		return importable;
+	public Collection<Identifier> getApplyDependencies() {
+		return applyDependencies;
 	}
 
 	public static void touch() {

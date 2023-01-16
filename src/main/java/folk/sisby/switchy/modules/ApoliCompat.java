@@ -1,6 +1,7 @@
 package folk.sisby.switchy.modules;
 
 import folk.sisby.switchy.Switchy;
+import folk.sisby.switchy.api.ModuleImportable;
 import folk.sisby.switchy.api.PresetModule;
 import folk.sisby.switchy.api.PresetModuleRegistry;
 import io.github.apace100.apoli.component.PowerHolderComponent;
@@ -20,6 +21,7 @@ import java.util.*;
 public class ApoliCompat implements PresetModule {
 	public static final Identifier ID = new Identifier("switchy", "apoli");
 	private static final boolean isDefault = true;
+	private static final ModuleImportable importable = ModuleImportable.OPERATOR;
 	private static final Collection<Identifier> applyDependencies = Set.of(OriginsCompat.ID);
 
 	public static final String KEY_POWER_DATA_LIST = "PowerData";
@@ -49,11 +51,7 @@ public class ApoliCompat implements PresetModule {
 	}
 
 	private static void clearInventories(List<InventoryPower> powers) {
-		for (InventoryPower power : powers) {
-			for (int i = 0; i < power.size(); ++i) {
-				power.removeStack(i);
-			}
-		}
+		powers.forEach(InventoryPower::clear);
 	}
 
 	@Override
@@ -98,6 +96,11 @@ public class ApoliCompat implements PresetModule {
 	@Override
 	public boolean isDefault() {
 		return isDefault;
+	}
+
+	@Override
+	public ModuleImportable getImportable() {
+		return importable;
 	}
 
 	@Override

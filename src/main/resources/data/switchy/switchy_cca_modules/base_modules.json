@@ -1,0 +1,6 @@
+{
+  "lanyard:profiles": {
+    "default": true,
+    "importable": "ALLOWED"
+  }
+}
