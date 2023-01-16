@@ -105,7 +105,7 @@ public class SwitchyCommands {
 
 	private static CompletableFuture<Suggestions> suggestModules(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, boolean enabled) throws CommandSyntaxException {
 		ServerPlayerEntity player = context.getSource().getPlayer();
-		CommandSource.suggestIdentifiers(Switchy.COMPAT_REGISTRY.keySet().stream().filter(id -> enabled == getPlayerPresetModules(player).get(id)), builder);
+		CommandSource.suggestIdentifiers(getPlayerPresetModules(player).entrySet().stream().filter(e -> e.getValue() == enabled).map(Map.Entry::getKey), builder);
 		return builder.buildFuture();
 	}
 
@@ -265,6 +265,8 @@ public class SwitchyCommands {
 	}
 
 	private static void importPresets(ServerPlayerEntity player, NbtCompound presetNbt) {
+		SwitchyPresets presets = getOrDefaultPresets(player);
+
 		if (presetNbt == null || !presetNbt.contains("filename")) {
 			tellInvalid(player, "commands.switchy.import.fail.parse");
 			return;
@@ -302,12 +304,12 @@ public class SwitchyCommands {
 
 		// Generate Importable List
 		Map<Identifier, ModuleImportable> importable = new HashMap<>();
-		Switchy.COMPAT_REGISTRY.forEach(
-				(key, val) -> importable.put(key, IMPORTABLE_CONFIGURABLE.contains(val.get().getImportable()) ? Switchy.CONFIG.moduleImportable.get(key.toString()) : val.get().getImportable())
+		presets.modules.keySet().forEach( (key) ->
+				importable.put(key, IMPORTABLE_CONFIGURABLE.contains(Switchy.COMPAT_REGISTRY.get(key).get().getImportable()) ? Switchy.CONFIG.moduleImportable.get(key.toString()) : Switchy.COMPAT_REGISTRY.get(key).get().getImportable())
 		);
 
 		// Warn user about any disallowed flags
-		List<Identifier> disallowedFlags = Switchy.COMPAT_REGISTRY.keySet().stream().filter(
+		List<Identifier> disallowedFlags = presets.modules.keySet().stream().filter(
 				(key) -> importable.get(key) == ModuleImportable.OPERATOR && !player.hasPermissionLevel(2) && opModules.contains(key)
 		).toList();
 		if (!disallowedFlags.isEmpty()) {
@@ -315,8 +317,7 @@ public class SwitchyCommands {
 		}
 
 		// Generate list of modules being imported
-		SwitchyPresets presets = getOrDefaultPresets(player);
-		List<Identifier> modules = Switchy.COMPAT_REGISTRY.keySet().stream()
+		List<Identifier> modules = presets.modules.keySet().stream()
 				.filter(presets.modules::get)
 				.filter(importedPresets.modules::get)
 				.filter(key -> !excludeModules.contains(key))

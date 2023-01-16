@@ -1,5 +1,6 @@
 package folk.sisby.switchy;
 
+import folk.sisby.switchy.api.PresetModule;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -117,6 +118,7 @@ public class SwitchyPresets {
 
 	private SwitchyPresets() {
 		this.modules = Switchy.COMPAT_REGISTRY.entrySet().stream()
+				.filter(e -> e.getValue().get() != null)
 				.collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().get().isDefault()));
 	}
 
@@ -194,10 +196,18 @@ public class SwitchyPresets {
 		}
 	}
 
-	public void enableModule(Identifier id) {
+	public boolean enableModule(Identifier id) {
 		if (this.modules.containsKey(id)) {
 			this.modules.put(id, true);
-			presetMap.forEach((name, preset) -> preset.compatModules.put(id, Switchy.COMPAT_REGISTRY.get(id).get()));
+			for (SwitchyPreset preset : presetMap.values()) {
+				PresetModule module = Switchy.COMPAT_REGISTRY.get(id).get();
+				if (module == null) {
+					disableModule(id);
+					return false;
+				}
+				preset.compatModules.put(id, module);
+			}
+			return true;
 		} else {
 			throw new IllegalArgumentException("Switchy module doesn't exist");
 		}

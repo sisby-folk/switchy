@@ -15,9 +15,9 @@ public class SwitchyPreset {
 
 	public SwitchyPreset(String name, Map<Identifier, Boolean> moduleToggles) {
 		this.presetName = name;
-		this.compatModules = Switchy.COMPAT_REGISTRY.entrySet().stream()
-				.filter(pair -> moduleToggles.get(pair.getKey()))
-				.collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().get()));
+		this.compatModules = moduleToggles.entrySet().stream()
+				.filter(Map.Entry::getValue)
+				.collect(Collectors.toMap(Map.Entry::getKey, e -> Switchy.COMPAT_REGISTRY.get(e.getKey()).get()));
 	}
 
 	public NbtCompound toNbt() {

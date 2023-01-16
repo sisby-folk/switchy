@@ -96,11 +96,13 @@ public class CardinalSerializerCompat<T1 extends Component> implements PresetMod
 	}
 
 	public static void tryRegister(Identifier moduleId, Identifier componentKeyId, Boolean isDefault, ModuleImportable importable) {
-		ComponentKey<? extends Component> componentKey = ComponentRegistry.get(componentKeyId);
-		if (componentKey != null) {
-			PresetModuleRegistry.registerModule(moduleId, () -> new CardinalSerializerCompat<>(moduleId, componentKey, isDefault, importable));
-		} else {
-			Switchy.LOGGER.warn("Switchy: cardinal module {} failed to register, as its component isn't created yet.", componentKeyId);
-		}
+			PresetModuleRegistry.registerModule(moduleId, () -> {
+				if (ComponentRegistry.get(componentKeyId) != null) {
+					return new CardinalSerializerCompat<>(moduleId, ComponentRegistry.get(componentKeyId), isDefault, importable);
+				} else {
+					Switchy.LOGGER.warn("Switchy: cardinal module {} failed to instantiate, as its component isn't created yet.", componentKeyId);
+					return null;
+				}
+			});
 	}
 }
