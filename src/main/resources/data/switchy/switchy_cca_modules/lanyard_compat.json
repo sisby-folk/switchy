@@ -1,6 +1,7 @@
 {
   "lanyard:profiles": {
     "default": true,
-    "importable": "ALLOWED"
+    "importable": "ALLOWED",
+    "ifModLoaded": "lanyard"
   }
 }
