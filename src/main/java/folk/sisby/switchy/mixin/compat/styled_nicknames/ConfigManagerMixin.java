@@ -6,13 +6,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = ConfigManager.class, remap = false)
 public abstract class ConfigManagerMixin {
 	@Shadow private static Config CONFIG;
 
 	@Inject(method = "getConfig", at = @At("RETURN"))
-	private static void forceAllowByDefault() {
+	private static void forceAllowByDefault(CallbackInfoReturnable<Config> cir) {
 		CONFIG.configData.allowByDefault = true;
 		CONFIG.configData.defaultEnabledFormatting.put("hover", true);
 		CONFIG.configData.defaultEnabledFormatting.put("dark_red", true);
