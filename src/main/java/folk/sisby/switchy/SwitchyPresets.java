@@ -196,18 +196,13 @@ public class SwitchyPresets {
 		}
 	}
 
-	public boolean enableModule(Identifier id) {
+	public void enableModule(Identifier id) {
 		if (this.modules.containsKey(id)) {
 			this.modules.put(id, true);
 			for (SwitchyPreset preset : presetMap.values()) {
 				PresetModule module = Switchy.MODULE_SUPPLIERS.get(id).get();
-				if (module == null) {
-					disableModule(id);
-					return false;
-				}
 				preset.compatModules.put(id, module);
 			}
-			return true;
 		} else {
 			throw new IllegalArgumentException("Switchy module doesn't exist");
 		}
