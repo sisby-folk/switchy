@@ -38,7 +38,7 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 					Switchy.LOGGER.warn("Switchy: Cardinal component '{}' is not a valid identifier, skipping...", entry.getKey());
 					continue;
 				}
-				Identifier moduleId = new Identifier(Switchy.ID + "_cardinal", componentId.toUnderscoreSeparatedString());
+				Identifier moduleId = new Identifier(Switchy.ID, "cca/" + componentId.toUnderscoreSeparatedString());
 				if (Switchy.MODULE_SUPPLIERS.containsKey(moduleId)) {
 					continue;
 				}
