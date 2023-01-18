@@ -65,9 +65,9 @@ These commands require switchy to also be installed on the client.
 
 You can then move to another server or singleplayer world.
 
-`/switchy import [filename]` will import all *allowed* modules (see below).
+`/switchy_client import [filename]` will import all *allowed* modules (see below).
 
-`/switchy import [filename] [exclude] [operator]` will import all allowed modules, except modules in `[exclude]`, plus any modules in `[operator]` if you have OP level 2. You can use `~` to specify no modules.
+`/switchy_client import [filename] [exclude] [operator]` will import all allowed modules, except modules in `[exclude]`, plus any modules in `[operator]` if you have OP level 2. You can use `~` to specify no modules.
 
 ## Import Configuration
 
