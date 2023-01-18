@@ -12,7 +12,7 @@ Switchy lets you use commands make ***presets*** that are stored with your playe
 
 Switchy will load ***modules*** that tell presets what to store.
 
-When you ***switch*** presets, your data is saved to the old preset, then loaded from the new one - again, based on what modules are installed.
+When you ***switch*** presets, that data is saved to the old preset, then loaded from the new one.
 
 ## Modules
 
