@@ -22,8 +22,6 @@ import java.util.Map;
 
 public class OriginsCompat implements PresetModule {
 	public static final Identifier ID = new Identifier("switchy",  "origins");
-	private static final boolean isDefault = true;
-	private static final ModuleImportable importable = ModuleImportable.ALLOWED;
 
 	public static final String KEY_ORIGINS_LIST = "OriginLayers";
 
@@ -91,26 +89,11 @@ public class OriginsCompat implements PresetModule {
 		}
 	}
 
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
-	@Override
-	public boolean isDefault() {
-		return isDefault;
-	}
-
-	@Override
-	public ModuleImportable getImportable() {
-		return importable;
-	}
-
 	public static void touch() {
 	}
 
 	// Runs on touch() - but only once.
 	static {
-		PresetModuleRegistry.registerModule(ID, OriginsCompat::new);
+		PresetModuleRegistry.registerModule(ID, OriginsCompat::new, true, ModuleImportable.ALLOWED);
 	}
 }

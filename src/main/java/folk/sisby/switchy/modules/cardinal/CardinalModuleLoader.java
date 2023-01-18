@@ -34,7 +34,7 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 					continue;
 				}
 				Identifier moduleId = new Identifier(Switchy.ID + "_cardinal", componentId.toUnderscoreSeparatedString());
-				if (Switchy.COMPAT_REGISTRY.containsKey(moduleId)) {
+				if (Switchy.MODULE_SUPPLIERS.containsKey(moduleId)) {
 					continue;
 				}
 				JsonObject componentOptions = entry.getValue().getAsJsonObject();
@@ -45,7 +45,7 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 				try {
 					ModuleImportable componentImportable = ModuleImportable.valueOf(componentOptions.get("importable").getAsString());
 					boolean componentDefault = componentOptions.get("default").getAsBoolean();
-					CardinalSerializerCompat.tryRegister(moduleId, componentId, componentDefault, componentImportable);
+					CardinalSerializerCompat.register(moduleId, componentId, componentDefault, componentImportable);
 				} catch (UnsupportedOperationException e) {
 					Switchy.LOGGER.warn("Switchy: Cardinal component '{}' has non-boolean options, skipping...", entry.getKey());
 				} catch (IllegalArgumentException e) {

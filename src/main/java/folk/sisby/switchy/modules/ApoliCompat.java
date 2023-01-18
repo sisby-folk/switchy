@@ -20,13 +20,10 @@ import java.util.*;
 
 public class ApoliCompat implements PresetModule {
 	public static final Identifier ID = new Identifier("switchy", "apoli");
-	private static final boolean isDefault = true;
-	private static final ModuleImportable importable = ModuleImportable.OPERATOR;
-	private static final Collection<Identifier> applyDependencies = Set.of(OriginsCompat.ID);
 
 	public static final String KEY_POWER_DATA_LIST = "PowerData";
 
-	public Map<PowerType<?>, NbtElement> powerNbt = new HashMap<>();
+	public final Map<PowerType<?>, NbtElement> powerNbt = new HashMap<>();
 
 	@Override
 	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
@@ -88,31 +85,11 @@ public class ApoliCompat implements PresetModule {
 		}
 	}
 
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
-	@Override
-	public boolean isDefault() {
-		return isDefault;
-	}
-
-	@Override
-	public ModuleImportable getImportable() {
-		return importable;
-	}
-
-	@Override
-	public Collection<Identifier> getApplyDependencies() {
-		return applyDependencies;
-	}
-
 	public static void touch() {
 	}
 
 	// Runs on touch() - but only once.
 	static {
-		PresetModuleRegistry.registerModule(ID, ApoliCompat::new);
+		PresetModuleRegistry.registerModule(ID, ApoliCompat::new, true, ModuleImportable.OPERATOR, Set.of(OriginsCompat.ID));
 	}
 }

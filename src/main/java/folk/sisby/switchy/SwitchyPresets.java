@@ -117,9 +117,9 @@ public class SwitchyPresets {
 	}
 
 	private SwitchyPresets() {
-		this.modules = Switchy.COMPAT_REGISTRY.entrySet().stream()
+		this.modules = Switchy.MODULE_SUPPLIERS.entrySet().stream()
 				.filter(e -> e.getValue().get() != null)
-				.collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().get().isDefault()));
+				.collect(Collectors.toMap(Map.Entry::getKey, e -> Switchy.MODULE_INFO.get(e.getKey()).isDefault()));
 	}
 
 	public boolean setCurrentPreset(PlayerEntity player, String presetName, Boolean performSwitch) {
@@ -200,7 +200,7 @@ public class SwitchyPresets {
 		if (this.modules.containsKey(id)) {
 			this.modules.put(id, true);
 			for (SwitchyPreset preset : presetMap.values()) {
-				PresetModule module = Switchy.COMPAT_REGISTRY.get(id).get();
+				PresetModule module = Switchy.MODULE_SUPPLIERS.get(id).get();
 				if (module == null) {
 					disableModule(id);
 					return false;

@@ -26,9 +26,6 @@ import java.util.*;
 
 public class FabricationArmorCompat implements PresetModule {
 	public static final Identifier ID = new Identifier("switchy", "fabrication_hidearmor");
-	private static final boolean isDefault = true;
-	private static final ModuleImportable importable = ModuleImportable.ALLOWED;
-	private static final Collection<Identifier> applyDependencies = new ArrayList<>();
 
 	public static final String KEY_SUPPRESSED_SLOTS = "suppressedSlots";
 
@@ -83,34 +80,11 @@ public class FabricationArmorCompat implements PresetModule {
 		}
 	}
 
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
-	@Override
-	public boolean isDefault() {
-		return isDefault;
-	}
-
-	@Override
-	public ModuleImportable getImportable() {
-		return importable;
-	}
-
-	@Override
-	public Collection<Identifier> getApplyDependencies() {
-		return applyDependencies;
-	}
-
 	public static void touch() {
 	}
 
 	// Runs on touch() - but only once.
 	static {
-		PresetModuleRegistry.registerModule(ID, FabricationArmorCompat::new);
-		if (QuiltLoader.isModLoaded("fabrictailor")) {
-			applyDependencies.add(FabricTailorCompat.ID);
-		}
+		PresetModuleRegistry.registerModule(ID, FabricationArmorCompat::new, true, ModuleImportable.ALLOWED, QuiltLoader.isModLoaded("fabrictailor") ? Set.of(FabricTailorCompat.ID) : Set.of());
 	}
 }
