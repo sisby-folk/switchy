@@ -1,7 +1,7 @@
-<p align="center"><img alt="switchy banner" src="https://user-images.githubusercontent.com/55819817/198210616-eb37be12-cd96-40c8-a941-68a96b2aadfc.png" /></p>
+<center><img alt="switchy banner" src="https://user-images.githubusercontent.com/55819817/198210616-eb37be12-cd96-40c8-a941-68a96b2aadfc.png" /></center>
 
-<p align="center">An extensible preset system for player customizations provided by other mods.<br/>
-Works in singleplayer and on server-side.</p>
+<center>An extensible preset system for player customizations provided by other mods.<br/>
+Works in singleplayer and on server-side.</center>
 
 ---
 
@@ -12,58 +12,75 @@ Switchy lets you use commands make ***presets*** that are stored with your playe
 
 Switchy will load ***modules*** that tell presets what to store.
 
-When you ***switch*** presets, your data is saved to the old preset, then loaded from the new one.
-
-Modules define what this data is: items, nicknames, player skins, player position, you name it.
-They don't even have to implement functionality (like nicknames) themselves - they can just interact with an existing mod.
-
-## How do you use it?
-
-First, install a vanilla add-on or any compatible mod (see modules).
-
-Use `/switchy list` any time to see your current presets.
-
-Then, use `/switchy rename default [name]` to give your starting preset a name.
-
-`/switchy new [name]` will create and switch to a new preset.
-
-`/switchy set [name]` or `/switch [name]` will switch between existing presets
-
-When a module is **Enabled**, it makes things "switch" (load and save) per-preset.
-Using `/switchy module enable/disable [name]` toggles this behaviour for your own presets.
-
-Modules cannot (and will never) be able to be enabled or disabled server-wide.
-
-For more commands, including `export` and `import` (client required), type `/switchy help`
+When you ***switch*** presets, your data is saved to the old preset, then loaded from the new one - again, based on what modules are installed.
 
 ## Modules
 
-Most modules require installing another mod to work! Be sure to follow the links below.
+Most modules provide inter-compatibility with other mods - be sure to follow the links.
 
-Switchy itself comes packaged with modules for:
-- [Drogtor The Nickinator](https://modrinth.com/mod/drogtor) - player `nickname`, `bio`, and `color`
-- [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) - nicknames. Recommended config WIP
-  - Note: Using Switchy with Styled Nicknames disables permissions for self-assigning nicknames
-- [Fabric Tailor](https://modrinth.com/mod/fabrictailor) - player skin
-- [Origins](https://modrinth.com/mod/origins/versions) - current origins (includes all layers, e.g. [Statures](https://modrinth.com/mod/tinkerers-statures) for player height)
-  - [Apoli](https://github.com/apace100/apoli) (by [MerchantPug](https://github.com/MerchantPug)) - current power state (e.g. Inventories, Resources/Cooldowns)
-- [Pehkui](https://modrinth.com/mod/pehkui) - pehkui `width` and `height` properties.
-- [Lanyard](https://modrinth.com/mod/lanyard) - lanyard name, pronouns, and bio.
+You can hotswap these features out-of-the box by installing their relevant mods:
+- Player Nicknames with either of:
+  - [Drogtor The Nickinator](https://modrinth.com/mod/drogtor) - `nickname`, `bio`, and `color`
+  - [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) (Note: Switchy force-allows nickname self-assignment)
+- Player Skin with [Fabric Tailor](https://modrinth.com/mod/fabrictailor)
+- Player Origin with [Origins](https://modrinth.com/mod/origins/versions) (includes all layers, e.g. [Statures](https://modrinth.com/mod/tinkerers-statures))
+    - [Contributed by [MerchantPug](https://github.com/MerchantPug)] Apoli power state - e.g. Origin power inventories, cooldowns.
+- Player height and size with [Pehkui](https://modrinth.com/mod/pehkui)
+- Detailed player profiles for conventions with [Lanyard](https://modrinth.com/mod/lanyard).
 
-You can add more modules from these first-party add-ons:
-- [Switchy Inventories](https://modrinth.com/mod/switchy-inventories) - addon for minecraft.
-  - Modules for separate inventories, ender chests, and trinket inventories.
-  - All modules are disabled by default.
+More functionality can be added with these Addons:
+- [Switchy Inventories](https://modrinth.com/mod/switchy-inventories) - separate inventories, ender chests, and trinkets. (all disabled by default)
+- [Switchy Teleport](https://modrinth.com/mod/switchy-teleport) - separate player position and spawn points. (all disabled by default)
 
-.. And these third-party add-ons!:
-- [Switchy Teleport](https://modrinth.com/mod/switchy-teleport) - addon for minecraft.
-  - Modules for keeping player position and spawn point separate between presets.
-  - All modules are disabled by default.
-
+These mods have Switchy support built-in:
+ - [RPGStats](https://modrinth.com/mod/rpgstats) - All 6 stats can be kept per-preset.
 
 ## Showcase
 
 <iframe width="896" height="504" src="https://www.youtube.com/embed/gkOGZUJOtR4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## Quick Start Guide
+
+Remember, switching does nothing on its own! Make sure you install a mod from above.
+
+1. Use `/switchy list` any time to see your current presets.
+
+2. use `/switchy rename default [name]` to give your starting preset a name.
+
+3. `/switchy new [name]` will create and switch to a new preset.
+
+4. `/switchy set [name]` or `/switch [name]` will switch between existing presets
+
+### Customize your modules
+
+When a module is **Enabled**, it makes things "switch" (load and save) per-preset.
+
+`/switchy module enable/disable [name]` will toggle this for your presets.
+
+### Import/Export
+
+These commands require switchy to also be installed on the client.
+
+`/switchy export` will export all of your presets and modules to a file.
+
+You can then move to another server or singleplayer world.
+
+`/switchy import [filename]` will import all *allowed* modules (see below).
+
+`/switchy import [filename] [exclude] [operator]` will import all allowed modules, except modules in `[exclude]`, plus any modules in `[operator]` if you have OP level 2. You can use `~` to specify no modules.
+
+## Import Configuration
+
+Switchy doesn't and will not support permissions on its basic commands, and has no way to enable or disable modules server-wide.
+
+However, you can minorly configure which players can import module data from their client in `/config/switchy/config.toml`
+
+Modules will be listed with one of four import settings:
+
+- `ALLOWED`: Importable by any player - can be changed to `OPERATOR` (e.g. origins)
+- `OPERATOR`: Importable by operators when specified - can be changed to `ALLOWED` (e.g. inventories)
+- `ALWAYS_ALLOWED`: Importable by any player - can't be changed (e.g. nicknames/skins)
+- `NEVER`: Can't be imported due to technical limitations - can't be changed.
 
 ## Developers
 
@@ -80,6 +97,19 @@ If you'd like to develop your own addon module, feel free to use [Switchy Invent
 To make a module, just implement `api.PresetModule` and register it using `api.PresetModuleRegistry`.
 
 There's also an API for basic operations like getting the name of a player's presets, and switching to a specific preset.
+
+### Data-Driven CCA Modules
+
+If your mod uses the [Cardinal Components API](https://github.com/OnyxStudios/Cardinal-Components-API) to store its player/entity data, you can instead register a module using an instance of `CardinalSerializerCompat`.
+
+If your component performs all of its necessary sync logic within writeToNbt/readFromNbt (or has none) - you can instead use the static `register` method or even define the module in data [like so](https://github.com/sisby-folk/switchy/blob/1.19/src/main/resources/data/switchy/switchy_cca_modules/lanyard_compat.json).
+
+Any json file in any data namespace under `switchy_cca_modules` will be loaded, in the following format:
+
+ - Top level key: Cardinal component ID
+   - `default`: boolean, module is enabled for players by default.
+   - `importable`: See import configuration above.
+   - `ifModLoaded`: a mod ID to check before trying to register the module.
 
 ## Further Info
 
