@@ -14,10 +14,6 @@ import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.Nullable;
 
 public class CardinalSerializerCompat<T1 extends Component> implements PresetModule {
-	private final Identifier ID;
-	private final boolean isDefault;
-	private final ModuleImportable importable;
-
 	// Generic Fields
 	private final ComponentKey<T1> registryKey;
 	private final TriConsumer<ComponentKey<T1>, T1, PlayerEntity> preApplyClear;
@@ -52,57 +48,24 @@ public class CardinalSerializerCompat<T1 extends Component> implements PresetMod
 		this.componentTag.copyFrom(nbt);
 	}
 
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
-	@Override
-	public boolean isDefault() {
-		return isDefault;
-	}
-
-	@Override
-	public ModuleImportable getImportable() {
-		return importable;
-	}
-
-	@Deprecated(forRemoval = true)
-	public CardinalSerializerCompat(Identifier id, ComponentKey<T1> registryKey, Boolean isDefault, TriConsumer<ComponentKey<T1>, T1, PlayerEntity> preApplyClear, TriConsumer<ComponentKey<T1>, T1, PlayerEntity> postApplySync) {
+	public CardinalSerializerCompat(ComponentKey<T1> registryKey, TriConsumer<ComponentKey<T1>, T1, PlayerEntity> preApplyClear, TriConsumer<ComponentKey<T1>, T1, PlayerEntity> postApplySync) {
 		this.registryKey = registryKey;
-		this.ID = id;
-		this.isDefault = isDefault;
-		this.importable = ModuleImportable.OPERATOR;
 		this.preApplyClear = preApplyClear;
 		this.postApplySync = postApplySync;
 	}
 
-	public CardinalSerializerCompat(Identifier id, ComponentKey<T1> registryKey, Boolean isDefault, ModuleImportable importable, TriConsumer<ComponentKey<T1>, T1, PlayerEntity> preApplyClear, TriConsumer<ComponentKey<T1>, T1, PlayerEntity> postApplySync) {
-		this.registryKey = registryKey;
-		this.ID = id;
-		this.isDefault = isDefault;
-		this.importable = importable;
-		this.preApplyClear = preApplyClear;
-		this.postApplySync = postApplySync;
+	public CardinalSerializerCompat(ComponentKey<T1> registryKey) {
+		this(registryKey, (k, c, p) -> {}, (k, c, p) -> {});
 	}
 
-	@Deprecated(forRemoval = true)
-	public CardinalSerializerCompat(Identifier id, ComponentKey<T1> registryKey, Boolean isDefault) {
-		this(id, registryKey, isDefault, (k, c, p) -> {}, (k, c, p) -> {});
-	}
-
-	public CardinalSerializerCompat(Identifier id, ComponentKey<T1> registryKey, Boolean isDefault, ModuleImportable importable) {
-		this(id, registryKey, isDefault, importable, (k, c, p) -> {}, (k, c, p) -> {});
-	}
-
-	public static void tryRegister(Identifier moduleId, Identifier componentKeyId, Boolean isDefault, ModuleImportable importable) {
+	public static void register(Identifier moduleId, Identifier componentKeyId, Boolean isDefault, ModuleImportable importable) {
 			PresetModuleRegistry.registerModule(moduleId, () -> {
 				if (ComponentRegistry.get(componentKeyId) != null) {
-					return new CardinalSerializerCompat<>(moduleId, ComponentRegistry.get(componentKeyId), isDefault, importable);
+					return new CardinalSerializerCompat<>(ComponentRegistry.get(componentKeyId));
 				} else {
 					Switchy.LOGGER.warn("Switchy: cardinal module {} failed to instantiate, as its component isn't created yet.", componentKeyId);
 					return null;
 				}
-			});
+			}, isDefault, importable);
 	}
 }

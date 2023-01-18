@@ -15,9 +15,6 @@ import java.util.Objects;
 
 public class DrogtorCompat implements PresetModule {
 	public static final Identifier ID = new Identifier("switchy",  "drogtor");
-	private static final boolean isDefault = true;
-	private static final ModuleImportable importable = ModuleImportable.ALWAYS_ALLOWED;
-
 
 	public static final String KEY_NICKNAME = "nickname";
 	public static final String KEY_NAME_COLOR = "nameColor";
@@ -63,26 +60,11 @@ public class DrogtorCompat implements PresetModule {
 		this.bio = nbt.contains(KEY_BIO) ? nbt.getString(KEY_BIO) : null;
 	}
 
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
-	@Override
-	public boolean isDefault() {
-		return isDefault;
-	}
-
-	@Override
-	public ModuleImportable getImportable() {
-		return importable;
-	}
-
 	public static void touch() {
 	}
 
 	// Runs on touch() - but only once.
 	static {
-		PresetModuleRegistry.registerModule(ID, DrogtorCompat::new);
+		PresetModuleRegistry.registerModule(ID, DrogtorCompat::new, true, ModuleImportable.ALWAYS_ALLOWED);
 	}
 }

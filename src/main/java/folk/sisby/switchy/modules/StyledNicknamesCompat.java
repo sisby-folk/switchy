@@ -14,8 +14,6 @@ import java.util.Objects;
 
 public class StyledNicknamesCompat implements PresetModule {
 	public static final Identifier ID = new Identifier("switchy",  "styled_nicknames");
-	private static final boolean isDefault = true;
-	private static final ModuleImportable importable = ModuleImportable.ALWAYS_ALLOWED;
 
 	public static final String KEY_NICKNAME = "styled_nickname";
 
@@ -49,26 +47,11 @@ public class StyledNicknamesCompat implements PresetModule {
 		this.styled_nickname = nbt.contains(KEY_NICKNAME) ? nbt.getString(KEY_NICKNAME) : null;
 	}
 
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
-	@Override
-	public boolean isDefault() {
-		return isDefault;
-	}
-
-	@Override
-	public ModuleImportable getImportable() {
-		return importable;
-	}
-
 	public static void touch() {
 	}
 
 	// Runs on touch() - but only once.
 	static {
-		PresetModuleRegistry.registerModule(ID, StyledNicknamesCompat::new);
+		PresetModuleRegistry.registerModule(ID, StyledNicknamesCompat::new, true, ModuleImportable.ALWAYS_ALLOWED);
 	}
 }

@@ -6,6 +6,7 @@ import folk.sisby.switchy.commands.SwitchyCommands;
 import folk.sisby.switchy.modules.*;
 import folk.sisby.switchy.modules.cardinal.CardinalModuleLoader;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.text.MutableText;
 import net.minecraft.util.Identifier;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.loader.api.QuiltLoader;
@@ -15,6 +16,7 @@ import org.quiltmc.qsl.resource.loader.api.ResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,20 +35,23 @@ public class Switchy implements ModInitializer {
 	public static final List<ModuleImportable> IMPORTABLE_NON_OP = List.of(ModuleImportable.ALLOWED, ModuleImportable.ALWAYS_ALLOWED);
 	public static final List<ModuleImportable> IMPORTABLE_OP = List.of(ModuleImportable.ALLOWED, ModuleImportable.ALWAYS_ALLOWED, ModuleImportable.OPERATOR);
 
-	public static final Map<Identifier, Supplier<? extends PresetModule>> COMPAT_REGISTRY = new HashMap<>();
+	public record ModuleInfo(boolean isDefault, ModuleImportable importable, Collection<Identifier> applyDependencies, MutableText disableConfirmation) {}
 
-	public static void registerModule(Identifier moduleId, Supplier<? extends PresetModule> moduleConstructor) {
-		if (!COMPAT_REGISTRY.containsKey(moduleId)) {
-			COMPAT_REGISTRY.put(moduleId, moduleConstructor);
-			ModuleImportable importable = moduleConstructor.get().getImportable();
+	public static final Map<Identifier, Supplier<? extends PresetModule>> MODULE_SUPPLIERS = new HashMap<>();
+	public static final Map<Identifier, ModuleInfo> MODULE_INFO = new HashMap<>();
+
+	public static void registerModule(Identifier moduleId, Supplier<? extends PresetModule> moduleConstructor, boolean isDefault, ModuleImportable importable, Collection<Identifier> applyDependencies, MutableText disableConfirmation) {
+		if (!MODULE_SUPPLIERS.containsKey(moduleId)) {
+			MODULE_SUPPLIERS.put(moduleId, moduleConstructor);
+			MODULE_INFO.put(moduleId, new ModuleInfo(isDefault, importable, applyDependencies, disableConfirmation));
 			ModuleImportable configImportable = CONFIG.moduleImportable.get(moduleId.toString());
 
 			if (IMPORTABLE_CONFIGURABLE.contains(importable)) { // Load default config values
 				if (configImportable == null || !IMPORTABLE_CONFIGURABLE.contains(configImportable)) {
-					CONFIG.moduleImportable.put(moduleId.toString(), moduleConstructor.get().getImportable());
+					CONFIG.moduleImportable.put(moduleId.toString(), importable);
 				}
 			} else {
-				CONFIG.moduleImportableReadOnly.put(moduleId.toString(), moduleConstructor.get().getImportable());
+				CONFIG.moduleImportableReadOnly.put(moduleId.toString(), importable);
 			}
 			LOGGER.info("Switchy: Registered module " + moduleId);
 		} else {
@@ -69,6 +74,6 @@ public class Switchy implements ModInitializer {
 		ResourceLoader.get(ResourceType.SERVER_DATA).registerReloader(CardinalModuleLoader.INSTANCE);
 
 
-		LOGGER.info("Switchy: Initialized! Already Registered Modules: " + COMPAT_REGISTRY.keySet());
+		LOGGER.info("Switchy: Initialized! Already Registered Modules: " + MODULE_SUPPLIERS.keySet());
 	}
 }

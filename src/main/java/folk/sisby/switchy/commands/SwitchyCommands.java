@@ -243,7 +243,7 @@ public class SwitchyCommands {
 		}
 
 		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase("/switchy module disable " + moduleId)) {
-			sendMessage(player, Switchy.COMPAT_REGISTRY.get(moduleId).get().getDisableConfirmation().setStyle(FORMAT_WARN.getLeft()));
+			sendMessage(player, Switchy.MODULE_INFO.get(moduleId).disableConfirmation().setStyle(FORMAT_WARN.getLeft()));
 			tellInvalidTry(player, "commands.switchy.module.disable.confirmation", "commands.switchy.module.disable.command", literal(moduleId.toString()));
 			return 0;
 		} else {
@@ -305,7 +305,7 @@ public class SwitchyCommands {
 		// Generate Importable List
 		Map<Identifier, ModuleImportable> importable = new HashMap<>();
 		presets.modules.keySet().forEach( (key) ->
-				importable.put(key, IMPORTABLE_CONFIGURABLE.contains(Switchy.COMPAT_REGISTRY.get(key).get().getImportable()) ? Switchy.CONFIG.moduleImportable.get(key.toString()) : Switchy.COMPAT_REGISTRY.get(key).get().getImportable())
+				importable.put(key, IMPORTABLE_CONFIGURABLE.contains(Switchy.MODULE_INFO.get(key).importable()) ? Switchy.CONFIG.moduleImportable.get(key.toString()) : Switchy.MODULE_INFO.get(key).importable())
 		);
 
 		// Warn user about any disallowed flags

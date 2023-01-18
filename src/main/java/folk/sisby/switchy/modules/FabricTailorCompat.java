@@ -11,8 +11,6 @@ import org.samo_lego.fabrictailor.casts.TailoredPlayer;
 
 public class FabricTailorCompat implements PresetModule {
 	public static final Identifier ID = new Identifier("switchy", "fabric_tailor");
-	private static final boolean isDefault = true;
-	private static final ModuleImportable importable = ModuleImportable.ALWAYS_ALLOWED;
 
 	public static final String KEY_SKIN_VALUE = "skinValue";
 	public static final String KEY_SKIN_SIGNATURE = "skinSignature";
@@ -50,26 +48,11 @@ public class FabricTailorCompat implements PresetModule {
 		this.skinSignature = nbt.contains(KEY_SKIN_SIGNATURE) ? nbt.getString(KEY_SKIN_SIGNATURE) : null;
 	}
 
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
-	@Override
-	public boolean isDefault() {
-		return isDefault;
-	}
-
-	@Override
-	public ModuleImportable getImportable() {
-		return importable;
-	}
-
 	public static void touch() {
 	}
 
 	// Runs on touch() - but only once.
 	static {
-		PresetModuleRegistry.registerModule(ID, FabricTailorCompat::new);
+		PresetModuleRegistry.registerModule(ID, FabricTailorCompat::new, true, ModuleImportable.ALWAYS_ALLOWED);
 	}
 }

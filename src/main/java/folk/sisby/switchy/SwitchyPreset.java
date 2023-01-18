@@ -17,7 +17,7 @@ public class SwitchyPreset {
 		this.presetName = name;
 		this.compatModules = moduleToggles.entrySet().stream()
 				.filter(Map.Entry::getValue)
-				.collect(Collectors.toMap(Map.Entry::getKey, e -> Switchy.COMPAT_REGISTRY.get(e.getKey()).get()));
+				.collect(Collectors.toMap(Map.Entry::getKey, e -> Switchy.MODULE_SUPPLIERS.get(e.getKey()).get()));
 	}
 
 	public NbtCompound toNbt() {
@@ -37,7 +37,7 @@ public class SwitchyPreset {
 			try {
 				module.updateFromPlayer(player, nextPreset);
 			} catch (Exception ex) {
-				Switchy.LOGGER.error("Switchy: Module " + module.getId() + " failed to update! Error:");
+				Switchy.LOGGER.error("Switchy: Module " + id + " failed to update! Error:");
 				Switchy.LOGGER.error(ex.toString());
 			}
 		});
@@ -47,7 +47,7 @@ public class SwitchyPreset {
 		if (!registeredModules.contains(id) && modules.containsKey(id)) {
 			try {
 				PresetModule module = modules.get(id);
-				module.getApplyDependencies().forEach((depId) -> tryApplyModule(modules, depId, player, registeredModules));
+				Switchy.MODULE_INFO.get(id).applyDependencies().forEach((depId) -> tryApplyModule(modules, depId, player, registeredModules));
 				module.applyToPlayer(player);
 			} catch (Exception ex) {
 				Switchy.LOGGER.error("Switchy: Module " + id + " failed to apply! Error:");
