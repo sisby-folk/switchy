@@ -11,12 +11,17 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import org.jetbrains.annotations.NotNull;
+import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.qsl.resource.loader.api.reloader.IdentifiableResourceReloader;
 
 import java.util.Map;
 
 public class CardinalModuleLoader extends JsonDataLoader implements IdentifiableResourceReloader {
 	private static final Identifier ID = new Identifier(Switchy.ID, "switchy_cca_modules");
+
+	private static final String KEY_DEFAULT = "default";
+	private static final String KEY_IMPORTABLE = "importable";
+	private static final String KEY_IF_MOD_LOADED = "ifModLoaded";
 
 	public static final CardinalModuleLoader INSTANCE = new CardinalModuleLoader(new Gson());
 
@@ -38,13 +43,16 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 					continue;
 				}
 				JsonObject componentOptions = entry.getValue().getAsJsonObject();
-				if (!componentOptions.has("default")|| !componentOptions.has("importable")) {
+				if (!componentOptions.has(KEY_DEFAULT)|| !componentOptions.has(KEY_IMPORTABLE)) {
 					Switchy.LOGGER.warn("Switchy: Cardinal component '{}' is missing options, skipping...", entry.getKey());
 					continue;
 				}
+				if (componentOptions.has(KEY_IF_MOD_LOADED) && !QuiltLoader.isModLoaded(componentOptions.get(KEY_IF_MOD_LOADED).getAsString())) {
+					continue;
+				}
 				try {
-					ModuleImportable componentImportable = ModuleImportable.valueOf(componentOptions.get("importable").getAsString());
-					boolean componentDefault = componentOptions.get("default").getAsBoolean();
+					ModuleImportable componentImportable = ModuleImportable.valueOf(componentOptions.get(KEY_IMPORTABLE).getAsString());
+					boolean componentDefault = componentOptions.get(KEY_DEFAULT).getAsBoolean();
 					CardinalSerializerCompat.register(moduleId, componentId, componentDefault, componentImportable);
 				} catch (UnsupportedOperationException e) {
 					Switchy.LOGGER.warn("Switchy: Cardinal component '{}' has non-boolean options, skipping...", entry.getKey());
