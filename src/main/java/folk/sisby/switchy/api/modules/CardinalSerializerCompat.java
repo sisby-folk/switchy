@@ -17,7 +17,15 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 public class CardinalSerializerCompat implements PresetModule {
-	public record ComponentConfig<T1 extends Component>(ComponentKey<T1> registryKey, BiConsumer<ComponentKey<T1>, PlayerEntity> preApplyClear, BiConsumer<ComponentKey<T1>, PlayerEntity> postApplySync) {}
+	public record ComponentConfig<T1 extends Component>(ComponentKey<T1> registryKey, BiConsumer<ComponentKey<T1>, PlayerEntity> preApplyClear, BiConsumer<ComponentKey<T1>, PlayerEntity> postApplySync) {
+		void invokePreApplyClear(PlayerEntity player) {
+			preApplyClear.accept(registryKey, player);
+		}
+
+		void invokePostApplySync(PlayerEntity player) {
+			postApplySync.accept(registryKey, player);
+		}
+	}
 
 	// Generic Fields
 	private final Map<Identifier, ComponentConfig<? extends Component>> componentConfigs = new HashMap<>();
@@ -39,9 +47,9 @@ public class CardinalSerializerCompat implements PresetModule {
 	@Override
 	public void applyToPlayer(PlayerEntity player) {
 		componentConfigs.forEach((id, componentConfig) -> {
-			componentConfig.preApplyClear.accept(componentConfig.registryKey, player);
+			componentConfig.invokePreApplyClear(player);
 			componentConfig.registryKey.get(player).readFromNbt(componentTag.getCompound(id.toString()));
-			componentConfig.postApplySync.accept(componentConfig.registryKey, player);
+			componentConfig.invokePostApplySync(player);
 			componentConfig.registryKey.sync(player);
 		});
 	}
@@ -62,9 +70,12 @@ public class CardinalSerializerCompat implements PresetModule {
 
 	public static void register(Identifier moduleId, Set<Identifier> componentKeyId, Boolean isDefault, ModuleImportable importable) {
 			PresetModuleRegistry.registerModule(moduleId, () -> {
-				Set<ComponentKey<? extends Component>> componentKeys = componentKeyId.stream().map(ComponentRegistry::get).collect(Collectors.toSet());
-				if (componentKeys.stream().allMatch(Objects::nonNull)) {
-					return new CardinalSerializerCompat(componentKeys.stream().map(registryKey -> new ComponentConfig<>(registryKey, (k, p) -> {}, (k, p) -> {})).collect(Collectors.toSet()));
+				Set<ComponentKey<?>> list = new HashSet<>();
+				for (Identifier identifier : componentKeyId) {
+					list.add(ComponentRegistry.get(identifier));
+				}
+				if (list.stream().allMatch(Objects::nonNull)) {
+					return new CardinalSerializerCompat(list.stream().map(registryKey -> new ComponentConfig<>(registryKey, (k, p) -> {}, (k, p) -> {})).collect(Collectors.toSet()));
 				} else {
 					Switchy.LOGGER.warn("Switchy: cardinal module {} failed to instantiate, as its component isn't created yet.", moduleId);
 					return null;
