@@ -12,14 +12,18 @@ import static folk.sisby.switchy.util.Feedback.translatable;
 
 public class PresetModuleRegistry {
 	public static void registerModule(Identifier moduleId, Supplier<PresetModule> moduleConstructor, boolean isDefault, ModuleImportable importable) {
-		Switchy.registerModule(moduleId, moduleConstructor, isDefault, importable, Set.of(), translatable("commands.switchy.module.disable.warn"));
+		Switchy.registerModule(moduleId, moduleConstructor, isDefault, importable, Set.of(), Set.of(), translatable("commands.switchy.module.disable.warn"));
 	}
 
 	public static void registerModule(Identifier moduleId, Supplier<PresetModule> moduleConstructor, boolean isDefault, ModuleImportable importable, Collection<Identifier> applyDependencies) {
-		Switchy.registerModule(moduleId, moduleConstructor, isDefault, importable, applyDependencies, translatable("commands.switchy.module.disable.warn"));
+		Switchy.registerModule(moduleId, moduleConstructor, isDefault, importable, applyDependencies, Set.of(), translatable("commands.switchy.module.disable.warn"));
 	}
 
-	public static void registerModule(Identifier moduleId, Supplier<PresetModule> moduleConstructor, boolean isDefault, ModuleImportable importable, Collection<Identifier> applyDependencies, MutableText disableConfirmation) {
-		Switchy.registerModule(moduleId, moduleConstructor, isDefault, importable, applyDependencies, disableConfirmation);
+	public static void registerModule(Identifier moduleId, Supplier<PresetModule> moduleConstructor, boolean isDefault, ModuleImportable importable, Collection<Identifier> applyDependencies, Collection<Identifier> uniqueIds) {
+		Switchy.registerModule(moduleId, moduleConstructor, isDefault, importable, applyDependencies, uniqueIds, translatable("commands.switchy.module.disable.warn"));
+	}
+
+	public static void registerModule(Identifier moduleId, Supplier<PresetModule> moduleConstructor, boolean isDefault, ModuleImportable importable, Collection<Identifier> applyDependencies, Collection<Identifier> uniqueIds, MutableText disableConfirmation) {
+		Switchy.registerModule(moduleId, moduleConstructor, isDefault, importable, applyDependencies, uniqueIds, disableConfirmation);
 	}
 }

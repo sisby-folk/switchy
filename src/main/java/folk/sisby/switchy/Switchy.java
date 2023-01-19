@@ -35,15 +35,15 @@ public class Switchy implements ModInitializer {
 	public static final List<ModuleImportable> IMPORTABLE_NON_OP = List.of(ModuleImportable.ALLOWED, ModuleImportable.ALWAYS_ALLOWED);
 	public static final List<ModuleImportable> IMPORTABLE_OP = List.of(ModuleImportable.ALLOWED, ModuleImportable.ALWAYS_ALLOWED, ModuleImportable.OPERATOR);
 
-	public record ModuleInfo(boolean isDefault, ModuleImportable importable, Collection<Identifier> applyDependencies, MutableText disableConfirmation) {}
+	public record ModuleInfo(boolean isDefault, ModuleImportable importable, Collection<Identifier> applyDependencies, Collection<Identifier> uniqueIds, MutableText disableConfirmation) {}
 
 	public static final Map<Identifier, Supplier<? extends PresetModule>> MODULE_SUPPLIERS = new HashMap<>();
 	public static final Map<Identifier, ModuleInfo> MODULE_INFO = new HashMap<>();
 
-	public static void registerModule(Identifier moduleId, Supplier<? extends PresetModule> moduleConstructor, boolean isDefault, ModuleImportable importable, Collection<Identifier> applyDependencies, MutableText disableConfirmation) {
+	public static void registerModule(Identifier moduleId, Supplier<? extends PresetModule> moduleConstructor, boolean isDefault, ModuleImportable importable, Collection<Identifier> applyDependencies, Collection<Identifier> uniqueIds, MutableText disableConfirmation) {
 		if (!MODULE_SUPPLIERS.containsKey(moduleId)) {
 			MODULE_SUPPLIERS.put(moduleId, moduleConstructor);
-			MODULE_INFO.put(moduleId, new ModuleInfo(isDefault, importable, applyDependencies, disableConfirmation));
+			MODULE_INFO.put(moduleId, new ModuleInfo(isDefault, importable, applyDependencies, uniqueIds, disableConfirmation));
 			ModuleImportable configImportable = CONFIG.moduleImportable.get(moduleId.toString());
 
 			if (IMPORTABLE_CONFIGURABLE.contains(importable)) { // Load default config values
