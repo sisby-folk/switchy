@@ -1,7 +1,0 @@
-{
-  "arcpocalypse:nekoarc": {
-    "default": true,
-    "importable": "OPERATOR",
-    "ifModLoaded": "arcpocalypse"
-  }
-}
