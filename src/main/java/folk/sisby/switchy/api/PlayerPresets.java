@@ -2,6 +2,7 @@ package folk.sisby.switchy.api;
 
 import folk.sisby.switchy.SwitchyPresets;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
@@ -19,9 +20,10 @@ public class PlayerPresets {
 		return presets != null ? presets.getCurrentPreset().toString() : "";
 	}
 
-	public static boolean switchPlayerPreset(PlayerEntity player, String presetName) {
+	@SuppressWarnings("unused")
+	public static boolean switchPlayerPreset(ServerPlayerEntity player, String presetName) {
 		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
-		return presets != null && presets.setCurrentPreset(player, presetName, true);
+		return presets != null && presets.switchCurrentPreset(player, presetName) != null;
 	}
 
 	public static Map<Identifier, Boolean> getPlayerPresetModules(PlayerEntity player) {

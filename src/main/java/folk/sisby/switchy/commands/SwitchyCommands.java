@@ -8,10 +8,12 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.datafixers.util.Function3;
 import com.mojang.datafixers.util.Function4;
 import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.api.SwitchyPlayer;
 import folk.sisby.switchy.SwitchyPreset;
 import folk.sisby.switchy.SwitchyPresets;
 import folk.sisby.switchy.api.ModuleImportable;
+import folk.sisby.switchy.api.SwitchyEvents;
+import folk.sisby.switchy.api.SwitchyPlayer;
+import folk.sisby.switchy.api.SwitchySwitchEvent;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.nbt.NbtCompound;
@@ -26,6 +28,7 @@ import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
+import org.quiltmc.qsl.networking.api.ServerPlayConnectionEvents;
 import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
 import java.util.*;
@@ -74,6 +77,10 @@ public class SwitchyCommands {
 														.suggests((c, b) -> suggestModules(c, b, true))
 														.executes((c) -> unwrapAndExecute(c, SwitchyCommands::disableModule, new Pair<>("module", Identifier.class))))))
 								.then(CommandManager.literal("export")
+										.requires(source -> {
+											ServerPlayerEntity player = serverPlayerOrNull(source);
+											return player != null && ServerPlayNetworking.canSend(player, S2C_EXPORT);
+										})
 										.executes((c) -> unwrapAndExecute(c, SwitchyCommands::exportPresets)))
 				));
 
@@ -88,6 +95,20 @@ public class SwitchyCommands {
 
 	public static void InitializeReceivers() {
 		ServerPlayNetworking.registerGlobalReceiver(C2S_IMPORT, (server, player, handler, buf, sender) -> importPresets(player, buf.readNbt()));
+	}
+
+	public static void InitializeEvents() {
+		ServerPlayConnectionEvents.JOIN.register((spn, ps, s) -> {
+			ServerPlayerEntity player = spn.getPlayer();
+			SwitchyPresets presets = getOrDefaultPresets(player);
+			SwitchySwitchEvent switchEvent = new SwitchySwitchEvent(
+					spn.getPlayer().getUuid(), presets.getCurrentPreset().presetName, null, presets.getEnabledModuleNames()
+			);
+			SwitchyEvents.fireSwitch(switchEvent);
+			if (ServerPlayNetworking.canSend(player, S2C_SWITCH)) {
+				ps.sendPacket(S2C_SWITCH, PacketByteBufs.create().writeNbt(switchEvent.toNbt()));
+			}
+		});
 	}
 
 	public static SwitchyPresets getOrDefaultPresets(ServerPlayerEntity player) {
@@ -109,24 +130,33 @@ public class SwitchyCommands {
 		return builder.buildFuture();
 	}
 
+	private static @Nullable ServerPlayerEntity serverPlayerOrNull(ServerCommandSource source) {
+		try {
+			return source.getPlayer();
+		} catch (CommandSyntaxException e) {
+			return null;
+		}
+	}
+
 	private static <V, V2> int unwrapAndExecute(CommandContext<ServerCommandSource> context, Function4<ServerPlayerEntity, SwitchyPresets, V, V2, Integer> executeFunction, @Nullable Pair<String, Class<V>> argument, @Nullable Pair<String, Class<V2>> argument2) {
 		int result = 0;
 
-		// Get context and execute
-		try {
-			ServerPlayerEntity player = context.getSource().getPlayer();
-			SwitchyPresets presets = getOrDefaultPresets(player);
-			result = executeFunction.apply(
-					player,
-					presets,
-					(argument != null ? context.getArgument(argument.getLeft(), argument.getRight()) : null),
-					(argument2 != null ? context.getArgument(argument2.getLeft(), argument2.getRight()) : null)
-			);
-			// Record previous command (for confirmations)
-			last_command.put(player.getUuid(), context.getInput());
-		} catch (CommandSyntaxException e) {
+		ServerPlayerEntity player = serverPlayerOrNull(context.getSource());
+		if (player == null) {
 			Switchy.LOGGER.error("Switchy: Command wasn't called by a player! (this shouldn't happen!)");
+			return result;
 		}
+
+		// Get context and execute
+		SwitchyPresets presets = getOrDefaultPresets(player);
+		result = executeFunction.apply(
+				player,
+				presets,
+				(argument != null ? context.getArgument(argument.getLeft(), argument.getRight()) : null),
+				(argument2 != null ? context.getArgument(argument2.getLeft(), argument2.getRight()) : null)
+		);
+		// Record previous command (for confirmations)
+		last_command.put(player.getUuid(), context.getInput());
 
 		return result;
 	}
@@ -196,10 +226,11 @@ public class SwitchyCommands {
 			return 0;
 		}
 
-		String oldPresetName = Objects.toString(presets.getCurrentPreset(), "<None>");
-		presets.setCurrentPreset(player, presetName, true);
-		Switchy.LOGGER.info("[Switchy] Player switch: '" + oldPresetName + "' -> '" + presetName + "' [" + player.getGameProfile().getName() + "]");
-		tellSuccess(player, "commands.switchy.set.success", literal(oldPresetName), literal(presetName));
+		String oldPresetName = presets.getCurrentPreset().toString();
+		String newPresetName = presets.switchCurrentPreset(player, presetName);
+
+		Switchy.LOGGER.info("[Switchy] Player switch: '" + oldPresetName + "' -> '" + newPresetName + "' [" + player.getGameProfile().getName() + "]");
+		tellSuccess(player, "commands.switchy.set.success", literal(oldPresetName), literal(newPresetName));
 		return 1;
 	}
 

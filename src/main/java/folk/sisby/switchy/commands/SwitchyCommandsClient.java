@@ -5,6 +5,8 @@ import com.mojang.datafixers.util.Function3;
 import com.mojang.datafixers.util.Function4;
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.SwitchyClient;
+import folk.sisby.switchy.api.SwitchyClientEvents;
+import folk.sisby.switchy.api.SwitchySwitchEvent;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
@@ -30,6 +32,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static folk.sisby.switchy.Switchy.S2C_EXPORT;
+import static folk.sisby.switchy.Switchy.S2C_SWITCH;
 import static folk.sisby.switchy.util.Feedback.*;
 
 public class SwitchyCommandsClient {
@@ -70,6 +73,14 @@ public class SwitchyCommandsClient {
 				if (client.player != null) {
 					tellInvalid(client.player, "commands.switchy_client.export.fail");
 				}
+			}
+		});
+
+		ClientPlayNetworking.registerGlobalReceiver(S2C_SWITCH, (client, handler, buf, sender) -> {
+			NbtCompound eventNbt = buf.readNbt();
+			if (eventNbt != null) {
+				SwitchySwitchEvent event = SwitchySwitchEvent.fromNbt(eventNbt);
+				SwitchyClientEvents.fireSwitch(event);
 			}
 		});
 	}
