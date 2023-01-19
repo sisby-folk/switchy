@@ -29,6 +29,7 @@ public class Switchy implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
 	public static final Identifier S2C_EXPORT = new Identifier(Switchy.ID, "s2c_export");
 	public static final Identifier C2S_IMPORT = new Identifier(Switchy.ID, "c2s_import");
+	public static final Identifier S2C_SWITCH = new Identifier(Switchy.ID, "s2c_switch");
 
 	public static final SwitchyConfig CONFIG = QuiltConfig.create(ID, "config", SwitchyConfig.class);
 	public static final List<ModuleImportable> IMPORTABLE_CONFIGURABLE = List.of(ModuleImportable.ALLOWED, ModuleImportable.OPERATOR);
@@ -63,6 +64,7 @@ public class Switchy implements ModInitializer {
 	public void onInitialize(ModContainer mod) {
 		SwitchyCommands.InitializeCommands();
 		SwitchyCommands.InitializeReceivers();
+		SwitchyCommands.InitializeEvents();
 
 		if (QuiltLoader.isModLoaded("drogtor")) DrogtorCompat.touch();
 		if (QuiltLoader.isModLoaded("styled-nicknames")) StyledNicknamesCompat.touch();
@@ -72,7 +74,6 @@ public class Switchy implements ModInitializer {
 		if (QuiltLoader.isModLoaded("pehkui")) PehkuiCompat.touch();
 		if (QuiltLoader.isModLoaded("fabrication")) FabricationArmorCompat.touch();
 		ResourceLoader.get(ResourceType.SERVER_DATA).registerReloader(CardinalModuleLoader.INSTANCE);
-
 
 		LOGGER.info("Switchy: Initialized! Already Registered Modules: " + MODULE_SUPPLIERS.keySet());
 	}

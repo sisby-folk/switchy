@@ -1,20 +1,27 @@
 package folk.sisby.switchy;
 
 import folk.sisby.switchy.api.PresetModule;
+import folk.sisby.switchy.api.SwitchyEvents;
+import folk.sisby.switchy.api.SwitchySwitchEvent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
+import org.quiltmc.qsl.networking.api.PacketByteBufs;
+import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import static folk.sisby.switchy.Switchy.S2C_SWITCH;
 import static folk.sisby.switchy.util.Feedback.getIdText;
 
 public class SwitchyPresets {
@@ -67,14 +74,14 @@ public class SwitchyPresets {
 		}
 
 		if (player != null) {
-			if (nbt.contains(KEY_PRESET_CURRENT) && !outPresets.setCurrentPreset(player, nbt.getString(KEY_PRESET_CURRENT), false)) {
+			if (nbt.contains(KEY_PRESET_CURRENT) && !outPresets.setCurrentPreset(nbt.getString(KEY_PRESET_CURRENT))) {
 				Switchy.LOGGER.warn("Switchy: Unable to set current preset from data. Data may have been lost.");
 			}
 
 			if (outPresets.presetMap.isEmpty() || outPresets.getCurrentPreset() == null) {
 				// Recover current data as "Default" preset
 				outPresets.addPreset(new SwitchyPreset("default", outPresets.modules));
-				outPresets.setCurrentPreset(player, "default", false);
+				outPresets.setCurrentPreset("default");
 			}
 		}
 
@@ -122,20 +129,37 @@ public class SwitchyPresets {
 				.collect(Collectors.toMap(Map.Entry::getKey, e -> Switchy.MODULE_INFO.get(e.getKey()).isDefault()));
 	}
 
-	public boolean setCurrentPreset(PlayerEntity player, String presetName, Boolean performSwitch) {
+	private boolean setCurrentPreset(String presetName) {
 		if (this.presetMap.containsKey(presetName)) {
-			SwitchyPreset newPreset = this.presetMap.get(presetName);
-			if (performSwitch) this.switchPreset(player, currentPreset, newPreset);
-			this.currentPreset = newPreset;
+			this.currentPreset = this.presetMap.get(presetName);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	private void switchPreset(PlayerEntity player, SwitchyPreset oldPreset, SwitchyPreset newPreset) {
-		oldPreset.updateFromPlayer(player, newPreset.presetName);
-		newPreset.applyToPlayer(player);
+	public @Nullable String switchCurrentPreset(ServerPlayerEntity player, String presetName) {
+		if (this.presetMap.containsKey(presetName)) {
+			SwitchyPreset newPreset = this.presetMap.get(presetName);
+
+			// Perform Switch
+			this.currentPreset.updateFromPlayer(player, newPreset.presetName);
+			newPreset.applyToPlayer(player);
+
+			// Fire Events
+			SwitchySwitchEvent switchEvent = new SwitchySwitchEvent(
+					player.getUuid(), newPreset.presetName, Objects.toString(this.currentPreset, null), getEnabledModuleNames()
+			);
+			SwitchyEvents.fireSwitch(switchEvent);
+			if (ServerPlayNetworking.canSend(player, S2C_SWITCH)) {
+				ServerPlayNetworking.send(player, S2C_SWITCH, PacketByteBufs.create().writeNbt(switchEvent.toNbt()));
+			}
+
+			this.currentPreset = newPreset;
+			return newPreset.presetName;
+		} else {
+			return null;
+		}
 	}
 
 	public void saveCurrentPreset(PlayerEntity player) {
