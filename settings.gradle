@@ -30,7 +30,7 @@ dependencyResolutionManagement {
 
 			// // Libraries // //
 			version('serverTranslationsApi', "1.4.12+${mc}")
-			version('lib39', "1.5.0-pre1+${mc}")
+			version('lib39', "1.5.0-pre2+${mc}")
 			version('kdlyData', "1.0.1+${mc}")
 
 			library('serverTranslationsApi', 'fr.catcore', 'server-translations-api').versionRef('serverTranslationsApi')
