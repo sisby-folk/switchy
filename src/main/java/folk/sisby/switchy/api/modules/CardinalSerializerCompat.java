@@ -12,9 +12,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 public class CardinalSerializerCompat implements PresetModule {
 	public record ComponentConfig<T1 extends Component>(ComponentKey<T1> registryKey, BiConsumer<ComponentKey<T1>, PlayerEntity> preApplyClear, BiConsumer<ComponentKey<T1>, PlayerEntity> postApplySync) {
@@ -28,19 +29,19 @@ public class CardinalSerializerCompat implements PresetModule {
 	}
 
 	// Generic Fields
-	private final Map<Identifier, ComponentConfig<? extends Component>> componentConfigs = new HashMap<>();
+	private final Map<Identifier, ComponentConfig<? extends Component>> componentConfigs;
 
 	// Module Data
-	private NbtCompound componentTag = new NbtCompound();
+	private NbtCompound moduleNbt = new NbtCompound();
 
 	@Override
 	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
-		this.componentTag = new NbtCompound();
+		this.moduleNbt = new NbtCompound();
 		componentConfigs.forEach((id, componentConfig) -> {
 			NbtCompound componentCompound = new NbtCompound();
 			Component component = componentConfig.registryKey.get(player);
 			component.writeToNbt(componentCompound);
-			this.componentTag.put(id.toString(), componentCompound);
+			this.moduleNbt.put(id.toString(), componentCompound);
 		});
 	}
 
@@ -48,7 +49,7 @@ public class CardinalSerializerCompat implements PresetModule {
 	public void applyToPlayer(PlayerEntity player) {
 		componentConfigs.forEach((id, componentConfig) -> {
 			componentConfig.invokePreApplyClear(player);
-			componentConfig.registryKey.get(player).readFromNbt(componentTag.getCompound(id.toString()));
+			componentConfig.registryKey.get(player).readFromNbt(moduleNbt.getCompound(id.toString()));
 			componentConfig.invokePostApplySync(player);
 			componentConfig.registryKey.sync(player);
 		});
@@ -56,30 +57,30 @@ public class CardinalSerializerCompat implements PresetModule {
 
 	@Override
 	public NbtCompound toNbt() {
-		return componentTag.copy();
+		return moduleNbt.copy();
 	}
 
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
-		this.componentTag.copyFrom(nbt);
+		this.moduleNbt.copyFrom(nbt);
 	}
 
-	public CardinalSerializerCompat(Collection<ComponentConfig<? extends Component>> componentConfigs) {
-		this.componentConfigs.putAll(componentConfigs.stream().collect(Collectors.toMap(rk -> rk.registryKey().getId(), rk -> rk)));
+	public CardinalSerializerCompat(Map<Identifier, ComponentConfig<? extends Component>> componentConfigs) {
+		this.componentConfigs = componentConfigs;
 	}
 
 	public static void register(Identifier moduleId, Set<Identifier> componentKeyId, Boolean isDefault, ModuleImportable importable) {
 			PresetModuleRegistry.registerModule(moduleId, () -> {
-				Set<ComponentKey<?>> list = new HashSet<>();
+				Map<Identifier, ComponentConfig<?>> map = new HashMap<>();
 				for (Identifier identifier : componentKeyId) {
-					list.add(ComponentRegistry.get(identifier));
+					ComponentKey<?> componentKey = ComponentRegistry.get(identifier);
+					if (componentKey == null) {
+						Switchy.LOGGER.warn("Switchy: cardinal module {} failed to instantiate, as its component isn't created yet.", moduleId);
+						return null;
+					}
+					map.put(identifier, new ComponentConfig<>(componentKey, (k, p) -> {}, (k, p) -> {}));
 				}
-				if (list.stream().allMatch(Objects::nonNull)) {
-					return new CardinalSerializerCompat(list.stream().map(registryKey -> new ComponentConfig<>(registryKey, (k, p) -> {}, (k, p) -> {})).collect(Collectors.toSet()));
-				} else {
-					Switchy.LOGGER.warn("Switchy: cardinal module {} failed to instantiate, as its component isn't created yet.", moduleId);
-					return null;
-				}
+				return new CardinalSerializerCompat(map);
 			}, isDefault, importable, Set.of(), componentKeyId);
 	}
 }
