@@ -69,6 +69,10 @@ public class CardinalSerializerCompat implements PresetModule {
 		this.componentConfigs = componentConfigs;
 	}
 
+	public <T1 extends Component> CardinalSerializerCompat from(ComponentKey<T1> registryKey, BiConsumer<ComponentKey<T1>, PlayerEntity> preApplyClear, BiConsumer<ComponentKey<T1>, PlayerEntity> postApplySync) {
+		return new CardinalSerializerCompat(Map.of(registryKey.getId(), new ComponentConfig<>(registryKey, preApplyClear, postApplySync)));
+	}
+
 	public static void register(Identifier moduleId, Set<Identifier> componentKeyId, Boolean isDefault, ModuleImportable importable) {
 			PresetModuleRegistry.registerModule(moduleId, () -> {
 				Map<Identifier, ComponentConfig<?>> map = new HashMap<>();
