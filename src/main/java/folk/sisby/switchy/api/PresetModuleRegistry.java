@@ -23,6 +23,10 @@ public class PresetModuleRegistry {
 		Switchy.registerModule(moduleId, moduleConstructor, isDefault, importable, applyDependencies, uniqueIds, translatable("commands.switchy.module.disable.warn"));
 	}
 
+	public static void registerModule(Identifier moduleId, Supplier<PresetModule> moduleConstructor, boolean isDefault, ModuleImportable importable, Collection<Identifier> applyDependencies, MutableText disableConfirmation) {
+		Switchy.registerModule(moduleId, moduleConstructor, isDefault, importable, applyDependencies, Set.of(), disableConfirmation);
+	}
+
 	public static void registerModule(Identifier moduleId, Supplier<PresetModule> moduleConstructor, boolean isDefault, ModuleImportable importable, Collection<Identifier> applyDependencies, Collection<Identifier> uniqueIds, MutableText disableConfirmation) {
 		Switchy.registerModule(moduleId, moduleConstructor, isDefault, importable, applyDependencies, uniqueIds, disableConfirmation);
 	}
