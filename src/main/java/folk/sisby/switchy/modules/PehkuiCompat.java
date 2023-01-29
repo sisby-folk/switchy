@@ -7,61 +7,56 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
+import virtuoel.pehkui.api.ScaleRegistries;
+import virtuoel.pehkui.api.ScaleType;
 import virtuoel.pehkui.api.ScaleTypes;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PehkuiCompat implements PresetModule {
 	public static final Identifier ID = new Identifier("switchy", "pehkui");
 
-	public static final String KEY_SCALE_HEIGHT = "scaleHeight";
-	public static final String KEY_SCALE_WIDTH = "scaleWidth";
-	public static final String KEY_SCALE_MODEL_HEIGHT = "scaleModelHeight";
-	public static final String KEY_SCALE_MODEL_WIDTH = "scaleModelWidth";
-
-	// Overwritten on save when null
-	@Nullable public Float scaleHeight;
-	@Nullable public Float scaleWidth;
-	@Nullable public Float scaleModelHeight;
-	@Nullable public Float scaleModelWidth;
+	public static final Map<ScaleType, String> scaleKeys = new HashMap<>();
+	public final Map<ScaleType, @Nullable Float> scaleValues = new HashMap<>();
 
 	@Override
 	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
-		this.scaleHeight = ScaleTypes.HEIGHT.getScaleData(player).getTargetScale();
-		this.scaleWidth = ScaleTypes.WIDTH.getScaleData(player).getTargetScale();
-		this.scaleModelHeight = ScaleTypes.MODEL_HEIGHT.getScaleData(player).getTargetScale();
-		this.scaleModelWidth = ScaleTypes.MODEL_WIDTH.getScaleData(player).getTargetScale();
+		scaleValues.replaceAll((t, v) -> t.getScaleData(player).getTargetScale());
 	}
 
 	@Override
 	public void applyToPlayer(PlayerEntity player) {
-		if (this.scaleHeight != null) ScaleTypes.HEIGHT.getScaleData(player).setTargetScale(scaleHeight);
-		if (this.scaleWidth != null) ScaleTypes.WIDTH.getScaleData(player).setTargetScale(scaleWidth);
-		if (this.scaleModelHeight != null) ScaleTypes.MODEL_HEIGHT.getScaleData(player).setTargetScale(scaleModelHeight);
-		if (this.scaleModelWidth != null) ScaleTypes.MODEL_WIDTH.getScaleData(player).setTargetScale(scaleModelWidth);
+		scaleValues.forEach((type, value) -> {if (value != null) type.getScaleData(player).setTargetScale(value);});
 	}
 
 	@Override
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
-		if (this.scaleHeight != null) outNbt.putFloat(KEY_SCALE_HEIGHT, this.scaleHeight);
-		if (this.scaleWidth != null) outNbt.putFloat(KEY_SCALE_WIDTH, this.scaleWidth);
-		if (this.scaleModelHeight != null) outNbt.putFloat(KEY_SCALE_MODEL_HEIGHT, this.scaleModelHeight);
-		if (this.scaleModelWidth != null) outNbt.putFloat(KEY_SCALE_MODEL_WIDTH, this.scaleModelWidth);
+		scaleValues.forEach((type, value) -> {if (value != null) outNbt.putFloat(scaleKeys.get(type), value);});
 		return outNbt;
 	}
 
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
-		this.scaleHeight = nbt.contains(KEY_SCALE_HEIGHT) ? nbt.getFloat(KEY_SCALE_HEIGHT) : null;
-		this.scaleWidth = nbt.contains(KEY_SCALE_WIDTH) ? nbt.getFloat(KEY_SCALE_WIDTH) : null;
-		this.scaleModelHeight = nbt.contains(KEY_SCALE_MODEL_HEIGHT) ? nbt.getFloat(KEY_SCALE_MODEL_HEIGHT) : null;
-		this.scaleModelWidth = nbt.contains(KEY_SCALE_MODEL_WIDTH) ? nbt.getFloat(KEY_SCALE_MODEL_WIDTH) : null;
+		scaleKeys.forEach((type, key) -> {if (nbt.contains(key)) scaleValues.put(type, nbt.getFloat(key));});
+	}
+
+	public PehkuiCompat() {
+		scaleKeys.forEach((type, key) -> scaleValues.put(type, null));
 	}
 
 	public static void touch() {
 	}
 
+	public static void addScaleType(ScaleType type) {
+		scaleKeys.put(type, ScaleRegistries.SCALE_TYPES.inverse().get(type).getPath());
+	}
+
 	// Runs on touch() - but only once.
 	static {
 		PresetModuleRegistry.registerModule(ID, PehkuiCompat::new, true, ModuleImportable.OPERATOR);
+		List.of(ScaleTypes.HEIGHT, ScaleTypes.WIDTH, ScaleTypes.MODEL_HEIGHT, ScaleTypes.MODEL_WIDTH).forEach(PehkuiCompat::addScaleType);
 	}
 }
