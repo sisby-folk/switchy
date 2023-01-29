@@ -6,7 +6,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -34,7 +33,7 @@ public abstract class MixinPlayerEntity extends LivingEntity implements SwitchyP
 	@SuppressWarnings("unused")
 	@Inject(at = @At("TAIL"), method = "readCustomDataFromNbt(Lnet/minecraft/nbt/NbtCompound;)V")
 	public void readCustomDataFromNbt(NbtCompound tag, CallbackInfo ci) {
-		switchy$switchyPresets = SwitchyPresets.fromNbt(tag.contains("switchy:presets", NbtElement.COMPOUND_TYPE) ? tag.getCompound("switchy:presets") : new NbtCompound(), (PlayerEntity)(Object) this);
+		switchy$switchyPresets = SwitchyPresets.fromNbt(tag.getCompound("switchy:presets"), (PlayerEntity)(Object) this);
 	}
 
 	@Override

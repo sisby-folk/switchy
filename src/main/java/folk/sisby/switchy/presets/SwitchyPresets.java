@@ -139,28 +139,28 @@ public class SwitchyPresets {
 		}
 	}
 
-	public @Nullable String switchCurrentPreset(ServerPlayerEntity player, String presetName) {
-		if (this.presetMap.containsKey(presetName)) {
-			SwitchyPreset newPreset = this.presetMap.get(presetName);
+	public String switchCurrentPreset(ServerPlayerEntity player, String presetName) throws IllegalArgumentException, IllegalStateException {
+		if (!this.presetMap.containsKey(presetName)) throw new IllegalArgumentException("Can't switch to a preset that doesn't exist");
+		if (presetName.equalsIgnoreCase(Objects.toString(this.currentPreset, ""))) throw new IllegalStateException("Can't switch to the current preset");
 
-			// Perform Switch
-			this.currentPreset.updateFromPlayer(player, newPreset.presetName);
-			newPreset.applyToPlayer(player);
+		SwitchyPreset newPreset = this.presetMap.get(presetName);
 
-			// Fire Events
-			SwitchySwitchEvent switchEvent = new SwitchySwitchEvent(
-					player.getUuid(), newPreset.presetName, Objects.toString(this.currentPreset, null), getEnabledModuleNames()
-			);
-			SwitchyEvents.fireSwitch(switchEvent);
-			if (ServerPlayNetworking.canSend(player, S2C_SWITCH)) {
-				ServerPlayNetworking.send(player, S2C_SWITCH, PacketByteBufs.create().writeNbt(switchEvent.toNbt()));
-			}
+		// Perform Switch
+		this.currentPreset.updateFromPlayer(player, newPreset.presetName);
+		newPreset.applyToPlayer(player);
 
-			this.currentPreset = newPreset;
-			return newPreset.presetName;
-		} else {
-			return null;
+		SwitchySwitchEvent switchEvent = new SwitchySwitchEvent(
+				player.getUuid(), newPreset.presetName, Objects.toString(this.currentPreset, null), getEnabledModuleNames()
+		);
+		this.currentPreset = newPreset;
+
+		// Fire Events
+		SwitchyEvents.fireSwitch(switchEvent);
+		if (ServerPlayNetworking.canSend(player, S2C_SWITCH)) {
+			ServerPlayNetworking.send(player, S2C_SWITCH, PacketByteBufs.create().writeNbt(switchEvent.toNbt()));
 		}
+
+		return this.currentPreset.presetName;
 	}
 
 	public void saveCurrentPreset(PlayerEntity player) {

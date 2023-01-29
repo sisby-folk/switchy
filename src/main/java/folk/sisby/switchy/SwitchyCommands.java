@@ -99,7 +99,7 @@ public class SwitchyCommands {
 	public static void InitializeEvents() {
 		ServerPlayConnectionEvents.JOIN.register((spn, ps, s) -> {
 			ServerPlayerEntity player = spn.getPlayer();
-			SwitchyPresets presets = getOrDefaultPresets(player);
+			SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 			SwitchySwitchEvent switchEvent = new SwitchySwitchEvent(
 					spn.getPlayer().getUuid(), presets.getCurrentPreset().presetName, null, presets.getEnabledModuleNames()
 			);
@@ -108,13 +108,6 @@ public class SwitchyCommands {
 				ps.sendPacket(S2C_SWITCH, PacketByteBufs.create().writeNbt(switchEvent.toNbt()));
 			}
 		});
-	}
-
-	public static SwitchyPresets getOrDefaultPresets(ServerPlayerEntity player) {
-		if (((SwitchyPlayer) player).switchy$getPresets() == null) {
-			((SwitchyPlayer) player).switchy$setPresets(SwitchyPresets.fromNbt(new NbtCompound(), player));
-		}
-		return ((SwitchyPlayer) player).switchy$getPresets();
 	}
 
 	private static CompletableFuture<Suggestions> suggestPresets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, boolean allowCurrent) throws CommandSyntaxException {
@@ -147,7 +140,7 @@ public class SwitchyCommands {
 		}
 
 		// Get context and execute
-		SwitchyPresets presets = getOrDefaultPresets(player);
+		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 		result = executeFunction.apply(
 				player,
 				presets,
@@ -216,21 +209,19 @@ public class SwitchyCommands {
 	}
 
 	private static int setPreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
-		if (!presets.containsPreset(presetName)) {
+		String oldPresetName = presets.getCurrentPreset().toString();
+		try {
+			String newPresetName = presets.switchCurrentPreset(player, presetName);
+			Switchy.LOGGER.info("[Switchy] Player switch: '" + oldPresetName + "' -> '" + newPresetName + "' [" + player.getGameProfile().getName() + "]");
+			tellSuccess(player, "commands.switchy.set.success", literal(oldPresetName), literal(newPresetName));
+			return 1;
+		} catch (IllegalArgumentException ignored) {
 			tellInvalidTry(player, "commands.switchy.set.fail.missing", "commands.switchy.list.command");
 			return 0;
-		}
-		if (presetName.equalsIgnoreCase(Objects.toString(presets.getCurrentPreset(), null))) {
+		} catch (IllegalStateException ignored) {
 			tellInvalidTry(player, "commands.switchy.set.fail.current", "commands.switchy.list.command");
 			return 0;
 		}
-
-		String oldPresetName = presets.getCurrentPreset().toString();
-		String newPresetName = presets.switchCurrentPreset(player, presetName);
-
-		Switchy.LOGGER.info("[Switchy] Player switch: '" + oldPresetName + "' -> '" + newPresetName + "' [" + player.getGameProfile().getName() + "]");
-		tellSuccess(player, "commands.switchy.set.success", literal(oldPresetName), literal(newPresetName));
-		return 1;
 	}
 
 	private static int renamePreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName, String newName) {
@@ -295,7 +286,7 @@ public class SwitchyCommands {
 	}
 
 	private static void importPresets(ServerPlayerEntity player, NbtCompound presetNbt) {
-		SwitchyPresets presets = getOrDefaultPresets(player);
+		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 
 		if (presetNbt == null || !presetNbt.contains("filename")) {
 			tellInvalid(player, "commands.switchy.import.fail.parse");
