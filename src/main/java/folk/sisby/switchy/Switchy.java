@@ -2,7 +2,6 @@ package folk.sisby.switchy;
 
 import folk.sisby.switchy.api.ModuleImportable;
 import folk.sisby.switchy.api.PresetModule;
-import folk.sisby.switchy.commands.SwitchyCommands;
 import folk.sisby.switchy.modules.*;
 import folk.sisby.switchy.modules.cardinal.CardinalModuleLoader;
 import net.minecraft.resource.ResourceType;

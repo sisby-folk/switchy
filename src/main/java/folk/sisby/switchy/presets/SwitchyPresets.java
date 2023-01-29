@@ -1,5 +1,6 @@
-package folk.sisby.switchy;
+package folk.sisby.switchy.presets;
 
+import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.PresetModule;
 import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.api.SwitchySwitchEvent;

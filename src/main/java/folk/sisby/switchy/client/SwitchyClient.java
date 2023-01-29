@@ -1,6 +1,6 @@
-package folk.sisby.switchy;
+package folk.sisby.switchy.client;
 
-import folk.sisby.switchy.commands.SwitchyCommandsClient;
+import folk.sisby.switchy.Switchy;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
 import org.slf4j.Logger;

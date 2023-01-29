@@ -1,4 +1,4 @@
-package folk.sisby.switchy.commands;
+package folk.sisby.switchy;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -7,9 +7,8 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.datafixers.util.Function3;
 import com.mojang.datafixers.util.Function4;
-import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.SwitchyPreset;
-import folk.sisby.switchy.SwitchyPresets;
+import folk.sisby.switchy.presets.SwitchyPreset;
+import folk.sisby.switchy.presets.SwitchyPresets;
 import folk.sisby.switchy.api.ModuleImportable;
 import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.api.SwitchyPlayer;

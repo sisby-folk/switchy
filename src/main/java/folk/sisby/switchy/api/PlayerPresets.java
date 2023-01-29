@@ -1,6 +1,6 @@
 package folk.sisby.switchy.api;
 
-import folk.sisby.switchy.SwitchyPresets;
+import folk.sisby.switchy.presets.SwitchyPresets;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
