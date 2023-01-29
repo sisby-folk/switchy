@@ -1,12 +1,13 @@
-package folk.sisby.switchy.commands;
+package folk.sisby.switchy.client;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.datafixers.util.Function3;
 import com.mojang.datafixers.util.Function4;
 import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.SwitchyClient;
-import folk.sisby.switchy.api.SwitchyClientEvents;
+import folk.sisby.switchy.client.api.SwitchyEventsClient;
 import folk.sisby.switchy.api.SwitchySwitchEvent;
+import folk.sisby.switchy.argument.IdentifiersFromNbtArgArgumentType;
+import folk.sisby.switchy.argument.NbtFileArgumentType;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
@@ -80,7 +81,7 @@ public class SwitchyCommandsClient {
 			NbtCompound eventNbt = buf.readNbt();
 			if (eventNbt != null) {
 				SwitchySwitchEvent event = SwitchySwitchEvent.fromNbt(eventNbt);
-				SwitchyClientEvents.fireSwitch(event);
+				SwitchyEventsClient.fireSwitch(event);
 			}
 		});
 	}

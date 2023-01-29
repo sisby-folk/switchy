@@ -1,5 +1,6 @@
-package folk.sisby.switchy;
+package folk.sisby.switchy.presets;
 
+import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.PresetModule;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;

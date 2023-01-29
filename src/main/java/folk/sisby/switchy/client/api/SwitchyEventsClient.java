@@ -1,13 +1,14 @@
-package folk.sisby.switchy.api;
+package folk.sisby.switchy.client.api;
 
 import folk.sisby.switchy.Switchy;
+import folk.sisby.switchy.api.SwitchySwitchEvent;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class SwitchyClientEvents {
+public class SwitchyEventsClient {
 	private static final Map<Identifier, Consumer<SwitchySwitchEvent>> switchListeners = new HashMap<>();
 
 	@SuppressWarnings("unused")
