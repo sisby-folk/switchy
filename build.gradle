@@ -3,14 +3,14 @@ buildscript {
 		gradlePluginPortal()
 	}
 	dependencies {
-		classpath 'com.modrinth.minotaur:Minotaur:2.4.3'
+		classpath 'com.modrinth.minotaur:Minotaur:2.6.0'
 		classpath "com.github.breadmoirai:github-release:2.4.1"
 	}
 }
 
 plugins {
 	id 'maven-publish'
-	id 'org.quiltmc.loom' version '0.12.+'
+	id 'org.quiltmc.loom' version "1.0.+"
 }
 
 if (System.getenv("MODRINTH_TOKEN")) {
@@ -34,7 +34,14 @@ repositories {
 	// Jitpack
 	maven { url 'https://jitpack.io' }
 
-	// Sleeping Town
+	// Modrinth
+	maven {
+		url = "https://api.modrinth.com/maven"
+		content {
+			includeGroup "maven.modrinth"
+		}
+	}
+
 	maven {
 		url 'https://repo.sleeping.town'
 		content {
@@ -43,12 +50,8 @@ repositories {
 		}
 	}
 
-	// Unascribed (Kdl4j)
-	maven { url "https://repo.unascribed.com" }
-
-	// Player Pronouns
+	// Nucleoid
 	maven {
-		name = "NucleoidMC"
 		url = uri("https://maven.nucleoid.xyz/")
 	}
 
@@ -57,7 +60,6 @@ repositories {
 
 	// Origins
 	maven {
-		name = 'Ladysnake Mods'
 		url = 'https://ladysnake.jfrog.io/artifactory/mods'
 	}
 	maven {
@@ -72,29 +74,19 @@ repositories {
 			includeGroup "com.jamieswhiteshirt"
 		}
 	}
-	maven {
+
+	maven { // Cloth Config
 		url "https://maven.shedaniel.me/"
 	}
-	maven {
+	maven { // ModMenu
 		url "https://maven.terraformersmc.com/"
-	}
-
-	// Modrinth
-	repositories {
-		maven {
-			name = "Modrinth"
-			url = "https://api.modrinth.com/maven"
-			content {
-				includeGroup "maven.modrinth"
-			}
-		}
 	}
 }
 
 dependencies {
 	// // Base // //
-	minecraft libs.minecraft
-	mappings variantOf(libs.quiltMappings) { classifier "intermediary-v2" }
+	minecraft libs.mc
+	mappings variantOf(libs.qm) { classifier "intermediary-v2" }
 	modImplementation libs.ql
 	modImplementation libs.qsl
 
@@ -107,9 +99,6 @@ dependencies {
 
 	modImplementation libs.lib39Dessicant
 	include libs.lib39Dessicant
-
-	// modImplementation libs.kdlyData // FTB Quests issue
-	// include libs.kdlyData
 
 	// // Compat // //
 
@@ -147,11 +136,21 @@ dependencies {
 }
 
 processResources {
-	inputs.property "version", version
+	final Map<String, String> map = [
+			"switchy": version.toString(),
+			"mc"  : libs.versions.mc.get(),
+			"ql"  : libs.versions.ql.get(),
+			"qfapi"  : libs.versions.qfapi.get(),
+			"drogtor"  : libs.versions.drogtor.get(),
+			"styledNicknames"  : libs.versions.styledNicknames.get(),
+			"fabrictailor"  : libs.versions.fabrictailor.get(),
+			"origins"  : libs.versions.origins.get(),
+			"pehkui"  : libs.versions.pehkui.get(),
+			"fabrication"  : libs.versions.fabrication.get(),
+	]
 
-	filesMatching('quilt.mod.json') {
-		expand "version": version
-	}
+	inputs.properties(map)
+	filesMatching('quilt.mod.json') { expand(map) }
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -205,9 +204,9 @@ if (System.getenv("MODRINTH_TOKEN")) {
 			optional.project "pehkui"
 			optional.project "origins"
 			optional.project "fabrication"
+			optional.project "styled-nicknames"
 			optional.project "arcpocalypse"
 			optional.project "lanyard"
-			optional.project "styled-nicknames"
 		}
 		changelog = "Changelog: https://github.com/sisby-folk/switchy/releases/tag/v" + origVersion
 		syncBodyFrom = rootProject.file("README.md").text

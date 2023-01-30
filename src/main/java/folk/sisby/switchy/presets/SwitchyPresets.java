@@ -1,7 +1,6 @@
 package folk.sisby.switchy.presets;
 
 import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.api.PresetModule;
 import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.api.SwitchySwitchEvent;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,13 +35,53 @@ public class SwitchyPresets {
 	public static final String KEY_PRESET_MODULE_DISABLED = "disabled";
 	public static final String KEY_PRESET_LIST = "list";
 
+	private SwitchyPresets() {
+		modules = Switchy.MODULE_SUPPLIERS.entrySet().stream()
+				.filter(e -> e.getValue().get() != null)
+				.collect(Collectors.toMap(Map.Entry::getKey, e -> Switchy.MODULE_INFO.get(e.getKey()).isDefault()));
+	}
+
+	public static SwitchyPresets fromNbt(NbtCompound nbt, @Nullable PlayerEntity player) {
+		SwitchyPresets outPresets = new SwitchyPresets();
+
+		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE), true, player == null);
+		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_DISABLED, NbtElement.STRING_TYPE), false, player == null);
+
+		NbtCompound listNbt = nbt.getCompound(KEY_PRESET_LIST);
+		for (String key : listNbt.getKeys()) {
+			SwitchyPreset preset = SwitchyPreset.fromNbt(key, listNbt.getCompound(key), outPresets.modules);
+			try {
+				outPresets.addPreset(preset);
+			} catch (IllegalStateException ignored){
+				Switchy.LOGGER.warn("Switchy: Player data contained duplicate preset '{}'. Data may have been lost.", preset.presetName);
+			}
+		}
+
+		if (player != null) {
+			if (nbt.contains(KEY_PRESET_CURRENT))
+				try {
+					outPresets.setCurrentPreset(nbt.getString(KEY_PRESET_CURRENT));
+				} catch (IllegalArgumentException ignored) {
+					Switchy.LOGGER.warn("Switchy: Unable to set current preset from data. Data may have been lost.");
+				}
+
+			if (outPresets.presetMap.isEmpty() || outPresets.getCurrentPreset() == null) {
+				// Recover current data as "Default" preset
+				outPresets.addPreset(new SwitchyPreset("default", outPresets.modules));
+				outPresets.setCurrentPreset("default");
+			}
+		}
+
+		return outPresets;
+	}
+
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 
 		NbtList enabledList = new NbtList();
 		NbtList disabledList = new NbtList();
 
-		this.modules.forEach((key, value) -> {
+		modules.forEach((key, value) -> {
 			if (value) enabledList.add(NbtString.of(key.toString()));
 			if (!value) disabledList.add(NbtString.of(key.toString()));
 		});
@@ -56,67 +95,34 @@ public class SwitchyPresets {
 		}
 		outNbt.put(KEY_PRESET_LIST, listNbt);
 
-		if (this.currentPreset != null) outNbt.putString(KEY_PRESET_CURRENT, currentPreset.presetName);
+		if (currentPreset != null) outNbt.putString(KEY_PRESET_CURRENT, currentPreset.presetName);
 		return outNbt;
 	}
 
-	public static SwitchyPresets fromNbt(NbtCompound nbt, @Nullable PlayerEntity player) {
-		SwitchyPresets outPresets = new SwitchyPresets();
-
-		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE), true, player == null);
-		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_DISABLED, NbtElement.STRING_TYPE), false, player == null);
-
-		NbtCompound listNbt = nbt.getCompound(KEY_PRESET_LIST);
-		for (String key : listNbt.getKeys()) {
-			SwitchyPreset preset = SwitchyPreset.fromNbt(key, listNbt.getCompound(key), outPresets.modules);
-			if (!outPresets.addPreset(preset)) {
-				Switchy.LOGGER.warn("Switchy: Player data contained duplicate preset. Data may have been lost.");
+	public void importFromOther(SwitchyPresets other, List<Identifier> importModules) throws IllegalStateException {
+		if (other.getPresetNames().stream().anyMatch((name) -> getPresetNames().contains(name))) throw new IllegalStateException("Specified preset already exists");
+		// Remove modules that shouldn't be imported
+		modules.forEach((key, enabled) -> {
+			if (other.modules.get(key) && (!importModules.contains(key) || !enabled)) {
+				other.disableModule(key);
 			}
-		}
+		});
 
-		if (player != null) {
-			if (nbt.contains(KEY_PRESET_CURRENT) && !outPresets.setCurrentPreset(nbt.getString(KEY_PRESET_CURRENT))) {
-				Switchy.LOGGER.warn("Switchy: Unable to set current preset from data. Data may have been lost.");
+		// Re-enable missing empty modules
+		modules.forEach((key, enabled) -> {
+			if (enabled && !other.modules.get(key)) {
+				other.enableModule(key);
 			}
+		});
 
-			if (outPresets.presetMap.isEmpty() || outPresets.getCurrentPreset() == null) {
-				// Recover current data as "Default" preset
-				outPresets.addPreset(new SwitchyPreset("default", outPresets.modules));
-				outPresets.setCurrentPreset("default");
-			}
-		}
-
-		return outPresets;
-	}
-
-	public boolean importFromOther(SwitchyPresets other, List<Identifier> importModules) {
-		if (other.getPresetNames().stream().noneMatch((name) -> this.getPresetNames().contains(name))) {
-			// Remove modules that shouldn't be imported
-			this.modules.forEach((key, enabled) -> {
-				if (other.modules.get(key) && (!importModules.contains(key) || !enabled)) {
-					other.disableModule(key);
-				}
-			});
-
-			// Re-enable missing empty modules
-			this.modules.forEach((key, enabled) -> {
-				if (enabled && !other.modules.get(key)) {
-					other.enableModule(key);
-				}
-			});
-
-			other.presetMap.values().forEach(this::addPreset);
-			return true;
-		} else {
-			return false;
-		}
+		other.presetMap.values().forEach(this::addPreset);
 	}
 
 	private void toggleModulesFromNbt(NbtList list, Boolean enabled, Boolean silent) {
 		list.forEach((e) -> {
 			Identifier id;
-			if (e instanceof NbtString s && (id = Identifier.tryParse(s.asString())) != null && this.modules.containsKey(id)) {
-				this.modules.put(id, enabled);
+			if (e instanceof NbtString s && (id = Identifier.tryParse(s.asString())) != null && modules.containsKey(id)) {
+				modules.put(id, enabled);
 			} else if (!silent) {
 				Switchy.LOGGER.warn("Switchy: Unable to toggle a module - Was a module unloaded?");
 				Switchy.LOGGER.warn("Switchy: NBT Element: " + e.asString());
@@ -124,117 +130,87 @@ public class SwitchyPresets {
 		});
 	}
 
-	private SwitchyPresets() {
-		this.modules = Switchy.MODULE_SUPPLIERS.entrySet().stream()
-				.filter(e -> e.getValue().get() != null)
-				.collect(Collectors.toMap(Map.Entry::getKey, e -> Switchy.MODULE_INFO.get(e.getKey()).isDefault()));
+	private void setCurrentPreset(String presetName) throws IllegalArgumentException {
+		if (!presetMap.containsKey(presetName)) throw new IllegalArgumentException("Specified preset does not exist");
+		currentPreset = presetMap.get(presetName);
 	}
 
-	private boolean setCurrentPreset(String presetName) {
-		if (this.presetMap.containsKey(presetName)) {
-			this.currentPreset = this.presetMap.get(presetName);
-			return true;
-		} else {
-			return false;
+	public String switchCurrentPreset(ServerPlayerEntity player, String presetName) throws IllegalArgumentException, IllegalStateException {
+		if (!presetMap.containsKey(presetName)) throw new IllegalArgumentException("Specified preset does not exist");
+		if (presetName.equalsIgnoreCase(Objects.toString(currentPreset, ""))) throw new IllegalStateException("Specified preset is already current");
+
+		SwitchyPreset newPreset = presetMap.get(presetName);
+
+		// Perform Switch
+		currentPreset.updateFromPlayer(player, newPreset.presetName);
+		newPreset.applyToPlayer(player);
+
+		SwitchySwitchEvent switchEvent = new SwitchySwitchEvent(
+				player.getUuid(), newPreset.presetName, Objects.toString(currentPreset, null), getEnabledModuleNames()
+		);
+		currentPreset = newPreset;
+
+		// Fire Events
+		SwitchyEvents.fireSwitch(switchEvent);
+		if (ServerPlayNetworking.canSend(player, S2C_SWITCH)) {
+			ServerPlayNetworking.send(player, S2C_SWITCH, PacketByteBufs.create().writeNbt(switchEvent.toNbt()));
 		}
-	}
 
-	public @Nullable String switchCurrentPreset(ServerPlayerEntity player, String presetName) {
-		if (this.presetMap.containsKey(presetName)) {
-			SwitchyPreset newPreset = this.presetMap.get(presetName);
-
-			// Perform Switch
-			this.currentPreset.updateFromPlayer(player, newPreset.presetName);
-			newPreset.applyToPlayer(player);
-
-			// Fire Events
-			SwitchySwitchEvent switchEvent = new SwitchySwitchEvent(
-					player.getUuid(), newPreset.presetName, Objects.toString(this.currentPreset, null), getEnabledModuleNames()
-			);
-			SwitchyEvents.fireSwitch(switchEvent);
-			if (ServerPlayNetworking.canSend(player, S2C_SWITCH)) {
-				ServerPlayNetworking.send(player, S2C_SWITCH, PacketByteBufs.create().writeNbt(switchEvent.toNbt()));
-			}
-
-			this.currentPreset = newPreset;
-			return newPreset.presetName;
-		} else {
-			return null;
-		}
+		return currentPreset.presetName;
 	}
 
 	public void saveCurrentPreset(PlayerEntity player) {
-		if (this.currentPreset != null) this.currentPreset.updateFromPlayer(player, null);
+		if (currentPreset != null) currentPreset.updateFromPlayer(player, null);
+	}
+
+	public void addPreset(SwitchyPreset preset) throws IllegalStateException {
+		if (presetMap.containsKey(preset.presetName)) throw new IllegalStateException("Specified preset already exists.");
+		presetMap.put(preset.presetName, preset);
+	}
+
+	public void deletePreset(String presetName) throws IllegalArgumentException, IllegalStateException {
+		if (!presetMap.containsKey(presetName)) throw new IllegalArgumentException("Specified preset does not exist");
+		if (currentPreset.presetName.equalsIgnoreCase(presetName)) throw new IllegalStateException("Specified preset is current");
+		presetMap.remove(presetName);
+	}
+
+	public void renamePreset(String oldName, String newName) throws IllegalArgumentException, IllegalStateException {
+		if (!presetMap.containsKey(oldName)) throw new IllegalArgumentException("Specified preset does not exist");
+		if (presetMap.containsKey(newName)) throw new IllegalStateException("Specified preset name already exists");
+		SwitchyPreset preset = presetMap.get(oldName);
+		preset.presetName = newName;
+		presetMap.put(newName, preset);
+		presetMap.remove(oldName);
+	}
+
+	public void disableModule(Identifier id) throws IllegalArgumentException, IllegalStateException  {
+		if (!modules.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
+		if (!modules.get(id)) throw new IllegalStateException("Specified module is already disabled");
+		modules.put(id, false);
+		presetMap.forEach((name, preset) -> preset.compatModules.remove(id));
+	}
+
+	public void enableModule(Identifier id) throws IllegalArgumentException, IllegalStateException {
+		if (!modules.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
+		if (modules.get(id)) throw new IllegalStateException("Specified module is already enabled");
+		modules.put(id, true);
+		presetMap.values().forEach(preset -> preset.compatModules.put(id, Switchy.MODULE_SUPPLIERS.get(id).get()));
 	}
 
 	public SwitchyPreset getCurrentPreset() {
 		return currentPreset;
 	}
 
-	public boolean addPreset(SwitchyPreset preset) {
-		if (presetMap.containsKey(preset.presetName)) {
-			return false;
-		} else {
-			presetMap.put(preset.presetName, preset);
-			return true;
-		}
-	}
-
-	@Override
-	public String toString() {
-		return presetMap.keySet().toString();
+	public boolean containsPreset(String presetName) {
+		return presetMap.containsKey(presetName); // Case Insensitive
 	}
 
 	public List<String> getPresetNames() {
 		return presetMap.keySet().stream().sorted().toList();
 	}
 
-	public void deletePreset(String presetName) {
-		if (this.presetMap.containsKey(presetName) && !this.currentPreset.toString().equalsIgnoreCase(presetName)) {
-			this.presetMap.remove(presetName);
-		} else {
-			throw new IllegalArgumentException("Switchy can't delete that preset");
-		}
-	}
-
-	public void renamePreset(String oldName, String newName) {
-		if (this.presetMap.containsKey(oldName) && !this.presetMap.containsKey(newName)) {
-			SwitchyPreset preset = this.presetMap.get(oldName);
-			preset.presetName = newName;
-			this.presetMap.put(newName, preset);
-			this.presetMap.remove(oldName);
-		} else {
-			throw new IllegalArgumentException("Switchy rename not valid");
-		}
-	}
-
-	public boolean containsPreset(String presetName) {
-		return this.presetMap.containsKey(presetName); // Case Insensitive
-	}
-
-	public void disableModule(Identifier id) {
-		if (this.modules.containsKey(id)) {
-			this.modules.put(id, false);
-			presetMap.forEach((name, preset) -> preset.compatModules.remove(id));
-		} else {
-			throw new IllegalArgumentException("Switchy module doesn't exist");
-		}
-	}
-
-	public void enableModule(Identifier id) {
-		if (this.modules.containsKey(id)) {
-			this.modules.put(id, true);
-			for (SwitchyPreset preset : presetMap.values()) {
-				PresetModule module = Switchy.MODULE_SUPPLIERS.get(id).get();
-				preset.compatModules.put(id, module);
-			}
-		} else {
-			throw new IllegalArgumentException("Switchy module doesn't exist");
-		}
-	}
-
 	public List<Identifier> getEnabledModules() {
-		return this.modules.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).toList();
+		return modules.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).toList();
 	}
 
 	public List<String> getEnabledModuleNames() {
@@ -246,6 +222,11 @@ public class SwitchyPresets {
 	}
 
 	public List<Identifier> getDisabledModules() {
-		return this.modules.entrySet().stream().filter((e) -> !e.getValue()).map(Map.Entry::getKey).toList();
+		return modules.entrySet().stream().filter((e) -> !e.getValue()).map(Map.Entry::getKey).toList();
+	}
+
+	@Override
+	public String toString() {
+		return presetMap.keySet().toString();
 	}
 }

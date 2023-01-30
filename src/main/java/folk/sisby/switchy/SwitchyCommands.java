@@ -99,7 +99,7 @@ public class SwitchyCommands {
 	public static void InitializeEvents() {
 		ServerPlayConnectionEvents.JOIN.register((spn, ps, s) -> {
 			ServerPlayerEntity player = spn.getPlayer();
-			SwitchyPresets presets = getOrDefaultPresets(player);
+			SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 			SwitchySwitchEvent switchEvent = new SwitchySwitchEvent(
 					spn.getPlayer().getUuid(), presets.getCurrentPreset().presetName, null, presets.getEnabledModuleNames()
 			);
@@ -108,13 +108,6 @@ public class SwitchyCommands {
 				ps.sendPacket(S2C_SWITCH, PacketByteBufs.create().writeNbt(switchEvent.toNbt()));
 			}
 		});
-	}
-
-	public static SwitchyPresets getOrDefaultPresets(ServerPlayerEntity player) {
-		if (((SwitchyPlayer) player).switchy$getPresets() == null) {
-			((SwitchyPlayer) player).switchy$setPresets(SwitchyPresets.fromNbt(new NbtCompound(), player));
-		}
-		return ((SwitchyPlayer) player).switchy$getPresets();
 	}
 
 	private static CompletableFuture<Suggestions> suggestPresets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, boolean allowCurrent) throws CommandSyntaxException {
@@ -147,7 +140,7 @@ public class SwitchyCommands {
 		}
 
 		// Get context and execute
-		SwitchyPresets presets = getOrDefaultPresets(player);
+		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 		result = executeFunction.apply(
 				player,
 				presets,
@@ -205,43 +198,44 @@ public class SwitchyCommands {
 	}
 
 	private static int newPreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
-		if (presets.containsPreset(presetName)) {
+		try {
+			presets.addPreset(new SwitchyPreset(presetName, presets.modules));
+			tellSuccess(player, "commands.switchy.new.success", literal(presetName));
+			return 1 + setPreset(player, presets, presetName);
+		} catch (IllegalStateException ignored) {
 			tellInvalidTry(player, "commands.switchy.new.fail.exists", "commands.switchy.set.command", literal(presetName));
 			return 0;
 		}
-
-		presets.addPreset(new SwitchyPreset(presetName, presets.modules));
-		tellSuccess(player, "commands.switchy.new.success", literal(presetName));
-		return 1 + setPreset(player, presets, presetName);
 	}
 
 	private static int setPreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
-		if (!presets.containsPreset(presetName)) {
+		String oldPresetName = presets.getCurrentPreset().toString();
+		try {
+			String newPresetName = presets.switchCurrentPreset(player, presetName);
+			Switchy.LOGGER.info("[Switchy] Player switch: '" + oldPresetName + "' -> '" + newPresetName + "' [" + player.getGameProfile().getName() + "]");
+			tellSuccess(player, "commands.switchy.set.success", literal(oldPresetName), literal(newPresetName));
+			return 1;
+		} catch (IllegalArgumentException ignored) {
 			tellInvalidTry(player, "commands.switchy.set.fail.missing", "commands.switchy.list.command");
 			return 0;
-		}
-		if (presetName.equalsIgnoreCase(Objects.toString(presets.getCurrentPreset(), null))) {
+		} catch (IllegalStateException ignored) {
 			tellInvalidTry(player, "commands.switchy.set.fail.current", "commands.switchy.list.command");
 			return 0;
 		}
-
-		String oldPresetName = presets.getCurrentPreset().toString();
-		String newPresetName = presets.switchCurrentPreset(player, presetName);
-
-		Switchy.LOGGER.info("[Switchy] Player switch: '" + oldPresetName + "' -> '" + newPresetName + "' [" + player.getGameProfile().getName() + "]");
-		tellSuccess(player, "commands.switchy.set.success", literal(oldPresetName), literal(newPresetName));
-		return 1;
 	}
 
 	private static int renamePreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName, String newName) {
-		if (!presets.containsPreset(presetName) || presets.containsPreset(newName)) {
-			tellInvalidTry(player, "commands.switchy.rename.fail." + (presets.containsPreset(newName) ? "exists" : "missing"), "commands.switchy.list.command");
+		try {
+			presets.renamePreset(presetName, newName);
+			tellSuccess(player, "commands.switchy.rename.success", literal(presetName), literal(newName));
+			return 1;
+		} catch (IllegalArgumentException ignored) {
+			tellInvalidTry(player, "commands.switchy.rename.fail.missing", "commands.switchy.list.command");
+			return 0;
+		} catch (IllegalStateException ignored) {
+			tellInvalidTry(player, "commands.switchy.rename.fail.exists", "commands.switchy.list.command");
 			return 0;
 		}
-
-		presets.renamePreset(presetName, newName);
-		tellSuccess(player, "commands.switchy.rename.success", literal(presetName), literal(newName));
-		return 1;
 	}
 
 	private static int deletePreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
@@ -260,7 +254,7 @@ public class SwitchyCommands {
 			tellInvalidTry(player, "commands.switchy.delete.confirmation", "commands.switchy.delete.command", literal(presetName));
 			return 0;
 		} else {
-			presets.deletePreset(presetName);
+			presets.deletePreset(presetName); // Unsure if we can rectify having both confirmation and throw-errors
 			tellSuccess(player, "commands.switchy.delete.success", literal(presetName));
 			return 1;
 		}
@@ -277,25 +271,28 @@ public class SwitchyCommands {
 			tellInvalidTry(player, "commands.switchy.module.disable.confirmation", "commands.switchy.module.disable.command", literal(moduleId.toString()));
 			return 0;
 		} else {
-			presets.disableModule(moduleId);
+			presets.disableModule(moduleId); // Unsure if we can rectify having both confirmation and throw-errors
 			tellSuccess(player, "commands.switchy.module.disable.success", literal(moduleId.toString()));
 			return 1;
 		}
 	}
 
 	private static int enableModule(ServerPlayerEntity player, SwitchyPresets presets, Identifier moduleId) {
-		if (!presets.getDisabledModules().contains(moduleId)) {
-			tellInvalid(player, "commands.switchy.module.enable.fail." + (presets.modules.containsKey(moduleId) ? "enabled" : "missing"), literal(moduleId.toString()));
+		try {
+			presets.enableModule(moduleId);
+		} catch (IllegalArgumentException ignored) {
+			tellInvalid(player, "commands.switchy.module.enable.fail.missing", literal(moduleId.toString()));
+			return 0;
+		} catch (IllegalStateException ignored) {
+			tellInvalid(player, "commands.switchy.module.enable.fail.enabled", literal(moduleId.toString()));
 			return 0;
 		}
-
-		presets.enableModule(moduleId);
 		tellSuccess(player, "commands.switchy.module.enable.success", literal(moduleId.toString()));
 		return 1;
 	}
 
 	private static void importPresets(ServerPlayerEntity player, NbtCompound presetNbt) {
-		SwitchyPresets presets = getOrDefaultPresets(player);
+		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 
 		if (presetNbt == null || !presetNbt.contains("filename")) {
 			tellInvalid(player, "commands.switchy.import.fail.parse");
@@ -334,7 +331,7 @@ public class SwitchyCommands {
 
 		// Generate Importable List
 		Map<Identifier, ModuleImportable> importable = new HashMap<>();
-		presets.modules.keySet().forEach( (key) ->
+		presets.modules.keySet().forEach((key) ->
 				importable.put(key, IMPORTABLE_CONFIGURABLE.contains(Switchy.MODULE_INFO.get(key).importable()) ? Switchy.CONFIG.moduleImportable.get(key.toString()) : Switchy.MODULE_INFO.get(key).importable())
 		);
 
@@ -353,7 +350,7 @@ public class SwitchyCommands {
 				.filter(key -> !excludeModules.contains(key))
 				.filter((key) -> IMPORTABLE_OP.contains(importable.get(key)))
 				.filter((key) -> (opModules.contains(key) && player.hasPermissionLevel(2)) || IMPORTABLE_NON_OP.contains(importable.get(key)))
-		.toList();
+				.toList();
 
 		// Print and check command confirmation
 		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command)) {
@@ -366,9 +363,10 @@ public class SwitchyCommands {
 		}
 
 		// Actually attempt to import
-		if (presets.importFromOther(importedPresets, modules)) {
+		try {
+			presets.importFromOther(importedPresets, modules);
 			tellSuccess(player, "commands.switchy.import.success", literal(String.valueOf(importedPresets.getPresetNames().size())));
-		} else {
+		} catch (IllegalStateException ignored) {
 			String collisionPresets = presets.getPresetNames().stream()
 					.filter(importedPresets.getPresetNames()::contains)
 					.collect(Collectors.joining(", "));
