@@ -150,7 +150,7 @@ processResources {
 			"drogtor"  : libs.versions.drogtor.get(),
 			"styledNicknames"  : libs.versions.styledNicknames.get(),
 			"fabrictailor"  : libs.versions.fabrictailor.get(),
-			"origins"  : libs.versions.origins.get(),
+			"origins"  : libs.versions.origins.get().replaceFirst('v', ''),
 			"pehkui"  : libs.versions.pehkui.get(),
 			"fabrication"  : libs.versions.fabrication.get(),
 	]
