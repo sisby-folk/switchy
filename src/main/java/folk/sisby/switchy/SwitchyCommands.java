@@ -101,7 +101,7 @@ public class SwitchyCommands {
 			ServerPlayerEntity player = spn.getPlayer();
 			SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 			SwitchySwitchEvent switchEvent = new SwitchySwitchEvent(
-					spn.getPlayer().getUuid(), presets.getCurrentPreset().presetName, null, presets.getEnabledModuleNames()
+					spn.getPlayer().getUuid(), presets != null ? presets.getCurrentPreset().presetName : "", null, presets != null ? presets.getEnabledModuleNames() : new ArrayList<>()
 			);
 			SwitchyEvents.fireSwitch(switchEvent);
 			if (ServerPlayNetworking.canSend(player, S2C_SWITCH)) {
