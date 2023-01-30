@@ -198,14 +198,14 @@ public class SwitchyCommands {
 	}
 
 	private static int newPreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
-		if (presets.containsPreset(presetName)) {
+		try {
+			presets.addPreset(new SwitchyPreset(presetName, presets.modules));
+			tellSuccess(player, "commands.switchy.new.success", literal(presetName));
+			return 1 + setPreset(player, presets, presetName);
+		} catch (IllegalStateException ignored) {
 			tellInvalidTry(player, "commands.switchy.new.fail.exists", "commands.switchy.set.command", literal(presetName));
 			return 0;
 		}
-
-		presets.addPreset(new SwitchyPreset(presetName, presets.modules));
-		tellSuccess(player, "commands.switchy.new.success", literal(presetName));
-		return 1 + setPreset(player, presets, presetName);
 	}
 
 	private static int setPreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
@@ -225,14 +225,17 @@ public class SwitchyCommands {
 	}
 
 	private static int renamePreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName, String newName) {
-		if (!presets.containsPreset(presetName) || presets.containsPreset(newName)) {
-			tellInvalidTry(player, "commands.switchy.rename.fail." + (presets.containsPreset(newName) ? "exists" : "missing"), "commands.switchy.list.command");
+		try {
+			presets.renamePreset(presetName, newName);
+			tellSuccess(player, "commands.switchy.rename.success", literal(presetName), literal(newName));
+			return 1;
+		} catch (IllegalArgumentException ignored) {
+			tellInvalidTry(player, "commands.switchy.rename.fail.missing", "commands.switchy.list.command");
+			return 0;
+		} catch (IllegalStateException ignored) {
+			tellInvalidTry(player, "commands.switchy.rename.fail.exists", "commands.switchy.list.command");
 			return 0;
 		}
-
-		presets.renamePreset(presetName, newName);
-		tellSuccess(player, "commands.switchy.rename.success", literal(presetName), literal(newName));
-		return 1;
 	}
 
 	private static int deletePreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
@@ -251,7 +254,7 @@ public class SwitchyCommands {
 			tellInvalidTry(player, "commands.switchy.delete.confirmation", "commands.switchy.delete.command", literal(presetName));
 			return 0;
 		} else {
-			presets.deletePreset(presetName);
+			presets.deletePreset(presetName); // Unsure if we can rectify having both confirmation and throw-errors
 			tellSuccess(player, "commands.switchy.delete.success", literal(presetName));
 			return 1;
 		}
@@ -268,19 +271,22 @@ public class SwitchyCommands {
 			tellInvalidTry(player, "commands.switchy.module.disable.confirmation", "commands.switchy.module.disable.command", literal(moduleId.toString()));
 			return 0;
 		} else {
-			presets.disableModule(moduleId);
+			presets.disableModule(moduleId); // Unsure if we can rectify having both confirmation and throw-errors
 			tellSuccess(player, "commands.switchy.module.disable.success", literal(moduleId.toString()));
 			return 1;
 		}
 	}
 
 	private static int enableModule(ServerPlayerEntity player, SwitchyPresets presets, Identifier moduleId) {
-		if (!presets.getDisabledModules().contains(moduleId)) {
-			tellInvalid(player, "commands.switchy.module.enable.fail." + (presets.modules.containsKey(moduleId) ? "enabled" : "missing"), literal(moduleId.toString()));
+		try {
+			presets.enableModule(moduleId);
+		} catch (IllegalArgumentException ignored) {
+			tellInvalid(player, "commands.switchy.module.enable.fail.missing", literal(moduleId.toString()));
+			return 0;
+		} catch (IllegalStateException ignored) {
+			tellInvalid(player, "commands.switchy.module.enable.fail.enabled", literal(moduleId.toString()));
 			return 0;
 		}
-
-		presets.enableModule(moduleId);
 		tellSuccess(player, "commands.switchy.module.enable.success", literal(moduleId.toString()));
 		return 1;
 	}
@@ -325,7 +331,7 @@ public class SwitchyCommands {
 
 		// Generate Importable List
 		Map<Identifier, ModuleImportable> importable = new HashMap<>();
-		presets.modules.keySet().forEach( (key) ->
+		presets.modules.keySet().forEach((key) ->
 				importable.put(key, IMPORTABLE_CONFIGURABLE.contains(Switchy.MODULE_INFO.get(key).importable()) ? Switchy.CONFIG.moduleImportable.get(key.toString()) : Switchy.MODULE_INFO.get(key).importable())
 		);
 
@@ -344,7 +350,7 @@ public class SwitchyCommands {
 				.filter(key -> !excludeModules.contains(key))
 				.filter((key) -> IMPORTABLE_OP.contains(importable.get(key)))
 				.filter((key) -> (opModules.contains(key) && player.hasPermissionLevel(2)) || IMPORTABLE_NON_OP.contains(importable.get(key)))
-		.toList();
+				.toList();
 
 		// Print and check command confirmation
 		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command)) {
@@ -357,9 +363,10 @@ public class SwitchyCommands {
 		}
 
 		// Actually attempt to import
-		if (presets.importFromOther(importedPresets, modules)) {
+		try {
+			presets.importFromOther(importedPresets, modules);
 			tellSuccess(player, "commands.switchy.import.success", literal(String.valueOf(importedPresets.getPresetNames().size())));
-		} else {
+		} catch (IllegalStateException ignored) {
 			String collisionPresets = presets.getPresetNames().stream()
 					.filter(importedPresets.getPresetNames()::contains)
 					.collect(Collectors.joining(", "));
