@@ -34,7 +34,6 @@ import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 import static folk.sisby.switchy.Switchy.*;
 import static folk.sisby.switchy.api.PlayerPresets.*;
@@ -136,7 +135,7 @@ public class SwitchyCommands {
 
 		ServerPlayerEntity player = serverPlayerOrNull(context.getSource());
 		if (player == null) {
-			Switchy.LOGGER.error("Switchy: Command wasn't called by a player! (this shouldn't happen!)");
+			LOGGER.error("Switchy: Command wasn't called by a player! (this shouldn't happen!)");
 			return result;
 		}
 
@@ -181,11 +180,11 @@ public class SwitchyCommands {
 		try {
 			presets.saveCurrentPreset(player);
 			PacketByteBuf presetsBuf = PacketByteBufs.create().writeNbt(presets.toNbt());
-			ServerPlayNetworking.send(player, Switchy.S2C_EXPORT, presetsBuf);
+			ServerPlayNetworking.send(player, S2C_EXPORT, presetsBuf);
 			return 1;
 		} catch (Exception ex) {
-			Switchy.LOGGER.error(ex.toString());
-			Switchy.LOGGER.error(ex.getMessage());
+			LOGGER.error(ex.toString());
+			LOGGER.error(ex.getMessage());
 			sendMessage(player, translatableWithArgs("commands.switchy.export.fail", FORMAT_INVALID));
 			return 0;
 		}
@@ -213,7 +212,7 @@ public class SwitchyCommands {
 		String oldPresetName = presets.getCurrentPreset().toString();
 		try {
 			String newPresetName = presets.switchCurrentPreset(player, presetName);
-			Switchy.LOGGER.info("[Switchy] Player switch: '" + oldPresetName + "' -> '" + newPresetName + "' [" + player.getGameProfile().getName() + "]");
+			LOGGER.info("[Switchy] Player switch: '" + oldPresetName + "' -> '" + newPresetName + "' [" + player.getGameProfile().getName() + "]");
 			tellSuccess(player, "commands.switchy.set.success", literal(oldPresetName), literal(newPresetName));
 			return 1;
 		} catch (IllegalArgumentException ignored) {
@@ -268,7 +267,7 @@ public class SwitchyCommands {
 		}
 
 		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command("switchy module disable " + moduleId))) {
-			sendMessage(player, Switchy.MODULE_INFO.get(moduleId).disableConfirmation().setStyle(FORMAT_WARN.getLeft()));
+			sendMessage(player, MODULE_INFO.get(moduleId).disableConfirmation().setStyle(FORMAT_WARN.getLeft()));
 			tellInvalidTry(player, "commands.switchy.module.disable.confirmation", "commands.switchy.module.disable.command", literal(moduleId.toString()));
 			return 0;
 		} else {
@@ -297,7 +296,7 @@ public class SwitchyCommands {
 
 		// Parse Preset NBT //
 
-		if (presetNbt == null) {
+		if (presetNbt == null || !presetNbt.contains("command", NbtElement.STRING_TYPE)) {
 			tellInvalid(player, "commands.switchy.import.fail.parse");
 			return;
 		}
@@ -328,6 +327,8 @@ public class SwitchyCommands {
 			}
 		});
 
+		String command = presetNbt.getString("command");
+
 		// Perform pre-import command feedback //
 
 		if (!opModules.isEmpty() && player.hasPermissionLevel(2)) {
@@ -335,31 +336,19 @@ public class SwitchyCommands {
 			return;
 		}
 
-		// Recreate command for confirmation
-		String command_args = presetNbt.getString("filename") +
-				(excludeModules.isEmpty() ? "" : (" " + excludeModules.stream().map(Identifier::toString).collect(Collectors.joining(",")))) +
-				(opModules.isEmpty() ? "" : (" " + opModules.stream().map(Identifier::toString).collect(Collectors.joining(","))));
-		String command = command("switchy_client import " + command_args);
-
-		// Request confirmation and quit if required
+		// Print info and stop if confirmation is required.
 		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command)) {
 			tellWarn(player, "commands.switchy.import.warn", literal(String.valueOf(importedPresets.getPresetNames().size())), literal(String.valueOf(importedPresets.getEnabledModules().size())));
-			tellWarn(player, "commands.switchy.list.presets", getHighlightedListText(importedPresets.getPresetNames(), presets.getPresetNames()::contains, Formatting.DARK_RED));
+			tellWarn(player, "commands.switchy.import.warn.collision");
+			tellWarn(player, "commands.switchy.list.presets", getHighlightedListText(importedPresets.getPresetNames(), Map.of(presets.getCurrentPreset().presetName::equalsIgnoreCase, Formatting.STRIKETHROUGH, presets.getPresetNames()::contains, Formatting.DARK_RED)));
 			tellWarn(player, "commands.switchy.list.modules", importedPresets.getEnabledModuleText());
-			tellInvalidTry(player, "commands.switchy.import.confirmation", "commands.switchy.import.command", literal(command_args));
+			sendMessage(player, translatableWithArgs("commands.switchy.import.confirmation", FORMAT_INVALID, literal("/" + command)));
 			last_command.put(player.getUuid(), command);
 			return;
 		}
 
 		// Import
-		try {
-			presets.importFromOther(importedPresets);
-			tellSuccess(player, "commands.switchy.import.success", literal(String.valueOf(importedPresets.getPresetNames().size())));
-		} catch (IllegalStateException ignored) {
-			String collisionPresets = presets.getPresetNames().stream()
-					.filter(importedPresets.getPresetNames()::contains)
-					.collect(Collectors.joining(", "));
-			tellInvalid(player, "commands.switchy.import.fail.collision", literal(collisionPresets));
-		}
+		presets.importFromOther(importedPresets);
+		tellSuccess(player, "commands.switchy.import.success", literal(String.valueOf(importedPresets.getPresetNames().size())));
 	}
 }

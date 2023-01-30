@@ -9,6 +9,7 @@ import net.minecraft.util.Pair;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 public class Feedback {
@@ -92,11 +93,11 @@ public class Feedback {
 		)).append(literal("]"));
 	}
 
-	public static MutableText getHighlightedListText(List<String> list, Predicate<String> highlighter, Formatting highlight) {
+	public static MutableText getHighlightedListText(List<String> list, Map<Predicate<String>, Formatting> highlighter) {
 		return literal("[").append(Texts.join(
 				list,
 				literal(", "),
-				str -> literal(str).setStyle(Style.EMPTY.withColor(highlight))
+				str -> literal(str).setStyle(Style.EMPTY.withFormatting(highlighter.entrySet().stream().filter(e -> e.getKey().test(str)).map(Map.Entry::getValue).findFirst().orElse(Formatting.RESET)))
 		)).append(literal("]"));
 	}
 

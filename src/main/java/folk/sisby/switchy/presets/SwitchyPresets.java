@@ -52,7 +52,7 @@ public class SwitchyPresets {
 			SwitchyPreset preset = SwitchyPreset.fromNbt(key, listNbt.getCompound(key), outPresets.modules);
 			try {
 				outPresets.addPreset(preset);
-			} catch (IllegalStateException ignored){
+			} catch (IllegalStateException ignored) {
 				Switchy.LOGGER.warn("Switchy: Player data contained duplicate preset '{}'. Data may have been lost.", preset.presetName);
 			}
 		}
@@ -99,9 +99,7 @@ public class SwitchyPresets {
 		return outNbt;
 	}
 
-	public void importFromOther(SwitchyPresets other) throws IllegalStateException {
-		if (other.getPresetNames().stream().anyMatch((name) -> getPresetNames().contains(name))) throw new IllegalStateException("Specified preset already exists");
-
+	public void importFromOther(SwitchyPresets other) {
 		// Re-enable missing empty modules
 		modules.forEach((key, enabled) -> {
 			if (enabled && !other.modules.get(key)) {
@@ -109,7 +107,13 @@ public class SwitchyPresets {
 			}
 		});
 
-		other.presetMap.values().forEach(this::addPreset);
+		other.presetMap.entrySet().stream().filter(e -> presetMap.containsKey(e.getKey())).forEach(e -> e.getValue().compatModules.forEach((moduleId, module) -> {
+			presetMap.get(e.getKey()).compatModules.remove(moduleId);
+			presetMap.get(e.getKey()).compatModules.put(moduleId, module);
+		}));
+		other.presetMap.entrySet().stream().filter(e -> !presetMap.containsKey(e.getKey())).forEach(e ->
+				addPreset(e.getValue())
+		);
 	}
 
 	private void toggleModulesFromNbt(NbtList list, Boolean enabled, Boolean silent) {
@@ -131,7 +135,8 @@ public class SwitchyPresets {
 
 	public String switchCurrentPreset(ServerPlayerEntity player, String presetName) throws IllegalArgumentException, IllegalStateException {
 		if (!presetMap.containsKey(presetName)) throw new IllegalArgumentException("Specified preset does not exist");
-		if (presetName.equalsIgnoreCase(Objects.toString(currentPreset, ""))) throw new IllegalStateException("Specified preset is already current");
+		if (presetName.equalsIgnoreCase(Objects.toString(currentPreset, "")))
+			throw new IllegalStateException("Specified preset is already current");
 
 		SwitchyPreset newPreset = presetMap.get(presetName);
 
@@ -158,13 +163,15 @@ public class SwitchyPresets {
 	}
 
 	public void addPreset(SwitchyPreset preset) throws IllegalStateException {
-		if (presetMap.containsKey(preset.presetName)) throw new IllegalStateException("Specified preset already exists.");
+		if (presetMap.containsKey(preset.presetName))
+			throw new IllegalStateException("Specified preset already exists.");
 		presetMap.put(preset.presetName, preset);
 	}
 
 	public void deletePreset(String presetName) throws IllegalArgumentException, IllegalStateException {
 		if (!presetMap.containsKey(presetName)) throw new IllegalArgumentException("Specified preset does not exist");
-		if (currentPreset.presetName.equalsIgnoreCase(presetName)) throw new IllegalStateException("Specified preset is current");
+		if (currentPreset.presetName.equalsIgnoreCase(presetName))
+			throw new IllegalStateException("Specified preset is current");
 		presetMap.remove(presetName);
 	}
 
@@ -177,7 +184,7 @@ public class SwitchyPresets {
 		presetMap.remove(oldName);
 	}
 
-	public void disableModule(Identifier id) throws IllegalArgumentException, IllegalStateException  {
+	public void disableModule(Identifier id) throws IllegalArgumentException, IllegalStateException {
 		if (!modules.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
 		if (!modules.get(id)) throw new IllegalStateException("Specified module is already disabled");
 		modules.put(id, false);
