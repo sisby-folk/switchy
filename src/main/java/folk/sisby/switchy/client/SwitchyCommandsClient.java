@@ -3,11 +3,12 @@ package folk.sisby.switchy.client;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.datafixers.util.Function3;
 import com.mojang.datafixers.util.Function4;
+import com.mojang.datafixers.util.Function5;
 import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.client.api.SwitchyEventsClient;
 import folk.sisby.switchy.api.SwitchySwitchEvent;
 import folk.sisby.switchy.argument.IdentifiersFromNbtArgArgumentType;
 import folk.sisby.switchy.argument.NbtFileArgumentType;
+import folk.sisby.switchy.client.api.SwitchyEventsClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
@@ -25,19 +26,15 @@ import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import static folk.sisby.switchy.Switchy.S2C_EXPORT;
 import static folk.sisby.switchy.Switchy.S2C_SWITCH;
 import static folk.sisby.switchy.util.Feedback.*;
 
 public class SwitchyCommandsClient {
-	private static final Map<UUID, String> last_command = new HashMap<>();
+	private static String last_command = "";
 
 	public static void InitializeCommands() {
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, cbc, reg) -> dispatcher.register(
@@ -86,7 +83,7 @@ public class SwitchyCommandsClient {
 		});
 	}
 	private static <V, V2, V3> int unwrapAndExecute(CommandContext<QuiltClientCommandSource> context,
-												Function4<ClientPlayerEntity, V, V2, V3, Integer> executeFunction,
+												Function5<CommandContext<QuiltClientCommandSource>, ClientPlayerEntity, V, V2, V3, Integer> executeFunction,
 												@Nullable Pair<String, Class<V>> argument,
 												@Nullable Pair<String, Class<V2>> argument2,
 												@Nullable Pair<String, Class<V3>> argument3
@@ -94,29 +91,30 @@ public class SwitchyCommandsClient {
 		// Get context and execute
 		ClientPlayerEntity player = context.getSource().getPlayer();
 		int result = executeFunction.apply(
+				context,
 				player,
 				(argument != null ? context.getArgument(argument.getLeft(), argument.getRight()) : null),
 				(argument2 != null ? context.getArgument(argument2.getLeft(), argument2.getRight()) : null),
 				(argument3 != null ? context.getArgument(argument3.getLeft(), argument3.getRight()) : null)
 		);
 		// Record previous command (for confirmations)
-		last_command.put(player.getUuid(), context.getInput());
+		last_command = context.getInput();
 		return result;
 	}
 
-	private static <V, V2> int unwrapAndExecute(CommandContext<QuiltClientCommandSource> context, Function3<ClientPlayerEntity, V, V2, Integer> executeFunction, @Nullable Pair<String, Class<V>> argument, @Nullable Pair<String, Class<V2>> argument2) {
-		return unwrapAndExecute(context, (player, arg, arg2, ignored) -> executeFunction.apply(player, arg, arg2), argument, argument2, null);
+	private static <V, V2> int unwrapAndExecute(CommandContext<QuiltClientCommandSource> context, Function4<CommandContext<QuiltClientCommandSource>, ClientPlayerEntity, V, V2, Integer> executeFunction, @Nullable Pair<String, Class<V>> argument, @Nullable Pair<String, Class<V2>> argument2) {
+		return unwrapAndExecute(context, (ctx, player, arg, arg2, ignored) -> executeFunction.apply(ctx, player, arg, arg2), argument, argument2, null);
 	}
 
-	private static <V> int unwrapAndExecute(CommandContext<QuiltClientCommandSource> context, BiFunction<ClientPlayerEntity, V, Integer> executeFunction, @Nullable Pair<String, Class<V>> argument) {
-		return unwrapAndExecute(context, (player, arg, ignored) -> executeFunction.apply(player, arg), argument, null);
+	private static <V> int unwrapAndExecute(CommandContext<QuiltClientCommandSource> context, Function3<CommandContext<QuiltClientCommandSource>, ClientPlayerEntity, V, Integer> executeFunction, @Nullable Pair<String, Class<V>> argument) {
+		return unwrapAndExecute(context, (ctx, player, arg, ignored) -> executeFunction.apply(ctx, player, arg), argument, null);
 	}
 
-	private static int unwrapAndExecute(CommandContext<QuiltClientCommandSource> context, Function<ClientPlayerEntity, Integer> executeFunction) {
-		return unwrapAndExecute(context, (player, ignored) -> executeFunction.apply(player), null);
+	private static int unwrapAndExecute(CommandContext<QuiltClientCommandSource> context, BiFunction<CommandContext<QuiltClientCommandSource>, ClientPlayerEntity, Integer> executeFunction) {
+		return unwrapAndExecute(context, (ctx, player, ignored) -> executeFunction.apply(ctx, player), null);
 	}
 
-	private static int importPresets(ClientPlayerEntity player, NbtCompound presetsNbt, List<Identifier> excludeModules, List<Identifier> opModules) {
+	private static int importPresets(CommandContext<QuiltClientCommandSource> context, ClientPlayerEntity player, NbtCompound presetsNbt, List<Identifier> excludeModules, List<Identifier> opModules) {
 		if (!excludeModules.isEmpty()) {
 			NbtList excludeModulesNbt = new NbtList();
 			excludeModules.stream().map(Identifier::toString).map(NbtString::of).forEach(excludeModulesNbt::add);
@@ -127,16 +125,17 @@ public class SwitchyCommandsClient {
 			opModules.stream().map(Identifier::toString).map(NbtString::of).forEach(opModulesNbt::add);
 			presetsNbt.put("opModules", opModulesNbt);
 		}
+		presetsNbt.putString("command", context.getInput());
 		ClientPlayNetworking.send(Switchy.C2S_IMPORT, PacketByteBufs.create().writeNbt(presetsNbt));
 		tellSuccess(player, "commands.switchy_client.import.success");
 		return 1;
 	}
 
-	private static int importPresets(ClientPlayerEntity player, NbtCompound presetsNbt, List<Identifier> excludeModules) {
-		return importPresets(player, presetsNbt, excludeModules, List.of());
+	private static int importPresets(CommandContext<QuiltClientCommandSource> context, ClientPlayerEntity player, NbtCompound presetsNbt, List<Identifier> excludeModules) {
+		return importPresets(context, player, presetsNbt, excludeModules, List.of());
 	}
 
-	private static int importPresets(ClientPlayerEntity player, NbtCompound presetsNbt) {
-		return importPresets(player, presetsNbt, List.of(), List.of());
+	private static int importPresets(CommandContext<QuiltClientCommandSource> context, ClientPlayerEntity player, NbtCompound presetsNbt) {
+		return importPresets(context, player, presetsNbt, List.of(), List.of());
 	}
 }

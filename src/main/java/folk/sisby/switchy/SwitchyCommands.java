@@ -7,12 +7,12 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.datafixers.util.Function3;
 import com.mojang.datafixers.util.Function4;
-import folk.sisby.switchy.presets.SwitchyPreset;
-import folk.sisby.switchy.presets.SwitchyPresets;
 import folk.sisby.switchy.api.ModuleImportable;
 import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.api.SwitchyPlayer;
 import folk.sisby.switchy.api.SwitchySwitchEvent;
+import folk.sisby.switchy.presets.SwitchyPreset;
+import folk.sisby.switchy.presets.SwitchyPresets;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.nbt.NbtCompound;
@@ -21,6 +21,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.Pair;
@@ -33,7 +34,6 @@ import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 import static folk.sisby.switchy.Switchy.*;
 import static folk.sisby.switchy.api.PlayerPresets.*;
@@ -135,7 +135,7 @@ public class SwitchyCommands {
 
 		ServerPlayerEntity player = serverPlayerOrNull(context.getSource());
 		if (player == null) {
-			Switchy.LOGGER.error("Switchy: Command wasn't called by a player! (this shouldn't happen!)");
+			LOGGER.error("Switchy: Command wasn't called by a player! (this shouldn't happen!)");
 			return result;
 		}
 
@@ -180,11 +180,11 @@ public class SwitchyCommands {
 		try {
 			presets.saveCurrentPreset(player);
 			PacketByteBuf presetsBuf = PacketByteBufs.create().writeNbt(presets.toNbt());
-			ServerPlayNetworking.send(player, Switchy.S2C_EXPORT, presetsBuf);
+			ServerPlayNetworking.send(player, S2C_EXPORT, presetsBuf);
 			return 1;
 		} catch (Exception ex) {
-			Switchy.LOGGER.error(ex.toString());
-			Switchy.LOGGER.error(ex.getMessage());
+			LOGGER.error(ex.toString());
+			LOGGER.error(ex.getMessage());
 			sendMessage(player, translatableWithArgs("commands.switchy.export.fail", FORMAT_INVALID));
 			return 0;
 		}
@@ -212,7 +212,7 @@ public class SwitchyCommands {
 		String oldPresetName = presets.getCurrentPreset().toString();
 		try {
 			String newPresetName = presets.switchCurrentPreset(player, presetName);
-			Switchy.LOGGER.info("[Switchy] Player switch: '" + oldPresetName + "' -> '" + newPresetName + "' [" + player.getGameProfile().getName() + "]");
+			LOGGER.info("[Switchy] Player switch: '" + oldPresetName + "' -> '" + newPresetName + "' [" + player.getGameProfile().getName() + "]");
 			tellSuccess(player, "commands.switchy.set.success", literal(oldPresetName), literal(newPresetName));
 			return 1;
 		} catch (IllegalArgumentException ignored) {
@@ -248,7 +248,7 @@ public class SwitchyCommands {
 			return 0;
 		}
 
-		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase("switchy delete " + presetName)) {
+		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command("switchy delete " + presetName))) {
 			tellWarn(player, "commands.switchy.delete.warn");
 			tellWarn(player, "commands.switchy.list.modules", presets.getEnabledModuleText());
 			tellInvalidTry(player, "commands.switchy.delete.confirmation", "commands.switchy.delete.command", literal(presetName));
@@ -266,8 +266,8 @@ public class SwitchyCommands {
 			return 0;
 		}
 
-		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase("switchy module disable " + moduleId)) {
-			sendMessage(player, Switchy.MODULE_INFO.get(moduleId).disableConfirmation().setStyle(FORMAT_WARN.getLeft()));
+		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command("switchy module disable " + moduleId))) {
+			sendMessage(player, MODULE_INFO.get(moduleId).disableConfirmation().setStyle(FORMAT_WARN.getLeft()));
 			tellInvalidTry(player, "commands.switchy.module.disable.confirmation", "commands.switchy.module.disable.command", literal(moduleId.toString()));
 			return 0;
 		} else {
@@ -291,36 +291,16 @@ public class SwitchyCommands {
 		return 1;
 	}
 
-	private static void importPresets(ServerPlayerEntity player, NbtCompound presetNbt) {
+	private static void importPresets(ServerPlayerEntity player, @Nullable NbtCompound presetNbt) {
 		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 
-		if (presetNbt == null || !presetNbt.contains("filename")) {
-			tellInvalid(player, "commands.switchy.import.fail.parse");
-			return;
-		}
-		String filename = presetNbt.getString("filename");
+		// Parse Preset NBT //
 
-		// Parse Identifier Flags
-		Set<Identifier> opModules = new HashSet<>();
-		Set<Identifier> excludeModules = new HashSet<>();
-		try {
-			presetNbt.getList("opModules", NbtElement.STRING_TYPE).forEach(
-					e -> opModules.add(new Identifier(e.asString()))
-			);
-			presetNbt.getList("excludeModules", NbtElement.STRING_TYPE).forEach(
-					e -> excludeModules.add(new Identifier(e.asString()))
-			);
-		} catch (InvalidIdentifierException e) {
+		if (presetNbt == null || !presetNbt.contains("command", NbtElement.STRING_TYPE)) {
 			tellInvalid(player, "commands.switchy.import.fail.parse");
 			return;
 		}
 
-		String command_args = filename +
-				(excludeModules.isEmpty() ? "" : (" " + excludeModules.stream().map(Identifier::toString).collect(Collectors.joining(",")))) +
-				(opModules.isEmpty() ? "" : (" " + opModules.stream().map(Identifier::toString).collect(Collectors.joining(","))));
-		String command = "switchy_client import " + command_args;
-
-		// Construct presets from NBT
 		SwitchyPresets importedPresets;
 		try {
 			importedPresets = SwitchyPresets.fromNbt(presetNbt, null);
@@ -329,48 +309,46 @@ public class SwitchyCommands {
 			return;
 		}
 
-		// Generate Importable List
-		Map<Identifier, ModuleImportable> importable = new HashMap<>();
-		presets.modules.keySet().forEach((key) ->
-				importable.put(key, IMPORTABLE_CONFIGURABLE.contains(Switchy.MODULE_INFO.get(key).importable()) ? Switchy.CONFIG.moduleImportable.get(key.toString()) : Switchy.MODULE_INFO.get(key).importable())
-		);
+		// Parse & Apply Additional Arguments //
 
-		// Warn user about any disallowed flags
-		List<Identifier> disallowedFlags = presets.modules.keySet().stream().filter(
-				(key) -> importable.get(key) == ModuleImportable.OPERATOR && !player.hasPermissionLevel(2) && opModules.contains(key)
-		).toList();
-		if (!disallowedFlags.isEmpty()) {
-			tellWarn(player, "commands.switchy.import.warn.permission", literal(disallowedFlags.toString()));
+		List<Identifier> excludeModules;
+		List<Identifier> opModules;
+		try {
+			excludeModules = presetNbt.getList("excludeModules", NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::new).toList();
+			opModules = presetNbt.getList("opModules", NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::new).toList();
+		} catch (InvalidIdentifierException e) {
+			tellInvalid(player, "commands.switchy.import.fail.parse");
+			return;
 		}
 
-		// Generate list of modules being imported
-		List<Identifier> modules = presets.modules.keySet().stream()
-				.filter(presets.modules::get)
-				.filter(importedPresets.modules::get)
-				.filter(key -> !excludeModules.contains(key))
-				.filter((key) -> IMPORTABLE_OP.contains(importable.get(key)))
-				.filter((key) -> (opModules.contains(key) && player.hasPermissionLevel(2)) || IMPORTABLE_NON_OP.contains(importable.get(key)))
-				.toList();
+		importedPresets.modules.forEach((moduleId, enabled) -> {
+			if (enabled && (!presets.modules.containsKey(moduleId) || !presets.modules.get(moduleId) || excludeModules.contains(moduleId) || getImportable(moduleId) == ModuleImportable.NEVER || (!opModules.contains(moduleId) && getImportable(moduleId) == ModuleImportable.OPERATOR))) {
+				importedPresets.disableModule(moduleId);
+			}
+		});
 
-		// Print and check command confirmation
+		String command = presetNbt.getString("command");
+
+		// Perform pre-import command feedback //
+
+		if (!opModules.isEmpty() && player.hasPermissionLevel(2)) {
+			tellWarn(player, "commands.switchy.import.fail.permission", getIdText(opModules));
+			return;
+		}
+
+		// Print info and stop if confirmation is required.
 		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command)) {
-			tellWarn(player, "commands.switchy.import.warn", literal(String.valueOf(importedPresets.getPresetNames().size())), literal(String.valueOf(modules.size())));
-			tellWarn(player, "commands.switchy.list.presets", literal(importedPresets.getPresetNames().toString()));
-			tellWarn(player, "commands.switchy.list.modules", getIdText(modules));
-			tellInvalidTry(player, "commands.switchy.import.confirmation", "commands.switchy.import.command", literal(command_args));
+			tellWarn(player, "commands.switchy.import.warn", literal(String.valueOf(importedPresets.getPresetNames().size())), literal(String.valueOf(importedPresets.getEnabledModules().size())));
+			tellWarn(player, "commands.switchy.import.warn.collision");
+			tellWarn(player, "commands.switchy.list.presets", getHighlightedListText(importedPresets.getPresetNames(), Map.of(presets.getCurrentPreset().presetName::equalsIgnoreCase, Formatting.STRIKETHROUGH, presets.getPresetNames()::contains, Formatting.DARK_RED)));
+			tellWarn(player, "commands.switchy.list.modules", importedPresets.getEnabledModuleText());
+			sendMessage(player, translatableWithArgs("commands.switchy.import.confirmation", FORMAT_INVALID, literal("/" + command)));
 			last_command.put(player.getUuid(), command);
 			return;
 		}
 
-		// Actually attempt to import
-		try {
-			presets.importFromOther(importedPresets, modules);
-			tellSuccess(player, "commands.switchy.import.success", literal(String.valueOf(importedPresets.getPresetNames().size())));
-		} catch (IllegalStateException ignored) {
-			String collisionPresets = presets.getPresetNames().stream()
-					.filter(importedPresets.getPresetNames()::contains)
-					.collect(Collectors.joining(", "));
-			tellInvalid(player, "commands.switchy.import.fail.collision", literal(collisionPresets));
-		}
+		// Import
+		presets.importFromOther(importedPresets);
+		tellSuccess(player, "commands.switchy.import.success", literal(String.valueOf(importedPresets.getPresetNames().size())));
 	}
 }

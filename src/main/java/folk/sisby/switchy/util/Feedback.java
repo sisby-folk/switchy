@@ -9,6 +9,8 @@ import net.minecraft.util.Pair;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 
 public class Feedback {
 	public static final Pair<Style, Style> FORMAT_SUCCESS = new Pair<>(Style.EMPTY.withColor(Formatting.GREEN), Style.EMPTY.withColor(Formatting.WHITE).withItalic(true));
@@ -90,4 +92,14 @@ public class Feedback {
 				id -> literal(id.getPath()).setStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, literal(id.toString()))))
 		)).append(literal("]"));
 	}
+
+	public static MutableText getHighlightedListText(List<String> list, Map<Predicate<String>, Formatting> highlighter) {
+		return literal("[").append(Texts.join(
+				list,
+				literal(", "),
+				str -> literal(str).setStyle(Style.EMPTY.withFormatting(highlighter.entrySet().stream().filter(e -> e.getKey().test(str)).map(Map.Entry::getValue).findFirst().orElse(Formatting.RESET)))
+		)).append(literal("]"));
+	}
+
+	public static String command(String string) { return "/" + string; }
 }
