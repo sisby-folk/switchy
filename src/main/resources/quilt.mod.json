@@ -3,7 +3,7 @@
 	"quilt_loader": {
 		"group": "folk.sisby",
 		"id": "switchy",
-		"version": "${version}",
+		"version": "${switchy}",
 		"metadata": {
 			"name": "Switchy",
 			"description": "Commands for switching between nothing - including nicknames, skins, and more.",
@@ -24,45 +24,45 @@
 		},
 		"depends": [
 			{
+				"id": "minecraft",
+				"versions": "${mc}"
+			},
+			{
 				"id": "quilt_loader",
-				"versions": ">=0.17.0-"
+				"versions": ">=${ql}"
 			},
 			{
 				"id": "quilted_fabric_api",
-				"versions": ">=1.0.0-"
-			},
-			{
-				"id": "minecraft",
-				"versions": ">=1.18.2"
+				"versions": ">=${qfapi}"
 			},
 			{
 				"id": "drogtor",
-				"versions": ">=1.1.3",
+				"versions": ">=${drogtor}",
 				"optional": true
 			},
 			{
 				"id": "styled-nicknames",
-				"versions": ">=1.0.4",
+				"versions": ">=${styledNicknames}",
 				"optional": true
 			},
 			{
 				"id": "fabrictailor",
-				"versions": ">=1.9.0",
+				"versions": ">=${fabrictailor}",
 				"optional": true
 			},
 			{
 				"id": "origins",
-				"versions": ">=1.4.1",
+				"versions": ">=${origins}",
 				"optional": true
 			},
 			{
 				"id": "pehkui",
-				"versions": ">=3.4.2",
+				"versions": ">=${pehkui}",
 				"optional": true
 			},
 			{
 				"id": "fabrication",
-				"versions": ">=3.0.2",
+				"versions": ">=${fabrication}",
 				"optional": true
 			}
 		]
