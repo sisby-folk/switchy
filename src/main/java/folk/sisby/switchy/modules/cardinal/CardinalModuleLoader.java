@@ -63,12 +63,12 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 					}
 					componentIds.add(componentId);
 				}
-				if (Switchy.MODULE_INFO.values().stream().map(Switchy.ModuleInfo::uniqueIds).anyMatch(ids -> ids.stream().anyMatch(componentIds::contains))) {
-					Switchy.LOGGER.warn("Switchy: CCA module {} tried to register a component that already has a module!, skipping...", file.getKey());
-					continue;
-				}
 				if (!componentIds.isEmpty()) {
-					CardinalSerializerCompat.register(moduleId, componentIds, componentDefault, componentImportable);
+					try {
+						CardinalSerializerCompat.register(moduleId, componentIds, componentDefault, componentImportable);
+					} catch (IllegalStateException ignored) {
+						Switchy.LOGGER.warn("Switchy: CCA module {} tried to register a component that already has a module!, skipping...", file.getKey());
+					}
 				}
 			} catch (UnsupportedOperationException e) {
 				Switchy.LOGGER.warn("Switchy: CCA module '{}' has non-boolean options, skipping...", file.getKey());

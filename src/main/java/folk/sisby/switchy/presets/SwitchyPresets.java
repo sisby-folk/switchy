@@ -99,14 +99,8 @@ public class SwitchyPresets {
 		return outNbt;
 	}
 
-	public void importFromOther(SwitchyPresets other, List<Identifier> importModules) throws IllegalStateException {
+	public void importFromOther(SwitchyPresets other) throws IllegalStateException {
 		if (other.getPresetNames().stream().anyMatch((name) -> getPresetNames().contains(name))) throw new IllegalStateException("Specified preset already exists");
-		// Remove modules that shouldn't be imported
-		modules.forEach((key, enabled) -> {
-			if (other.modules.get(key) && (!importModules.contains(key) || !enabled)) {
-				other.disableModule(key);
-			}
-		});
 
 		// Re-enable missing empty modules
 		modules.forEach((key, enabled) -> {
@@ -199,10 +193,6 @@ public class SwitchyPresets {
 
 	public SwitchyPreset getCurrentPreset() {
 		return currentPreset;
-	}
-
-	public boolean containsPreset(String presetName) {
-		return presetMap.containsKey(presetName); // Case Insensitive
 	}
 
 	public List<String> getPresetNames() {

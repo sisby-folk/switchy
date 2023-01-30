@@ -4,10 +4,10 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.datafixers.util.Function3;
 import com.mojang.datafixers.util.Function4;
 import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.client.api.SwitchyEventsClient;
 import folk.sisby.switchy.api.SwitchySwitchEvent;
 import folk.sisby.switchy.argument.IdentifiersFromNbtArgArgumentType;
 import folk.sisby.switchy.argument.NbtFileArgumentType;
+import folk.sisby.switchy.client.api.SwitchyEventsClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
@@ -25,10 +25,7 @@ import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -37,7 +34,7 @@ import static folk.sisby.switchy.Switchy.S2C_SWITCH;
 import static folk.sisby.switchy.util.Feedback.*;
 
 public class SwitchyCommandsClient {
-	private static final Map<UUID, String> last_command = new HashMap<>();
+	private static String last_command = "";
 
 	public static void InitializeCommands() {
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher) -> dispatcher.register(
@@ -100,7 +97,7 @@ public class SwitchyCommandsClient {
 				(argument3 != null ? context.getArgument(argument3.getLeft(), argument3.getRight()) : null)
 		);
 		// Record previous command (for confirmations)
-		last_command.put(player.getUuid(), context.getInput());
+		last_command = context.getInput();
 		return result;
 	}
 
