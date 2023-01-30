@@ -101,5 +101,5 @@ public class Feedback {
 		)).append(literal("]"));
 	}
 
-	public static String command(String string) { return "/" + string; }
+	public static String command(String string) { return "" + string; }
 }
