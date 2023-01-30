@@ -29,7 +29,6 @@ dependencyResolutionManagement {
 			library('ql', 'org.quiltmc', 'quilt-loader').versionRef('ql')
 			library('qm', 'org.quiltmc', 'quilt-mappings').versionRef('qm')
 			library('qsl', 'org.quiltmc', 'qsl').versionRef('qsl')
-			library('quiltMappings', 'org.quiltmc', 'quilt-mappings').versionRef('quiltMappings')
 
 			// // Libraries // //
 			version('serverTranslationsApi', "1.4.17+${mc}")
@@ -56,7 +55,6 @@ dependencyResolutionManagement {
 			library('fabrictailor', 'com.github.samolego', 'FabricTailor').versionRef('fabrictailor')
 			library('qfapi', 'org.quiltmc.quilted-fabric-api', 'quilted-fabric-api', ).versionRef('qfapi')
 			library('origins', 'com.github.apace100', 'origins-fabric').versionRef('origins')
-			library('calio', 'com.github.LambdAurora', 'calio-test').versionRef('calio')
 			library('cardinal', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-base').versionRef('cardinal')
 			library('cardinalEntity', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-entity').versionRef('cardinal')
 			library('pehkui', 'com.github.Virtuoel', 'Pehkui').versionRef('pehkui')
