@@ -248,7 +248,7 @@ public class SwitchyCommands {
 			return 0;
 		}
 
-		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase("/switchy delete " + presetName)) {
+		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command("switchy delete " + presetName))) {
 			tellWarn(player, "commands.switchy.delete.warn");
 			tellWarn(player, "commands.switchy.list.modules", presets.getEnabledModuleText());
 			tellInvalidTry(player, "commands.switchy.delete.confirmation", "commands.switchy.delete.command", literal(presetName));
@@ -266,7 +266,7 @@ public class SwitchyCommands {
 			return 0;
 		}
 
-		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase("/switchy module disable " + moduleId)) {
+		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command("switchy module disable " + moduleId))) {
 			sendMessage(player, Switchy.MODULE_INFO.get(moduleId).disableConfirmation().setStyle(FORMAT_WARN.getLeft()));
 			tellInvalidTry(player, "commands.switchy.module.disable.confirmation", "commands.switchy.module.disable.command", literal(moduleId.toString()));
 			return 0;
@@ -318,7 +318,7 @@ public class SwitchyCommands {
 		String command_args = filename +
 				(excludeModules.isEmpty() ? "" : (" " + excludeModules.stream().map(Identifier::toString).collect(Collectors.joining(",")))) +
 				(opModules.isEmpty() ? "" : (" " + opModules.stream().map(Identifier::toString).collect(Collectors.joining(","))));
-		String command = "/switchy_client import " + command_args;
+		String command = command("switchy_client import " + command_args);
 
 		// Construct presets from NBT
 		SwitchyPresets importedPresets;

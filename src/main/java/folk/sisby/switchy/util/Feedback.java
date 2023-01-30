@@ -90,4 +90,6 @@ public class Feedback {
 				id -> literal(id.getPath()).setStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, literal(id.toString()))))
 		)).append(literal("]"));
 	}
+
+	public static String command(String string) { return "/" + string; }
 }
