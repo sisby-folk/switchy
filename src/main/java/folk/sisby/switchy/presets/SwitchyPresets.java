@@ -107,9 +107,7 @@ public class SwitchyPresets {
 			}
 		});
 		// Remove the current preset if it isn't included - it won't do anything.
-		if (other.presetMap.containsKey(currentPreset.presetName)) {
-			other.deletePreset(currentPreset.presetName);
-		}
+		other.presetMap.remove(currentPreset.presetName);
 
 		other.presetMap.entrySet().stream().filter(e -> presetMap.containsKey(e.getKey())).forEach(e -> e.getValue().compatModules.forEach((moduleId, module) -> {
 			presetMap.get(e.getKey()).compatModules.remove(moduleId);
