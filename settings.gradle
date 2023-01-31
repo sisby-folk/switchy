@@ -77,7 +77,6 @@ dependencyResolutionManagement {
 			        'cardinal',
 					'cardinalEntity',
 			])
-			// Note: Origins is special-cased.
 			bundle('compat_compile', [
 					'drogtor',
 					'fabrictailor',
@@ -85,16 +84,17 @@ dependencyResolutionManagement {
 					'pehkui',
 					'fabrication',
 					'styledNicknames',
+					'origins'
 			])
 			bundle('compat_runtime', [
 					'fabrictailor',
 					'qfapi',
-					'calio',
 					'pehkui',
 					'playerDataApi',
 					'placeholderApi',
 					'styledNicknames',
 					'styledPlayerList',
+					'origins'
 			])
 		}
 	}

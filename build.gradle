@@ -39,10 +39,6 @@ dependencies {
 	include(libs.bundles.libraries)
 
 	// For runtime only //
-	modLocalRuntime(libs.origins) {
-		exclude module: 'calio'
-		exclude module: 'AdditionalEntityAttributes'
-	}
 	modLocalRuntime(libs.bundles.compat.runtime)
 }
 
