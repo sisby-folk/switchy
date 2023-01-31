@@ -6,7 +6,7 @@
 		"version": "${switchy}",
 		"metadata": {
 			"name": "Switchy Core",
-			"description": "Commands for switching between nothing - including nicknames, skins, and more.",
+			"description": "Switchy API, commands, and client functionality - without any modules.",
 			"contributors": {
 				"Sisby folk": "Co-Authors"
 			},
