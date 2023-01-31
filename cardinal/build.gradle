@@ -1,0 +1,11 @@
+plugins {
+	alias libs.plugins.loom
+}
+
+dependencies {
+	// Core
+	implementation(project(path: ':core', configuration: 'namedElements'))
+
+	// Cardinal Components
+	modCompileOnly libs.bundles.cardinal
+}

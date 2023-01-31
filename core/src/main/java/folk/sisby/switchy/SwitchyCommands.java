@@ -100,8 +100,12 @@ public class SwitchyCommands {
 		ServerPlayConnectionEvents.JOIN.register((spn, ps, s) -> {
 			ServerPlayerEntity player = spn.getPlayer();
 			SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
+			if (presets == null) {
+				((SwitchyPlayer) player).switchy$setPresets(SwitchyPresets.fromNbt(new NbtCompound(), player));
+				presets = ((SwitchyPlayer) player).switchy$getPresets();
+			}
 			SwitchySwitchEvent switchEvent = new SwitchySwitchEvent(
-					spn.getPlayer().getUuid(), presets != null ? presets.getCurrentPreset().presetName : "", null, presets != null ? presets.getEnabledModuleNames() : new ArrayList<>()
+					spn.getPlayer().getUuid(), presets.getCurrentPreset().presetName, null, presets.getEnabledModuleNames()
 			);
 			SwitchyEvents.fireSwitch(switchEvent);
 			if (ServerPlayNetworking.canSend(player, S2C_SWITCH)) {

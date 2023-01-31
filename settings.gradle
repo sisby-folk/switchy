@@ -19,6 +19,11 @@ dependencyResolutionManagement {
 			def mc_major = '1.19'
 			def mc = mc_major + '.2'
 
+			// // Build Tools // //
+			version('loom', '1.0.+')
+
+			plugin('loom', 'org.quiltmc.loom').versionRef('loom')
+
 			// // Base // //
 			version('mc', mc)
 			version('ql', "0.17.10")
@@ -30,6 +35,8 @@ dependencyResolutionManagement {
 			library('qm', 'org.quiltmc', 'quilt-mappings').versionRef('qm')
 			library('qsl', 'org.quiltmc', 'qsl').versionRef('qsl')
 
+			bundle('base', ['qfapi', 'ql', 'qsl'])
+
 			// // Libraries // //
 			version('serverTranslationsApi', "1.4.17+${mc}")
 			version('lib39', "1.5.0-pre2+${mc}")
@@ -37,6 +44,8 @@ dependencyResolutionManagement {
 			library('serverTranslationsApi', 'fr.catcore', 'server-translations-api').versionRef('serverTranslationsApi')
 			library('lib39Core', 'com.unascribed', 'lib39-core').versionRef('lib39')
 			library('lib39Dessicant', 'com.unascribed', 'lib39-dessicant').versionRef('lib39')
+
+			bundle('libraries', ['serverTranslationsApi', 'lib39Core', 'lib39Dessicant'])
 
 			// // Compat // //
 			version('drogtor', "1.1.3${mc_major == '1.18' ? '' : "+${mc_major}"}")
@@ -63,6 +72,32 @@ dependencyResolutionManagement {
 			library('playerDataApi', 'eu.pb4', 'player-data-api').versionRef('playerDataApi')
 			library('styledNicknames', 'maven.modrinth', 'styled-nicknames').versionRef('styledNicknames')
 			library('styledPlayerList', 'maven.modrinth', 'styledplayerlist').versionRef('styledPlayerList')
+
+			bundle('cardinal', [
+			        'cardinal',
+					'cardinalEntity',
+			])
+			// Note: Origins is special-cased.
+			bundle('compat_compile', [
+					'drogtor',
+					'fabrictailor',
+					'qfapi',
+					'pehkui',
+					'fabrication',
+					'styledNicknames',
+			])
+			bundle('compat_runtime', [
+					'fabrictailor',
+					'qfapi',
+					'calio',
+					'pehkui',
+					'playerDataApi',
+					'placeholderApi',
+					'styledNicknames',
+					'styledPlayerList',
+			])
 		}
 	}
 }
+
+include('core', 'cardinal', 'compat')

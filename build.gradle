@@ -10,7 +10,7 @@ buildscript {
 
 plugins {
 	id 'maven-publish'
-	id 'org.quiltmc.loom' version "1.0.+"
+	alias libs.plugins.loom
 }
 
 if (System.getenv("MODRINTH_TOKEN")) {
@@ -27,162 +27,176 @@ def mc = mc_major + '.2'
 def default_branch = '1.18'
 
 def origVersion = project.version
-project.version = project.version + "+" + mc_major
-group = project.maven_group
-
-repositories {
-	// Jitpack
-	maven { url 'https://jitpack.io' }
-
-	// Modrinth
-	maven {
-		url = "https://api.modrinth.com/maven"
-		content {
-			includeGroup "maven.modrinth"
-		}
-	}
-
-	maven {
-		url 'https://repo.sleeping.town'
-		content {
-			includeGroup 'com.unascribed'
-			includeGroup 'gay.lemmaeof'
-		}
-	}
-
-	// Nucleoid
-	maven {
-		url = uri("https://maven.nucleoid.xyz/")
-	}
-
-	// Fabric Tailor
-	maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-
-	// Origins
-	maven {
-		url = 'https://ladysnake.jfrog.io/artifactory/mods'
-	}
-	maven {
-		url = 'https://maven.cafeteria.dev'
-		content {
-			includeGroup 'net.adriantodt.fabricmc'
-		}
-	}
-	maven {
-		url "https://maven.jamieswhiteshirt.com/libs-release"
-		content {
-			includeGroup "com.jamieswhiteshirt"
-		}
-	}
-
-	maven { // Cloth Config
-		url "https://maven.shedaniel.me/"
-	}
-	maven { // ModMenu
-		url "https://maven.terraformersmc.com/"
-	}
-}
 
 dependencies {
-	// // Base // //
-	minecraft libs.mc
-	mappings variantOf(libs.qm) { classifier "intermediary-v2" }
-	modImplementation libs.ql
-	modImplementation libs.qsl
+	// Subprojects //
+	runtimeOnly(include(project(path: ':core', configuration: 'namedElements')))
+	runtimeOnly(include(project(path: ':compat', configuration: 'namedElements')))
+	runtimeOnly(include(project(path: ':cardinal', configuration: 'namedElements')))
 
-	// // Libraries // //
-	modImplementation libs.serverTranslationsApi
-	include libs.serverTranslationsApi
+	// Required dependencies //
+	// Here because each jar doesn't need a copy.
+	include(libs.bundles.libraries)
 
-	modImplementation libs.lib39Core
-	include libs.lib39Core
-
-	modImplementation libs.lib39Dessicant
-	include libs.lib39Dessicant
-
-	// // Compat // //
-
-	// Drogtor
-	modCompileOnly libs.drogtor
-//	modLocalRuntime libs.drogtor
-
-	// // Fabric Tailor
-	modCompileOnly libs.fabrictailor
-	modLocalRuntime libs.fabrictailor
-
-	// Origins
-	modCompileOnly libs.qfapi
-	modLocalRuntime libs.qfapi
-	modCompileOnly (libs.origins)
-	modLocalRuntime(libs.origins)
-
-	// Cardinal Components
-	modCompileOnly libs.cardinal
-	modCompileOnly libs.cardinalEntity
-
-	// Pehkui
-	modCompileOnly libs.pehkui
-	modLocalRuntime libs.pehkui
-
-	// Fabrication
-	modCompileOnly libs.fabrication
-
-	// Styled Nicknames
-	modCompileOnly libs.styledNicknames
-	modLocalRuntime libs.playerDataApi
-	modLocalRuntime libs.placeholderApi
-	modLocalRuntime libs.styledNicknames
-	modLocalRuntime libs.styledPlayerList
-}
-
-processResources {
-	final Map<String, String> map = [
-			"switchy": version.toString(),
-			"mc"  : libs.versions.mc.get(),
-			"ql"  : libs.versions.ql.get(),
-			"qfapi"  : libs.versions.qfapi.get(),
-			"drogtor"  : libs.versions.drogtor.get(),
-			"styledNicknames"  : libs.versions.styledNicknames.get(),
-			"fabrictailor"  : libs.versions.fabrictailor.get(),
-			"origins"  : libs.versions.origins.get().replaceFirst('v', ''),
-			"pehkui"  : libs.versions.pehkui.get(),
-			"fabrication"  : libs.versions.fabrication.get(),
-	]
-
-	inputs.properties(map)
-	filesMatching('quilt.mod.json') { expand(map) }
-}
-
-tasks.withType(JavaCompile).configureEach {
-	it.options.encoding = "UTF-8"
-	it.options.release = 17
-}
-
-java {
-	withSourcesJar()
-
-	// If this mod is going to be a library, then it should also generate Javadocs in order to aid with development.
-	// Uncomment this line to generate them.
-	// withJavadocJar()
-}
-
-jar {
-	from("LICENSE.txt") {
-		rename { "${it}_${archivesBaseName}" }
+	// For runtime only //
+	modLocalRuntime(libs.origins) {
+		exclude module: 'calio'
+		exclude module: 'AdditionalEntityAttributes'
 	}
+	modLocalRuntime(libs.bundles.compat.runtime)
 }
 
-// Configure the maven publication
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
+allprojects {
+	apply plugin: 'org.quiltmc.loom'
+	apply plugin: 'maven-publish'
+
+
+	project.version = project.version + "+" + mc_major
+	group = project.maven_group
+
+	loom {
+		runs {
+			client {
+				client()
+				ideConfigGenerated(true)
+			}
+			server {
+				server()
+				ideConfigGenerated(true)
+			}
 		}
 	}
 
-	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-	repositories {
+	java {
+		sourceCompatibility = JavaVersion.VERSION_17
+		targetCompatibility = JavaVersion.VERSION_17
+		withSourcesJar()
+		withJavadocJar()
+	}
 
+	repositories {
+		// Modrinth
+		maven {
+			url = "https://api.modrinth.com/maven"
+			content {
+				includeGroup "maven.modrinth"
+			}
+		}
+
+		maven {
+			url 'https://repo.sleeping.town'
+			content {
+				includeGroup 'com.unascribed'
+				includeGroup 'gay.lemmaeof'
+			}
+		}
+
+		// Nucleoid
+		maven {
+			url = uri("https://maven.nucleoid.xyz/")
+		}
+
+		// Fabric Tailor
+		maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+
+		// Origins
+		maven {
+			url = 'https://ladysnake.jfrog.io/artifactory/mods'
+		}
+		maven {
+			url = 'https://maven.cafeteria.dev'
+			content {
+				includeGroup 'net.adriantodt.fabricmc'
+			}
+		}
+		maven {
+			url "https://maven.jamieswhiteshirt.com/libs-release"
+			content {
+				includeGroup "com.jamieswhiteshirt"
+			}
+		}
+
+		maven { // Cloth Config
+			url "https://maven.shedaniel.me/"
+		}
+		maven { // ModMenu
+			url "https://maven.terraformersmc.com/"
+		}
+
+		// Jitpack
+		maven {
+			url 'https://jitpack.io'
+			content {
+				// Avoids sending everything through JitPack, which can be slow.
+				// Add any further using `includeGroup 'com.example'`
+				includeGroupByRegex 'com\\.github\\..*'
+			}
+		}
+	}
+
+	dependencies {
+		// // Base // //
+		minecraft libs.mc
+		mappings variantOf(libs.qm) { classifier "intermediary-v2" }
+		modImplementation libs.bundles.base
+
+		// // Libraries // //
+		modLocalRuntime libs.bundles.libraries
+	}
+
+	processResources {
+		final Map<String, String> map = [
+				"switchy": version.toString(),
+				"mc"  : libs.versions.mc.get(),
+				"ql"  : libs.versions.ql.get(),
+				"qfapi"  : libs.versions.qfapi.get(),
+				"drogtor"  : libs.versions.drogtor.get(),
+				"styledNicknames"  : libs.versions.styledNicknames.get(),
+				"fabrictailor"  : libs.versions.fabrictailor.get(),
+				"origins"  : libs.versions.origins.get().replaceFirst('v', ''),
+				"pehkui"  : libs.versions.pehkui.get(),
+				"fabrication"  : libs.versions.fabrication.get(),
+				"lib39": libs.versions.lib39.get(),
+				"serverTranslationsAPI": libs.versions.serverTranslationsApi.get(),
+		]
+
+		inputs.properties(map)
+		filesMatching('quilt.mod.json') { expand(map) }
+	}
+
+	tasks.withType(JavaCompile).configureEach {
+		it.options.encoding = "UTF-8"
+		it.options.release = 17
+	}
+
+	jar {
+		from("LICENSE.txt") {
+			rename { "${it}_${archivesBaseName}" }
+		}
+	}
+}
+
+subprojects {
+	archivesBaseName = project.archives_base_name + '-' + project.name
+
+	processResources {
+		from("$rootDir/src/main/resources/assets/switchy/icon.png") {
+			rename { "assets/switchy/icon.png" }
+		}
+	}
+
+	// Configure the maven publication
+	publishing {
+		publications {
+			mavenJava(MavenPublication) {
+				from components.java
+			}
+		}
+
+		// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+		repositories {
+
+		}
 	}
 }
 

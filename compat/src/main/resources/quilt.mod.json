@@ -1,0 +1,77 @@
+{
+	"schema_version": 1,
+	"quilt_loader": {
+		"group": "folk.sisby",
+		"id": "switchy-compat",
+		"version": "${switchy}",
+		"metadata": {
+			"name": "Switchy Compat",
+			"description": "Built-in switchy modules like drogtor, styled nicknames, fabric tailor, and origins.",
+			"contributors": {
+				"Sisby folk": "Co-Authors"
+			},
+			"contact": {
+				"homepage": "https://modrinth.com/mod/switchy",
+				"issues": "https://github.com/sisby-folk/switchy/issues",
+				"sources": "https://github.com/sisby-folk/switchy"
+			},
+			"icon": "assets/switchy/icon.png"
+		},
+		"intermediate_mappings": "net.fabricmc:intermediary",
+		"entrypoints": {
+			"switchy": "folk.sisby.switchy.SwitchyCompat"
+		},
+		"depends": [
+			{
+				"id": "minecraft",
+				"versions": "${mc}"
+			},
+			{
+				"id": "quilt_loader",
+				"versions": ">=${ql}"
+			},
+			{
+				"id": "quilted_fabric_api",
+				"versions": ">=${qfapi}"
+			},
+			{
+				"id": "switchy-core",
+				"versions": "${switchy}"
+			},
+			{
+				"id": "drogtor",
+				"versions": ">=${drogtor}",
+				"optional": true
+			},
+			{
+				"id": "styled-nicknames",
+				"versions": ">=${styledNicknames}",
+				"optional": true
+			},
+			{
+				"id": "fabrictailor",
+				"versions": ">=${fabrictailor}",
+				"optional": true
+			},
+			{
+				"id": "origins",
+				"versions": ">=${origins}",
+				"optional": true
+			},
+			{
+				"id": "pehkui",
+				"versions": ">=${pehkui}",
+				"optional": true
+			},
+			{
+				"id": "fabrication",
+				"versions": ">=${fabrication}",
+				"optional": true
+			}
+		]
+	},
+	"mixin": "switchy-compat.mixins.json",
+	"modmenu": {
+		"parent": "switchy"
+	}
+}
