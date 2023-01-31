@@ -2,16 +2,13 @@ package folk.sisby.switchy;
 
 import folk.sisby.switchy.api.ModuleImportable;
 import folk.sisby.switchy.api.PresetModule;
-import folk.sisby.switchy.modules.*;
-import folk.sisby.switchy.modules.cardinal.CardinalModuleLoader;
-import net.minecraft.resource.ResourceType;
+import folk.sisby.switchy.api.SwitchyModInitializer;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Identifier;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.loader.api.config.QuiltConfig;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
-import org.quiltmc.qsl.resource.loader.api.ResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,14 +68,9 @@ public class Switchy implements ModInitializer {
 		SwitchyCommands.InitializeReceivers();
 		SwitchyCommands.InitializeEvents();
 
-		if (QuiltLoader.isModLoaded("drogtor")) DrogtorCompat.touch();
-		if (QuiltLoader.isModLoaded("styled-nicknames")) StyledNicknamesCompat.touch();
-		if (QuiltLoader.isModLoaded("fabrictailor")) FabricTailorCompat.touch();
-		if (QuiltLoader.isModLoaded("origins")) OriginsCompat.touch();
-		if (QuiltLoader.isModLoaded("apoli")) ApoliCompat.touch();
-		if (QuiltLoader.isModLoaded("pehkui")) PehkuiCompat.touch();
-		if (QuiltLoader.isModLoaded("fabrication")) FabricationArmorCompat.touch();
-		ResourceLoader.get(ResourceType.SERVER_DATA).registerReloader(CardinalModuleLoader.INSTANCE);
+		for(SwitchyModInitializer init : QuiltLoader.getEntrypoints("switchy", SwitchyModInitializer.class)) {
+			init.initializeSwitchyCompat();
+		}
 
 		LOGGER.info("Switchy: Initialized! Already Registered Modules: " + MODULE_SUPPLIERS.keySet());
 	}

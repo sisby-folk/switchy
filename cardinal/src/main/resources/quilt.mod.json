@@ -2,10 +2,10 @@
 	"schema_version": 1,
 	"quilt_loader": {
 		"group": "folk.sisby",
-		"id": "switchy",
+		"id": "switchy-cardinal",
 		"version": "${switchy}",
 		"metadata": {
-			"name": "Switchy",
+			"name": "Switchy Cardinal",
 			"description": "Commands for switching between nothing - including nicknames, skins, and more.",
 			"contributors": {
 				"Sisby folk": "Co-Authors"
@@ -18,6 +18,9 @@
 			"icon": "assets/switchy/icon.png"
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
+		"entrypoints": {
+			"switchy": "folk.sisby.switchy.SwitchyCardinal"
+		},
 		"depends": [
 			{
 				"id": "minecraft",
@@ -34,27 +37,10 @@
 			{
 				"id": "switchy-core",
 				"versions": "${switchy}"
-			},
-			{
-				"id": "switchy-compat",
-				"versions": "${switchy}"
-			},
-			{
-				"id": "switchy-cardinal",
-				"versions": "${switchy}"
-			},
-			{
-				"id": "lib39-core",
-				"versions": ">=${lib39}"
-			},
-			{
-				"id": "lib39-dessicant",
-				"versions": ">=${lib39}"
-			},
-			{
-				"id": "server_translations_api",
-				"versions": ">=${serverTranslationsAPI}"
 			}
 		]
+	},
+	"modmenu": {
+		"parent": "switchy"
 	}
 }

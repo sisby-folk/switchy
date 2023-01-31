@@ -1,0 +1,20 @@
+plugins {
+	alias libs.plugins.loom
+}
+
+dependencies {
+	// Core
+	implementation(project(path: ':core', configuration: 'namedElements'))
+
+	// Compat
+	modCompileOnly(libs.origins) {
+		exclude module: 'AdditionalEntityAttributes'
+	}
+	modLocalRuntime(libs.origins) {
+		exclude module: 'calio'
+		exclude module: 'AdditionalEntityAttributes'
+	}
+
+	modCompileOnly libs.bundles.compat.compile
+	modLocalRuntime libs.bundles.compat.runtime
+}
