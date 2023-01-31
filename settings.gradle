@@ -50,7 +50,7 @@ dependencyResolutionManagement {
 			// // Compat // //
 			version('drogtor', "1.1.3${mc_major == '1.18' ? '' : "+${mc_major}"}")
 			version('fabrictailor', "1.9.0")
-			version('qfapi', "4.0.0-beta.9+0.60.0-${mc}")
+			version('qfapi', "4.0.0-beta.27+0.73.0-${mc}")
 			version('origins', "v1.7.1")
 			version('cardinal', "5.1.0")
 			version('pehkui', "3.4.2")
