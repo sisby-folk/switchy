@@ -32,8 +32,16 @@
 				"versions": ">=${ql}"
 			},
 			{
-				"id": "quilted_fabric_api",
-				"versions": ">=${qfapi}"
+				"id": "quilt_base",
+				"versions": ">=${qsl}"
+			},
+			{
+				"id": "quilt_command",
+				"versions": ">=${qsl}"
+			},
+			{
+				"id": "quilt_networking",
+				"versions": ">=${qsl}"
 			}
 		]
 	},

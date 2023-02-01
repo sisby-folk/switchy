@@ -1,9 +1,8 @@
-package folk.sisby.switchy.modules.cardinal;
+package folk.sisby.switchy;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.ModuleImportable;
 import folk.sisby.switchy.api.modules.CardinalSerializerCompat;
 import net.minecraft.resource.JsonDataLoader;
