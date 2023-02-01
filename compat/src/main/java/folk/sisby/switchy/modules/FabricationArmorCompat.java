@@ -8,11 +8,11 @@ import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.ModuleImportable;
 import folk.sisby.switchy.api.PresetModule;
 import folk.sisby.switchy.api.PresetModuleRegistry;
-import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
@@ -69,7 +69,7 @@ public class FabricationArmorCompat implements PresetModule {
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
 		suppressedSlots = EnumSet.noneOf(EquipmentSlot.class);
-		NbtList nbtList = nbt.getList(KEY_SUPPRESSED_SLOTS, NbtType.STRING);
+		NbtList nbtList = nbt.getList(KEY_SUPPRESSED_SLOTS, NbtElement.STRING_TYPE);
 		for (int i = 0; i < nbtList.size(); i++) {
 			EquipmentSlot slot = Enums.getIfPresent(EquipmentSlot.class, nbtList.getString(i).toUpperCase(Locale.ROOT)).orNull();
 			if (slot == null) {
