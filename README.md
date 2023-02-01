@@ -84,19 +84,27 @@ Modules will be listed with one of four import settings:
 
 ## Developers
 
-Switchy modules provide switchy with all of its practical functionality, but despite this, they're only required to do four things:
-- Save themselves to NBT
-- Load themselves from NBT
-- Save data to themselves from the player
-- Load data from themselves to the player
+Switchy can be added to your project with  `modImplementation "folk.sisby:switchy-core:x.x.x"` and this repo:
 
-Because mods (and minecraft) often have to do these things already, modules can be extremely simple.
+```
+maven {
+    url = "https://maven.proxyfox.dev/"
+    content {
+        includeGroup "folk.sisby"
+    }
+}
+```
 
-If you'd like to develop your own addon module, feel free to use [Switchy Inventories](https://github.com/sisby-folk/switchy-inventories) as an example.
+`switchy-core` includes commands and the API. For our jar releases, it's packaged with `switchy-cardinal` which provides data-driven CCA switchy modules and an API, and `switchy-compat` which provides the built-in modules for drogtor etc.
 
-To make a module, just implement `PresetModule` and register it using `PresetModuleRegistry`.
+Adding new Modules allows more data to be switched per-preset. They only need to:
+- Load and Save their data using NBT.
+- Save their data from the player
+- Load their data to the player
 
-There's also an API for basic operations like getting the name of a player's presets, and switching to a specific preset.
+Just implement `PresetModule` and register it with `PresetModuleRegistry` - See [Switchy Inventories](https://github.com/sisby-folk/switchy-inventories) for an example.
+
+Switchy also provides an entrypoint, which you can use to [skip](https://github.com/sisby-folk/switchy-inventories/blob/1.18/src/main/java/folk/sisby/switchy_inventories/modules/InventoryModule.java) checking if switchy is loaded, an events API that can let your mod (client or server) know which preset is loaded and when, and a simple API for switching and getting the names of presets and modules.
 
 ### Data-Driven CCA Modules
 

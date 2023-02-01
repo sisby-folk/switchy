@@ -189,12 +189,21 @@ subprojects {
 		publications {
 			mavenJava(MavenPublication) {
 				from components.java
+
+				artifactId = project.archives_base_name + '-' + project.name
 			}
 		}
 
-		// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 		repositories {
-
+			if (System.getenv("SWITCHY_MAVEN_URL")) {
+				maven {
+					url = System.getenv("SWITCHY_MAVEN_URL")
+					credentials {
+						username = System.getenv("SWITCHY_MAVEN_USERNAME")
+						password = System.getenv("SWITCHY_MAVEN_PASSWORD")
+					}
+				}
+			}
 		}
 	}
 }
