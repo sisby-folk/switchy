@@ -37,6 +37,7 @@ dependencies {
 	// Required dependencies //
 	// Here because each jar doesn't need a copy.
 	include(libs.bundles.libraries)
+	include(libs.bundles.cardinal)
 
 	// For runtime only //
 	modLocalRuntime(libs.origins) {
