@@ -190,6 +190,17 @@ subprojects {
 
 	// Configure the maven publication
 	publishing {
+		repositories {
+			if (System.getenv("SWITCHY_MAVEN_URL")) {
+				maven {
+					url = System.getenv("SWITCHY_MAVEN_URL")
+					credentials {
+						username = System.getenv("SWITCHY_MAVEN_USERNAME")
+						password = System.getenv("SWITCHY_MAVEN_PASSWORD")
+					}
+				}
+			}
+		}
 		publications {
 			mavenJava(MavenPublication) {
 				from components.java
