@@ -31,12 +31,20 @@
 				"versions": ">=${ql}"
 			},
 			{
-				"id": "quilted_fabric_api",
-				"versions": ">=${qfapi}"
+				"id": "quilt_resource_loader",
+				"versions": ">=${qsl}"
 			},
 			{
 				"id": "switchy-core",
 				"versions": "${switchy}"
+			},
+			{
+				"id": "cardinal-components-base",
+				"versions": "${cardinal}"
+			},
+			{
+				"id": "cardinal-components-entity",
+				"versions": "${cardinal}"
 			}
 		]
 	},

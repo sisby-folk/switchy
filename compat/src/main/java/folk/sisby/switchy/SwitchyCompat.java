@@ -1,13 +1,9 @@
-package folk.sisby.switchy;// Created 2023-30-01T21:57:33
+package folk.sisby.switchy;
 
 import folk.sisby.switchy.api.SwitchyModInitializer;
 import folk.sisby.switchy.modules.*;
 import org.quiltmc.loader.api.QuiltLoader;
 
-/**
- * @author KJP12
- * @since ${version}
- **/
 public class SwitchyCompat implements SwitchyModInitializer {
 
 	@Override
