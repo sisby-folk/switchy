@@ -190,6 +190,14 @@ subprojects {
 
 	// Configure the maven publication
 	publishing {
+		publications {
+			mavenJava(MavenPublication) {
+				from components.java
+
+				artifactId = project.archives_base_name + '-' + project.name
+			}
+		}
+
 		repositories {
 			if (System.getenv("SWITCHY_MAVEN_URL")) {
 				maven {
@@ -200,16 +208,6 @@ subprojects {
 					}
 				}
 			}
-		}
-		publications {
-			mavenJava(MavenPublication) {
-				from components.java
-			}
-		}
-
-		// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-		repositories {
-
 		}
 	}
 }
