@@ -34,6 +34,7 @@ import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 import static folk.sisby.switchy.Switchy.*;
 import static folk.sisby.switchy.api.PlayerPresets.*;
@@ -333,26 +334,31 @@ public class SwitchyCommands {
 
 		String command = presetNbt.getString("command");
 
-		// Perform pre-import command feedback //
-
 		if (!opModules.isEmpty() && player.hasPermissionLevel(2)) {
 			tellWarn(player, "commands.switchy.import.fail.permission", getIdText(opModules));
 			return;
 		}
 
+		confirmAndImportPresets(player, importedPresets.presetMap, importedPresets.getEnabledModules(), command);
+	}
+
+	public static boolean confirmAndImportPresets(ServerPlayerEntity player, Map<String, SwitchyPreset> importedPresets, List<Identifier> modules, String command) {
+		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
+
 		// Print info and stop if confirmation is required.
-		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command)) {
-			tellWarn(player, "commands.switchy.import.warn", literal(String.valueOf(importedPresets.getPresetNames().size())), literal(String.valueOf(importedPresets.getEnabledModules().size())));
+		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command(command))) {
+			tellWarn(player, "commands.switchy.import.warn.info", literal(String.valueOf(importedPresets.size())), literal(String.valueOf(modules.size())));
+			tellWarn(player, "commands.switchy.list.presets", getHighlightedListText(importedPresets.keySet().stream().sorted().toList(), List.of(new Pair<>(presets.getPresetNames()::contains, Formatting.DARK_RED))));
 			tellWarn(player, "commands.switchy.import.warn.collision");
-			tellWarn(player, "commands.switchy.list.presets", getHighlightedListText(importedPresets.getPresetNames(), List.of(new Pair<>(presets.getCurrentPreset().presetName::equalsIgnoreCase, Formatting.RED), new Pair<>(presets.getPresetNames()::contains, Formatting.DARK_RED))));
-			tellWarn(player, "commands.switchy.list.modules", importedPresets.getEnabledModuleText());
+			tellWarn(player, "commands.switchy.list.modules", getIdText(modules));
 			sendMessage(player, translatableWithArgs("commands.switchy.import.confirmation", FORMAT_INVALID, literal("/" + command)));
-			last_command.put(player.getUuid(), command);
-			return;
+			last_command.put(player.getUuid(), command(command));
+			return false;
 		}
 
 		// Import
 		presets.importFromOther(player, importedPresets);
-		tellSuccess(player, "commands.switchy.import.success", literal(String.valueOf(importedPresets.getPresetNames().size())));
+		tellSuccess(player, "commands.switchy.import.success", literal(String.valueOf(importedPresets.keySet().stream().filter(Predicate.not(presets.getPresetNames()::contains)).toList().size())), literal(String.valueOf(importedPresets.keySet().stream().filter(presets.getPresetNames()::contains).toList().size())));
+		return true;
 	}
 }
