@@ -1,6 +1,7 @@
 package folk.sisby.switchy.presets;
 
 import folk.sisby.switchy.Switchy;
+import folk.sisby.switchy.api.PresetModule;
 import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.api.SwitchySwitchEvent;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static folk.sisby.switchy.Switchy.S2C_SWITCH;
@@ -26,9 +28,9 @@ import static folk.sisby.switchy.util.Feedback.getIdText;
 
 public class SwitchyPresets {
 
-	private final Map<String, SwitchyPreset> presetMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+	public final Map<String, SwitchyPreset> presetMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 	public final Map<Identifier, Boolean> modules;
-	private SwitchyPreset currentPreset;
+	public SwitchyPreset currentPreset;
 
 	public static final String KEY_PRESET_CURRENT = "current";
 	public static final String KEY_PRESET_MODULE_ENABLED = "enabled";
@@ -99,23 +101,38 @@ public class SwitchyPresets {
 		return outNbt;
 	}
 
-	public void importFromOther(SwitchyPresets other) {
-		// Re-enable missing empty modules
-		modules.forEach((key, enabled) -> {
-			if (enabled && !other.modules.get(key)) {
-				other.enableModule(key);
-			}
-		});
-		// Remove the current preset if it isn't included - it won't do anything.
-		other.presetMap.remove(currentPreset.presetName);
+	public void importFromOther(@Nullable ServerPlayerEntity player, SwitchyPresets other) {
+		importFromOther(player, other.presetMap);
+	}
 
-		other.presetMap.entrySet().stream().filter(e -> presetMap.containsKey(e.getKey())).forEach(e -> e.getValue().compatModules.forEach((moduleId, module) -> {
+	public void importFromOther(@Nullable ServerPlayerEntity player, Map<String, SwitchyPreset> other) {
+		// Replace enabled modules for colliding current preset
+		if (other.containsKey(this.currentPreset.presetName) && player != null) {
+			other.get(this.currentPreset.presetName).compatModules.forEach((moduleId, module) -> {
+				duckCurrentModule(player, moduleId, (duckedModule) -> {
+					duckedModule.fillFromNbt(duckedModule.toNbt());
+				});
+			});
+		}
+		other.remove(currentPreset.presetName);
+
+		// Replace enabled modules for collisions
+		other.entrySet().stream().filter(e -> presetMap.containsKey(e.getKey())).forEach(e -> e.getValue().compatModules.forEach((moduleId, module) -> {
 			presetMap.get(e.getKey()).compatModules.remove(moduleId);
 			presetMap.get(e.getKey()).compatModules.put(moduleId, module);
 		}));
-		other.presetMap.entrySet().stream().filter(e -> !presetMap.containsKey(e.getKey())).forEach(e ->
-				addPreset(e.getValue())
-		);
+
+		// Add non-colliding presets
+		other.forEach((name, preset) -> {
+			if (!presetMap.containsKey(name)) {
+				modules.forEach((moduleId, enabled) -> {
+					if (enabled && !preset.compatModules.containsKey(moduleId)) { // Add missing modules
+						preset.compatModules.put(moduleId, Switchy.MODULE_SUPPLIERS.get(moduleId).get());
+					}
+				});
+				addPreset(preset);
+			}
+		});
 	}
 
 	private void toggleModulesFromNbt(NbtList list, Boolean enabled, Boolean silent) {
@@ -162,6 +179,16 @@ public class SwitchyPresets {
 
 	public void saveCurrentPreset(PlayerEntity player) {
 		if (currentPreset != null) currentPreset.updateFromPlayer(player, null);
+	}
+
+	public void duckCurrentModule(PlayerEntity player, Identifier moduleId, Consumer<PresetModule> mutator) throws IllegalArgumentException, IllegalStateException {
+		if (currentPreset == null) throw new IllegalStateException("Specified player has no current preset");
+		if (!modules.containsKey(moduleId)) throw new IllegalArgumentException("Specified module does not exist");
+		if (!modules.get(moduleId)) throw new IllegalStateException("Specified module is not enabled");
+		PresetModule module = currentPreset.compatModules.get(moduleId);
+		module.updateFromPlayer(player, null);
+		mutator.accept(module);
+		module.applyToPlayer(player);
 	}
 
 	public void addPreset(SwitchyPreset preset) throws IllegalStateException {
