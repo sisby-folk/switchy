@@ -39,7 +39,7 @@
       "delete": {
         "command": "/switchy delete {}",
         "help": "delete a preset permanently",
-        "warn": "WARNING: Preset data from enabled modules will be deleted.",
+        "warn": "WARNING: Preset data from enabled modules will be deleted",
         "confirmation": "Confirm using {}",
         "success": "Deleted preset {}",
         "fail": {
@@ -69,7 +69,7 @@
         "disable": {
           "command": "/switchy module disable {}",
           "help": "disable a module",
-          "warn": "Warning: Module data will be deleted for all presets.",
+          "warn": "Warning: Module data will be deleted for all presets",
           "confirmation": "Confirm using {}",
           "success": "Disabled {}",
           "fail": {
@@ -86,10 +86,12 @@
       "import": {
         "command": "/switchy_client import {}",
         "help": "load exported presets",
-        "warn": "You are about to import {} presets with {} modules:",
-        "warn.collision": "Red presets will have these modules replaced.",
+        "warn" : {
+          "info": "You are about to import {} presets with {} modules:",
+          "collision": "Red presets will have these modules overwritten:"
+        },
         "confirmation": "Confirm using {}",
-        "success": "Imported {} presets",
+        "success": "Import succeeded: added {} and updated {} presets",
         "fail" : {
           "parse": "Failed to parse imported NBT",
           "construct": "Failed to construct Presets from NBT",
