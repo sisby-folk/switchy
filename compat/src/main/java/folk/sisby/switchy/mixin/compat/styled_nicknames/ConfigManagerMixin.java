@@ -15,6 +15,7 @@ public abstract class ConfigManagerMixin {
 	@Inject(method = "getConfig", at = @At("RETURN"))
 	private static void forceAllowByDefault(CallbackInfoReturnable<Config> cir) {
 		CONFIG.configData.allowByDefault = true;
+		CONFIG.configData.defaultEnabledFormatting.put("color", true); // For SwitchyKit
 		CONFIG.configData.defaultEnabledFormatting.put("hover", true);
 		CONFIG.configData.defaultEnabledFormatting.put("dark_red", true);
 		CONFIG.configData.defaultEnabledFormatting.put("yellow", true);
