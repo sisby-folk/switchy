@@ -31,6 +31,7 @@ You can hotswap these features out-of-the box by installing their relevant mods:
 More functionality can be added with these Addons:
 - [Switchy Inventories](https://modrinth.com/mod/switchy-inventories) - separate inventories, ender chests, and trinkets (all disabled by default)
 - [Switchy Teleport](https://modrinth.com/mod/switchy-teleport) - separate player position and spawn points (all disabled by default)
+- [SwitchyKit](https://modrinth.com/mod/switchykit) - import presets with nicknames (as above) with colours, pronouns and system tags - directly from Pluralkit or Tupperbox.
 
 These mods have Switchy support built-in:
  - [RPGStats](https://modrinth.com/mod/rpgstats) - All 6 stats can be kept per-preset
