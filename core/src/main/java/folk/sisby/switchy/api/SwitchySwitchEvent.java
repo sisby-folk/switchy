@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.UUID;
 
 public class SwitchySwitchEvent {
-	private final UUID player;
-	private final @Nullable String previousPreset; // Null prev preset means "logging in"
-	private final String currentPreset;
-	private final List<String> enabledModules;
+	public final UUID player;
+	public final @Nullable String previousPreset; // Null prev preset means "logging in"
+	public final String currentPreset;
+	public final List<String> enabledModules;
 
 	private static final String KEY_PLAYER = "player";
 	private static final String KEY_CURRENT_PRESET = "currentName";
