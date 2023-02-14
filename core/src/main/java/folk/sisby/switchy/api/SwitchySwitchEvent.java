@@ -33,7 +33,7 @@ public class SwitchySwitchEvent {
 		nbt.putString(KEY_CURRENT_PRESET, currentPreset);
 		NbtList nbtModules = new NbtList();
 		nbtModules.addAll(enabledModules.stream().map(NbtString::of).toList());
-		nbt.put(KEY_CURRENT_PRESET, nbtModules);
+		nbt.put(KEY_ENABLED_MODULES, nbtModules);
 		if(previousPreset != null) nbt.putString(KEY_PREVIOUS_PRESET, previousPreset);
 		return nbt;
 	}
