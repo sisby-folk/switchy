@@ -2,11 +2,11 @@
 	"schema_version": 1,
 	"quilt_loader": {
 		"group": "folk.sisby",
-		"id": "switchy-core",
+		"id": "switchy-client",
 		"version": "${switchy}",
 		"metadata": {
-			"name": "Switchy Core",
-			"description": "Switchy API, commands, and client functionality - without any modules.",
+			"name": "Switchy Client",
+			"description": "The client addon for switchy, providing client-side API and conveniences.",
 			"contributors": {
 				"Sisby folk": "Co-Authors"
 			},
@@ -19,7 +19,7 @@
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"init": "folk.sisby.switchy.Switchy"
+			"client_init": "folk.sisby.switchy.client.SwitchyClient"
 		},
 		"depends": [
 			{
@@ -31,28 +31,15 @@
 				"versions": ">=${ql}"
 			},
 			{
-				"id": "quilt_base",
+				"id": "quilt_resource_loader",
 				"versions": ">=${qsl}"
 			},
 			{
-				"id": "quilt_command",
-				"versions": ">=${qsl}"
-			},
-			{
-				"id": "quilt_networking",
-				"versions": ">=${qsl}"
-			},
-			{
-				"id": "lib39-dessicant",
-				"versions": ">=${lib39}"
-			},
-			{
-				"id": "server_translations_api",
-				"versions": ">=${serverTranslationsAPI}"
+				"id": "switchy-core",
+				"versions": "${switchy}"
 			}
 		]
 	},
-	"mixin": "switchy-core.mixins.json",
 	"modmenu": {
 		"parent": "switchy"
 	}

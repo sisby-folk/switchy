@@ -1,0 +1,4 @@
+dependencies {
+	modImplementation libs.bundles.core
+	include libs.bundles.core
+}

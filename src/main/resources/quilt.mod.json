@@ -36,6 +36,10 @@
 				"versions": "${switchy}"
 			},
 			{
+				"id": "switchy-client",
+				"versions": "${switchy}"
+			},
+			{
 				"id": "switchy-compat",
 				"versions": "${switchy}"
 			},
@@ -46,14 +50,6 @@
 			{
 				"id": "lib39-core",
 				"versions": ">=${lib39}"
-			},
-			{
-				"id": "lib39-dessicant",
-				"versions": ">=${lib39}"
-			},
-			{
-				"id": "server_translations_api",
-				"versions": ">=${serverTranslationsAPI}"
 			}
 		]
 	}
