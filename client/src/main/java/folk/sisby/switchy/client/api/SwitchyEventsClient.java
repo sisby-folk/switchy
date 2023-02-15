@@ -1,7 +1,7 @@
 package folk.sisby.switchy.client.api;
 
-import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.SwitchySwitchEvent;
+import folk.sisby.switchy.client.SwitchyClient;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
@@ -22,7 +22,7 @@ public class SwitchyEventsClient {
 				listener.getValue().accept(event);
 			}
 			catch(Throwable t) {
-				Switchy.LOGGER.error("Switchy: Switch listener {} threw an exception", listener.getKey(), t);
+				SwitchyClient.LOGGER.error("Switchy: Switch listener {} threw an exception", listener.getKey(), t);
 			}
 		}
 	}

@@ -31,15 +31,11 @@ def origVersion = project.version
 dependencies {
 	// Subprojects //
 	runtimeOnly(include(project(path: ':core', configuration: 'namedElements')))
+	runtimeOnly(include(project(path: ':client', configuration: 'namedElements')))
 	runtimeOnly(include(project(path: ':compat', configuration: 'namedElements')))
 	runtimeOnly(include(project(path: ':cardinal', configuration: 'namedElements')))
 
-	// Required dependencies //
-	// Here because each jar doesn't need a copy.
-	include(libs.bundles.libraries)
-	include(libs.bundles.cardinal)
-
-	// For runtime only //
+	// Re-apply Local Runtime from Subprojects //
 	modLocalRuntime(libs.origins) {
 		exclude module: 'calio'
 		exclude module: 'AdditionalEntityAttributes'
@@ -140,9 +136,6 @@ allprojects {
 		minecraft libs.mc
 		mappings variantOf(libs.qm) { classifier "intermediary-v2" }
 		modImplementation libs.bundles.base
-
-		// // Libraries // //
-		modLocalRuntime libs.bundles.libraries
 	}
 
 	processResources {

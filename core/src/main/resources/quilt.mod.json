@@ -19,8 +19,7 @@
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"init": "folk.sisby.switchy.Switchy",
-			"client_init": "folk.sisby.switchy.client.SwitchyClient"
+			"init": "folk.sisby.switchy.Switchy"
 		},
 		"depends": [
 			{
@@ -42,6 +41,14 @@
 			{
 				"id": "quilt_networking",
 				"versions": ">=${qsl}"
+			},
+			{
+				"id": "lib39-dessicant",
+				"versions": ">=${lib39}"
+			},
+			{
+				"id": "server_translations_api",
+				"versions": ">=${serverTranslationsAPI}"
 			}
 		]
 	},
