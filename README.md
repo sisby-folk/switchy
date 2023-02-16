@@ -85,18 +85,33 @@ Modules will be listed with one of four import settings:
 
 ## Developers
 
-Switchy can be added to your project with  `modImplementation "folk.sisby:switchy-core:x.x.x"` and this repo:
+Switchy can be added to your project with  `modImplementation "folk.sisby:switchy-core:x.x.x"` and these repositories:
 
 ```
-maven {
-    url = "https://maven.proxyfox.dev/"
+maven { // Switchy
+    url = 'https://maven.proxyfox.dev/'
     content {
-        includeGroup "folk.sisby"
+        includeGroup 'folk.sisby'
+    }
+}
+maven { // Lib39
+    url 'https://repo.sleeping.town'
+    content {
+        includeGroup 'com.unascribed'
+    }
+}
+maven { // Server Translations API
+    url 'https://maven.nucleoid.xyz/'
+    content {
+        includeGroup 'fr.catcore'
     }
 }
 ```
 
-`switchy-core` includes commands and the API. For our jar releases, it's packaged with `switchy-cardinal` which provides data-driven CCA switchy modules and an API, and `switchy-compat` which provides the built-in modules for drogtor etc.
+`switchy-core` includes commands and the API. <br/>
+`switchy-client` enables import/export functionality and a client API. <br/>
+`switchy-cardinal` provides data-driven CCA switchy modules and an API <br/>
+`switchy-compat` provides the built-in modules for drogtor etc.
 
 Adding new Modules allows more data to be switched per-preset. They only need to:
 - Load and Save their data using NBT.
