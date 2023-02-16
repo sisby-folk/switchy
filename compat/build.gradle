@@ -5,6 +5,7 @@ plugins {
 dependencies {
 	// Core
 	implementation(project(path: ':core', configuration: 'namedElements'))
+	modImplementation libs.bundles.core
 
 	// Compat
 	modCompileOnly(libs.origins) {
