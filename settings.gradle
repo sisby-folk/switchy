@@ -78,6 +78,7 @@ dependencyResolutionManagement {
 					'cardinalEntity',
 			])
 			bundle('compat_compile', [
+					'qfapi',
 					'drogtor',
 					'fabrictailor',
 					'pehkui',
