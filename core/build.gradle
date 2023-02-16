@@ -1,3 +1,0 @@
-dependencies {
-	modImplementation libs.bundles.core
-}

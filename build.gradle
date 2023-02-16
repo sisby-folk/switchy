@@ -36,7 +36,7 @@ dependencies {
 	runtimeOnly(include(project(path: ':cardinal', configuration: 'namedElements')))
 
 	// Include runtime-only libraries //
-	include(libs.bundles.libraries)
+	include(libs.bundles.runtime)
 
 	// Re-apply Local Runtime from Subprojects //
 	modLocalRuntime(libs.origins) {
@@ -139,7 +139,7 @@ allprojects {
 		minecraft libs.mc
 		mappings variantOf(libs.qm) { classifier "intermediary-v2" }
 		modImplementation libs.bundles.base
-		modLocalRuntime libs.bundles.libraries
+		modRuntimeOnly libs.bundles.runtime
 	}
 
 	processResources {

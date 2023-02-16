@@ -37,7 +37,7 @@ dependencyResolutionManagement {
 
 			bundle('base', ['ql', 'qsl'])
 
-			// // Core // //
+			// // Runtime Libraries // //
 			version('serverTranslationsApi', "1.4.12+${mc}")
 			version('lib39', "1.5.0-pre3+${mc}")
 
@@ -45,7 +45,7 @@ dependencyResolutionManagement {
 			library('lib39Core', 'com.unascribed', 'lib39-core').versionRef('lib39')
 			library('lib39Dessicant', 'com.unascribed', 'lib39-dessicant').versionRef('lib39')
 
-			bundle('core', ['serverTranslationsApi', 'lib39Core', 'lib39Dessicant'])
+			bundle('runtime', ['serverTranslationsApi', 'lib39Core', 'lib39Dessicant'])
 
 			// // Compat // //
 			version('drogtor', "1.1.3${mc_major == '1.18' ? '' : "+${mc_major}"}")
