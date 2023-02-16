@@ -38,19 +38,20 @@ dependencyResolutionManagement {
 			bundle('base', ['ql', 'qsl'])
 
 			// // Runtime Libraries // //
+			version('qfapi', "4.0.0-beta.28+0.73.2-${mc}")
 			version('serverTranslationsApi', "1.4.18+${mc}")
 			version('lib39', "1.5.0-pre3+${mc}")
 
+			library('qfapi', 'org.quiltmc.quilted-fabric-api', 'quilted-fabric-api', ).versionRef('qfapi')
 			library('serverTranslationsApi', 'fr.catcore', 'server-translations-api').versionRef('serverTranslationsApi')
 			library('lib39Core', 'com.unascribed', 'lib39-core').versionRef('lib39')
 			library('lib39Dessicant', 'com.unascribed', 'lib39-dessicant').versionRef('lib39')
 
-			bundle('runtime', ['serverTranslationsApi', 'lib39Core', 'lib39Dessicant'])
+			bundle('runtime', ['qfapi', 'serverTranslationsApi', 'lib39Core', 'lib39Dessicant'])
 
 			// // Compat // //
 			version('drogtor', "1.1.3${mc_major == '1.18' ? '' : "+${mc_major}"}")
 			version('fabrictailor', "1.9.0")
-			version('qfapi', "4.0.0-beta.28+0.73.2-${mc}")
 			version('origins', "v1.7.1")
 			version('cardinal', "5.1.0")
 			version('pehkui', "3.4.2")
@@ -62,7 +63,6 @@ dependencyResolutionManagement {
 
 			library('drogtor', 'maven.modrinth', 'drogtor').versionRef('drogtor')
 			library('fabrictailor', 'com.github.samolego', 'FabricTailor').versionRef('fabrictailor')
-			library('qfapi', 'org.quiltmc.quilted-fabric-api', 'quilted-fabric-api', ).versionRef('qfapi')
 			library('origins', 'com.github.apace100', 'origins-fabric').versionRef('origins')
 			library('cardinal', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-base').versionRef('cardinal')
 			library('cardinalEntity', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-entity').versionRef('cardinal')
@@ -80,7 +80,6 @@ dependencyResolutionManagement {
 			bundle('compat_compile', [
 					'drogtor',
 					'fabrictailor',
-					'qfapi',
 					'pehkui',
 					'fabrication',
 					'styledNicknames',
@@ -89,7 +88,6 @@ dependencyResolutionManagement {
 			bundle('compat_runtime', [
 					'drogtor',
 					'fabrictailor',
-					'qfapi',
 					'pehkui',
 					'origins'
 			])
