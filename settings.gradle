@@ -90,7 +90,6 @@ dependencyResolutionManagement {
 					'drogtor',
 					'fabrictailor',
 					'qfapi',
-					'calio',
 					'pehkui',
 					'origins'
 			])
