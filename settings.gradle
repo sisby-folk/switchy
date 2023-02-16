@@ -81,6 +81,7 @@ dependencyResolutionManagement {
 			])
 			// Note: Origins is special-cased.
 			bundle('compat_compile', [
+					'qfapi',
 					'drogtor',
 					'fabrictailor',
 					'pehkui',
