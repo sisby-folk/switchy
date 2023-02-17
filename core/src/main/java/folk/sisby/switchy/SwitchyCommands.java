@@ -1,25 +1,18 @@
 package folk.sisby.switchy;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import com.mojang.datafixers.util.Function3;
-import com.mojang.datafixers.util.Function4;
 import folk.sisby.switchy.api.ModuleImportable;
 import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.api.SwitchyPlayer;
 import folk.sisby.switchy.api.SwitchySwitchEvent;
 import folk.sisby.switchy.presets.SwitchyPreset;
 import folk.sisby.switchy.presets.SwitchyPresets;
-import net.minecraft.command.CommandSource;
+import folk.sisby.switchy.util.Command;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -32,56 +25,54 @@ import org.quiltmc.qsl.networking.api.ServerPlayConnectionEvents;
 import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import static folk.sisby.switchy.Switchy.*;
-import static folk.sisby.switchy.api.PlayerPresets.*;
+import static folk.sisby.switchy.util.Command.*;
 import static folk.sisby.switchy.util.Feedback.*;
 
 public class SwitchyCommands {
-	private static final Map<UUID, String> last_command = new HashMap<>();
+	private static final Map<UUID, String> history = new HashMap<>();
 
 	public static void InitializeCommands() {
 		CommandRegistrationCallback.EVENT.register(
 				(dispatcher, buildContext, environment) -> dispatcher.register(
 						CommandManager.literal("switchy")
 								.then(CommandManager.literal("help")
-										.executes((c) -> unwrapAndExecute(c, SwitchyCommands::displayHelp)))
+										.executes((c) -> Command.unwrapAndExecute(c, history, SwitchyCommands::displayHelp)))
 								.then(CommandManager.literal("list")
-										.executes((c) -> unwrapAndExecute(c, SwitchyCommands::listPresets)))
+										.executes((c) -> unwrapAndExecute(c, history, SwitchyCommands::listPresets)))
 								.then(CommandManager.literal("new")
 										.then(CommandManager.argument("preset", StringArgumentType.word())
-												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::newPreset, new Pair<>("preset", String.class)))))
+												.executes((c) -> unwrapAndExecute(c, history, SwitchyCommands::newPreset, new Pair<>("preset", String.class)))))
 								.then(CommandManager.literal("set")
 										.then(CommandManager.argument("preset", StringArgumentType.word())
 												.suggests((c, b) -> suggestPresets(c, b, false))
-												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::setPreset, new Pair<>("preset", String.class)))))
+												.executes((c) -> unwrapAndExecute(c, history, SwitchyCommands::setPreset, new Pair<>("preset", String.class)))))
 								.then(CommandManager.literal("delete")
 										.then(CommandManager.argument("preset", StringArgumentType.word())
 												.suggests((c, b) -> suggestPresets(c, b, false))
-												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::deletePreset, new Pair<>("preset", String.class)))))
+												.executes((c) -> unwrapAndExecute(c, history, SwitchyCommands::deletePreset, new Pair<>("preset", String.class)))))
 								.then(CommandManager.literal("rename")
 										.then(CommandManager.argument("preset", StringArgumentType.word())
 												.suggests((c, b) -> suggestPresets(c, b, true))
 												.then(CommandManager.argument("name", StringArgumentType.word())
-														.executes((c) -> unwrapAndExecute(c, SwitchyCommands::renamePreset, new Pair<>("preset", String.class), new Pair<>("name", String.class))))))
+														.executes((c) -> unwrapAndExecute(c, history, SwitchyCommands::renamePreset, new Pair<>("preset", String.class), new Pair<>("name", String.class))))))
 								.then(CommandManager.literal("module")
 										.then(CommandManager.literal("enable")
 												.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
 														.suggests((c, b) -> suggestModules(c, b, false))
-														.executes((c) -> unwrapAndExecute(c, SwitchyCommands::enableModule, new Pair<>("module", Identifier.class)))))
+														.executes((c) -> unwrapAndExecute(c, history, SwitchyCommands::enableModule, new Pair<>("module", Identifier.class)))))
 										.then(CommandManager.literal("disable")
 												.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
 														.suggests((c, b) -> suggestModules(c, b, true))
-														.executes((c) -> unwrapAndExecute(c, SwitchyCommands::disableModule, new Pair<>("module", Identifier.class))))))
+														.executes((c) -> unwrapAndExecute(c, history, SwitchyCommands::disableModule, new Pair<>("module", Identifier.class))))))
 								.then(CommandManager.literal("export")
 										.requires(source -> {
 											ServerPlayerEntity player = serverPlayerOrNull(source);
 											return player != null && ServerPlayNetworking.canSend(player, S2C_EXPORT);
 										})
-										.executes((c) -> unwrapAndExecute(c, SwitchyCommands::exportPresets)))
+										.executes((c) -> unwrapAndExecute(c, history, SwitchyCommands::exportPresets)))
 				));
 
 		// switchy set alias
@@ -89,7 +80,7 @@ public class SwitchyCommands {
 				CommandManager.literal("switch")
 						.then(CommandManager.argument("preset", StringArgumentType.word())
 								.suggests((c, b) -> suggestPresets(c, b, false))
-								.executes((c) -> unwrapAndExecute(c, SwitchyCommands::setPreset, new Pair<>("preset", String.class)))))
+								.executes((c) -> unwrapAndExecute(c, history, SwitchyCommands::setPreset, new Pair<>("preset", String.class)))))
 		);
 	}
 
@@ -113,57 +104,6 @@ public class SwitchyCommands {
 				ps.sendPacket(S2C_SWITCH, PacketByteBufs.create().writeNbt(switchEvent.toNbt()));
 			}
 		});
-	}
-
-	private static CompletableFuture<Suggestions> suggestPresets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, boolean allowCurrent) throws CommandSyntaxException {
-		ServerPlayerEntity player = context.getSource().getPlayer();
-		CommandSource.suggestMatching(getPlayerPresetNames(player).stream().filter((s) -> allowCurrent || !Objects.equals(s, getPlayerCurrentPresetName(player))), builder);
-		return builder.buildFuture();
-	}
-
-	private static CompletableFuture<Suggestions> suggestModules(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, boolean enabled) throws CommandSyntaxException {
-		ServerPlayerEntity player = context.getSource().getPlayer();
-		CommandSource.suggestIdentifiers(getPlayerPresetModules(player).entrySet().stream().filter(e -> e.getValue() == enabled).map(Map.Entry::getKey), builder);
-		return builder.buildFuture();
-	}
-
-	private static @Nullable ServerPlayerEntity serverPlayerOrNull(ServerCommandSource source) {
-		try {
-			return source.getPlayer();
-		} catch (CommandSyntaxException e) {
-			return null;
-		}
-	}
-
-	private static <V, V2> int unwrapAndExecute(CommandContext<ServerCommandSource> context, Function4<ServerPlayerEntity, SwitchyPresets, V, V2, Integer> executeFunction, @Nullable Pair<String, Class<V>> argument, @Nullable Pair<String, Class<V2>> argument2) {
-		int result = 0;
-
-		ServerPlayerEntity player = serverPlayerOrNull(context.getSource());
-		if (player == null) {
-			LOGGER.error("Switchy: Command wasn't called by a player! (this shouldn't happen!)");
-			return result;
-		}
-
-		// Get context and execute
-		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
-		result = executeFunction.apply(
-				player,
-				presets,
-				(argument != null ? context.getArgument(argument.getLeft(), argument.getRight()) : null),
-				(argument2 != null ? context.getArgument(argument2.getLeft(), argument2.getRight()) : null)
-		);
-		// Record previous command (for confirmations)
-		last_command.put(player.getUuid(), context.getInput());
-
-		return result;
-	}
-
-	private static <V> int unwrapAndExecute(CommandContext<ServerCommandSource> context, Function3<ServerPlayerEntity, SwitchyPresets, V, Integer> executeFunction, @Nullable Pair<String, Class<V>> argument) {
-		return unwrapAndExecute(context, (player, preset, arg, ignored2) -> executeFunction.apply(player, preset, arg), argument, null);
-	}
-
-	private static int unwrapAndExecute(CommandContext<ServerCommandSource> context, BiFunction<ServerPlayerEntity, SwitchyPresets, Integer> executeFunction) {
-		return unwrapAndExecute(context, (player, preset, ignored, ignored2) -> executeFunction.apply(player, preset), null, null);
 	}
 
 	private static int displayHelp(ServerPlayerEntity player, SwitchyPresets presets) {
@@ -253,7 +193,7 @@ public class SwitchyCommands {
 			return 0;
 		}
 
-		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command("switchy delete " + presetName))) {
+		if (!history.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command("switchy delete " + presetName))) {
 			tellWarn(player, "commands.switchy.delete.warn");
 			tellWarn(player, "commands.switchy.list.modules", presets.getEnabledModuleText());
 			tellInvalidTry(player, "commands.switchy.delete.confirmation", "commands.switchy.delete.command", literal(presetName));
@@ -271,7 +211,7 @@ public class SwitchyCommands {
 			return 0;
 		}
 
-		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command("switchy module disable " + moduleId))) {
+		if (!history.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command("switchy module disable " + moduleId))) {
 			sendMessage(player, MODULE_INFO.get(moduleId).disableConfirmation().setStyle(FORMAT_WARN.getLeft()));
 			tellInvalidTry(player, "commands.switchy.module.disable.confirmation", "commands.switchy.module.disable.command", literal(moduleId.toString()));
 			return 0;
@@ -346,13 +286,13 @@ public class SwitchyCommands {
 		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 
 		// Print info and stop if confirmation is required.
-		if (!last_command.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command(command))) {
+		if (!history.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command(command))) {
 			tellWarn(player, "commands.switchy.import.warn.info", literal(String.valueOf(importedPresets.size())), literal(String.valueOf(modules.size())));
 			tellWarn(player, "commands.switchy.list.presets", getHighlightedListText(importedPresets.keySet().stream().sorted().toList(), List.of(new Pair<>(presets.getPresetNames()::contains, Formatting.DARK_RED))));
 			tellWarn(player, "commands.switchy.import.warn.collision");
 			tellWarn(player, "commands.switchy.list.modules", getIdText(modules));
 			sendMessage(player, translatableWithArgs("commands.switchy.import.confirmation", FORMAT_INVALID, literal("/" + command)));
-			last_command.put(player.getUuid(), command(command));
+			history.put(player.getUuid(), command(command));
 			return false;
 		}
 
