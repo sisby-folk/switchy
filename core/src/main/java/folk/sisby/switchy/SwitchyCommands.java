@@ -1,38 +1,32 @@
 package folk.sisby.switchy;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
-import folk.sisby.switchy.api.ModuleImportable;
-import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.api.SwitchyPlayer;
-import folk.sisby.switchy.api.SwitchySwitchEvent;
 import folk.sisby.switchy.presets.SwitchyPreset;
 import folk.sisby.switchy.presets.SwitchyPresets;
 import folk.sisby.switchy.util.Command;
 import net.minecraft.command.argument.IdentifierArgumentType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.Pair;
-import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
-import org.quiltmc.qsl.networking.api.ServerPlayConnectionEvents;
 import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
 import java.util.*;
 import java.util.function.Predicate;
 
-import static folk.sisby.switchy.Switchy.*;
+import static folk.sisby.switchy.Switchy.LOGGER;
+import static folk.sisby.switchy.Switchy.MODULE_INFO;
+import static folk.sisby.switchy.SwitchyNetworking.S2C_EXPORT;
 import static folk.sisby.switchy.util.Command.*;
 import static folk.sisby.switchy.util.Feedback.*;
 
 public class SwitchyCommands {
-	private static final Map<UUID, String> history = new HashMap<>();
+	public static final Map<UUID, String> history = new HashMap<>();
 
 	public static void InitializeCommands() {
 		CommandRegistrationCallback.EVENT.register(
@@ -82,28 +76,6 @@ public class SwitchyCommands {
 								.suggests((c, b) -> suggestPresets(c, b, false))
 								.executes((c) -> unwrapAndExecute(c, history, SwitchyCommands::setPreset, new Pair<>("preset", String.class)))))
 		);
-	}
-
-	public static void InitializeReceivers() {
-		ServerPlayNetworking.registerGlobalReceiver(C2S_IMPORT, (server, player, handler, buf, sender) -> importPresets(player, buf.readNbt()));
-	}
-
-	public static void InitializeEvents() {
-		ServerPlayConnectionEvents.JOIN.register((spn, ps, s) -> {
-			ServerPlayerEntity player = spn.getPlayer();
-			SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
-			if (presets == null) {
-				((SwitchyPlayer) player).switchy$setPresets(SwitchyPresets.fromNbt(new NbtCompound(), player));
-				presets = ((SwitchyPlayer) player).switchy$getPresets();
-			}
-			SwitchySwitchEvent switchEvent = new SwitchySwitchEvent(
-					spn.getPlayer().getUuid(), presets.getCurrentPreset().presetName, null, presets.getEnabledModuleNames()
-			);
-			SwitchyEvents.fireSwitch(switchEvent);
-			if (ServerPlayNetworking.canSend(player, S2C_SWITCH)) {
-				ps.sendPacket(S2C_SWITCH, PacketByteBufs.create().writeNbt(switchEvent.toNbt()));
-			}
-		});
 	}
 
 	private static int displayHelp(ServerPlayerEntity player, SwitchyPresets presets) {
@@ -234,52 +206,6 @@ public class SwitchyCommands {
 		}
 		tellSuccess(player, "commands.switchy.module.enable.success", literal(moduleId.toString()));
 		return 1;
-	}
-
-	private static void importPresets(ServerPlayerEntity player, @Nullable NbtCompound presetNbt) {
-		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
-
-		// Parse Preset NBT //
-
-		if (presetNbt == null || !presetNbt.contains("command", NbtElement.STRING_TYPE)) {
-			tellInvalid(player, "commands.switchy.import.fail.parse");
-			return;
-		}
-
-		SwitchyPresets importedPresets;
-		try {
-			importedPresets = SwitchyPresets.fromNbt(presetNbt, null);
-		} catch (Exception e) {
-			tellInvalid(player, "commands.switchy.import.fail.construct");
-			return;
-		}
-
-		// Parse & Apply Additional Arguments //
-
-		List<Identifier> excludeModules;
-		List<Identifier> opModules;
-		try {
-			excludeModules = presetNbt.getList("excludeModules", NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::new).toList();
-			opModules = presetNbt.getList("opModules", NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::new).toList();
-		} catch (InvalidIdentifierException e) {
-			tellInvalid(player, "commands.switchy.import.fail.parse");
-			return;
-		}
-
-		importedPresets.modules.forEach((moduleId, enabled) -> {
-			if (enabled && (!presets.modules.containsKey(moduleId) || !presets.modules.get(moduleId) || excludeModules.contains(moduleId) || getImportable(moduleId) == ModuleImportable.NEVER || (!opModules.contains(moduleId) && getImportable(moduleId) == ModuleImportable.OPERATOR))) {
-				importedPresets.disableModule(moduleId);
-			}
-		});
-
-		String command = presetNbt.getString("command");
-
-		if (!opModules.isEmpty() && player.hasPermissionLevel(2)) {
-			tellWarn(player, "commands.switchy.import.fail.permission", getIdText(opModules));
-			return;
-		}
-
-		confirmAndImportPresets(player, importedPresets.presetMap, importedPresets.getEnabledModules(), command);
 	}
 
 	public static boolean confirmAndImportPresets(ServerPlayerEntity player, Map<String, SwitchyPreset> importedPresets, List<Identifier> modules, String command) {

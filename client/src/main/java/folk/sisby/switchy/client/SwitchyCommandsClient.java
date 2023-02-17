@@ -1,7 +1,6 @@
 package folk.sisby.switchy.client;
 
 import com.mojang.brigadier.context.CommandContext;
-import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.SwitchySwitchEvent;
 import folk.sisby.switchy.argument.IdentifiersFromNbtArgArgumentType;
 import folk.sisby.switchy.argument.NbtFileArgumentType;
@@ -30,8 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static folk.sisby.switchy.Switchy.S2C_EXPORT;
-import static folk.sisby.switchy.Switchy.S2C_SWITCH;
+import static folk.sisby.switchy.SwitchyNetworking.*;
 import static folk.sisby.switchy.util.Command.consumeEventPacket;
 import static folk.sisby.switchy.util.Feedback.*;
 
@@ -92,7 +90,7 @@ public class SwitchyCommandsClient {
 			presetsNbt.put("opModules", opModulesNbt);
 		}
 		presetsNbt.putString("command", context.getInput());
-		ClientPlayNetworking.send(Switchy.C2S_IMPORT, PacketByteBufs.create().writeNbt(presetsNbt));
+		ClientPlayNetworking.send(C2S_IMPORT, PacketByteBufs.create().writeNbt(presetsNbt));
 		tellSuccess(player, "commands.switchy_client.import.success");
 		return 1;
 	}

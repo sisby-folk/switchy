@@ -23,9 +23,7 @@ public class Switchy implements ModInitializer {
 	public static final String ID = "switchy";
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
-	public static final Identifier S2C_EXPORT = new Identifier(Switchy.ID, "s2c_export");
-	public static final Identifier C2S_IMPORT = new Identifier(Switchy.ID, "c2s_import");
-	public static final Identifier S2C_SWITCH = new Identifier(Switchy.ID, "s2c_switch");
+
 
 	public static final SwitchyConfig CONFIG = QuiltConfig.create(ID, "config", SwitchyConfig.class);
 	public static final List<ModuleImportable> IMPORTABLE_CONFIGURABLE = List.of(ModuleImportable.ALLOWED, ModuleImportable.OPERATOR);
@@ -65,8 +63,8 @@ public class Switchy implements ModInitializer {
 	@Override
 	public void onInitialize(ModContainer mod) {
 		SwitchyCommands.InitializeCommands();
-		SwitchyCommands.InitializeReceivers();
-		SwitchyCommands.InitializeEvents();
+		SwitchyEvents.InitializeEvents();
+		SwitchyNetworking.InitializeReceivers();
 
 		for(SwitchyModInitializer init : QuiltLoader.getEntrypoints("switchy", SwitchyModInitializer.class)) {
 			init.initializeSwitchyCompat();
