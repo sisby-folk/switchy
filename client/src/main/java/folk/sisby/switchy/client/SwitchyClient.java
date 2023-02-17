@@ -16,6 +16,7 @@ public class SwitchyClient implements ClientModInitializer {
 		LOGGER.info("Initializing");
 		SwitchyCommandsClient.InitializeCommands();
 		SwitchyCommandsClient.InitializeReceivers();
+		SwitchyKeybinds.initializeKeybinds();
 	}
 
 }

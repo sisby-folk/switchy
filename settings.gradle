@@ -55,9 +55,8 @@ dependencyResolutionManagement {
 
 			library('owo', 'io.wispforest', 'owo-lib').versionRef('owo')
 
-			bundle('client', [
-			        'owo'
-			])
+			bundle('client', ['qfapi', 'owo'])
+			bundle('client.include', ['owo'])
 
 			// // Cardinal // //
 			version('cardinal', "5.1.0")

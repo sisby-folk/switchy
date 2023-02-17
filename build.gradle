@@ -38,6 +38,9 @@ dependencies {
 	// Include runtime-only libraries //
 	include(libs.bundles.runtime.include)
 
+	// Include other libraries //
+	include(libs.bundles.client.include)
+
 	// Re-apply Local Runtime from Subprojects //
 	modLocalRuntime(libs.bundles.compat.runtime)
 }
