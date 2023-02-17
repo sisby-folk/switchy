@@ -51,7 +51,7 @@ dependencyResolutionManagement {
 			bundle('runtime.include', ['serverTranslationsApi', 'lib39Core', 'lib39Dessicant'])
 
 			// // Client // //
-			version('owo', "0.7.2+${mc_major}")
+			version('owo', "0.9.3+${mc_major}")
 
 			library('owo', 'io.wispforest', 'owo-lib').versionRef('owo')
 
