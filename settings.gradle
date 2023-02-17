@@ -49,12 +49,31 @@ dependencyResolutionManagement {
 
 			bundle('runtime', ['qfapi', 'serverTranslationsApi', 'lib39Core', 'lib39Dessicant'])
 
+			// // Client // //
+			version('owo', "0.7.2+${mc_major}")
+
+			library('owo', 'io.wispforest', 'owo-lib').versionRef('owo')
+
+			bundle('client', [
+			        'owo'
+			])
+
+			// // Cardinal // //
+			version('cardinal', "5.1.0")
+
+			library('cardinal', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-base').versionRef('cardinal')
+			library('cardinalEntity', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-entity').versionRef('cardinal')
+
+			bundle('cardinal', [
+					'cardinal',
+					'cardinalEntity',
+			])
+
 			// // Compat // //
 			version('drogtor', "1.1.3${mc_major == '1.18' ? '' : "+${mc_major}"}")
 			version('fabrictailor', "1.9.0-${mc}")
 			version('origins', "v1.4.1")
 			version('calio', "-SNAPSHOT")
-			version('cardinal', "5.1.0")
 			version('pehkui', "3.4.2")
 			version('fabrication', "3.0.2+${mc_major}")
 			version('placeholderApi', "1.1.3+1.17.1")
@@ -66,8 +85,6 @@ dependencyResolutionManagement {
 			library('fabrictailor', 'com.github.samolego', 'FabricTailor').versionRef('fabrictailor')
 			library('origins', 'com.github.apace100', 'origins-fabric').versionRef('origins')
 			library('calio', 'com.github.LambdAurora', 'calio-test').versionRef('calio')
-			library('cardinal', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-base').versionRef('cardinal')
-			library('cardinalEntity', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-entity').versionRef('cardinal')
 			library('pehkui', 'com.github.Virtuoel', 'Pehkui').versionRef('pehkui')
 			library('fabrication', 'maven.modrinth', 'fabrication').versionRef('fabrication')
 			library('placeholderApi', 'eu.pb4', 'placeholder-api').versionRef('placeholderApi')
@@ -75,10 +92,6 @@ dependencyResolutionManagement {
 			library('styledNicknames', 'maven.modrinth', 'styled-nicknames').versionRef('styledNicknames')
 			library('styledPlayerList', 'maven.modrinth', 'styledplayerlist').versionRef('styledPlayerList')
 
-			bundle('cardinal', [
-			        'cardinal',
-					'cardinalEntity',
-			])
 			// Note: Origins is special-cased.
 			bundle('compat_compile', [
 					'qfapi',
