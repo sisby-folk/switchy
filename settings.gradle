@@ -48,6 +48,7 @@ dependencyResolutionManagement {
 			library('lib39Dessicant', 'com.unascribed', 'lib39-dessicant').versionRef('lib39')
 
 			bundle('runtime', ['qfapi', 'serverTranslationsApi', 'lib39Core', 'lib39Dessicant'])
+			bundle('runtime.include', ['serverTranslationsApi', 'lib39Core', 'lib39Dessicant'])
 
 			// // Client // //
 			version('owo', "0.9.3+${mc_major}")

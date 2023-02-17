@@ -36,7 +36,7 @@ dependencies {
 	runtimeOnly(include(project(path: ':cardinal', configuration: 'namedElements')))
 
 	// Include runtime-only libraries //
-	include(libs.bundles.runtime)
+	include(libs.bundles.runtime.include)
 
 	// Re-apply Local Runtime from Subprojects //
 	modLocalRuntime(libs.bundles.compat.runtime)
