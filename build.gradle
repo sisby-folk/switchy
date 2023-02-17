@@ -119,6 +119,10 @@ allprojects {
 			url "https://maven.terraformersmc.com/"
 		}
 
+		maven { // owo-lib
+			url 'https://maven.wispforest.io'
+		}
+
 		// Jitpack
 		maven {
 			url 'https://jitpack.io'
