@@ -24,7 +24,7 @@ archivesBaseName = project.archives_base_name
 
 def mc_major = '1.19'
 def mc = mc_major + '.2'
-def default_branch = '1.18'
+def default_branch = '1.19'
 
 def origVersion = project.version
 
