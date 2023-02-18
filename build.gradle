@@ -224,6 +224,8 @@ if (System.getenv("MODRINTH_TOKEN")) {
 		detectLoaders = false
 		dependencies {
 			required.project "qsl"
+			embedded.project "lib39"
+			embedded.project "owo-lib"
 			optional.project "drogtor"
 			optional.project "fabrictailor"
 			optional.project "pehkui"
