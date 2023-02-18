@@ -125,7 +125,7 @@ public class SwitchyCommands {
 		}
 	}
 
-	private static int setPreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
+	public static int setPreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
 		String oldPresetName = presets.getCurrentPreset().toString();
 		try {
 			String newPresetName = presets.switchCurrentPreset(player, presetName);

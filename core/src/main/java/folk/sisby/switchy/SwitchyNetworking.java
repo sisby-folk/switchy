@@ -5,10 +5,12 @@ import folk.sisby.switchy.api.SwitchyPlayer;
 import folk.sisby.switchy.presets.SwitchyPresets;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import org.jetbrains.annotations.Nullable;
+import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
 import java.util.List;
@@ -19,15 +21,29 @@ import static folk.sisby.switchy.util.Feedback.*;
 public class SwitchyNetworking {
 	// Client API
 	public static final Identifier C2S_IMPORT = new Identifier(Switchy.ID, "c2s_import");
+	public static final Identifier C2S_REQUEST_DISPLAY_PRESETS = new Identifier(Switchy.ID, "c2s_display_presets");
+	public static final Identifier C2S_SWITCH = new Identifier(Switchy.ID, "c2s_switch");
 
 	// Server Responses
 	public static final Identifier S2C_EXPORT = new Identifier(Switchy.ID, "s2c_export");
+	public static final Identifier S2C_DISPLAY_PRESETS = new Identifier(Switchy.ID, "s2c_display_presets");
 
 	// Events
 	public static final Identifier S2C_SWITCH = new Identifier(Switchy.ID, "s2c_switch");
 
 	public static void InitializeReceivers() {
+		// Client API
 		ServerPlayNetworking.registerGlobalReceiver(C2S_IMPORT, (server, player, handler, buf, sender) -> importPresets(player, buf.readNbt()));
+		ServerPlayNetworking.registerGlobalReceiver(C2S_REQUEST_DISPLAY_PRESETS, (server, player, handler, buf, sender) -> sendDisplayPresets(player));
+		ServerPlayNetworking.registerGlobalReceiver(C2S_SWITCH, (server, player, handler, buf, sender) -> SwitchyCommands.setPreset(player, ((SwitchyPlayer) player).switchy$getPresets(), buf.readString()));
+	}
+
+	private static void sendDisplayPresets(ServerPlayerEntity player) {
+		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
+
+		PacketByteBuf displayPresetsBuf = PacketByteBufs.create().writeNbt(presets.toNbt(true));
+
+		ServerPlayNetworking.send(player, S2C_DISPLAY_PRESETS, displayPresetsBuf);
 	}
 
 	private static void importPresets(ServerPlayerEntity player, @Nullable NbtCompound presetNbt) {
@@ -73,6 +89,6 @@ public class SwitchyNetworking {
 			return;
 		}
 
-		SwitchyCommands.confirmAndImportPresets(player, importedPresets.presetMap, importedPresets.getEnabledModules(), command);
+		SwitchyCommands.confirmAndImportPresets(player, importedPresets.presets, importedPresets.getEnabledModules(), command);
 	}
 }

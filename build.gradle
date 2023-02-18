@@ -153,7 +153,6 @@ allprojects {
 				"qsl"  : libs.versions.qsl.get(),
 				"lib39": libs.versions.lib39.get(),
 				"serverTranslationsAPI": libs.versions.serverTranslationsApi.get(),
-				"cardinal": libs.versions.cardinal.get(),
 				"qfapi"  : libs.versions.qfapi.get(),
 				"drogtor"  : libs.versions.drogtor.get(),
 				"styledNicknames"  : libs.versions.styledNicknames.get(),

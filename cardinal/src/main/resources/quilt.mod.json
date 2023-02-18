@@ -40,12 +40,12 @@
 			},
 			{
 				"id": "cardinal-components-base",
-				"versions": "${cardinal}",
+				"versions": "*",
 				"optional": true
 			},
 			{
 				"id": "cardinal-components-entity",
-				"versions": "${cardinal}",
+				"versions": "*",
 				"optional": true
 			}
 		]

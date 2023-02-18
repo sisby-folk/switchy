@@ -11,5 +11,9 @@ public interface PresetModule {
 
 	NbtCompound toNbt();
 
+	default NbtCompound toNbt(boolean displayOnly) {
+		return displayOnly ? new NbtCompound() : toNbt();
+	}
+
 	void fillFromNbt(NbtCompound nbt);
 }

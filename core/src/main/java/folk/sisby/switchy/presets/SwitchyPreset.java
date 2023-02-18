@@ -10,31 +10,35 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class SwitchyPreset {
-	public final Map<Identifier, PresetModule> compatModules;
+	public final Map<Identifier, PresetModule> modules;
 
 	public String presetName;
 
 	public SwitchyPreset(String name, Map<Identifier, Boolean> moduleToggles) {
 		this.presetName = name;
-		this.compatModules = moduleToggles.entrySet().stream()
+		this.modules = moduleToggles.entrySet().stream()
 				.filter(Map.Entry::getValue)
 				.collect(Collectors.toMap(Map.Entry::getKey, e -> Switchy.MODULE_SUPPLIERS.get(e.getKey()).get()));
 	}
 
-	public NbtCompound toNbt() {
+	public NbtCompound toNbt(boolean displayOnly) {
 		NbtCompound outNbt = new NbtCompound();
-		this.compatModules.forEach((id, module) -> outNbt.put(id.toString(), module.toNbt()));
+		this.modules.forEach((id, module) -> outNbt.put(id.toString(), module.toNbt(displayOnly)));
 		return outNbt;
+	}
+
+	public NbtCompound toNbt() {
+		return toNbt(false);
 	}
 
 	public static SwitchyPreset fromNbt(String presetName, NbtCompound nbt, Map<Identifier, Boolean> moduleToggles) {
 		SwitchyPreset outPreset = new SwitchyPreset(presetName, moduleToggles);
-		outPreset.compatModules.forEach((id, module) -> module.fillFromNbt(nbt.getCompound(id.toString())));
+		outPreset.modules.forEach((id, module) -> module.fillFromNbt(nbt.getCompound(id.toString())));
 		return outPreset;
 	}
 
 	public void updateFromPlayer(PlayerEntity player, String nextPreset) {
-		this.compatModules.forEach((id, module) -> {
+		this.modules.forEach((id, module) -> {
 			try {
 				module.updateFromPlayer(player, nextPreset);
 			} catch (Exception ex) {
@@ -59,7 +63,7 @@ public class SwitchyPreset {
 	}
 
 	public void applyToPlayer(PlayerEntity player) {
-		this.compatModules.forEach((id, module) -> tryApplyModule(compatModules, id, player, new HashSet<>()));
+		this.modules.forEach((id, module) -> tryApplyModule(modules, id, player, new HashSet<>()));
 	}
 
 	@Override

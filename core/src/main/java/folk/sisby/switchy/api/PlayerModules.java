@@ -18,8 +18,8 @@ public class PlayerModules {
 		if (!presets.modules.containsKey(moduleId)) throw new IllegalArgumentException("Specified module does not exist");
 		Map<String, PresetModule> outMap = new HashMap<>();
 		if (presets.modules.get(moduleId)) {
-			presets.presetMap.forEach((name, preset) -> {
-				outMap.put(name, preset.compatModules.get(moduleId));
+			presets.presets.forEach((name, preset) -> {
+				outMap.put(name, preset.modules.get(moduleId));
 			});
 		}
 		return outMap;

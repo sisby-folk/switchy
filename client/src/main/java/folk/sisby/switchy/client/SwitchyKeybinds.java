@@ -1,13 +1,14 @@
 package folk.sisby.switchy.client;
 
 import com.mojang.blaze3d.platform.InputUtil;
-import folk.sisby.switchy.client.screen.SwitchScreen;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBind;
-import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 import org.quiltmc.qsl.lifecycle.api.client.event.ClientTickEvents;
+import org.quiltmc.qsl.networking.api.PacketByteBufs;
+import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
+
+import static folk.sisby.switchy.SwitchyNetworking.*;
 
 public class SwitchyKeybinds {
 	public static void initializeKeybinds() {
@@ -19,9 +20,8 @@ public class SwitchyKeybinds {
 		));
 		ClientTickEvents.END.register(client -> {
 			while (switchKeyBinding.wasPressed()) {
-				if (client.player != null) {
-					client.player.sendMessage(Text.literal("Switch Was Pressed!"), false);
-					MinecraftClient.getInstance().setScreen(new SwitchScreen());
+				if (client.player != null && ClientPlayNetworking.canSend(C2S_REQUEST_DISPLAY_PRESETS)) {
+					ClientPlayNetworking.send(C2S_REQUEST_DISPLAY_PRESETS, PacketByteBufs.empty());
 				}
 			}
 		});

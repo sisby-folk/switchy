@@ -23,5 +23,15 @@
         "invalid_nbt": "File contained invalid NBT"
       }
     }
+  },
+  "key": {
+    "switchy": {
+      "switch": "Open Quick-Switcher"
+    }
+  },
+  "category": {
+    "switchy": {
+      "switchy": "Switchy"
+    }
   }
 }
