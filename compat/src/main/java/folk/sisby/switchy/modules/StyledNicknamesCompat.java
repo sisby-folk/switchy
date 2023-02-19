@@ -1,5 +1,6 @@
 package folk.sisby.switchy.modules;
 
+import eu.pb4.placeholders.api.TextParserUtils;
 import eu.pb4.stylednicknames.NicknameHolder;
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.ModuleImportable;
@@ -7,6 +8,7 @@ import folk.sisby.switchy.api.PresetModule;
 import folk.sisby.switchy.api.PresetModuleRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,9 +38,17 @@ public class StyledNicknamesCompat implements PresetModule {
 	}
 
 	@Override
-	public NbtCompound toNbt() {
+	public NbtCompound toNbt(boolean displayOnly) {
 		NbtCompound outNbt = new NbtCompound();
-		if (this.styled_nickname != null) outNbt.putString(KEY_NICKNAME, this.styled_nickname);
+		if (displayOnly && this.styled_nickname != null) {
+			Text name = TextParserUtils.formatText(this.styled_nickname);
+			outNbt.putString(KEY_NICKNAME, name.getString());
+			if (name.getStyle().getColor() != null) {
+				outNbt.putString("nameColor", name.getStyle().getColor().getName());
+			}
+		} else if (this.styled_nickname != null) {
+			outNbt.putString(KEY_NICKNAME, this.styled_nickname);
+		}
 		return outNbt;
 	}
 

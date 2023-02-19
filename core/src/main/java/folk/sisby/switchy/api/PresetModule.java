@@ -9,7 +9,7 @@ public interface PresetModule {
 
 	void applyToPlayer(PlayerEntity player);
 
-	NbtCompound toNbt();
+	default NbtCompound toNbt() {return toNbt(false);}
 
 	default NbtCompound toNbt(boolean displayOnly) {
 		return displayOnly ? new NbtCompound() : toNbt();

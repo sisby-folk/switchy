@@ -35,10 +35,11 @@ public class FabricTailorCompat implements PresetModule {
 	}
 
 	@Override
-	public NbtCompound toNbt() {
+	public NbtCompound toNbt(boolean displayOnly) {
 		NbtCompound outNbt = new NbtCompound();
 		if (this.skinValue != null) outNbt.putString(KEY_SKIN_VALUE, this.skinValue);
 		if (this.skinSignature != null) outNbt.putString(KEY_SKIN_SIGNATURE, this.skinSignature);
+
 		return outNbt;
 	}
 

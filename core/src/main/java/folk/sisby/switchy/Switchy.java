@@ -66,7 +66,7 @@ public class Switchy implements ModInitializer {
 		SwitchyEvents.InitializeEvents();
 		SwitchyNetworking.InitializeReceivers();
 
-		for(SwitchyModInitializer init : QuiltLoader.getEntrypoints("switchy", SwitchyModInitializer.class)) {
+		for(SwitchyModInitializer init : QuiltLoader.getEntrypoints(ID, SwitchyModInitializer.class)) {
 			init.initializeSwitchyCompat();
 		}
 

@@ -5,6 +5,7 @@ import folk.sisby.switchy.modules.*;
 import org.quiltmc.loader.api.QuiltLoader;
 
 public class SwitchyCompat implements SwitchyModInitializer {
+	public static final String ID = "switchy_compat";
 
 	@Override
 	public void initializeSwitchyCompat() {

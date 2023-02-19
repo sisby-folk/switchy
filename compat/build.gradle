@@ -1,15 +1,17 @@
 dependencies {
 	implementation(project(path: ':core', configuration: 'namedElements'))
+	implementation(project(path: ':client', configuration: 'namedElements'))
+
+	// Redo Client Deps (why)
+	modCompileOnly libs.bundles.client
 
 	// Optional Compatible Mods
 	modCompileOnly libs.bundles.compat.compile
 	modLocalRuntime libs.bundles.compat.runtime
 	modCompileOnly(libs.origins) {
+		exclude module: 'apoli'
+	}
+	modCompileOnly(libs.apoli) {
 		exclude module: 'AdditionalEntityAttributes'
 	}
-	modLocalRuntime(libs.origins) {
-		exclude module: 'calio'
-		exclude module: 'AdditionalEntityAttributes'
-	}
-
 }

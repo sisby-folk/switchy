@@ -45,7 +45,7 @@ public class DrogtorCompat implements PresetModule {
 	}
 
 	@Override
-	public NbtCompound toNbt() {
+	public NbtCompound toNbt(boolean displayOnly) {
 		NbtCompound outNbt = new NbtCompound();
 		if (this.nickname != null) outNbt.putString(KEY_NICKNAME, this.nickname);
 		if (this.namecolor != null) outNbt.putString(KEY_NAME_COLOR, this.namecolor.getName());

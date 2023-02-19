@@ -52,7 +52,7 @@ public class OriginsCompat implements PresetModule {
 	}
 
 	@Override
-	public NbtCompound toNbt() {
+	public NbtCompound toNbt(boolean displayOnly) {
 		NbtCompound outNbt = new NbtCompound();
 		// From Origins PlayerOriginComponent
 		NbtList originLayerList = new NbtList();
@@ -60,7 +60,7 @@ public class OriginsCompat implements PresetModule {
 			for (Map.Entry<OriginLayer, Origin> entry : origins.entrySet()) {
 				NbtCompound layerTag = new NbtCompound();
 				layerTag.putString("Layer", entry.getKey().getIdentifier().toString());
-				layerTag.putString("Origin", entry.getValue().getIdentifier().toString());
+				layerTag.putString("Origin", displayOnly ? entry.getValue().getName().getString() : entry.getValue().getIdentifier().toString());
 				originLayerList.add(layerTag);
 			}
 		}

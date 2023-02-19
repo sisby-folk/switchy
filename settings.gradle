@@ -71,24 +71,26 @@ dependencyResolutionManagement {
 
 			// // Compat // //
 			version('drogtor', "1.1.3${mc_major == '1.18' ? '' : "+${mc_major}"}")
-			version('fabrictailor', "1.9.0")
+			version('fabrictailor', "2.0.1")
 			version('origins', "v1.7.1")
+			version('apoli', "v2.6.0")
 			version('pehkui', "3.4.2")
 			version('fabrication', "3.0.2+${mc_major}")
 			version('placeholderApi', "2.0.0-pre.1+${mc}")
 			version('playerDataApi', "0.2.2+${mc}")
 			version('styledNicknames', "1.1.2+${mc_major}")
-			version('styledPlayerList', "2.2.2+1.19.1")
+			version('placeholder', "2.0.0-beta.7+${mc_major}")
 
 			library('drogtor', 'maven.modrinth', 'drogtor').versionRef('drogtor')
-			library('fabrictailor', 'com.github.samolego', 'FabricTailor').versionRef('fabrictailor')
+			library('fabrictailor', 'maven.modrinth', 'fabrictailor').versionRef('fabrictailor')
 			library('origins', 'com.github.apace100', 'origins-fabric').versionRef('origins')
+			library('apoli', 'com.github.apace100', 'apoli').versionRef('apoli')
 			library('pehkui', 'com.github.Virtuoel', 'Pehkui').versionRef('pehkui')
 			library('fabrication', 'maven.modrinth', 'fabrication').versionRef('fabrication')
 			library('placeholderApi', 'eu.pb4', 'placeholder-api').versionRef('placeholderApi')
 			library('playerDataApi', 'eu.pb4', 'player-data-api').versionRef('playerDataApi')
 			library('styledNicknames', 'maven.modrinth', 'styled-nicknames').versionRef('styledNicknames')
-			library('styledPlayerList', 'maven.modrinth', 'styledplayerlist').versionRef('styledPlayerList')
+			library('placeholder', 'eu.pb4', 'placeholder-api').versionRef('placeholder')
 
 			bundle('compat_compile', [
 					'qfapi',
@@ -97,13 +99,12 @@ dependencyResolutionManagement {
 					'pehkui',
 					'fabrication',
 					'styledNicknames',
-					'origins'
+					'placeholder'
 			])
 			bundle('compat_runtime', [
 					'drogtor',
 					'fabrictailor',
-					'pehkui',
-					'origins'
+					'pehkui'
 			])
 		}
 	}
