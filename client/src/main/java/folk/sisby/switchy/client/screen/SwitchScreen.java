@@ -51,26 +51,31 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 		return OwoUIAdapter.create(this, Containers::verticalFlow);
 	}
 
-	private Component generatePresetComponent(SwitchyDisplayPreset preset) {
+	private Component generatePresetComponent(SwitchyDisplayPreset preset, boolean currentPreset) {
 		// Main Horizontal Flow Panel
 		HorizontalFlowLayout horizontalFLow = Containers.horizontalFlow(Sizing.fixed(400), Sizing.content());
 		horizontalFLow.padding(Insets.vertical(4).withLeft(10).withRight(10));
 		horizontalFLow.gap(2);
-		horizontalFLow.surface(Surface.DARK_PANEL);
 		horizontalFLow.verticalAlignment(VerticalAlignment.CENTER);
 		horizontalFLow.horizontalAlignment(HorizontalAlignment.CENTER);
-		horizontalFLow.mouseEnter().subscribe(() -> horizontalFLow.surface(Surface.DARK_PANEL.and(Surface.outline(Color.WHITE.argb()))));
-		horizontalFLow.mouseLeave().subscribe(() -> horizontalFLow.surface(Surface.DARK_PANEL));
-		horizontalFLow.mouseDown().subscribe((x, y, button) -> {
-			SwitchyClientNetworking.sendSwitch(preset.presetName);
-			return true;
-		});
+		if (currentPreset) {
+			horizontalFLow.surface(Surface.DARK_PANEL.and(Surface.outline(Color.BLUE.argb())));
+		} else {
+			horizontalFLow.surface(Surface.DARK_PANEL);
+			horizontalFLow.mouseEnter().subscribe(() -> horizontalFLow.surface(Surface.DARK_PANEL.and(Surface.outline(Color.WHITE.argb()))));
+			horizontalFLow.mouseLeave().subscribe(() -> horizontalFLow.surface(Surface.DARK_PANEL));
+			horizontalFLow.mouseDown().subscribe((x, y, button) -> {
+				SwitchyClientNetworking.sendSwitch(preset.presetName);
+				return true;
+			});
+		}
 
 		// Left Side Elements
 		horizontalFLow.children(sideLeftComponents.values().stream().map((fun) -> fun.apply(preset)).filter(Objects::nonNull).toList());
 
 		// Main Elements
 		HorizontalFlowLayout leftRightFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
+		leftRightFlow.margins(Insets.horizontal(6));
 		leftRightFlow.gap(4);
 
 		VerticalFlowLayout leftAlignedFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
@@ -99,7 +104,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 		rootComponent.horizontalAlignment(HorizontalAlignment.CENTER);
 		rootComponent.verticalAlignment(VerticalAlignment.CENTER);
 
-		List<Component> presetFlows = new ArrayList<>(displayPresets.presets.values().stream().map(this::generatePresetComponent).toList());
+		List<Component> presetFlows = new ArrayList<>(displayPresets.presets.values().stream().map(preset -> generatePresetComponent(preset, Objects.equals(preset.presetName, displayPresets.currentPreset))).toList());
 
 		VerticalFlowLayout presetsLayout = Containers.verticalFlow(Sizing.content(), Sizing.content());
 		presetsLayout.padding(Insets.of(6));
@@ -133,6 +138,6 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 		});
 
 		// Add base components
-		registerPresetDisplayComponent(new Identifier(SwitchyClient.ID, "preset_name"), ComponentPosition.LEFT, displayPreset -> Components.label(Text.literal(displayPreset.presetName)));
+		registerPresetDisplayComponent(new Identifier(SwitchyClient.ID, "preset_name"), ComponentPosition.SIDE_LEFT, displayPreset -> Components.label(Text.literal(displayPreset.presetName)));
 	}
 }

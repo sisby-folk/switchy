@@ -18,7 +18,7 @@ public class StyledNicknamesCompatClient {
 	public static void touch() {}
 
 	static {
-		SwitchyScreenExtensions.registerQuickSwitchDisplayComponent(ID, SwitchScreen.ComponentPosition.RIGHT, displayPreset -> {
+		SwitchyScreenExtensions.registerQuickSwitchDisplayComponent(ID, SwitchScreen.ComponentPosition.LEFT, displayPreset -> {
 			if (!displayPreset.modules.containsKey(ID)) return null;
 			NbtCompound nbt = displayPreset.modules.get(ID);
 			if (!nbt.contains(KEY_NICKNAME)) return null;

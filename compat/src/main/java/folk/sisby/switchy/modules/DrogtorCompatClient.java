@@ -21,7 +21,7 @@ public class DrogtorCompatClient {
 	public static void touch() {}
 
 	static {
-		SwitchyScreenExtensions.registerQuickSwitchDisplayComponent(ID, ComponentPosition.RIGHT, displayPreset -> {
+		SwitchyScreenExtensions.registerQuickSwitchDisplayComponent(ID, ComponentPosition.LEFT, displayPreset -> {
 			if (!displayPreset.modules.containsKey(ID)) return null;
 			NbtCompound nbt = displayPreset.modules.get(ID);
 			if (!nbt.contains(KEY_NICKNAME)) return null;
