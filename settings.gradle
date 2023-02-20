@@ -103,7 +103,7 @@ dependencyResolutionManagement {
 			])
 			bundle('compat_runtime', [
 					'drogtor',
-					'fabrictailor',
+					// 'fabrictailor',
 					'pehkui'
 			])
 		}

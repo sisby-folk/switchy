@@ -44,6 +44,10 @@
 				"versions": ">=${qsl}"
 			},
 			{
+				"id": "lib39-core",
+				"versions": ">=${lib39}"
+			},
+			{
 				"id": "lib39-dessicant",
 				"versions": ">=${lib39}"
 			},

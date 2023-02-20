@@ -51,10 +51,6 @@
 			{
 				"id": "switchy-cardinal",
 				"versions": "${switchy}"
-			},
-			{
-				"id": "lib39-core",
-				"versions": ">=${lib39}"
 			}
 		]
 	}

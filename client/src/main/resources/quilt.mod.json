@@ -38,6 +38,10 @@
 			{
 				"id": "switchy-core",
 				"versions": "${switchy}"
+			},
+			{
+				"id": "owo-lib",
+				"versions": "${owo}"
 			}
 		]
 	},

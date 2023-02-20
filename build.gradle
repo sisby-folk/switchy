@@ -154,6 +154,7 @@ allprojects {
 				"lib39": libs.versions.lib39.get(),
 				"serverTranslationsAPI": libs.versions.serverTranslationsApi.get(),
 				"qfapi"  : libs.versions.qfapi.get(),
+				"owo"  : libs.versions.owo.get(),
 				"drogtor"  : libs.versions.drogtor.get(),
 				"styledNicknames"  : libs.versions.styledNicknames.get(),
 				"fabrictailor"  : libs.versions.fabrictailor.get(),
