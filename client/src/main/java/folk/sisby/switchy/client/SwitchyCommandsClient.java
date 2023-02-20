@@ -1,9 +1,8 @@
 package folk.sisby.switchy.client;
 
 import com.mojang.brigadier.context.CommandContext;
-import folk.sisby.switchy.argument.IdentifiersFromNbtArgArgumentType;
-import folk.sisby.switchy.argument.NbtFileArgumentType;
-import folk.sisby.switchy.client.util.CommandClient;
+import folk.sisby.switchy.client.argument.IdentifiersFromNbtArgArgumentType;
+import folk.sisby.switchy.client.argument.NbtFileArgumentType;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -22,7 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static folk.sisby.switchy.SwitchyNetworking.C2S_IMPORT;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.*;
+import static folk.sisby.switchy.client.util.CommandClient.unwrapAndExecute;
 import static folk.sisby.switchy.util.Feedback.tellSuccess;
 
 public class SwitchyCommandsClient {
@@ -31,17 +31,20 @@ public class SwitchyCommandsClient {
 	public static void InitializeCommands() {
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, cbc, reg) -> dispatcher.register(
 				ClientCommandManager.literal("switchy_client")
+						.requires(source -> ClientPlayNetworking.canSend(S2C_PRESETS))
 						.then(ClientCommandManager.literal("import")
 								.then(ClientCommandManager.argument("file", NbtFileArgumentType.create(new File(SwitchyClient.EXPORT_PATH)))
-										.executes((c) -> CommandClient.unwrapAndExecute(c, history, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class)))
+										.executes((c) -> unwrapAndExecute(c, history, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class)))
 										.then(ClientCommandManager.argument("excludeModules", IdentifiersFromNbtArgArgumentType.create("file", null, "enabled"))
-												.executes((c) -> CommandClient.unwrapAndExecute(c, history, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class), new Pair<>("excludeModules", List.class)))
+												.executes((c) -> unwrapAndExecute(c, history, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class), new Pair<>("excludeModules", List.class)))
 												.then(ClientCommandManager.argument("opModules", IdentifiersFromNbtArgArgumentType.create("file", "excludeModules", "enabled"))
-														.executes((c) -> CommandClient.unwrapAndExecute(c, history, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class), new Pair<>("excludeModules", List.class), new Pair<>("opModules", List.class)))
+														.executes((c) -> unwrapAndExecute(c, history, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class), new Pair<>("excludeModules", List.class), new Pair<>("opModules", List.class)))
 												)
 										)
 								)
 						)
+						.then(ClientCommandManager.literal("export")
+								.executes((c) -> unwrapAndExecute(c, history, SwitchyCommandsClient::exportPresets)))
 		));
 	}
 
@@ -60,6 +63,12 @@ public class SwitchyCommandsClient {
 		presetsNbt.putString("command", context.getInput());
 		ClientPlayNetworking.send(C2S_IMPORT, PacketByteBufs.create().writeNbt(presetsNbt));
 		tellSuccess(player, "commands.switchy_client.import.success");
+		return 1;
+	}
+
+	private static int exportPresets(CommandContext<QuiltClientCommandSource> context, ClientPlayerEntity player) {
+		ClientPlayNetworking.send(C2S_REQUEST_PRESETS, PacketByteBufs.empty());
+		tellSuccess(player, "commands.switchy_client.export.sent");
 		return 1;
 	}
 

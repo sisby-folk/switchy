@@ -1,13 +1,13 @@
 package folk.sisby.switchy;
 
-import folk.sisby.switchy.client.api.SwitchyClientModInitializer;
-import folk.sisby.switchy.modules.DrogtorCompatClient;
-import folk.sisby.switchy.modules.FabricTailorCompatClient;
-import folk.sisby.switchy.modules.OriginsCompatClient;
-import folk.sisby.switchy.modules.StyledNicknamesCompatClient;
+import folk.sisby.switchy.client.api.SwitchyClientEvents;
+import folk.sisby.switchy.modules.DrogtorCompatDisplay;
+import folk.sisby.switchy.modules.FabricTailorCompatDisplay;
+import folk.sisby.switchy.modules.OriginsCompatDisplay;
+import folk.sisby.switchy.modules.StyledNicknamesCompatDisplay;
 import org.quiltmc.loader.api.QuiltLoader;
 
-public class SwitchyCompatClient implements SwitchyClientModInitializer {
+public class SwitchyCompatClient implements SwitchyClientEvents.Init {
 	@Override
 	public void onInitialize() {
 		// Basically recreate the functionality of every mod because it might not be on the client (ow)
@@ -25,9 +25,9 @@ public class SwitchyCompatClient implements SwitchyClientModInitializer {
 		// interface SwitchyModule extends SwitchyModuleSerializer
 		// interface SwitchyClientModule extends SwitchyModuleSerializer
 
-		DrogtorCompatClient.touch();
-		StyledNicknamesCompatClient.touch();
-		FabricTailorCompatClient.touch();
-		if (QuiltLoader.isModLoaded("origins")) OriginsCompatClient.touch();
+		DrogtorCompatDisplay.touch();
+		StyledNicknamesCompatDisplay.touch();
+		FabricTailorCompatDisplay.touch();
+		if (QuiltLoader.isModLoaded("origins")) OriginsCompatDisplay.touch(); // To display origin orb
 	}
 }

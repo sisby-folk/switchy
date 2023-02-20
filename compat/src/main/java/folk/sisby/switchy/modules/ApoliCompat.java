@@ -1,24 +1,27 @@
 package folk.sisby.switchy.modules;
 
 import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.api.ModuleImportable;
-import folk.sisby.switchy.api.PresetModule;
-import folk.sisby.switchy.api.PresetModuleRegistry;
+import folk.sisby.switchy.api.module.SwitchyModule;
+import folk.sisby.switchy.api.module.SwitchyModuleEditable;
+import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.InventoryPower;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.PowerTypeRegistry;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-public class ApoliCompat implements PresetModule {
+public class ApoliCompat implements SwitchyModule {
 	public static final Identifier ID = new Identifier("switchy", "apoli");
 
 	public static final String KEY_POWER_DATA_LIST = "PowerData";
@@ -26,7 +29,7 @@ public class ApoliCompat implements PresetModule {
 	public final Map<PowerType<?>, NbtElement> powerNbt = new HashMap<>();
 
 	@Override
-	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
+	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
 		powerNbt.clear();
 		List<Power> powers = PowerHolderComponent.KEY.get(player).getPowers();
 		for (Power power : powers) {
@@ -38,7 +41,7 @@ public class ApoliCompat implements PresetModule {
 	}
 
 	@Override
-	public void applyToPlayer(PlayerEntity player) {
+	public void applyToPlayer(ServerPlayerEntity player) {
 		for (Map.Entry<PowerType<?>, NbtElement> entry : powerNbt.entrySet()) {
 			Power power = PowerHolderComponent.KEY.get(player).getPower(entry.getKey());
 			if (power != null) {
@@ -90,6 +93,6 @@ public class ApoliCompat implements PresetModule {
 
 	// Runs on touch() - but only once.
 	static {
-		PresetModuleRegistry.registerModule(ID, ApoliCompat::new, true, ModuleImportable.OPERATOR, Set.of(OriginsCompat.ID));
+		SwitchyModuleRegistry.registerModule(ID, ApoliCompat::new, true, SwitchyModuleEditable.OPERATOR, Set.of(OriginsCompat.ID));
 	}
 }

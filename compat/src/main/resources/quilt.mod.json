@@ -19,8 +19,8 @@
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"switchy": "folk.sisby.switchy.SwitchyCompat",
-			"switchy_client": "folk.sisby.switchy.SwitchyCompatClient"
+			"events": "folk.sisby.switchy.SwitchyCompat",
+			"client_events": "folk.sisby.switchy.SwitchyCompatClient"
 		},
 		"depends": [
 			{

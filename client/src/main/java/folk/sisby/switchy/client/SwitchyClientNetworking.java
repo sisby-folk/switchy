@@ -1,8 +1,8 @@
 package folk.sisby.switchy.client;
 
-import folk.sisby.switchy.api.SwitchySwitchEvent;
-import folk.sisby.switchy.client.api.SwitchyEventsClient;
-import folk.sisby.switchy.client.presets.SwitchyDisplayPresets;
+import folk.sisby.switchy.api.events.SwitchySwitchEvent;
+import folk.sisby.switchy.client.api.SwitchyClientEvents;
+import folk.sisby.switchy.presets.SwitchyDisplayPresets;
 import folk.sisby.switchy.client.screen.SwitchScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
@@ -16,14 +16,15 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 
-import static folk.sisby.switchy.SwitchyNetworking.*;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.*;
+import static folk.sisby.switchy.api.events.SwitchySwitchEvent.S2C_EVENT_SWITCH;
 import static folk.sisby.switchy.util.Command.consumeEventPacket;
 import static folk.sisby.switchy.util.Feedback.*;
 
 public class SwitchyClientNetworking {
 	public static void InitializeReceivers() {
-		ClientPlayNetworking.registerGlobalReceiver(S2C_EXPORT, (client, handler, buf, sender) -> exportPresets(client, buf));
-		ClientPlayNetworking.registerGlobalReceiver(S2C_SWITCH, (client, handler, buf, sender) -> consumeEventPacket(buf, SwitchySwitchEvent::fromNbt, SwitchyEventsClient::fireSwitch));
+		ClientPlayNetworking.registerGlobalReceiver(S2C_PRESETS, (client, handler, buf, sender) -> exportPresets(client, buf));
+		ClientPlayNetworking.registerGlobalReceiver(S2C_EVENT_SWITCH, (client, handler, buf, sender) -> consumeEventPacket(buf, SwitchySwitchEvent::fromNbt, SwitchyClientEvents.SWITCH.invoker()::onSwitch));
 		ClientPlayNetworking.registerGlobalReceiver(S2C_DISPLAY_PRESETS, (client, handler, buf, sender) -> displayPresets(client, buf.readNbt()));
 	}
 

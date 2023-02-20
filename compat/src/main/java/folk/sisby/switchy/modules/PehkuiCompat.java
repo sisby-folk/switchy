@@ -1,10 +1,10 @@
 package folk.sisby.switchy.modules;
 
-import folk.sisby.switchy.api.ModuleImportable;
-import folk.sisby.switchy.api.PresetModule;
-import folk.sisby.switchy.api.PresetModuleRegistry;
-import net.minecraft.entity.player.PlayerEntity;
+import folk.sisby.switchy.api.module.SwitchyModule;
+import folk.sisby.switchy.api.module.SwitchyModuleEditable;
+import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import virtuoel.pehkui.api.ScaleRegistries;
@@ -15,19 +15,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PehkuiCompat implements PresetModule {
+public class PehkuiCompat implements SwitchyModule {
 	public static final Identifier ID = new Identifier("switchy", "pehkui");
 
 	public static final Map<ScaleType, String> scaleKeys = new HashMap<>();
 	public final Map<ScaleType, @Nullable Float> scaleValues = new HashMap<>();
 
 	@Override
-	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
+	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
 		scaleValues.replaceAll((t, v) -> t.getScaleData(player).getTargetScale());
 	}
 
 	@Override
-	public void applyToPlayer(PlayerEntity player) {
+	public void applyToPlayer(ServerPlayerEntity player) {
 		scaleValues.forEach((type, value) -> {if (value != null) type.getScaleData(player).setTargetScale(value);});
 	}
 
@@ -56,7 +56,7 @@ public class PehkuiCompat implements PresetModule {
 
 	// Runs on touch() - but only once.
 	static {
-		PresetModuleRegistry.registerModule(ID, PehkuiCompat::new, true, ModuleImportable.OPERATOR);
+		SwitchyModuleRegistry.registerModule(ID, PehkuiCompat::new, true, SwitchyModuleEditable.OPERATOR);
 		List.of(ScaleTypes.HEIGHT, ScaleTypes.WIDTH, ScaleTypes.MODEL_HEIGHT, ScaleTypes.MODEL_WIDTH).forEach(PehkuiCompat::addScaleType);
 	}
 }

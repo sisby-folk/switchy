@@ -1,4 +1,4 @@
-package folk.sisby.switchy.argument;
+package folk.sisby.switchy.client.argument;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;

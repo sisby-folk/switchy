@@ -1,20 +1,18 @@
 package folk.sisby.switchy.modules;
 
-import eu.pb4.placeholders.api.TextParserUtils;
 import eu.pb4.stylednicknames.NicknameHolder;
 import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.api.ModuleImportable;
-import folk.sisby.switchy.api.PresetModule;
-import folk.sisby.switchy.api.PresetModuleRegistry;
-import net.minecraft.entity.player.PlayerEntity;
+import folk.sisby.switchy.api.module.SwitchyModule;
+import folk.sisby.switchy.api.module.SwitchyModuleEditable;
+import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.Text;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class StyledNicknamesCompat implements PresetModule {
+public class StyledNicknamesCompat implements SwitchyModule {
 	public static final Identifier ID = new Identifier("switchy",  "styled_nicknames");
 
 	public static final String KEY_NICKNAME = "styled_nickname";
@@ -23,13 +21,13 @@ public class StyledNicknamesCompat implements PresetModule {
 	@Nullable public String styled_nickname;
 
 	@Override
-	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
+	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
 		NicknameHolder holder = NicknameHolder.of(player);
 		this.styled_nickname = holder.sn_get();
 	}
 
 	@Override
-	public void applyToPlayer(PlayerEntity player) {
+	public void applyToPlayer(ServerPlayerEntity player) {
 		NicknameHolder holder = NicknameHolder.of(player);
 		String oldName = player.getDisplayName().getString();
 		holder.sn_set(this.styled_nickname, false);
@@ -38,17 +36,9 @@ public class StyledNicknamesCompat implements PresetModule {
 	}
 
 	@Override
-	public NbtCompound toNbt(boolean displayOnly) {
+	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
-		if (displayOnly && this.styled_nickname != null) {
-			Text name = TextParserUtils.formatText(this.styled_nickname);
-			outNbt.putString(KEY_NICKNAME, name.getString());
-			if (name.getStyle().getColor() != null) {
-				outNbt.putString("nameColor", name.getStyle().getColor().getName());
-			}
-		} else if (this.styled_nickname != null) {
-			outNbt.putString(KEY_NICKNAME, this.styled_nickname);
-		}
+		if (this.styled_nickname != null) outNbt.putString(KEY_NICKNAME, this.styled_nickname);
 		return outNbt;
 	}
 
@@ -62,6 +52,7 @@ public class StyledNicknamesCompat implements PresetModule {
 
 	// Runs on touch() - but only once.
 	static {
-		PresetModuleRegistry.registerModule(ID, StyledNicknamesCompat::new, true, ModuleImportable.ALWAYS_ALLOWED);
+		SwitchyModuleRegistry.registerModule(ID, StyledNicknamesCompat::new, true, SwitchyModuleEditable.ALWAYS_ALLOWED);
+		StyledNicknamesCompatDisplay.touch();
 	}
 }

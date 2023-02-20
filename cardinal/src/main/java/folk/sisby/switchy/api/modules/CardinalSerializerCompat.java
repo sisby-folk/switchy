@@ -4,11 +4,12 @@ import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.api.ModuleImportable;
-import folk.sisby.switchy.api.PresetModule;
-import folk.sisby.switchy.api.PresetModuleRegistry;
+import folk.sisby.switchy.api.module.SwitchyModuleEditable;
+import folk.sisby.switchy.api.module.SwitchyModule;
+import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-public class CardinalSerializerCompat implements PresetModule {
+public class CardinalSerializerCompat implements SwitchyModule {
 	public record ComponentConfig<T1 extends Component>(ComponentKey<T1> registryKey, BiConsumer<ComponentKey<T1>, PlayerEntity> preApplyClear, BiConsumer<ComponentKey<T1>, PlayerEntity> postApplySync) {
 		void invokePreApplyClear(PlayerEntity player) {
 			preApplyClear.accept(registryKey, player);
@@ -35,7 +36,7 @@ public class CardinalSerializerCompat implements PresetModule {
 	private NbtCompound moduleNbt = new NbtCompound();
 
 	@Override
-	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
+	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
 		this.moduleNbt = new NbtCompound();
 		componentConfigs.forEach((id, componentConfig) -> {
 			NbtCompound componentCompound = new NbtCompound();
@@ -46,7 +47,7 @@ public class CardinalSerializerCompat implements PresetModule {
 	}
 
 	@Override
-	public void applyToPlayer(PlayerEntity player) {
+	public void applyToPlayer(ServerPlayerEntity player) {
 		componentConfigs.forEach((id, componentConfig) -> {
 			componentConfig.invokePreApplyClear(player);
 			componentConfig.registryKey.get(player).readFromNbt(moduleNbt.getCompound(id.toString()));
@@ -73,8 +74,8 @@ public class CardinalSerializerCompat implements PresetModule {
 		return new CardinalSerializerCompat(Map.of(registryKey.getId(), new ComponentConfig<>(registryKey, preApplyClear, postApplySync)));
 	}
 
-	public static void register(Identifier moduleId, Set<Identifier> componentKeyId, Boolean isDefault, ModuleImportable importable) {
-			PresetModuleRegistry.registerModule(moduleId, () -> {
+	public static void register(Identifier moduleId, Set<Identifier> componentKeyId, Boolean isDefault, SwitchyModuleEditable importable) {
+			SwitchyModuleRegistry.registerModule(moduleId, () -> {
 				Map<Identifier, ComponentConfig<?>> map = new HashMap<>();
 				for (Identifier identifier : componentKeyId) {
 					ComponentKey<?> componentKey = ComponentRegistry.get(identifier);

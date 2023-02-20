@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PlayerPresets {
+public class SwitchyPresetAPI {
 	public static List<String> getPlayerPresetNames(PlayerEntity player) {
 		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 		return presets != null ? presets.getPresetNames() : List.of();

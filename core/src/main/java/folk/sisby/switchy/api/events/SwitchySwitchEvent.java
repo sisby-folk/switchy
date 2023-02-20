@@ -1,18 +1,21 @@
-package folk.sisby.switchy.api;
+package folk.sisby.switchy.api.events;
 
+import folk.sisby.switchy.Switchy;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.UUID;
 
 public class SwitchySwitchEvent {
+	public static final Identifier S2C_EVENT_SWITCH = new Identifier(Switchy.ID, "s2c_event_switch");
 	public final UUID player;
-	public final @Nullable String previousPreset; // Null prev preset means "logging in"
-	public final String currentPreset;
+	public final @Nullable String previousPreset; // Null previous preset means "logging in"
+	public final String currentPreset; // Null current preset means "logging out"
 	public final List<String> enabledModules;
 
 	private static final String KEY_PLAYER = "player";

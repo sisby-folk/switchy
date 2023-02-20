@@ -4,7 +4,6 @@
   "package": "folk.sisby.switchy.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "MixinPlayerEntity",
     "MixinServerPlayerEntity"
   ],
   "client": [

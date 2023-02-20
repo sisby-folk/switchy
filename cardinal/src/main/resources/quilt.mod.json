@@ -19,7 +19,7 @@
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"switchy": "folk.sisby.switchy.SwitchyCardinal"
+			"events": "folk.sisby.switchy.SwitchyCardinal"
 		},
 		"depends": [
 			{

@@ -6,22 +6,18 @@ import folk.sisby.switchy.presets.SwitchyPreset;
 import folk.sisby.switchy.presets.SwitchyPresets;
 import folk.sisby.switchy.util.Command;
 import net.minecraft.command.argument.IdentifierArgumentType;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
-import org.quiltmc.qsl.networking.api.PacketByteBufs;
-import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
 import java.util.*;
 import java.util.function.Predicate;
 
 import static folk.sisby.switchy.Switchy.LOGGER;
-import static folk.sisby.switchy.Switchy.MODULE_INFO;
-import static folk.sisby.switchy.SwitchyNetworking.S2C_EXPORT;
+import static folk.sisby.switchy.SwitchyModules.MODULE_INFO;
 import static folk.sisby.switchy.util.Command.*;
 import static folk.sisby.switchy.util.Feedback.*;
 
@@ -61,12 +57,6 @@ public class SwitchyCommands {
 												.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
 														.suggests((c, b) -> suggestModules(c, b, true))
 														.executes((c) -> unwrapAndExecute(c, history, SwitchyCommands::disableModule, new Pair<>("module", Identifier.class))))))
-								.then(CommandManager.literal("export")
-										.requires(source -> {
-											ServerPlayerEntity player = serverPlayerOrNull(source);
-											return player != null && ServerPlayNetworking.canSend(player, S2C_EXPORT);
-										})
-										.executes((c) -> unwrapAndExecute(c, history, SwitchyCommands::exportPresets)))
 				));
 
 		// switchy set alias
@@ -91,20 +81,6 @@ public class SwitchyCommands {
 		tellHelp(player, "commands.switchy.export.help", "commands.switchy.export.command");
 		tellHelp(player, "commands.switchy.import.help", "commands.switchy.import.command", "commands.switchy.help.placeholder.file");
 		return 11;
-	}
-
-	private static int exportPresets(ServerPlayerEntity player, SwitchyPresets presets) {
-		try {
-			presets.saveCurrentPreset(player);
-			PacketByteBuf presetsBuf = PacketByteBufs.create().writeNbt(presets.toNbt());
-			ServerPlayNetworking.send(player, S2C_EXPORT, presetsBuf);
-			return 1;
-		} catch (Exception ex) {
-			LOGGER.error(ex.toString());
-			LOGGER.error(ex.getMessage());
-			sendMessage(player, translatableWithArgs("commands.switchy.export.fail", FORMAT_INVALID));
-			return 0;
-		}
 	}
 
 	private static int listPresets(ServerPlayerEntity player, SwitchyPresets presets) {

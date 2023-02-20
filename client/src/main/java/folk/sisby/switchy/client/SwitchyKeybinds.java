@@ -8,7 +8,7 @@ import org.quiltmc.qsl.lifecycle.api.client.event.ClientTickEvents;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
-import static folk.sisby.switchy.SwitchyNetworking.*;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.*;
 
 public class SwitchyKeybinds {
 	public static void initializeKeybinds() {

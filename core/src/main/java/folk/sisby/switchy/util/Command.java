@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static folk.sisby.switchy.Switchy.LOGGER;
-import static folk.sisby.switchy.api.PlayerPresets.*;
+import static folk.sisby.switchy.api.SwitchyPresetAPI.*;
 
 public class Command {
 	public static CompletableFuture<Suggestions> suggestPresets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, boolean allowCurrent) throws CommandSyntaxException {
@@ -48,10 +48,10 @@ public class Command {
 		}
 	}
 
-	public static <EventType> void consumeEventPacket(PacketByteBuf buf, Function<NbtCompound, EventType> fromNbt, Consumer<EventType> eventHandler) {
+	public static <EventType> void consumeEventPacket(PacketByteBuf buf, Function<NbtCompound, EventType> parser, Consumer<EventType> eventHandler) {
 		NbtCompound eventNbt = buf.readNbt();
 		if (eventNbt != null) {
-			eventHandler.accept(fromNbt.apply(eventNbt));
+			eventHandler.accept(parser.apply(eventNbt));
 		}
 	}
 

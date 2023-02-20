@@ -1,10 +1,10 @@
 package folk.sisby.switchy.client.screen;
 
-import folk.sisby.switchy.client.SwitchyClient;
+import com.mojang.datafixers.util.Pair;
 import folk.sisby.switchy.client.SwitchyClientNetworking;
-import folk.sisby.switchy.client.api.SwitchyEventsClient;
-import folk.sisby.switchy.client.presets.SwitchyDisplayPreset;
-import folk.sisby.switchy.client.presets.SwitchyDisplayPresets;
+import folk.sisby.switchy.client.api.SwitchyClientEvents;
+import folk.sisby.switchy.presets.SwitchyDisplayPreset;
+import folk.sisby.switchy.presets.SwitchyDisplayPresets;
 import io.wispforest.owo.ui.base.BaseOwoScreen;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.component.LabelComponent;
@@ -12,7 +12,6 @@ import io.wispforest.owo.ui.container.*;
 import io.wispforest.owo.ui.core.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -26,20 +25,11 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 		RIGHT,
 		SIDE_RIGHT
 	}
-	private static final Map<Identifier, Function<SwitchyDisplayPreset, Component>> sideLeftComponents = new LinkedHashMap<>();
-	private static final Map<Identifier, Function<SwitchyDisplayPreset, Component>> leftComponents = new LinkedHashMap<>();
-	private static final Map<Identifier, Function<SwitchyDisplayPreset, Component>> rightComponents = new LinkedHashMap<>();
-	private static final Map<Identifier, Function<SwitchyDisplayPreset, Component>> sideRightComponents = new LinkedHashMap<>();
+	private static final List<Function<SwitchyDisplayPreset, Pair<Component, ComponentPosition>>> componentFunctions = new ArrayList<>();
 
-	public static void registerPresetDisplayComponent(Identifier id, ComponentPosition pos, Function<SwitchyDisplayPreset, Component> componentFunction) {
-		switch (pos) {
-			case SIDE_LEFT -> sideLeftComponents.put(id, componentFunction);
-			case LEFT -> leftComponents.put(id, componentFunction);
-			case RIGHT -> rightComponents.put(id, componentFunction);
-			case SIDE_RIGHT -> sideRightComponents.put(id, componentFunction);
-		}
+	public static void registerBasicPresetComponent(Function<SwitchyDisplayPreset, Pair<Component, ComponentPosition>> componentFunction) {
+		componentFunctions.add(componentFunction);
 	}
-
 
 	public SwitchScreen(SwitchyDisplayPresets displayPresets) {
 		super();
@@ -52,6 +42,9 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 	}
 
 	private Component generatePresetComponent(SwitchyDisplayPreset preset, boolean currentPreset) {
+		List<Pair<Component, ComponentPosition>> componentList = new ArrayList<>(componentFunctions.stream().map(fun -> fun.apply(preset)).toList());
+		componentList.addAll(preset.getDisplayComponents().values());
+
 		// Main Horizontal Flow Panel
 		HorizontalFlowLayout horizontalFLow = Containers.horizontalFlow(Sizing.fixed(400), Sizing.content());
 		horizontalFLow.padding(Insets.vertical(4).withLeft(10).withRight(10));
@@ -71,7 +64,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 		}
 
 		// Left Side Elements
-		horizontalFLow.children(sideLeftComponents.values().stream().map((fun) -> fun.apply(preset)).filter(Objects::nonNull).toList());
+		horizontalFLow.children(componentList.stream().filter(p -> p.getSecond() == ComponentPosition.SIDE_LEFT).map(Pair::getFirst).filter(Objects::nonNull).toList());
 
 		// Main Elements
 		HorizontalFlowLayout leftRightFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
@@ -81,19 +74,19 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 		VerticalFlowLayout leftAlignedFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
 		leftAlignedFlow.horizontalAlignment(HorizontalAlignment.LEFT);
 		leftAlignedFlow.gap(2);
-		leftAlignedFlow.children(leftComponents.values().stream().map((fun) -> fun.apply(preset)).filter(Objects::nonNull).toList());
+		leftAlignedFlow.children(componentList.stream().filter(p -> p.getSecond() == ComponentPosition.LEFT).map(Pair::getFirst).filter(Objects::nonNull).toList());
 		leftRightFlow.child(leftAlignedFlow);
 
 		VerticalFlowLayout rightAlignedFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
 		rightAlignedFlow.horizontalAlignment(HorizontalAlignment.RIGHT);
 		rightAlignedFlow.gap(2);
-		rightAlignedFlow.children(rightComponents.values().stream().map((fun) -> fun.apply(preset)).filter(Objects::nonNull).toList());
+		rightAlignedFlow.children(componentList.stream().filter(p -> p.getSecond() == ComponentPosition.RIGHT).map(Pair::getFirst).filter(Objects::nonNull).toList());
 		leftRightFlow.child(rightAlignedFlow);
 
 		horizontalFLow.child(leftRightFlow);
 
 		// Right Side Elements
-		horizontalFLow.children(sideRightComponents.values().stream().map((fun) -> fun.apply(preset)).filter(Objects::nonNull).toList());
+		horizontalFLow.children(componentList.stream().filter(p -> p.getSecond() == ComponentPosition.SIDE_RIGHT).map(Pair::getFirst).filter(Objects::nonNull).toList());
 
 		return horizontalFLow;
 	}
@@ -129,7 +122,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 
 	static {
 		// Close on switch
-		SwitchyEventsClient.registerSwitchListener(new Identifier(SwitchyClient.ID, "quick_switch_close"), (event) -> {
+		SwitchyClientEvents.SWITCH.register(event -> {
 			MinecraftClient client = MinecraftClient.getInstance();
 			if (Objects.equals(client.getSession().getPlayerUuid(), event.player))
 				client.execute(() -> {
@@ -138,6 +131,6 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 		});
 
 		// Add base components
-		registerPresetDisplayComponent(new Identifier(SwitchyClient.ID, "preset_name"), ComponentPosition.SIDE_LEFT, displayPreset -> Components.label(Text.literal(displayPreset.presetName)));
+		registerBasicPresetComponent(displayPreset -> Pair.of(Components.label(Text.literal(displayPreset.presetName)), ComponentPosition.SIDE_LEFT));
 	}
 }

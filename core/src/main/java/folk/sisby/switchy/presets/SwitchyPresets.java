@@ -1,10 +1,10 @@
 package folk.sisby.switchy.presets;
 
 import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.api.PresetModule;
+import folk.sisby.switchy.SwitchyModules;
 import folk.sisby.switchy.api.SwitchyEvents;
-import folk.sisby.switchy.api.SwitchySwitchEvent;
-import net.minecraft.entity.player.PlayerEntity;
+import folk.sisby.switchy.api.events.SwitchySwitchEvent;
+import folk.sisby.switchy.api.module.SwitchyModule;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -13,8 +13,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
-import org.quiltmc.qsl.networking.api.PacketByteBufs;
-import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +21,6 @@ import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static folk.sisby.switchy.SwitchyNetworking.*;
 import static folk.sisby.switchy.util.Feedback.getIdText;
 
 public class SwitchyPresets {
@@ -38,16 +35,16 @@ public class SwitchyPresets {
 	public static final String KEY_PRESET_LIST = "list";
 
 	private SwitchyPresets() {
-		modules = Switchy.MODULE_SUPPLIERS.entrySet().stream()
+		modules = SwitchyModules.MODULE_SUPPLIERS.entrySet().stream()
 				.filter(e -> e.getValue().get() != null)
-				.collect(Collectors.toMap(Map.Entry::getKey, e -> Switchy.MODULE_INFO.get(e.getKey()).isDefault()));
+				.collect(Collectors.toMap(Map.Entry::getKey, e -> SwitchyModules.MODULE_INFO.get(e.getKey()).isDefault()));
 	}
 
-	public static SwitchyPresets fromNbt(NbtCompound nbt, @Nullable PlayerEntity player) {
+	public static SwitchyPresets fromNbt(NbtCompound nbt, boolean forPlayer) {
 		SwitchyPresets outPresets = new SwitchyPresets();
 
-		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE), true, player == null);
-		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_DISABLED, NbtElement.STRING_TYPE), false, player == null);
+		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE), true, !forPlayer);
+		outPresets.toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_DISABLED, NbtElement.STRING_TYPE), false, !forPlayer);
 
 		NbtCompound listNbt = nbt.getCompound(KEY_PRESET_LIST);
 		for (String key : listNbt.getKeys()) {
@@ -59,7 +56,7 @@ public class SwitchyPresets {
 			}
 		}
 
-		if (player != null) {
+		if (forPlayer) {
 			if (nbt.contains(KEY_PRESET_CURRENT))
 				try {
 					outPresets.setCurrentPreset(nbt.getString(KEY_PRESET_CURRENT));
@@ -77,7 +74,7 @@ public class SwitchyPresets {
 		return outPresets;
 	}
 
-	public NbtCompound toNbt(boolean displayOnly) {
+	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 
 		NbtList enabledList = new NbtList();
@@ -93,16 +90,12 @@ public class SwitchyPresets {
 
 		NbtCompound listNbt = new NbtCompound();
 		for (SwitchyPreset preset : presets.values()) {
-			listNbt.put(preset.presetName, preset.toNbt(displayOnly));
+			listNbt.put(preset.presetName, preset.toNbt());
 		}
 		outNbt.put(KEY_PRESET_LIST, listNbt);
 
 		if (currentPreset != null) outNbt.putString(KEY_PRESET_CURRENT, currentPreset.presetName);
 		return outNbt;
-	}
-
-	public NbtCompound toNbt() {
-		return toNbt(false);
 	}
 
 	public void importFromOther(@Nullable ServerPlayerEntity player, SwitchyPresets other) {
@@ -131,7 +124,7 @@ public class SwitchyPresets {
 			if (!presets.containsKey(name)) {
 				modules.forEach((moduleId, enabled) -> {
 					if (enabled && !preset.modules.containsKey(moduleId)) { // Add missing modules
-						preset.modules.put(moduleId, Switchy.MODULE_SUPPLIERS.get(moduleId).get());
+						preset.modules.put(moduleId, SwitchyModules.MODULE_SUPPLIERS.get(moduleId).get());
 					}
 				});
 				addPreset(preset);
@@ -171,25 +164,20 @@ public class SwitchyPresets {
 				player.getUuid(), newPreset.presetName, Objects.toString(currentPreset, null), getEnabledModuleNames()
 		);
 		currentPreset = newPreset;
-
-		// Fire Events
-		SwitchyEvents.fireSwitch(switchEvent);
-		if (ServerPlayNetworking.canSend(player, S2C_SWITCH)) {
-			ServerPlayNetworking.send(player, S2C_SWITCH, PacketByteBufs.create().writeNbt(switchEvent.toNbt()));
-		}
+		SwitchyEvents.SWITCH.invoker().onSwitch(player, switchEvent);
 
 		return currentPreset.presetName;
 	}
 
-	public void saveCurrentPreset(PlayerEntity player) {
+	public void saveCurrentPreset(ServerPlayerEntity player) {
 		if (currentPreset != null) currentPreset.updateFromPlayer(player, null);
 	}
 
-	public void duckCurrentModule(PlayerEntity player, Identifier moduleId, Consumer<PresetModule> mutator) throws IllegalArgumentException, IllegalStateException {
+	public void duckCurrentModule(ServerPlayerEntity player, Identifier moduleId, Consumer<SwitchyModule> mutator) throws IllegalArgumentException, IllegalStateException {
 		if (currentPreset == null) throw new IllegalStateException("Specified player has no current preset");
 		if (!modules.containsKey(moduleId)) throw new IllegalArgumentException("Specified module does not exist");
 		if (!modules.get(moduleId)) throw new IllegalStateException("Specified module is not enabled");
-		PresetModule module = currentPreset.modules.get(moduleId);
+		SwitchyModule module = currentPreset.modules.get(moduleId);
 		module.updateFromPlayer(player, null);
 		mutator.accept(module);
 		module.applyToPlayer(player);
@@ -228,7 +216,7 @@ public class SwitchyPresets {
 		if (!modules.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
 		if (modules.get(id)) throw new IllegalStateException("Specified module is already enabled");
 		modules.put(id, true);
-		presets.values().forEach(preset -> preset.modules.put(id, Switchy.MODULE_SUPPLIERS.get(id).get()));
+		presets.values().forEach(preset -> preset.modules.put(id, SwitchyModules.MODULE_SUPPLIERS.get(id).get()));
 	}
 
 	public SwitchyPreset getCurrentPreset() {

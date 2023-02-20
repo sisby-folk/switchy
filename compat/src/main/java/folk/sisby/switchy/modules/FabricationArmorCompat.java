@@ -5,11 +5,10 @@ import com.mojang.datafixers.util.Pair;
 import com.unascribed.fabrication.features.FeatureHideArmor;
 import com.unascribed.fabrication.interfaces.GetSuppressedSlots;
 import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.api.ModuleImportable;
-import folk.sisby.switchy.api.PresetModule;
-import folk.sisby.switchy.api.PresetModuleRegistry;
+import folk.sisby.switchy.api.module.SwitchyModule;
+import folk.sisby.switchy.api.module.SwitchyModuleEditable;
+import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -24,7 +23,7 @@ import org.quiltmc.loader.api.QuiltLoader;
 
 import java.util.*;
 
-public class FabricationArmorCompat implements PresetModule {
+public class FabricationArmorCompat implements SwitchyModule {
 	public static final Identifier ID = new Identifier("switchy", "fabrication_hidearmor");
 
 	public static final String KEY_SUPPRESSED_SLOTS = "suppressedSlots";
@@ -33,7 +32,7 @@ public class FabricationArmorCompat implements PresetModule {
 	private @Nullable Set<EquipmentSlot> suppressedSlots;
 
 	@Override
-	public void updateFromPlayer(PlayerEntity player, @Nullable String nextPreset) {
+	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
 		if (player instanceof GetSuppressedSlots gss) {
 			this.suppressedSlots = new HashSet<>();
 			this.suppressedSlots.addAll(gss.fabrication$getSuppressedSlots());
@@ -41,7 +40,7 @@ public class FabricationArmorCompat implements PresetModule {
 	}
 
 	@Override
-	public void applyToPlayer(PlayerEntity player) {
+	public void applyToPlayer(ServerPlayerEntity player) {
 		if (this.suppressedSlots != null && player instanceof GetSuppressedSlots gss) {
 			gss.fabrication$getSuppressedSlots().clear();
 			gss.fabrication$getSuppressedSlots().addAll(suppressedSlots);
@@ -49,7 +48,7 @@ public class FabricationArmorCompat implements PresetModule {
 			// Sketchily copied from feature
 			((ServerWorld) player.world).getChunkManager().sendToOtherNearbyPlayers(player, new EntityEquipmentUpdateS2CPacket(player.getId(), Arrays.stream(EquipmentSlot.values()).map((es) ->
 					Pair.of(es, gss.fabrication$getSuppressedSlots().contains(es) ? ItemStack.EMPTY : player.getEquippedStack(es))).toList()));
-			FeatureHideArmor.sendSuppressedSlotsForSelf((ServerPlayerEntity) player);
+			FeatureHideArmor.sendSuppressedSlotsForSelf(player);
 		}
 	}
 
@@ -85,6 +84,6 @@ public class FabricationArmorCompat implements PresetModule {
 
 	// Runs on touch() - but only once.
 	static {
-		PresetModuleRegistry.registerModule(ID, FabricationArmorCompat::new, true, ModuleImportable.ALLOWED, QuiltLoader.isModLoaded("fabrictailor") ? Set.of(FabricTailorCompat.ID) : Set.of());
+		SwitchyModuleRegistry.registerModule(ID, FabricationArmorCompat::new, true, SwitchyModuleEditable.ALLOWED, QuiltLoader.isModLoaded("fabrictailor") ? Set.of(FabricTailorCompat.ID) : Set.of());
 	}
 }
