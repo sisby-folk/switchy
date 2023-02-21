@@ -46,7 +46,7 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 				Switchy.LOGGER.warn("Switchy: CCA module '{}' is missing options, skipping...", file.getKey());
 				continue;
 			}
-			if (componentOptions.has(KEY_IF_MODS_LOADED) && StreamSupport.stream(componentOptions.get(KEY_IF_MODS_LOADED).getAsJsonArray().spliterator(), true).map(JsonElement::getAsString).noneMatch(QuiltLoader::isModLoaded)) {
+			if (componentOptions.has(KEY_IF_MODS_LOADED) && !StreamSupport.stream(componentOptions.get(KEY_IF_MODS_LOADED).getAsJsonArray().spliterator(), true).map(JsonElement::getAsString).allMatch(QuiltLoader::isModLoaded)) {
 				continue;
 			}
 			try {
