@@ -1,18 +1,21 @@
 package folk.sisby.switchy.modules;
 
+import eu.pb4.placeholders.api.TextParserUtils;
 import eu.pb4.stylednicknames.NicknameHolder;
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.module.SwitchyModule;
+import folk.sisby.switchy.api.module.SwitchyModuleDisplayable;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class StyledNicknamesCompat implements SwitchyModule {
+public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleDisplayable {
 	public static final Identifier ID = new Identifier("switchy",  "styled_nicknames");
 
 	public static final String KEY_NICKNAME = "styled_nickname";
@@ -43,6 +46,13 @@ public class StyledNicknamesCompat implements SwitchyModule {
 	}
 
 	@Override
+	public NbtCompound toDisplayNbt() {
+		NbtCompound outNbt = new NbtCompound();
+		if (this.styled_nickname != null) outNbt.putString(KEY_NICKNAME, Text.Serializer.toJsonTree(TextParserUtils.formatText(this.styled_nickname)).getAsString());
+		return outNbt;
+	}
+
+	@Override
 	public void fillFromNbt(NbtCompound nbt) {
 		this.styled_nickname = nbt.contains(KEY_NICKNAME) ? nbt.getString(KEY_NICKNAME) : null;
 	}
@@ -53,6 +63,5 @@ public class StyledNicknamesCompat implements SwitchyModule {
 	// Runs on touch() - but only once.
 	static {
 		SwitchyModuleRegistry.registerModule(ID, StyledNicknamesCompat::new, true, SwitchyModuleEditable.ALWAYS_ALLOWED);
-		StyledNicknamesCompatDisplay.touch();
 	}
 }

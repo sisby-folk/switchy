@@ -1,11 +1,11 @@
 package folk.sisby.switchy;
 
 import folk.sisby.switchy.api.SwitchyEvents;
+import folk.sisby.switchy.api.SwitchyPlayer;
 import folk.sisby.switchy.api.events.SwitchySwitchEvent;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
-import folk.sisby.switchy.api.SwitchyPlayer;
-import folk.sisby.switchy.presets.SwitchyDisplayPresets;
 import folk.sisby.switchy.presets.SwitchyPresets;
+import folk.sisby.switchy.util.PresetDisplayNbt;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.PacketByteBuf;
@@ -46,7 +46,7 @@ public class SwitchyClientServerNetworking {
 
 	private static void sendDisplayPresets(ServerPlayerEntity player) {
 		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
-		PacketByteBuf displayPresetsBuf = PacketByteBufs.create().writeNbt(SwitchyDisplayPresets.fromPresets(presets).toNbt());
+		PacketByteBuf displayPresetsBuf = PacketByteBufs.create().writeNbt(PresetDisplayNbt.presetsToNbt(presets));
 		ServerPlayNetworking.send(player, S2C_DISPLAY_PRESETS, displayPresetsBuf);
 	}
 

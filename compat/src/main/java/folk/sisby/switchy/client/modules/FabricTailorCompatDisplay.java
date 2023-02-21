@@ -1,4 +1,4 @@
-package folk.sisby.switchy.modules;
+package folk.sisby.switchy.client.modules;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -6,9 +6,10 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.yggdrasil.response.MinecraftTexturesPayload;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.util.UUIDTypeAdapter;
-import folk.sisby.switchy.SwitchyDisplayModules;
-import folk.sisby.switchy.api.module.SwitchyDisplayModule;
-import folk.sisby.switchy.client.screen.SwitchScreen;
+import folk.sisby.switchy.client.api.SwitchScreenPosition;
+import folk.sisby.switchy.client.api.module.SwitchyDisplayModule;
+import folk.sisby.switchy.client.api.module.SwitchyDisplayModuleRegistry;
+import folk.sisby.switchy.modules.FabricTailorCompatData;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.component.EntityComponent;
 import io.wispforest.owo.ui.core.Component;
@@ -20,14 +21,9 @@ import net.minecraft.util.Identifier;
 import java.util.Base64;
 import java.util.UUID;
 
-public class FabricTailorCompatDisplay extends FabricTailorCompatData implements SwitchyDisplayModule<FabricTailorCompat> {
+public class FabricTailorCompatDisplay extends FabricTailorCompatData implements SwitchyDisplayModule {
 	@Override
-	public void fillFromData(FabricTailorCompat fabricTailorCompat) {
-		fillFromNbt(fabricTailorCompat.toNbt());
-	}
-
-	@Override
-	public Pair<Component, SwitchScreen.ComponentPosition> getDisplayComponent() {
+	public Pair<Component, SwitchScreenPosition> getDisplayComponent() {
 		if (skinValue == null) return null;
 		MinecraftClient client = MinecraftClient.getInstance();
 
@@ -46,12 +42,12 @@ public class FabricTailorCompatDisplay extends FabricTailorCompatData implements
 
 		skinPreview.scale(0.5F);
 
-		return Pair.of(skinPreview, SwitchScreen.ComponentPosition.SIDE_RIGHT);
+		return Pair.of(skinPreview, SwitchScreenPosition.SIDE_RIGHT);
 	}
 
 	public static void touch() {}
 
 	static {
-		SwitchyDisplayModules.registerModule(ID, FabricTailorCompatDisplay::new);
+		SwitchyDisplayModuleRegistry.registerModule(ID, FabricTailorCompatDisplay::new);
 	}
 }

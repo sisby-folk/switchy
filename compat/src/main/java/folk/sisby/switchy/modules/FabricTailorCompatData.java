@@ -1,11 +1,12 @@
 package folk.sisby.switchy.modules;
 
+import folk.sisby.switchy.api.module.SwitchyModuleDisplayable;
 import folk.sisby.switchy.api.module.SwitchyModuleData;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-public class FabricTailorCompatData implements SwitchyModuleData {
+public class FabricTailorCompatData implements SwitchyModuleData, SwitchyModuleDisplayable {
 	public static final Identifier ID = new Identifier("switchy", "fabric_tailor");
 
 	public static final String KEY_SKIN_VALUE = "skinValue";
@@ -28,5 +29,10 @@ public class FabricTailorCompatData implements SwitchyModuleData {
 	public void fillFromNbt(NbtCompound nbt) {
 		this.skinValue = nbt.contains(KEY_SKIN_VALUE) ? nbt.getString(KEY_SKIN_VALUE) : null;
 		this.skinSignature = nbt.contains(KEY_SKIN_SIGNATURE) ? nbt.getString(KEY_SKIN_SIGNATURE) : null;
+	}
+
+	@Override
+	public NbtCompound toDisplayNbt() {
+		return toNbt();
 	}
 }

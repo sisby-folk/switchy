@@ -1,9 +1,9 @@
-package folk.sisby.switchy.modules;
+package folk.sisby.switchy.client.modules;
 
 import com.mojang.datafixers.util.Pair;
-import folk.sisby.switchy.SwitchyDisplayModules;
-import folk.sisby.switchy.api.module.SwitchyDisplayModule;
-import folk.sisby.switchy.client.screen.SwitchScreen;
+import folk.sisby.switchy.client.api.SwitchScreenPosition;
+import folk.sisby.switchy.client.api.module.SwitchyDisplayModule;
+import folk.sisby.switchy.client.api.module.SwitchyDisplayModuleRegistry;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.HorizontalFlowLayout;
@@ -24,32 +24,26 @@ import java.util.stream.Collectors;
 
 import static io.github.apace100.origins.registry.ModItems.ORB_OF_ORIGIN;
 
-public class OriginsCompatDisplay implements SwitchyDisplayModule<OriginsCompat> {
+public class OriginsCompatDisplay implements SwitchyDisplayModule {
 	public static final Identifier ID = new Identifier("switchy",  "origins");
-	public Map<String, String> origins;
+	public Map<String, Identifier> origins;
 
 	public static final String KEY_ORIGINS_LIST = "OriginLayers";
 	public static final String KEY_LAYER = "Layer";
 	public static final String KEY_ORIGIN = "Origin";
 
 	@Override
-	public void fillFromData(OriginsCompat originsCompat) {
-		origins = originsCompat.origins == null ? null : originsCompat.origins.entrySet().stream().collect(Collectors.toMap(
-				entry -> entry.getKey().toString(),
-				entry -> entry.getValue().toString()
-		));
-	}
-
-	@Override
-	public Pair<Component, SwitchScreen.ComponentPosition> getDisplayComponent() {
+	public Pair<Component, SwitchScreenPosition> getDisplayComponent() {
 		if (origins == null || origins.isEmpty()) return null;
 
 		HorizontalFlowLayout originsFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 		originsFlow.verticalAlignment(VerticalAlignment.CENTER);
 		originsFlow.child(Components.item(ORB_OF_ORIGIN.getDefaultStack()));
-		originsFlow.child(Components.label(Text.literal(String.join(" | ", origins.values())).setStyle(Style.EMPTY.withColor(Formatting.GRAY))));
+		originsFlow.child(Components.label(Text.literal(
+				origins.values().stream().map(Identifier::getPath).collect(Collectors.joining(" | ")))
+				.setStyle(Style.EMPTY.withColor(Formatting.GRAY))));
 
-		return Pair.of(originsFlow, SwitchScreen.ComponentPosition.LEFT);
+		return Pair.of(originsFlow, SwitchScreenPosition.LEFT);
 	}
 
 	@Override
@@ -60,7 +54,7 @@ public class OriginsCompatDisplay implements SwitchyDisplayModule<OriginsCompat>
 			origins.forEach((key, value) -> {
 				NbtCompound layerTag = new NbtCompound();
 				layerTag.putString(KEY_LAYER, key);
-				layerTag.putString(KEY_ORIGIN, value);
+				layerTag.putString(KEY_ORIGIN, value.toString());
 				originLayerList.add(layerTag);
 			});
 		}
@@ -75,7 +69,7 @@ public class OriginsCompatDisplay implements SwitchyDisplayModule<OriginsCompat>
 			NbtList originLayerList = nbt.getList(KEY_ORIGINS_LIST, NbtElement.COMPOUND_TYPE);
 			for (NbtElement layerElement : originLayerList) {
 				if (layerElement instanceof NbtCompound layerCompound) {
-					this.origins.put(layerCompound.getString(KEY_LAYER), layerCompound.getString(KEY_ORIGIN));
+					this.origins.put(layerCompound.getString(KEY_LAYER), new Identifier(layerCompound.getString(KEY_ORIGIN)));
 				}
 			}
 		}
@@ -84,6 +78,6 @@ public class OriginsCompatDisplay implements SwitchyDisplayModule<OriginsCompat>
 	public static void touch() {}
 
 	static {
-		SwitchyDisplayModules.registerModule(ID, OriginsCompatDisplay::new);
+		SwitchyDisplayModuleRegistry.registerModule(ID, OriginsCompatDisplay::new);
 	}
 }

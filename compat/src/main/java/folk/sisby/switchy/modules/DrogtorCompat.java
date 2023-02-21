@@ -36,6 +36,5 @@ public class DrogtorCompat extends DrogtorCompatData implements SwitchyModule {
 	// Runs on touch() - but only once.
 	static {
 		SwitchyModuleRegistry.registerModule(ID, DrogtorCompat::new, true, SwitchyModuleEditable.ALWAYS_ALLOWED);
-		DrogtorCompatDisplay.touch();
 	}
 }

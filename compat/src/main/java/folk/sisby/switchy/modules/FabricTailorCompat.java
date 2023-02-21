@@ -29,6 +29,5 @@ public class FabricTailorCompat extends FabricTailorCompatData implements Switch
 	// Runs on touch() - but only once.
 	static {
 		SwitchyModuleRegistry.registerModule(ID, FabricTailorCompat::new, true, SwitchyModuleEditable.ALWAYS_ALLOWED);
-		FabricTailorCompatDisplay.touch();
 	}
 }
