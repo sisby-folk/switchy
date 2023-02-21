@@ -1,13 +1,12 @@
 package folk.sisby.switchy.modules;
 
-import folk.sisby.switchy.api.module.SwitchyModuleDisplayable;
 import folk.sisby.switchy.api.module.SwitchyModuleData;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-public class DrogtorCompatData implements SwitchyModuleData, SwitchyModuleDisplayable {
+public class DrogtorCompatData implements SwitchyModuleData {
 	public static final Identifier ID = new Identifier("switchy",  "drogtor");
 
 	public static final String KEY_NICKNAME = "nickname";
@@ -33,10 +32,5 @@ public class DrogtorCompatData implements SwitchyModuleData, SwitchyModuleDispla
 		this.nickname = nbt.contains(KEY_NICKNAME) ? nbt.getString(KEY_NICKNAME) : null;
 		this.namecolor = nbt.contains(KEY_NAME_COLOR) ? Formatting.byName(nbt.getString(KEY_NAME_COLOR)) : null;
 		this.bio = nbt.contains(KEY_BIO) ? nbt.getString(KEY_BIO) : null;
-	}
-
-	@Override
-	public NbtCompound toDisplayNbt() {
-		return toNbt();
 	}
 }
