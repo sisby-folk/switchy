@@ -25,7 +25,7 @@ public class SwitchyPresetAPI {
 		return ((SwitchyPlayer) player).switchy$getPresets().switchCurrentPreset(player, presetName);
 	}
 
-	public static Map<Identifier, Boolean> getPlayerPresetModules(PlayerEntity player) {
+	public static Map<Identifier, Boolean> getPlayerModules(PlayerEntity player) {
 		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 		return presets != null ? presets.modules : new HashMap<>();
 	}

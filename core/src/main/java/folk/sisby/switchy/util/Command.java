@@ -35,7 +35,7 @@ public class Command {
 
 	public static CompletableFuture<Suggestions> suggestModules(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, boolean enabled) throws CommandSyntaxException {
 		ServerPlayerEntity player = context.getSource().getPlayer();
-		CommandSource.suggestIdentifiers(getPlayerPresetModules(player).entrySet().stream().filter(e -> e.getValue() == enabled).map(Map.Entry::getKey), builder);
+		CommandSource.suggestIdentifiers(getPlayerModules(player).entrySet().stream().filter(e -> e.getValue() == enabled).map(Map.Entry::getKey), builder);
 		return builder.buildFuture();
 	}
 
@@ -59,7 +59,7 @@ public class Command {
 
 		ServerPlayerEntity player = serverPlayerOrNull(context.getSource());
 		if (player == null) {
-			LOGGER.error("Switchy: Command wasn't called by a player! (this shouldn't happen!)");
+			LOGGER.error("[Switchy] Command wasn't called by a player! (this shouldn't happen!)");
 			return result;
 		}
 

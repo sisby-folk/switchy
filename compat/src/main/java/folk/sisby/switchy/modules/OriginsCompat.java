@@ -90,7 +90,7 @@ public class OriginsCompat implements SwitchyModule, SwitchyModuleDisplayable {
 						Origin origin = OriginRegistry.get(Identifier.tryParse(originId));
 						this.origins.put(layer, origin);
 					} catch (IllegalArgumentException e) {
-						Switchy.LOGGER.warn("Switchy: Failed to load preset origin with layer" + layerId + " and origin " + originId);
+						Switchy.LOGGER.warn("[Switchy] Failed to load preset origin with layer" + layerId + " and origin " + originId);
 					}
 				}
 			}

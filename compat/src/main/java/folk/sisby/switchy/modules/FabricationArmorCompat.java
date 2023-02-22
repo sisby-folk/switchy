@@ -72,7 +72,7 @@ public class FabricationArmorCompat implements SwitchyModule {
 		for (int i = 0; i < nbtList.size(); i++) {
 			EquipmentSlot slot = Enums.getIfPresent(EquipmentSlot.class, nbtList.getString(i).toUpperCase(Locale.ROOT)).orNull();
 			if (slot == null) {
-				Switchy.LOGGER.warn("Switchy: Unrecognized slot " + nbtList.getString(i) + " while loading profile");
+				Switchy.LOGGER.warn("[Switchy] Unrecognized slot " + nbtList.getString(i) + " while loading profile");
 			} else {
 				suppressedSlots.add(slot);
 			}

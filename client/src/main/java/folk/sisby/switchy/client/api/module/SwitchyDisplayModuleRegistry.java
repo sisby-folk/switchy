@@ -18,6 +18,6 @@ public class SwitchyDisplayModuleRegistry {
 			throw new IllegalArgumentException("Specified moduleId is already registered");
 		}
 		MODULE_SUPPLIERS.put(moduleId, moduleConstructor);
-		Switchy.LOGGER.info("Switchy Client: Registered display module " + moduleId);
+		Switchy.LOGGER.info("[Switchy Client] Registered display module " + moduleId);
 	}
 }

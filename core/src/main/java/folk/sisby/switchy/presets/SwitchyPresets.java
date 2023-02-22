@@ -52,7 +52,7 @@ public class SwitchyPresets {
 			try {
 				outPresets.addPreset(preset);
 			} catch (IllegalStateException ignored) {
-				Switchy.LOGGER.warn("Switchy: Player data contained duplicate preset '{}'. Data may have been lost.", preset.presetName);
+				Switchy.LOGGER.warn("[Switchy] Player data contained duplicate preset '{}'. Data may have been lost.", preset.presetName);
 			}
 		}
 
@@ -61,7 +61,7 @@ public class SwitchyPresets {
 				try {
 					outPresets.setCurrentPreset(nbt.getString(KEY_PRESET_CURRENT));
 				} catch (IllegalArgumentException ignored) {
-					Switchy.LOGGER.warn("Switchy: Unable to set current preset from data. Data may have been lost.");
+					Switchy.LOGGER.warn("[Switchy] Unable to set current preset from data. Data may have been lost.");
 				}
 
 			if (outPresets.presets.isEmpty() || outPresets.getCurrentPreset() == null) {
@@ -138,8 +138,8 @@ public class SwitchyPresets {
 			if (e instanceof NbtString s && (id = Identifier.tryParse(s.asString())) != null && modules.containsKey(id)) {
 				modules.put(id, enabled);
 			} else if (!silent) {
-				Switchy.LOGGER.warn("Switchy: Unable to toggle a module - Was a module unloaded?");
-				Switchy.LOGGER.warn("Switchy: NBT Element: " + e.asString());
+				Switchy.LOGGER.warn("[Switchy] Unable to toggle a module - Was a module unloaded?");
+				Switchy.LOGGER.warn("[Switchy] NBT Element: " + e.asString());
 			}
 		});
 	}

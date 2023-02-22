@@ -81,7 +81,7 @@ public class ApoliCompat implements SwitchyModule {
 						PowerType<?> powerType = PowerTypeRegistry.get(Identifier.tryParse(powerId));
 						this.powerNbt.put(powerType, powerData);
 					} catch (IllegalArgumentException e) {
-						Switchy.LOGGER.warn("Switchy: Failed to load preset power with id" + powerId);
+						Switchy.LOGGER.warn("[Switchy] Failed to load preset power with id" + powerId);
 					}
 				}
 			}

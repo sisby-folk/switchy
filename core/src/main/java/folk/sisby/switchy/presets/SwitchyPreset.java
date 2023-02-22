@@ -41,7 +41,7 @@ public class SwitchyPreset {
 			try {
 				module.updateFromPlayer(player, nextPreset);
 			} catch (Exception ex) {
-				Switchy.LOGGER.error("Switchy: Module " + id + " failed to update! Error:");
+				Switchy.LOGGER.error("[Switchy] Module " + id + " failed to update! Error:");
 				Switchy.LOGGER.error(ex.toString());
 			}
 		});
@@ -54,7 +54,7 @@ public class SwitchyPreset {
 				SwitchyModules.MODULE_INFO.get(id).applyDependencies().forEach((depId) -> tryApplyModule(modules, depId, player, registeredModules));
 				module.applyToPlayer(player);
 			} catch (Exception ex) {
-				Switchy.LOGGER.error("Switchy: Module " + id + " failed to apply! Error:");
+				Switchy.LOGGER.error("[Switchy] Module " + id + " failed to apply! Error:");
 				Switchy.LOGGER.error(ex.toString());
 			}
 			registeredModules.add(id);
