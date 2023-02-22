@@ -106,9 +106,7 @@ public class SwitchyPresets {
 		// Replace enabled modules for colliding current preset
 		if (other.containsKey(this.currentPreset.presetName) && player != null) {
 			other.get(this.currentPreset.presetName).modules.forEach((moduleId, module) -> {
-				duckCurrentModule(player, moduleId, (duckedModule) -> {
-					duckedModule.fillFromNbt(duckedModule.toNbt());
-				});
+				duckCurrentModule(player, moduleId, (duckedModule) -> duckedModule.fillFromNbt(duckedModule.toNbt()));
 			});
 		}
 		other.remove(currentPreset.presetName);
@@ -189,11 +187,15 @@ public class SwitchyPresets {
 		presets.put(preset.presetName, preset);
 	}
 
-	public void deletePreset(String presetName) throws IllegalArgumentException, IllegalStateException {
+	public void deletePreset(String presetName, boolean dryRun) throws IllegalArgumentException, IllegalStateException {
 		if (!presets.containsKey(presetName)) throw new IllegalArgumentException("Specified preset does not exist");
-		if (currentPreset.presetName.equalsIgnoreCase(presetName))
-			throw new IllegalStateException("Specified preset is current");
+		if (currentPreset.presetName.equalsIgnoreCase(presetName)) throw new IllegalStateException("Specified preset is current");
+		if (dryRun) return;
 		presets.remove(presetName);
+	}
+
+	public void deletePreset(String presetName) throws IllegalArgumentException, IllegalStateException {
+		deletePreset(presetName, false);
 	}
 
 	public void renamePreset(String oldName, String newName) throws IllegalArgumentException, IllegalStateException {
@@ -205,11 +207,16 @@ public class SwitchyPresets {
 		presets.remove(oldName);
 	}
 
-	public void disableModule(Identifier id) throws IllegalArgumentException, IllegalStateException {
+	public void disableModule(Identifier id, boolean dryRun) throws IllegalArgumentException, IllegalStateException {
 		if (!modules.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
 		if (!modules.get(id)) throw new IllegalStateException("Specified module is already disabled");
+		if (dryRun) return;
 		modules.put(id, false);
 		presets.forEach((name, preset) -> preset.modules.remove(id));
+	}
+
+	public void disableModule(Identifier id) throws IllegalArgumentException, IllegalStateException {
+		disableModule(id, false);
 	}
 
 	public void enableModule(Identifier id) throws IllegalArgumentException, IllegalStateException {

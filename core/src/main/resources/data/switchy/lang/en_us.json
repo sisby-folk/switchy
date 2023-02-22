@@ -97,7 +97,8 @@
           "construct": "Failed to construct Presets from NBT",
           "permission": "You do not have permission to specify operator modules: {}"
         }
-      }
+      },
+      "fail": "Error occurred while executing command: '{}' - Check the server log for more details."
     },
     "switch": {
       "command": "/switch {}",

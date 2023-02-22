@@ -70,7 +70,7 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 		);
 	}
 
-	private static int displayHelp(ServerPlayerEntity player, SwitchyPresets presets) {
+	private static void displayHelp(ServerPlayerEntity player, SwitchyPresets presets) {
 		tellHelp(player, "commands.switchy.help.help", "commands.switchy.help.command");
 		tellHelp(player, "commands.switchy.list.help", "commands.switchy.list.command");
 		tellHelp(player, "commands.switchy.new.help", "commands.switchy.new.command", "commands.switchy.help.placeholder.preset");
@@ -82,108 +82,93 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 		tellHelp(player, "commands.switchy.module.disable.help", "commands.switchy.module.disable.command", "commands.switchy.help.placeholder.module");
 		tellHelp(player, "commands.switchy.export.help", "commands.switchy.export.command");
 		tellHelp(player, "commands.switchy.import.help", "commands.switchy.import.command", "commands.switchy.help.placeholder.file");
-		return 11;
 	}
 
-	private static int listPresets(ServerPlayerEntity player, SwitchyPresets presets) {
+	private static void listPresets(ServerPlayerEntity player, SwitchyPresets presets) {
 		sendMessage(player, translatableWithArgs("commands.switchy.list.presets", FORMAT_INFO, literal(presets.toString())));
 		sendMessage(player, translatableWithArgs("commands.switchy.list.modules", FORMAT_INFO, presets.getEnabledModuleText()));
 		sendMessage(player, translatableWithArgs("commands.switchy.list.current", FORMAT_INFO, literal(presets.getCurrentPreset().toString())));
-		return 1;
 	}
 
-	private static int newPreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
+	private static void newPreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
 		try {
 			presets.addPreset(new SwitchyPreset(presetName, presets.modules));
 			tellSuccess(player, "commands.switchy.new.success", literal(presetName));
-			return 1 + setPreset(player, presets, presetName);
 		} catch (IllegalStateException ignored) {
 			tellInvalidTry(player, "commands.switchy.new.fail.exists", "commands.switchy.set.command", literal(presetName));
-			return 0;
 		}
 	}
 
-	public static int setPreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
+	public static void setPreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
 		String oldPresetName = presets.getCurrentPreset().toString();
 		try {
 			String newPresetName = presets.switchCurrentPreset(player, presetName);
 			LOGGER.info("[Switchy] Player switch: '" + oldPresetName + "' -> '" + newPresetName + "' [" + player.getGameProfile().getName() + "]");
 			tellSuccess(player, "commands.switchy.set.success", literal(oldPresetName), literal(newPresetName));
-			return 1;
 		} catch (IllegalArgumentException ignored) {
 			tellInvalidTry(player, "commands.switchy.set.fail.missing", "commands.switchy.list.command");
-			return 0;
 		} catch (IllegalStateException ignored) {
 			tellInvalidTry(player, "commands.switchy.set.fail.current", "commands.switchy.list.command");
-			return 0;
 		}
 	}
 
-	private static int renamePreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName, String newName) {
+	private static void renamePreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName, String newName) {
 		try {
 			presets.renamePreset(presetName, newName);
 			tellSuccess(player, "commands.switchy.rename.success", literal(presetName), literal(newName));
-			return 1;
 		} catch (IllegalArgumentException ignored) {
 			tellInvalidTry(player, "commands.switchy.rename.fail.missing", "commands.switchy.list.command");
-			return 0;
 		} catch (IllegalStateException ignored) {
 			tellInvalidTry(player, "commands.switchy.rename.fail.exists", "commands.switchy.list.command");
-			return 0;
 		}
 	}
 
-	private static int deletePreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
-		if (!presets.getPresetNames().contains(presetName)) {
+	private static void deletePreset(ServerPlayerEntity player, SwitchyPresets presets, String presetName) {
+		try {
+			presets.deletePreset(presetName, true);
+		} catch (IllegalArgumentException ignored) {
 			tellInvalidTry(player, "commands.switchy.delete.fail.missing", "commands.switchy.list.command");
-			return 0;
-		}
-		if (presetName.equalsIgnoreCase(Objects.toString(presets.getCurrentPreset(), null))) {
+		} catch (IllegalStateException ignored) {
 			tellInvalidTry(player, "commands.switchy.delete.fail.current", "commands.switchy.rename.command", literal(""), literal(""));
-			return 0;
 		}
 
 		if (!HISTORY.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command("switchy delete " + presetName))) {
 			tellWarn(player, "commands.switchy.delete.warn");
 			tellWarn(player, "commands.switchy.list.modules", presets.getEnabledModuleText());
 			tellInvalidTry(player, "commands.switchy.delete.confirmation", "commands.switchy.delete.command", literal(presetName));
-			return 0;
 		} else {
 			presets.deletePreset(presetName); // Unsure if we can rectify having both confirmation and throw-errors
 			tellSuccess(player, "commands.switchy.delete.success", literal(presetName));
-			return 1;
 		}
 	}
 
-	private static int disableModule(ServerPlayerEntity player, SwitchyPresets presets, Identifier moduleId) {
-		if (!presets.getEnabledModules().contains(moduleId)) {
-			tellInvalid(player, "commands.switchy.module.disable.fail." + (presets.modules.containsKey(moduleId) ? "disabled" : "missing"), literal(moduleId.toString()));
-			return 0;
+	private static void disableModule(ServerPlayerEntity player, SwitchyPresets presets, Identifier moduleId) {
+		try {
+			presets.disableModule(moduleId, true);
+		} catch (IllegalArgumentException ignored) {
+			tellInvalid(player, "commands.switchy.module.disable.fail.missing", literal(moduleId.toString()));
+		} catch (IllegalStateException ignored) {
+			tellInvalid(player, "commands.switchy.module.disable.fail.disabled", literal(moduleId.toString()));
 		}
 
 		if (!HISTORY.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command("switchy module disable " + moduleId))) {
 			sendMessage(player, MODULE_INFO.get(moduleId).disableConfirmation().setStyle(FORMAT_WARN.getLeft()));
 			tellInvalidTry(player, "commands.switchy.module.disable.confirmation", "commands.switchy.module.disable.command", literal(moduleId.toString()));
-			return 0;
 		} else {
-			presets.disableModule(moduleId); // Unsure if we can rectify having both confirmation and throw-errors
+			presets.disableModule(moduleId);
 			tellSuccess(player, "commands.switchy.module.disable.success", literal(moduleId.toString()));
-			return 1;
 		}
 	}
 
-	private static int enableModule(ServerPlayerEntity player, SwitchyPresets presets, Identifier moduleId) {
+	private static void enableModule(ServerPlayerEntity player, SwitchyPresets presets, Identifier moduleId) {
 		try {
 			presets.enableModule(moduleId);
+			tellSuccess(player, "commands.switchy.module.enable.success", literal(moduleId.toString()));
 		} catch (IllegalArgumentException ignored) {
 			tellInvalid(player, "commands.switchy.module.enable.fail.missing", literal(moduleId.toString()));
-			return 0;
 		} catch (IllegalStateException ignored) {
 			tellInvalid(player, "commands.switchy.module.enable.fail.enabled", literal(moduleId.toString()));
-			return 0;
 		}
-		tellSuccess(player, "commands.switchy.module.enable.success", literal(moduleId.toString()));
-		return 1;
 	}
 
 	public static boolean confirmAndImportPresets(ServerPlayerEntity player, Map<String, SwitchyPreset> importedPresets, List<Identifier> modules, String command) {

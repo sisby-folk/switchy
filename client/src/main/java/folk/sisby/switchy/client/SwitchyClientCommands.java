@@ -49,7 +49,7 @@ public class SwitchyClientCommands implements ClientCommandRegistrationCallback 
 		);
 	}
 
-	private static int importPresets(CommandContext<QuiltClientCommandSource> context, ClientPlayerEntity player, NbtCompound presetsNbt, List<Identifier> excludeModules, List<Identifier> opModules) {
+	private static void importPresets(CommandContext<QuiltClientCommandSource> context, ClientPlayerEntity player, NbtCompound presetsNbt, List<Identifier> excludeModules, List<Identifier> opModules) {
 		if (!excludeModules.isEmpty()) {
 			NbtList excludeModulesNbt = new NbtList();
 			excludeModules.stream().map(Identifier::toString).map(NbtString::of).forEach(excludeModulesNbt::add);
@@ -63,21 +63,19 @@ public class SwitchyClientCommands implements ClientCommandRegistrationCallback 
 		presetsNbt.putString("command", context.getInput());
 		ClientPlayNetworking.send(C2S_IMPORT, PacketByteBufs.create().writeNbt(presetsNbt));
 		tellSuccess(player, "commands.switchy_client.import.success");
-		return 1;
 	}
 
-	private static int exportPresets(CommandContext<QuiltClientCommandSource> context, ClientPlayerEntity player) {
+	private static void exportPresets(CommandContext<QuiltClientCommandSource> context, ClientPlayerEntity player) {
 		SwitchyClient.LOGGER.info(HISTORY);
 		ClientPlayNetworking.send(C2S_REQUEST_PRESETS, PacketByteBufs.empty());
 		tellSuccess(player, "commands.switchy_client.export.sent");
-		return 1;
 	}
 
-	private static int importPresets(CommandContext<QuiltClientCommandSource> context, ClientPlayerEntity player, NbtCompound presetsNbt, List<Identifier> excludeModules) {
-		return importPresets(context, player, presetsNbt, excludeModules, List.of());
+	private static void importPresets(CommandContext<QuiltClientCommandSource> context, ClientPlayerEntity player, NbtCompound presetsNbt, List<Identifier> excludeModules) {
+		importPresets(context, player, presetsNbt, excludeModules, List.of());
 	}
 
-	private static int importPresets(CommandContext<QuiltClientCommandSource> context, ClientPlayerEntity player, NbtCompound presetsNbt) {
-		return importPresets(context, player, presetsNbt, List.of(), List.of());
+	private static void importPresets(CommandContext<QuiltClientCommandSource> context, ClientPlayerEntity player, NbtCompound presetsNbt) {
+		importPresets(context, player, presetsNbt, List.of(), List.of());
 	}
 }
