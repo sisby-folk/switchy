@@ -2,8 +2,8 @@ package folk.sisby.switchy.client;
 
 import folk.sisby.switchy.api.events.SwitchySwitchEvent;
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
-import folk.sisby.switchy.presets.SwitchyDisplayPresets;
 import folk.sisby.switchy.client.screen.SwitchScreen;
+import folk.sisby.switchy.presets.SwitchyDisplayPresets;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
