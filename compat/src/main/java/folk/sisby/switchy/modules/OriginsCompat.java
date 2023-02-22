@@ -2,6 +2,7 @@ package folk.sisby.switchy.modules;
 
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.module.SwitchyModule;
+import folk.sisby.switchy.api.module.SwitchyModuleDisplayable;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import io.github.apace100.origins.component.OriginComponent;
@@ -20,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class OriginsCompat implements SwitchyModule {
+public class OriginsCompat implements SwitchyModule, SwitchyModuleDisplayable {
 	public static final Identifier ID = new Identifier("switchy",  "origins");
 
 	public static final String KEY_ORIGINS_LIST = "OriginLayers";
@@ -71,6 +72,11 @@ public class OriginsCompat implements SwitchyModule {
 	}
 
 	@Override
+	public NbtCompound toDisplayNbt() {
+		return toNbt();
+	}
+
+	@Override
 	public void fillFromNbt(NbtCompound nbt) {
 		this.origins = new HashMap<>();
 		if (nbt.contains(KEY_ORIGINS_LIST, NbtElement.LIST_TYPE)) {
@@ -90,13 +96,12 @@ public class OriginsCompat implements SwitchyModule {
 			}
 		}
 	}
-
 	public static void touch() {
 	}
 
 	// Runs on touch() - but only once.
+
 	static {
 		SwitchyModuleRegistry.registerModule(ID, OriginsCompat::new, true, SwitchyModuleEditable.ALLOWED);
-		OriginsCompatDisplay.touch();
 	}
 }

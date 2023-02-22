@@ -1,6 +1,7 @@
 package folk.sisby.switchy.client.screen;
 
 import com.mojang.datafixers.util.Pair;
+import folk.sisby.switchy.client.api.SwitchScreenPosition;
 import folk.sisby.switchy.client.SwitchyClientNetworking;
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
 import folk.sisby.switchy.presets.SwitchyDisplayPreset;
@@ -19,15 +20,10 @@ import java.util.function.Function;
 
 public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 	public final SwitchyDisplayPresets displayPresets;
-	public enum ComponentPosition {
-		SIDE_LEFT,
-		LEFT,
-		RIGHT,
-		SIDE_RIGHT
-	}
-	private static final List<Function<SwitchyDisplayPreset, Pair<Component, ComponentPosition>>> componentFunctions = new ArrayList<>();
 
-	public static void registerBasicPresetComponent(Function<SwitchyDisplayPreset, Pair<Component, ComponentPosition>> componentFunction) {
+	private static final List<Function<SwitchyDisplayPreset, Pair<Component, SwitchScreenPosition>>> componentFunctions = new ArrayList<>();
+
+	public static void registerBasicPresetComponent(Function<SwitchyDisplayPreset, Pair<Component, SwitchScreenPosition>> componentFunction) {
 		componentFunctions.add(componentFunction);
 	}
 
@@ -42,7 +38,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 	}
 
 	private Component generatePresetComponent(SwitchyDisplayPreset preset, boolean currentPreset) {
-		List<Pair<Component, ComponentPosition>> componentList = new ArrayList<>(componentFunctions.stream().map(fun -> fun.apply(preset)).toList());
+		List<Pair<Component, SwitchScreenPosition>> componentList = new ArrayList<>(componentFunctions.stream().map(fun -> fun.apply(preset)).toList());
 		componentList.addAll(preset.getDisplayComponents().values());
 
 		// Main Horizontal Flow Panel
@@ -64,7 +60,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 		}
 
 		// Left Side Elements
-		horizontalFLow.children(componentList.stream().filter(p -> p.getSecond() == ComponentPosition.SIDE_LEFT).map(Pair::getFirst).filter(Objects::nonNull).toList());
+		horizontalFLow.children(componentList.stream().filter(p -> p.getSecond() == SwitchScreenPosition.SIDE_LEFT).map(Pair::getFirst).filter(Objects::nonNull).toList());
 
 		// Main Elements
 		HorizontalFlowLayout leftRightFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
@@ -74,19 +70,19 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 		VerticalFlowLayout leftAlignedFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
 		leftAlignedFlow.horizontalAlignment(HorizontalAlignment.LEFT);
 		leftAlignedFlow.gap(2);
-		leftAlignedFlow.children(componentList.stream().filter(p -> p.getSecond() == ComponentPosition.LEFT).map(Pair::getFirst).filter(Objects::nonNull).toList());
+		leftAlignedFlow.children(componentList.stream().filter(p -> p.getSecond() == SwitchScreenPosition.LEFT).map(Pair::getFirst).filter(Objects::nonNull).toList());
 		leftRightFlow.child(leftAlignedFlow);
 
 		VerticalFlowLayout rightAlignedFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
 		rightAlignedFlow.horizontalAlignment(HorizontalAlignment.RIGHT);
 		rightAlignedFlow.gap(2);
-		rightAlignedFlow.children(componentList.stream().filter(p -> p.getSecond() == ComponentPosition.RIGHT).map(Pair::getFirst).filter(Objects::nonNull).toList());
+		rightAlignedFlow.children(componentList.stream().filter(p -> p.getSecond() == SwitchScreenPosition.RIGHT).map(Pair::getFirst).filter(Objects::nonNull).toList());
 		leftRightFlow.child(rightAlignedFlow);
 
 		horizontalFLow.child(leftRightFlow);
 
 		// Right Side Elements
-		horizontalFLow.children(componentList.stream().filter(p -> p.getSecond() == ComponentPosition.SIDE_RIGHT).map(Pair::getFirst).filter(Objects::nonNull).toList());
+		horizontalFLow.children(componentList.stream().filter(p -> p.getSecond() == SwitchScreenPosition.SIDE_RIGHT).map(Pair::getFirst).filter(Objects::nonNull).toList());
 
 		return horizontalFLow;
 	}
@@ -131,6 +127,6 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 		});
 
 		// Add base components
-		registerBasicPresetComponent(displayPreset -> Pair.of(Components.label(Text.literal(displayPreset.presetName)), ComponentPosition.SIDE_LEFT));
+		registerBasicPresetComponent(displayPreset -> Pair.of(Components.label(Text.literal(displayPreset.presetName)), SwitchScreenPosition.SIDE_LEFT));
 	}
 }
