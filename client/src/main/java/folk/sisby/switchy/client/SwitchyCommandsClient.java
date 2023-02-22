@@ -16,35 +16,32 @@ import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import static folk.sisby.switchy.SwitchyClientServerNetworking.*;
 import static folk.sisby.switchy.client.util.CommandClient.unwrapAndExecute;
 import static folk.sisby.switchy.util.Feedback.tellSuccess;
 
 public class SwitchyCommandsClient {
-	private static final Map<UUID, String> history = new HashMap<>();
+	public static String HISTORY = "";
 
 	public static void InitializeCommands() {
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, cbc, reg) -> dispatcher.register(
 				ClientCommandManager.literal("switchy_client")
-						.requires(source -> ClientPlayNetworking.canSend(S2C_PRESETS))
+						.requires(source -> ClientPlayNetworking.canSend(C2S_IMPORT))
 						.then(ClientCommandManager.literal("import")
 								.then(ClientCommandManager.argument("file", NbtFileArgumentType.create(new File(SwitchyClient.EXPORT_PATH)))
-										.executes((c) -> unwrapAndExecute(c, history, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class)))
+										.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class)))
 										.then(ClientCommandManager.argument("excludeModules", IdentifiersFromNbtArgArgumentType.create("file", null, "enabled"))
-												.executes((c) -> unwrapAndExecute(c, history, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class), new Pair<>("excludeModules", List.class)))
+												.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class), new Pair<>("excludeModules", List.class)))
 												.then(ClientCommandManager.argument("opModules", IdentifiersFromNbtArgArgumentType.create("file", "excludeModules", "enabled"))
-														.executes((c) -> unwrapAndExecute(c, history, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class), new Pair<>("excludeModules", List.class), new Pair<>("opModules", List.class)))
+														.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::importPresets, new Pair<>("file", NbtCompound.class), new Pair<>("excludeModules", List.class), new Pair<>("opModules", List.class)))
 												)
 										)
 								)
 						)
 						.then(ClientCommandManager.literal("export")
-								.executes((c) -> unwrapAndExecute(c, history, SwitchyCommandsClient::exportPresets)))
+								.executes((c) -> unwrapAndExecute(c, SwitchyCommandsClient::exportPresets)))
 		));
 	}
 
@@ -67,6 +64,7 @@ public class SwitchyCommandsClient {
 	}
 
 	private static int exportPresets(CommandContext<QuiltClientCommandSource> context, ClientPlayerEntity player) {
+		SwitchyClient.LOGGER.info(HISTORY);
 		ClientPlayNetworking.send(C2S_REQUEST_PRESETS, PacketByteBufs.empty());
 		tellSuccess(player, "commands.switchy_client.export.sent");
 		return 1;

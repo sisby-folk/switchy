@@ -18,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -55,7 +54,7 @@ public class Command {
 		}
 	}
 
-	public static <V, V2> int unwrapAndExecute(CommandContext<ServerCommandSource> context, Map<UUID, String> history, Function4<ServerPlayerEntity, SwitchyPresets, V, V2, Integer> executeFunction, @Nullable Pair<String, Class<V>> argument, @Nullable Pair<String, Class<V2>> argument2) {
+	public static <V, V2> int unwrapAndExecute(CommandContext<ServerCommandSource> context, Function4<ServerPlayerEntity, SwitchyPresets, V, V2, Integer> executeFunction, @Nullable Pair<String, Class<V>> argument, @Nullable Pair<String, Class<V2>> argument2) {
 		int result = 0;
 
 		ServerPlayerEntity player = serverPlayerOrNull(context.getSource());
@@ -72,17 +71,15 @@ public class Command {
 				(argument != null ? context.getArgument(argument.getLeft(), argument.getRight()) : null),
 				(argument2 != null ? context.getArgument(argument2.getLeft(), argument2.getRight()) : null)
 		);
-		// Record previous command (for confirmations)
-		history.put(player.getUuid(), context.getInput());
 
 		return result;
 	}
 
-	public static <V> int unwrapAndExecute(CommandContext<ServerCommandSource> context, Map<UUID, String> history, Function3<ServerPlayerEntity, SwitchyPresets, V, Integer> executeFunction, @Nullable Pair<String, Class<V>> argument) {
-		return unwrapAndExecute(context, history, (player, preset, arg, ignored) -> executeFunction.apply(player, preset, arg), argument, null);
+	public static <V> int unwrapAndExecute(CommandContext<ServerCommandSource> context, Function3<ServerPlayerEntity, SwitchyPresets, V, Integer> executeFunction, @Nullable Pair<String, Class<V>> argument) {
+		return unwrapAndExecute(context, (player, preset, arg, ignored) -> executeFunction.apply(player, preset, arg), argument, null);
 	}
 
-	public static int unwrapAndExecute(CommandContext<ServerCommandSource> context, Map<UUID, String> history, BiFunction<ServerPlayerEntity, SwitchyPresets, Integer> executeFunction) {
-		return unwrapAndExecute(context, history, (player, preset, ignored) -> executeFunction.apply(player, preset), null);
+	public static int unwrapAndExecute(CommandContext<ServerCommandSource> context, BiFunction<ServerPlayerEntity, SwitchyPresets, Integer> executeFunction) {
+		return unwrapAndExecute(context, (player, preset, ignored) -> executeFunction.apply(player, preset), null);
 	}
 }

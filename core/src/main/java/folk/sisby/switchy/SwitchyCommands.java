@@ -22,41 +22,41 @@ import static folk.sisby.switchy.util.Command.*;
 import static folk.sisby.switchy.util.Feedback.*;
 
 public class SwitchyCommands {
-	public static final Map<UUID, String> history = new HashMap<>();
+	public static final Map<UUID, String> HISTORY = new HashMap<>();
 
 	public static void InitializeCommands() {
 		CommandRegistrationCallback.EVENT.register(
 				(dispatcher, buildContext, environment) -> dispatcher.register(
 						CommandManager.literal("switchy")
 								.then(CommandManager.literal("help")
-										.executes((c) -> Command.unwrapAndExecute(c, history, SwitchyCommands::displayHelp)))
+										.executes((c) -> Command.unwrapAndExecute(c, SwitchyCommands::displayHelp)))
 								.then(CommandManager.literal("list")
-										.executes((c) -> unwrapAndExecute(c, history, SwitchyCommands::listPresets)))
+										.executes((c) -> unwrapAndExecute(c, SwitchyCommands::listPresets)))
 								.then(CommandManager.literal("new")
 										.then(CommandManager.argument("preset", StringArgumentType.word())
-												.executes((c) -> unwrapAndExecute(c, history, SwitchyCommands::newPreset, new Pair<>("preset", String.class)))))
+												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::newPreset, new Pair<>("preset", String.class)))))
 								.then(CommandManager.literal("set")
 										.then(CommandManager.argument("preset", StringArgumentType.word())
 												.suggests((c, b) -> suggestPresets(c, b, false))
-												.executes((c) -> unwrapAndExecute(c, history, SwitchyCommands::setPreset, new Pair<>("preset", String.class)))))
+												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::setPreset, new Pair<>("preset", String.class)))))
 								.then(CommandManager.literal("delete")
 										.then(CommandManager.argument("preset", StringArgumentType.word())
 												.suggests((c, b) -> suggestPresets(c, b, false))
-												.executes((c) -> unwrapAndExecute(c, history, SwitchyCommands::deletePreset, new Pair<>("preset", String.class)))))
+												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::deletePreset, new Pair<>("preset", String.class)))))
 								.then(CommandManager.literal("rename")
 										.then(CommandManager.argument("preset", StringArgumentType.word())
 												.suggests((c, b) -> suggestPresets(c, b, true))
 												.then(CommandManager.argument("name", StringArgumentType.word())
-														.executes((c) -> unwrapAndExecute(c, history, SwitchyCommands::renamePreset, new Pair<>("preset", String.class), new Pair<>("name", String.class))))))
+														.executes((c) -> unwrapAndExecute(c, SwitchyCommands::renamePreset, new Pair<>("preset", String.class), new Pair<>("name", String.class))))))
 								.then(CommandManager.literal("module")
 										.then(CommandManager.literal("enable")
 												.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
 														.suggests((c, b) -> suggestModules(c, b, false))
-														.executes((c) -> unwrapAndExecute(c, history, SwitchyCommands::enableModule, new Pair<>("module", Identifier.class)))))
+														.executes((c) -> unwrapAndExecute(c, SwitchyCommands::enableModule, new Pair<>("module", Identifier.class)))))
 										.then(CommandManager.literal("disable")
 												.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
 														.suggests((c, b) -> suggestModules(c, b, true))
-														.executes((c) -> unwrapAndExecute(c, history, SwitchyCommands::disableModule, new Pair<>("module", Identifier.class))))))
+														.executes((c) -> unwrapAndExecute(c, SwitchyCommands::disableModule, new Pair<>("module", Identifier.class))))))
 				));
 
 		// switchy set alias
@@ -64,7 +64,7 @@ public class SwitchyCommands {
 				CommandManager.literal("switch")
 						.then(CommandManager.argument("preset", StringArgumentType.word())
 								.suggests((c, b) -> suggestPresets(c, b, false))
-								.executes((c) -> unwrapAndExecute(c, history, SwitchyCommands::setPreset, new Pair<>("preset", String.class)))))
+								.executes((c) -> unwrapAndExecute(c, SwitchyCommands::setPreset, new Pair<>("preset", String.class)))))
 		);
 	}
 
@@ -141,7 +141,7 @@ public class SwitchyCommands {
 			return 0;
 		}
 
-		if (!history.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command("switchy delete " + presetName))) {
+		if (!HISTORY.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command("switchy delete " + presetName))) {
 			tellWarn(player, "commands.switchy.delete.warn");
 			tellWarn(player, "commands.switchy.list.modules", presets.getEnabledModuleText());
 			tellInvalidTry(player, "commands.switchy.delete.confirmation", "commands.switchy.delete.command", literal(presetName));
@@ -159,7 +159,7 @@ public class SwitchyCommands {
 			return 0;
 		}
 
-		if (!history.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command("switchy module disable " + moduleId))) {
+		if (!HISTORY.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command("switchy module disable " + moduleId))) {
 			sendMessage(player, MODULE_INFO.get(moduleId).disableConfirmation().setStyle(FORMAT_WARN.getLeft()));
 			tellInvalidTry(player, "commands.switchy.module.disable.confirmation", "commands.switchy.module.disable.command", literal(moduleId.toString()));
 			return 0;
@@ -188,13 +188,13 @@ public class SwitchyCommands {
 		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 
 		// Print info and stop if confirmation is required.
-		if (!history.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command(command))) {
+		if (!HISTORY.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command(command))) {
 			tellWarn(player, "commands.switchy.import.warn.info", literal(String.valueOf(importedPresets.size())), literal(String.valueOf(modules.size())));
 			tellWarn(player, "commands.switchy.list.presets", getHighlightedListText(importedPresets.keySet().stream().sorted().toList(), List.of(new Pair<>(presets.getPresetNames()::contains, Formatting.DARK_RED))));
 			tellWarn(player, "commands.switchy.import.warn.collision");
 			tellWarn(player, "commands.switchy.list.modules", getIdText(modules));
 			sendMessage(player, translatableWithArgs("commands.switchy.import.confirmation", FORMAT_INVALID, literal("/" + command)));
-			history.put(player.getUuid(), command(command));
+			HISTORY.put(player.getUuid(), command(command));
 			return false;
 		}
 
