@@ -12,23 +12,23 @@ import static folk.sisby.switchy.util.Feedback.translatable;
 
 public class SwitchyModuleRegistry {
 
-	public static void registerModule(Identifier moduleId, Supplier<SwitchyModule> moduleConstructor, boolean isDefault, SwitchyModuleEditable importable) throws IllegalArgumentException, IllegalStateException  {
-		SwitchyModules.registerModule(moduleId, moduleConstructor, isDefault, importable, Set.of(), Set.of(), translatable("commands.switchy.module.disable.warn"));
+	public static void registerModule(Identifier moduleId, Supplier<SwitchyModule> moduleConstructor, boolean isDefault, SwitchyModuleEditable editable) throws IllegalArgumentException, IllegalStateException  {
+		SwitchyModules.registerModule(moduleId, moduleConstructor, isDefault, editable, Set.of(), Set.of(), translatable("commands.switchy.module.disable.warn"));
 	}
 
-	public static void registerModule(Identifier moduleId, Supplier<SwitchyModule> moduleConstructor, boolean isDefault, SwitchyModuleEditable importable, Collection<Identifier> applyDependencies) throws IllegalArgumentException, IllegalStateException  {
-		SwitchyModules.registerModule(moduleId, moduleConstructor, isDefault, importable, applyDependencies, Set.of(), translatable("commands.switchy.module.disable.warn"));
+	public static void registerModule(Identifier moduleId, Supplier<SwitchyModule> moduleConstructor, boolean isDefault, SwitchyModuleEditable editable, Collection<Identifier> applyDependencies) throws IllegalArgumentException, IllegalStateException  {
+		SwitchyModules.registerModule(moduleId, moduleConstructor, isDefault, editable, applyDependencies, Set.of(), translatable("commands.switchy.module.disable.warn"));
 	}
 
-	public static void registerModule(Identifier moduleId, Supplier<SwitchyModule> moduleConstructor, boolean isDefault, SwitchyModuleEditable importable, Collection<Identifier> applyDependencies, Collection<Identifier> uniqueIds) throws IllegalArgumentException, IllegalStateException  {
-		SwitchyModules.registerModule(moduleId, moduleConstructor, isDefault, importable, applyDependencies, uniqueIds, translatable("commands.switchy.module.disable.warn"));
+	public static void registerModule(Identifier moduleId, Supplier<SwitchyModule> moduleConstructor, boolean isDefault, SwitchyModuleEditable editable, Collection<Identifier> applyDependencies, Collection<Identifier> uniqueIds) throws IllegalArgumentException, IllegalStateException  {
+		SwitchyModules.registerModule(moduleId, moduleConstructor, isDefault, editable, applyDependencies, uniqueIds, translatable("commands.switchy.module.disable.warn"));
 	}
 
-	public static void registerModule(Identifier moduleId, Supplier<SwitchyModule> moduleConstructor, boolean isDefault, SwitchyModuleEditable importable, Collection<Identifier> applyDependencies, MutableText disableConfirmation) throws IllegalArgumentException, IllegalStateException  {
-		SwitchyModules.registerModule(moduleId, moduleConstructor, isDefault, importable, applyDependencies, Set.of(), disableConfirmation);
+	public static void registerModule(Identifier moduleId, Supplier<SwitchyModule> moduleConstructor, boolean isDefault, SwitchyModuleEditable editable, Collection<Identifier> applyDependencies, MutableText disableConfirmation) throws IllegalArgumentException, IllegalStateException  {
+		SwitchyModules.registerModule(moduleId, moduleConstructor, isDefault, editable, applyDependencies, Set.of(), disableConfirmation);
 	}
 
-	public static void registerModule(Identifier moduleId, Supplier<SwitchyModule> moduleConstructor, boolean isDefault, SwitchyModuleEditable importable, Collection<Identifier> applyDependencies, Collection<Identifier> uniqueIds, MutableText disableConfirmation) throws IllegalArgumentException, IllegalStateException  {
-		SwitchyModules.registerModule(moduleId, moduleConstructor, isDefault, importable, applyDependencies, uniqueIds, disableConfirmation);
+	public static void registerModule(Identifier moduleId, Supplier<SwitchyModule> moduleConstructor, boolean isDefault, SwitchyModuleEditable editable, Collection<Identifier> applyDependencies, Collection<Identifier> uniqueIds, MutableText disableConfirmation) throws IllegalArgumentException, IllegalStateException  {
+		SwitchyModules.registerModule(moduleId, moduleConstructor, isDefault, editable, applyDependencies, uniqueIds, disableConfirmation);
 	}
 }

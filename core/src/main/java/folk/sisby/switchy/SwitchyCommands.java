@@ -1,12 +1,15 @@
 package folk.sisby.switchy;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import folk.sisby.switchy.api.SwitchyPlayer;
 import folk.sisby.switchy.presets.SwitchyPreset;
 import folk.sisby.switchy.presets.SwitchyPresets;
 import folk.sisby.switchy.util.Command;
+import net.minecraft.command.CommandBuildContext;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -21,50 +24,49 @@ import static folk.sisby.switchy.SwitchyModules.MODULE_INFO;
 import static folk.sisby.switchy.util.Command.*;
 import static folk.sisby.switchy.util.Feedback.*;
 
-public class SwitchyCommands {
+public class SwitchyCommands implements CommandRegistrationCallback {
 	public static final Map<UUID, String> HISTORY = new HashMap<>();
 
-	public static void InitializeCommands() {
-		CommandRegistrationCallback.EVENT.register(
-				(dispatcher, buildContext, environment) -> dispatcher.register(
-						CommandManager.literal("switchy")
-								.then(CommandManager.literal("help")
-										.executes((c) -> Command.unwrapAndExecute(c, SwitchyCommands::displayHelp)))
-								.then(CommandManager.literal("list")
-										.executes((c) -> unwrapAndExecute(c, SwitchyCommands::listPresets)))
-								.then(CommandManager.literal("new")
-										.then(CommandManager.argument("preset", StringArgumentType.word())
-												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::newPreset, new Pair<>("preset", String.class)))))
-								.then(CommandManager.literal("set")
-										.then(CommandManager.argument("preset", StringArgumentType.word())
-												.suggests((c, b) -> suggestPresets(c, b, false))
-												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::setPreset, new Pair<>("preset", String.class)))))
-								.then(CommandManager.literal("delete")
-										.then(CommandManager.argument("preset", StringArgumentType.word())
-												.suggests((c, b) -> suggestPresets(c, b, false))
-												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::deletePreset, new Pair<>("preset", String.class)))))
-								.then(CommandManager.literal("rename")
-										.then(CommandManager.argument("preset", StringArgumentType.word())
-												.suggests((c, b) -> suggestPresets(c, b, true))
-												.then(CommandManager.argument("name", StringArgumentType.word())
-														.executes((c) -> unwrapAndExecute(c, SwitchyCommands::renamePreset, new Pair<>("preset", String.class), new Pair<>("name", String.class))))))
-								.then(CommandManager.literal("module")
-										.then(CommandManager.literal("enable")
-												.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
-														.suggests((c, b) -> suggestModules(c, b, false))
-														.executes((c) -> unwrapAndExecute(c, SwitchyCommands::enableModule, new Pair<>("module", Identifier.class)))))
-										.then(CommandManager.literal("disable")
-												.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
-														.suggests((c, b) -> suggestModules(c, b, true))
-														.executes((c) -> unwrapAndExecute(c, SwitchyCommands::disableModule, new Pair<>("module", Identifier.class))))))
-				));
+	@Override
+	public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandBuildContext buildContext, CommandManager.RegistrationEnvironment environment) {
+		dispatcher.register(
+				CommandManager.literal("switchy")
+						.then(CommandManager.literal("help")
+								.executes((c) -> Command.unwrapAndExecute(c, SwitchyCommands::displayHelp)))
+						.then(CommandManager.literal("list")
+								.executes((c) -> unwrapAndExecute(c, SwitchyCommands::listPresets)))
+						.then(CommandManager.literal("new")
+								.then(CommandManager.argument("preset", StringArgumentType.word())
+										.executes((c) -> unwrapAndExecute(c, SwitchyCommands::newPreset, new Pair<>("preset", String.class)))))
+						.then(CommandManager.literal("set")
+								.then(CommandManager.argument("preset", StringArgumentType.word())
+										.suggests((c, b) -> suggestPresets(c, b, false))
+										.executes((c) -> unwrapAndExecute(c, SwitchyCommands::setPreset, new Pair<>("preset", String.class)))))
+						.then(CommandManager.literal("delete")
+								.then(CommandManager.argument("preset", StringArgumentType.word())
+										.suggests((c, b) -> suggestPresets(c, b, false))
+										.executes((c) -> unwrapAndExecute(c, SwitchyCommands::deletePreset, new Pair<>("preset", String.class)))))
+						.then(CommandManager.literal("rename")
+								.then(CommandManager.argument("preset", StringArgumentType.word())
+										.suggests((c, b) -> suggestPresets(c, b, true))
+										.then(CommandManager.argument("name", StringArgumentType.word())
+												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::renamePreset, new Pair<>("preset", String.class), new Pair<>("name", String.class))))))
+						.then(CommandManager.literal("module")
+								.then(CommandManager.literal("enable")
+										.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
+												.suggests((c, b) -> suggestModules(c, b, false))
+												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::enableModule, new Pair<>("module", Identifier.class)))))
+								.then(CommandManager.literal("disable")
+										.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
+												.suggests((c, b) -> suggestModules(c, b, true))
+												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::disableModule, new Pair<>("module", Identifier.class))))))
+		);
 
-		// switchy set alias
-		CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, environment) -> dispatcher.register(
+		dispatcher.register(
 				CommandManager.literal("switch")
 						.then(CommandManager.argument("preset", StringArgumentType.word())
 								.suggests((c, b) -> suggestPresets(c, b, false))
-								.executes((c) -> unwrapAndExecute(c, SwitchyCommands::setPreset, new Pair<>("preset", String.class)))))
+								.executes((c) -> unwrapAndExecute(c, SwitchyCommands::setPreset, new Pair<>("preset", String.class))))
 		);
 	}
 

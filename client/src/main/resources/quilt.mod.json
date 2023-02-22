@@ -19,7 +19,12 @@
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"events": "folk.sisby.switchy.SwitchyClientEventListener",
+			"events": [
+				"folk.sisby.switchy.SwitchyClientServer"
+			],
+			"client_events": [
+				"folk.sisby.switchy.client.SwitchyClientCommands"
+			],
 			"client_init": "folk.sisby.switchy.client.SwitchyClient"
 		},
 		"depends": [

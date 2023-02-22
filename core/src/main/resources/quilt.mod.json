@@ -20,7 +20,10 @@
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
 			"init": "folk.sisby.switchy.Switchy",
-			"events": "folk.sisby.switchy.SwitchyEventListener"
+			"events": [
+				"folk.sisby.switchy.SwitchyPlayConnectionListener",
+				"folk.sisby.switchy.SwitchyCommands"
+			]
 		},
 		"depends": [
 			{

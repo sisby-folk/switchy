@@ -1,7 +1,7 @@
 package folk.sisby.switchy.client.modules;
 
 import com.mojang.datafixers.util.Pair;
-import folk.sisby.switchy.client.api.SwitchScreenPosition;
+import folk.sisby.switchy.client.api.SwitchySwitchScreenPosition;
 import folk.sisby.switchy.client.api.module.SwitchyDisplayModule;
 import folk.sisby.switchy.client.api.module.SwitchyDisplayModuleRegistry;
 import io.wispforest.owo.ui.component.Components;
@@ -17,6 +17,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static io.github.apace100.origins.registry.ModItems.ORB_OF_ORIGIN;
 
+@ClientOnly
 public class OriginsCompatDisplay implements SwitchyDisplayModule {
 	public static final Identifier ID = new Identifier("switchy",  "origins");
 	public Map<String, Identifier> origins;
@@ -33,7 +35,7 @@ public class OriginsCompatDisplay implements SwitchyDisplayModule {
 	public static final String KEY_ORIGIN = "Origin";
 
 	@Override
-	public Pair<Component, SwitchScreenPosition> getDisplayComponent() {
+	public Pair<Component, SwitchySwitchScreenPosition> getDisplayComponent() {
 		if (origins == null || origins.isEmpty()) return null;
 
 		HorizontalFlowLayout originsFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
@@ -43,7 +45,7 @@ public class OriginsCompatDisplay implements SwitchyDisplayModule {
 				origins.values().stream().map(Identifier::getPath).collect(Collectors.joining(" | ")))
 				.setStyle(Style.EMPTY.withColor(Formatting.GRAY))));
 
-		return Pair.of(originsFlow, SwitchScreenPosition.LEFT);
+		return Pair.of(originsFlow, SwitchySwitchScreenPosition.LEFT);
 	}
 
 	@Override

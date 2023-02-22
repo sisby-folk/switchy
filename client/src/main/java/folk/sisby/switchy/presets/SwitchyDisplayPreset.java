@@ -1,7 +1,7 @@
 package folk.sisby.switchy.presets;
 
 import com.mojang.datafixers.util.Pair;
-import folk.sisby.switchy.client.api.SwitchScreenPosition;
+import folk.sisby.switchy.client.api.SwitchySwitchScreenPosition;
 import folk.sisby.switchy.client.api.module.SwitchyDisplayModule;
 import folk.sisby.switchy.client.api.module.SwitchyDisplayModuleRegistry;
 import io.wispforest.owo.ui.core.Component;
@@ -28,10 +28,10 @@ public class SwitchyDisplayPreset {
 
 	}
 
-	public Map<Identifier, Pair<Component, SwitchScreenPosition>> getDisplayComponents() {
-		Map<Identifier, Pair<Component, SwitchScreenPosition>> map = new HashMap<>();
+	public Map<Identifier, Pair<Component, SwitchySwitchScreenPosition>> getDisplayComponents() {
+		Map<Identifier, Pair<Component, SwitchySwitchScreenPosition>> map = new HashMap<>();
 		modules.forEach((id, module) -> {
-			@Nullable Pair<Component, SwitchScreenPosition> component = module.getDisplayComponent();
+			@Nullable Pair<Component, SwitchySwitchScreenPosition> component = module.getDisplayComponent();
 			if (component != null) {
 				map.put(id, component);
 			}

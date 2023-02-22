@@ -70,22 +70,23 @@ public class CardinalSerializerCompat implements SwitchyModule {
 		this.componentConfigs = componentConfigs;
 	}
 
+	@SuppressWarnings("unused")
 	public static <T1 extends Component> CardinalSerializerCompat from(ComponentKey<T1> registryKey, BiConsumer<ComponentKey<T1>, PlayerEntity> preApplyClear, BiConsumer<ComponentKey<T1>, PlayerEntity> postApplySync) {
 		return new CardinalSerializerCompat(Map.of(registryKey.getId(), new ComponentConfig<>(registryKey, preApplyClear, postApplySync)));
 	}
 
-	public static void register(Identifier moduleId, Set<Identifier> componentKeyId, Boolean isDefault, SwitchyModuleEditable importable) {
+	public static void register(Identifier moduleId, Set<Identifier> componentKeyId, Boolean isDefault, SwitchyModuleEditable editable) {
 			SwitchyModuleRegistry.registerModule(moduleId, () -> {
 				Map<Identifier, ComponentConfig<?>> map = new HashMap<>();
 				for (Identifier identifier : componentKeyId) {
 					ComponentKey<?> componentKey = ComponentRegistry.get(identifier);
 					if (componentKey == null) {
-						Switchy.LOGGER.warn("Switchy: cardinal module {} failed to instantiate, as its component isn't created yet.", moduleId);
+						Switchy.LOGGER.warn("[Switchy] cardinal module {} failed to instantiate, as its component isn't created yet.", moduleId);
 						return null;
 					}
 					map.put(identifier, new ComponentConfig<>(componentKey, (k, p) -> {}, (k, p) -> {}));
 				}
 				return new CardinalSerializerCompat(map);
-			}, isDefault, importable, Set.of(), componentKeyId);
+			}, isDefault, editable, Set.of(), componentKeyId);
 	}
 }

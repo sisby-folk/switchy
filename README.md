@@ -71,11 +71,11 @@ You can then move to another server or singleplayer world.
 
 `/switchy_client import [filename] [exclude] [operator]` will import all allowed modules, except modules in `[exclude]`, plus any modules in `[operator]` if you have OP level 2. You can use `~` to specify no modules.
 
-## Import Configuration
+## Module Editing Permissions
 
 Switchy doesn't and will not support permissions on its basic commands, and has no way to enable or disable modules server-wide.
 
-However, you can minorly configure which players can import module data from their client in `/config/switchy/config.toml`
+However, you can minorly configure which players can import module data in `/config/switchy/config.toml`
 
 Modules will be listed with one of four import settings:
 
@@ -140,7 +140,7 @@ Any data matching `data/*/switchy_cca_modules/*.json` will be loaded [like so](h
 
  - Top level key: Cardinal component ID
    - `default`: boolean, module is enabled for players by default.
-   - `importable`: See import configuration above.
+   - `editable`: See import configuration above.
    - `ifModLoaded`: a mod ID to check before trying to register the module.
 
 ## Further Info

@@ -6,7 +6,7 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.yggdrasil.response.MinecraftTexturesPayload;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.util.UUIDTypeAdapter;
-import folk.sisby.switchy.client.api.SwitchScreenPosition;
+import folk.sisby.switchy.client.api.SwitchySwitchScreenPosition;
 import folk.sisby.switchy.client.api.module.SwitchyDisplayModule;
 import folk.sisby.switchy.client.api.module.SwitchyDisplayModuleRegistry;
 import folk.sisby.switchy.modules.FabricTailorCompatData;
@@ -17,13 +17,15 @@ import io.wispforest.owo.ui.core.Sizing;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.util.Identifier;
+import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 import java.util.Base64;
 import java.util.UUID;
 
+@ClientOnly
 public class FabricTailorCompatDisplay extends FabricTailorCompatData implements SwitchyDisplayModule {
 	@Override
-	public Pair<Component, SwitchScreenPosition> getDisplayComponent() {
+	public Pair<Component, SwitchySwitchScreenPosition> getDisplayComponent() {
 		if (skinValue == null) return null;
 		MinecraftClient client = MinecraftClient.getInstance();
 
@@ -42,7 +44,7 @@ public class FabricTailorCompatDisplay extends FabricTailorCompatData implements
 
 		skinPreview.scale(0.5F);
 
-		return Pair.of(skinPreview, SwitchScreenPosition.SIDE_RIGHT);
+		return Pair.of(skinPreview, SwitchySwitchScreenPosition.SIDE_RIGHT);
 	}
 
 	public static void touch() {}

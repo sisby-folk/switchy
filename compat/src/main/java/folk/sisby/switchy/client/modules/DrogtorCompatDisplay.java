@@ -1,7 +1,7 @@
 package folk.sisby.switchy.client.modules;
 
 import com.mojang.datafixers.util.Pair;
-import folk.sisby.switchy.client.api.SwitchScreenPosition;
+import folk.sisby.switchy.client.api.SwitchySwitchScreenPosition;
 import folk.sisby.switchy.client.api.module.SwitchyDisplayModule;
 import folk.sisby.switchy.client.api.module.SwitchyDisplayModuleRegistry;
 import folk.sisby.switchy.modules.DrogtorCompatData;
@@ -15,12 +15,12 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
 @ClientOnly
 public class DrogtorCompatDisplay extends DrogtorCompatData implements SwitchyDisplayModule {
 	@Override
-	public Pair<Component, SwitchScreenPosition> getDisplayComponent() {
+	public Pair<Component, SwitchySwitchScreenPosition> getDisplayComponent() {
 		if (nickname == null) return null;
 		Style style = Style.EMPTY;
 		if (namecolor != null) style = style.withColor(namecolor);
 		if (bio != null) style = style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(bio)));
-		return Pair.of(Components.label(Text.literal(nickname).setStyle(style)), SwitchScreenPosition.LEFT);
+		return Pair.of(Components.label(Text.literal(nickname).setStyle(style)), SwitchySwitchScreenPosition.LEFT);
 	}
 
 	public static void touch() {

@@ -15,7 +15,6 @@ public class SwitchyClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient(ModContainer mod) {
-		SwitchyCommandsClient.InitializeCommands();
 		SwitchyClientNetworking.InitializeReceivers();
 		SwitchyKeybinds.initializeKeybinds();
 		SwitchyClientEvents.INIT.invoker().onInitialize();

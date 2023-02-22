@@ -1,7 +1,7 @@
 package folk.sisby.switchy.client.modules;
 
 import com.mojang.datafixers.util.Pair;
-import folk.sisby.switchy.client.api.SwitchScreenPosition;
+import folk.sisby.switchy.client.api.SwitchySwitchScreenPosition;
 import folk.sisby.switchy.client.api.module.SwitchyDisplayModule;
 import folk.sisby.switchy.client.api.module.SwitchyDisplayModuleRegistry;
 import io.wispforest.owo.ui.component.Components;
@@ -10,7 +10,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
+import org.quiltmc.loader.api.minecraft.ClientOnly;
 
+@ClientOnly
 public class StyledNicknamesCompatDisplay implements SwitchyDisplayModule {
 	public static final Identifier ID = new Identifier("switchy",  "styled_nicknames");
 
@@ -19,9 +21,9 @@ public class StyledNicknamesCompatDisplay implements SwitchyDisplayModule {
 	public static final String KEY_NICKNAME = "styled_nickname";
 
 	@Override
-	public Pair<Component, SwitchScreenPosition> getDisplayComponent() {
+	public Pair<Component, SwitchySwitchScreenPosition> getDisplayComponent() {
 		if (styled_nickname == null) return null;
-		return Pair.of(Components.label(styled_nickname), SwitchScreenPosition.LEFT);
+		return Pair.of(Components.label(styled_nickname), SwitchySwitchScreenPosition.LEFT);
 	}
 
 	@Override

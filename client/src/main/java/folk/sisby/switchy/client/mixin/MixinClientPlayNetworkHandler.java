@@ -1,6 +1,6 @@
 package folk.sisby.switchy.client.mixin;
 
-import folk.sisby.switchy.client.SwitchyCommandsClient;
+import folk.sisby.switchy.client.SwitchyClientCommands;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.ChatCommandC2SPacket;
@@ -17,7 +17,7 @@ public abstract class MixinClientPlayNetworkHandler {
 	{
 		if (packet instanceof ChatCommandC2SPacket chatPacket)
 		{
-			SwitchyCommandsClient.HISTORY = chatPacket.command();
+			SwitchyClientCommands.HISTORY = chatPacket.command();
 		}
 	}
 }

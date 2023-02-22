@@ -14,8 +14,8 @@ import java.util.UUID;
 public class SwitchySwitchEvent {
 	public static final Identifier S2C_EVENT_SWITCH = new Identifier(Switchy.ID, "s2c_event_switch");
 	public final UUID player;
-	public final @Nullable String previousPreset; // Null previous preset means "logging in"
-	public final String currentPreset; // Null current preset means "logging out"
+	public final @Nullable String previousPreset; // Null previous preset means "joined"
+	public final @Nullable String currentPreset; // Null current preset means "disconnected"
 	public final List<String> enabledModules;
 
 	private static final String KEY_PLAYER = "player";
@@ -23,7 +23,7 @@ public class SwitchySwitchEvent {
 	private static final String KEY_PREVIOUS_PRESET = "previousName";
 	private static final String KEY_ENABLED_MODULES = "enabledModules";
 
-	public SwitchySwitchEvent(UUID player, String currentName, @Nullable String previousName, List<String> enabledModules) {
+	public SwitchySwitchEvent(UUID player, @Nullable String currentName, @Nullable String previousName, List<String> enabledModules) {
 		this.player = player;
 		this.previousPreset = previousName;
 		this.currentPreset = currentName;

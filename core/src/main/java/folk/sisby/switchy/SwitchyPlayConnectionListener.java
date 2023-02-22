@@ -11,7 +11,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.quiltmc.qsl.networking.api.PacketSender;
 import org.quiltmc.qsl.networking.api.ServerPlayConnectionEvents;
 
-public class SwitchyEventListener implements ServerPlayConnectionEvents.Join {
+public class SwitchyPlayConnectionListener implements ServerPlayConnectionEvents.Join, ServerPlayConnectionEvents.Disconnect {
 	@Override
 	public void onPlayReady(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
 		ServerPlayerEntity player = handler.getPlayer();
@@ -22,6 +22,16 @@ public class SwitchyEventListener implements ServerPlayConnectionEvents.Join {
 		}
 		SwitchySwitchEvent switchEvent = new SwitchySwitchEvent(
 				handler.getPlayer().getUuid(), presets.getCurrentPreset().presetName, null, presets.getEnabledModuleNames()
+		);
+		SwitchyEvents.SWITCH.invoker().onSwitch(handler.getPlayer(), switchEvent);
+	}
+
+	@Override
+	public void onPlayDisconnect(ServerPlayNetworkHandler handler, MinecraftServer server) {
+		ServerPlayerEntity player = handler.getPlayer();
+		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
+		SwitchySwitchEvent switchEvent = new SwitchySwitchEvent(
+				handler.getPlayer().getUuid(), null, presets.getCurrentPreset().presetName, presets.getEnabledModuleNames()
 		);
 		SwitchyEvents.SWITCH.invoker().onSwitch(handler.getPlayer(), switchEvent);
 	}

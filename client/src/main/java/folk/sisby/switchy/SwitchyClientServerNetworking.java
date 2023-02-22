@@ -5,7 +5,7 @@ import folk.sisby.switchy.api.SwitchyPlayer;
 import folk.sisby.switchy.api.events.SwitchySwitchEvent;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.presets.SwitchyPresets;
-import folk.sisby.switchy.util.PresetDisplayNbt;
+import folk.sisby.switchy.util.PresetConverter;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.PacketByteBuf;
@@ -19,7 +19,7 @@ import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 import java.util.List;
 
 import static folk.sisby.switchy.Switchy.LOGGER;
-import static folk.sisby.switchy.SwitchyModules.getImportable;
+import static folk.sisby.switchy.SwitchyModules.getEditable;
 import static folk.sisby.switchy.util.Feedback.*;
 
 public class SwitchyClientServerNetworking {
@@ -46,7 +46,7 @@ public class SwitchyClientServerNetworking {
 
 	private static void sendDisplayPresets(ServerPlayerEntity player) {
 		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
-		PacketByteBuf displayPresetsBuf = PacketByteBufs.create().writeNbt(PresetDisplayNbt.presetsToNbt(presets));
+		PacketByteBuf displayPresetsBuf = PacketByteBufs.create().writeNbt(PresetConverter.presetsToNbt(presets));
 		ServerPlayNetworking.send(player, S2C_DISPLAY_PRESETS, displayPresetsBuf);
 	}
 
@@ -94,7 +94,7 @@ public class SwitchyClientServerNetworking {
 		}
 
 		importedPresets.modules.forEach((moduleId, enabled) -> {
-			if (enabled && (!presets.modules.containsKey(moduleId) || !presets.modules.get(moduleId) || excludeModules.contains(moduleId) || getImportable(moduleId) == SwitchyModuleEditable.NEVER || (!opModules.contains(moduleId) && getImportable(moduleId) == SwitchyModuleEditable.OPERATOR))) {
+			if (enabled && (!presets.modules.containsKey(moduleId) || !presets.modules.get(moduleId) || excludeModules.contains(moduleId) || getEditable(moduleId) == SwitchyModuleEditable.NEVER || (!opModules.contains(moduleId) && getEditable(moduleId) == SwitchyModuleEditable.OPERATOR))) {
 				importedPresets.disableModule(moduleId);
 			}
 		});

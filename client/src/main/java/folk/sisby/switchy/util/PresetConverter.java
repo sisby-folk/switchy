@@ -9,7 +9,7 @@ import net.minecraft.nbt.NbtString;
 
 import static folk.sisby.switchy.presets.SwitchyPresets.*;
 
-public class PresetDisplayNbt {
+public class PresetConverter {
 	public static NbtCompound presetsToNbt(SwitchyPresets presets) {
 		NbtCompound outNbt = new NbtCompound();
 
