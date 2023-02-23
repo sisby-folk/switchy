@@ -22,7 +22,7 @@ public class SwitchyPlayConnectionListener implements ServerPlayConnectionEvents
 			((SwitchyPlayer) player).switchy$setPresets(presets);
 		}
 		SwitchySwitchEvent switchEvent = new SwitchySwitchEvent(
-				handler.getPlayer().getUuid(), presets.getCurrentPreset().name, null, presets.getEnabledModuleNames()
+				handler.getPlayer().getUuid(), presets.getCurrentPresetName(), null, presets.getEnabledModuleNames()
 		);
 		SwitchyEvents.SWITCH.invoker().onSwitch(handler.getPlayer(), switchEvent);
 	}
@@ -32,7 +32,7 @@ public class SwitchyPlayConnectionListener implements ServerPlayConnectionEvents
 		ServerPlayerEntity player = handler.getPlayer();
 		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 		SwitchySwitchEvent switchEvent = new SwitchySwitchEvent(
-				handler.getPlayer().getUuid(), null, presets.getCurrentPreset().name, presets.getEnabledModuleNames()
+				handler.getPlayer().getUuid(), null, presets.getCurrentPresetName(), presets.getEnabledModuleNames()
 		);
 		SwitchyEvents.SWITCH.invoker().onSwitch(handler.getPlayer(), switchEvent);
 	}

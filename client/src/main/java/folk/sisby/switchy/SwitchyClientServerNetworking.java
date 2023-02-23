@@ -2,7 +2,6 @@ package folk.sisby.switchy;
 
 import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.api.SwitchyPlayer;
-import folk.sisby.switchy.api.events.SwitchySwitchEvent;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.presets.SwitchyPresets;
 import folk.sisby.switchy.util.PresetConverter;
@@ -33,6 +32,9 @@ public class SwitchyClientServerNetworking {
 	public static final Identifier S2C_PRESETS = new Identifier(Switchy.ID, "s2c_export");
 	public static final Identifier S2C_DISPLAY_PRESETS = new Identifier(Switchy.ID, "s2c_display_presets");
 
+	// Relayed Events
+	public static final Identifier S2C_EVENT_SWITCH = new Identifier(Switchy.ID, "s2c_event_switch");
+
 	public static void InitializeReceivers() {
 		ServerPlayNetworking.registerGlobalReceiver(C2S_REQUEST_PRESETS, (server, player, handler, buf, sender) -> sendPresets(player));
 		ServerPlayNetworking.registerGlobalReceiver(C2S_REQUEST_DISPLAY_PRESETS, (server, player, handler, buf, sender) -> sendDisplayPresets(player));
@@ -41,7 +43,7 @@ public class SwitchyClientServerNetworking {
 	}
 
 	public static void InitializeRelays() {
-		SwitchyEvents.SWITCH.register((player, event) -> ServerPlayNetworking.send(player, SwitchySwitchEvent.S2C_EVENT_SWITCH, PacketByteBufs.create().writeNbt(event.toNbt())));
+		SwitchyEvents.SWITCH.register((player, event) -> ServerPlayNetworking.send(player, S2C_EVENT_SWITCH, PacketByteBufs.create().writeNbt(event.toNbt())));
 	}
 
 	private static void sendDisplayPresets(ServerPlayerEntity player) {
@@ -95,19 +97,19 @@ public class SwitchyClientServerNetworking {
 			return;
 		}
 
-		importedPresets.modules.forEach((moduleId, enabled) -> {
-			if (enabled && (!presets.modules.containsKey(moduleId) || !presets.modules.get(moduleId) || excludeModules.contains(moduleId) || getEditable(moduleId) == SwitchyModuleEditable.NEVER || (!opModules.contains(moduleId) && getEditable(moduleId) == SwitchyModuleEditable.OPERATOR))) {
-				importedPresets.disableModule(moduleId);
+		if (!opModules.isEmpty() && player.hasPermissionLevel(2)) {
+			tellWarn(player, "commands.switchy.import.fail.permission", getIdListText(opModules));
+			return;
+		}
+
+		importedPresets.getModules().forEach((id, enabled) -> {
+			if (enabled && (!presets.containsModule(id) || !presets.isModuleEnabled(id) || excludeModules.contains(id) || getEditable(id) == SwitchyModuleEditable.NEVER || (getEditable(id) == SwitchyModuleEditable.OPERATOR && !opModules.contains(id)))) {
+				importedPresets.disableModule(id);
 			}
 		});
 
 		String command = presetNbt.getString("command");
 
-		if (!opModules.isEmpty() && player.hasPermissionLevel(2)) {
-			tellWarn(player, "commands.switchy.import.fail.permission", getIdText(opModules));
-			return;
-		}
-
-		SwitchyCommands.confirmAndImportPresets(player, importedPresets.presets, importedPresets.getEnabledModules(), command);
+		SwitchyCommands.confirmAndImportPresets(player, importedPresets.getPresets(), importedPresets.getEnabledModules(), command);
 	}
 }

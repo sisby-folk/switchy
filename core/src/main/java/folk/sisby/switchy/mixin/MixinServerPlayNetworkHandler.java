@@ -18,6 +18,6 @@ public abstract class MixinServerPlayNetworkHandler {
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;m_lseobmtm(Lnet/minecraft/network/packet/c2s/play/ChatCommandC2SPacket;)V", shift = At.Shift.AFTER), method = "m_bbegevsu(Lnet/minecraft/network/packet/c2s/play/ChatCommandC2SPacket;)V")
 	void onChatCommand(ChatCommandC2SPacket packet, CallbackInfo ci)
 	{
-		SwitchyCommands.HISTORY.put(this.player.getUuid(), packet.command());
+		SwitchyCommands.HISTORY.put(player.getUuid(), packet.command());
 	}
 }

@@ -10,15 +10,15 @@ public class FabricTailorCompat extends FabricTailorCompatData implements Switch
 	@Override
 	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
 		TailoredPlayer tailoredPlayer = (TailoredPlayer) player;
-		this.skinValue = tailoredPlayer.getSkinValue();
-		this.skinSignature = tailoredPlayer.getSkinSignature();
+		skinValue = tailoredPlayer.getSkinValue();
+		skinSignature = tailoredPlayer.getSkinSignature();
 	}
 
 	@Override
 	public void applyToPlayer(ServerPlayerEntity player) {
 		TailoredPlayer tailoredPlayer = (TailoredPlayer) player;
-		if (this.skinValue != null && this.skinSignature != null) {
-			tailoredPlayer.setSkin(this.skinValue, this.skinSignature, true);
+		if (skinValue != null && skinSignature != null) {
+			tailoredPlayer.setSkin(skinValue, skinSignature, true);
 		}
 	}
 

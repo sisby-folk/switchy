@@ -21,16 +21,16 @@ public class DrogtorCompatData implements SwitchySerializable {
 	@Override
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
-		if (this.nickname != null) outNbt.putString(KEY_NICKNAME, this.nickname);
-		if (this.namecolor != null) outNbt.putString(KEY_NAME_COLOR, this.namecolor.getName());
-		if (this.bio != null) outNbt.putString(KEY_BIO, this.bio);
+		if (nickname != null) outNbt.putString(KEY_NICKNAME, nickname);
+		if (namecolor != null) outNbt.putString(KEY_NAME_COLOR, namecolor.getName());
+		if (bio != null) outNbt.putString(KEY_BIO, bio);
 		return outNbt;
 	}
 
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
-		this.nickname = nbt.contains(KEY_NICKNAME) ? nbt.getString(KEY_NICKNAME) : null;
-		this.namecolor = nbt.contains(KEY_NAME_COLOR) ? Formatting.byName(nbt.getString(KEY_NAME_COLOR)) : null;
-		this.bio = nbt.contains(KEY_BIO) ? nbt.getString(KEY_BIO) : null;
+		nickname = nbt.contains(KEY_NICKNAME) ? nbt.getString(KEY_NICKNAME) : null;
+		namecolor = nbt.contains(KEY_NAME_COLOR) ? Formatting.byName(nbt.getString(KEY_NAME_COLOR)) : null;
+		bio = nbt.contains(KEY_BIO) ? nbt.getString(KEY_BIO) : null;
 	}
 }

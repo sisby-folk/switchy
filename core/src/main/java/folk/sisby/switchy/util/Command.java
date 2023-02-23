@@ -23,7 +23,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static folk.sisby.switchy.Switchy.LOGGER;
-import static folk.sisby.switchy.api.SwitchyPresetAPI.*;
 import static folk.sisby.switchy.util.Feedback.tellInvalid;
 
 public class Command {
@@ -35,16 +34,15 @@ public class Command {
 		void accept(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5);
 	}
 
-
 	public static CompletableFuture<Suggestions> suggestPresets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, boolean allowCurrent) throws CommandSyntaxException {
-		ServerPlayerEntity player = context.getSource().getPlayer();
-		CommandSource.suggestMatching(getPlayerPresetNames(player).stream().filter((s) -> allowCurrent || !Objects.equals(s, getPlayerCurrentPresetName(player))), builder);
+		SwitchyPresets presets = ((SwitchyPlayer) context.getSource().getPlayer()).switchy$getPresets();
+		CommandSource.suggestMatching(presets.getPresetNames().stream().filter((s) -> allowCurrent || !Objects.equals(s, presets.getCurrentPresetName())), builder);
 		return builder.buildFuture();
 	}
 
 	public static CompletableFuture<Suggestions> suggestModules(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, boolean enabled) throws CommandSyntaxException {
-		ServerPlayerEntity player = context.getSource().getPlayer();
-		CommandSource.suggestIdentifiers(getPlayerModules(player).entrySet().stream().filter(e -> e.getValue() == enabled).map(Map.Entry::getKey), builder);
+		SwitchyPresets presets = ((SwitchyPlayer) context.getSource().getPlayer()).switchy$getPresets();
+		CommandSource.suggestIdentifiers(presets.getModules().entrySet().stream().filter(e -> e.getValue() == enabled).map(Map.Entry::getKey), builder);
 		return builder.buildFuture();
 	}
 

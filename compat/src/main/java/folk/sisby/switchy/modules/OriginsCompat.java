@@ -31,14 +31,14 @@ public class OriginsCompat implements SwitchyModule, SwitchyModuleDisplayable {
 	@Override
 	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
 		OriginComponent originComponent = ModComponents.ORIGIN.get(player);
-		this.origins = new HashMap<>(originComponent.getOrigins());
+		origins = new HashMap<>(originComponent.getOrigins());
 	}
 
 	@Override
 	public void applyToPlayer(ServerPlayerEntity player) {
-		if (this.origins != null) {
-			for (OriginLayer layer : this.origins.keySet()) {
-				setOrigin(player, layer, this.origins.get(layer));
+		if (origins != null) {
+			for (OriginLayer layer : origins.keySet()) {
+				setOrigin(player, layer, origins.get(layer));
 			}
 		}
 	}
@@ -56,7 +56,7 @@ public class OriginsCompat implements SwitchyModule, SwitchyModuleDisplayable {
 		NbtCompound outNbt = new NbtCompound();
 		// From Origins PlayerOriginComponent
 		NbtList originLayerList = new NbtList();
-		if (this.origins != null) {
+		if (origins != null) {
 			origins.forEach((key, value) -> {
 				NbtCompound layerTag = new NbtCompound();
 				layerTag.putString(KEY_LAYER, key.getIdentifier().toString());
@@ -75,7 +75,7 @@ public class OriginsCompat implements SwitchyModule, SwitchyModuleDisplayable {
 
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
-		this.origins = new HashMap<>();
+		origins = new HashMap<>();
 		if (nbt.contains(KEY_ORIGINS_LIST, NbtElement.LIST_TYPE)) {
 			NbtList originLayerList = nbt.getList(KEY_ORIGINS_LIST, NbtElement.COMPOUND_TYPE);
 			for (NbtElement layerElement : originLayerList) {
@@ -85,7 +85,7 @@ public class OriginsCompat implements SwitchyModule, SwitchyModuleDisplayable {
 					try {
 						OriginLayer layer = OriginLayers.getLayer(Identifier.tryParse(layerId));
 						Origin origin = OriginRegistry.get(Identifier.tryParse(originId));
-						this.origins.put(layer, origin);
+						origins.put(layer, origin);
 					} catch (IllegalArgumentException e) {
 						Switchy.LOGGER.warn("[Switchy] Failed to load preset origin with layer" + layerId + " and origin " + originId);
 					}

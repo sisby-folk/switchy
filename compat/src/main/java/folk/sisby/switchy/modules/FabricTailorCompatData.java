@@ -18,15 +18,15 @@ public class FabricTailorCompatData implements SwitchySerializable {
 	@Override
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
-		if (this.skinValue != null) outNbt.putString(KEY_SKIN_VALUE, this.skinValue);
-		if (this.skinSignature != null) outNbt.putString(KEY_SKIN_SIGNATURE, this.skinSignature);
+		if (skinValue != null) outNbt.putString(KEY_SKIN_VALUE, skinValue);
+		if (skinSignature != null) outNbt.putString(KEY_SKIN_SIGNATURE, skinSignature);
 
 		return outNbt;
 	}
 
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
-		this.skinValue = nbt.contains(KEY_SKIN_VALUE) ? nbt.getString(KEY_SKIN_VALUE) : null;
-		this.skinSignature = nbt.contains(KEY_SKIN_SIGNATURE) ? nbt.getString(KEY_SKIN_SIGNATURE) : null;
+		skinValue = nbt.contains(KEY_SKIN_VALUE) ? nbt.getString(KEY_SKIN_VALUE) : null;
+		skinSignature = nbt.contains(KEY_SKIN_SIGNATURE) ? nbt.getString(KEY_SKIN_SIGNATURE) : null;
 	}
 }

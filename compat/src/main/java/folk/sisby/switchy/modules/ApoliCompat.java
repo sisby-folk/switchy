@@ -34,7 +34,7 @@ public class ApoliCompat implements SwitchyModule {
 		powerNbt.clear();
 		List<Power> powers = PowerHolderComponent.KEY.get(player).getPowers();
 		for (Power power : powers) {
-			this.powerNbt.put(power.getType(), power.toTag());
+			powerNbt.put(power.getType(), power.toTag());
 		}
 		if (nextPreset != null) {
 			clearInventories(PowerHolderComponent.getPowers(player, InventoryPower.class));
@@ -43,12 +43,12 @@ public class ApoliCompat implements SwitchyModule {
 
 	@Override
 	public void applyToPlayer(ServerPlayerEntity player) {
-		for (Map.Entry<PowerType<?>, NbtElement> entry : powerNbt.entrySet()) {
-			Power power = PowerHolderComponent.KEY.get(player).getPower(entry.getKey());
+		powerNbt.forEach((powerType, nbt) -> {
+			Power power = PowerHolderComponent.KEY.get(player).getPower(powerType);
 			if (power != null) {
-				power.fromTag(entry.getValue());
+				power.fromTag(nbt);
 			}
-		}
+		});
 	}
 
 	private static void clearInventories(List<InventoryPower> powers) {
@@ -59,19 +59,19 @@ public class ApoliCompat implements SwitchyModule {
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		NbtList powerNbtList = new NbtList();
-		for (Map.Entry<PowerType<?>, NbtElement> entry : powerNbt.entrySet()) {
+		powerNbt.forEach((powerType, nbt) -> {
 			NbtCompound powerTag = new NbtCompound();
-			powerTag.putString("PowerType", entry.getKey().getIdentifier().toString());
-			powerTag.put("Data", entry.getValue());
+			powerTag.putString("PowerType", powerType.getIdentifier().toString());
+			powerTag.put("Data", nbt);
 			powerNbtList.add(powerTag);
-		}
+		});
 		outNbt.put(KEY_POWER_DATA_LIST, powerNbtList);
 		return outNbt;
 	}
 
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
-		this.powerNbt.clear();
+		powerNbt.clear();
 		if (nbt.contains(KEY_POWER_DATA_LIST, NbtElement.LIST_TYPE)) {
 			NbtList powerDataList = nbt.getList(KEY_POWER_DATA_LIST, NbtElement.COMPOUND_TYPE);
 			for (NbtElement dataElement : powerDataList) {
@@ -80,7 +80,7 @@ public class ApoliCompat implements SwitchyModule {
 					NbtElement powerData = dataCompound.get("Data");
 					try {
 						PowerType<?> powerType = PowerTypeRegistry.get(Identifier.tryParse(powerId));
-						this.powerNbt.put(powerType, powerData);
+						powerNbt.put(powerType, powerData);
 					} catch (IllegalArgumentException e) {
 						Switchy.LOGGER.warn("[Switchy] Failed to load preset power with id" + powerId);
 					}

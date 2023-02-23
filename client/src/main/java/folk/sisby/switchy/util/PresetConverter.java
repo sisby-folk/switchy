@@ -16,7 +16,7 @@ public class PresetConverter {
 		NbtList enabledList = new NbtList();
 		NbtList disabledList = new NbtList();
 
-		presets.modules.forEach((key, value) -> {
+		presets.getModules().forEach((key, value) -> {
 			if (value) enabledList.add(NbtString.of(key.toString()));
 			if (!value) disabledList.add(NbtString.of(key.toString()));
 		});
@@ -25,18 +25,16 @@ public class PresetConverter {
 		outNbt.put(KEY_PRESET_MODULE_DISABLED, disabledList);
 
 		NbtCompound listNbt = new NbtCompound();
-		for (SwitchyPreset preset : presets.presets.values()) {
-			listNbt.put(preset.name, presetToNbt(preset));
-		}
+		presets.getPresets().forEach((name, preset) -> listNbt.put(name, presetToNbt(preset)));
 		outNbt.put(KEY_PRESET_LIST, listNbt);
 
-		if (presets.currentPreset != null) outNbt.putString(KEY_PRESET_CURRENT, presets.currentPreset.name);
+		outNbt.putString(KEY_PRESET_CURRENT, presets.getCurrentPresetName());
 		return outNbt;
 	}
 
 	public static NbtCompound presetToNbt(SwitchyPreset preset) {
 		NbtCompound outNbt = new NbtCompound();
-		preset.modules.forEach((id, module) -> {
+		preset.getModules().forEach((id, module) -> {
 			if (module instanceof SwitchyModuleDisplayable displayableModule) {
 				outNbt.put(id.toString(), displayableModule.toDisplayNbt());
 			}

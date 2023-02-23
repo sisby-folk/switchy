@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 
 import static folk.sisby.switchy.SwitchyClientServerNetworking.*;
-import static folk.sisby.switchy.api.events.SwitchySwitchEvent.S2C_EVENT_SWITCH;
 import static folk.sisby.switchy.util.Command.consumeEventPacket;
 import static folk.sisby.switchy.util.Feedback.*;
 
@@ -28,9 +27,9 @@ public class SwitchyClientNetworking {
 		ClientPlayNetworking.registerGlobalReceiver(S2C_DISPLAY_PRESETS, (client, handler, buf, sender) -> displayPresets(client, buf.readNbt()));
 	}
 
-	public static void sendSwitch(String presetName) {
+	public static void switchCurrentPreset(String name) {
 		PacketByteBuf buf = PacketByteBufs.create();
-		buf.writeString(presetName);
+		buf.writeString(name);
 		ClientPlayNetworking.send(C2S_SWITCH, buf);
 	}
 

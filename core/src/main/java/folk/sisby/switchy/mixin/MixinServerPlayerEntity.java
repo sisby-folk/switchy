@@ -50,7 +50,7 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Sw
 
 	@Override
 	public void switchy$setPresets(SwitchyPresets presets) {
-		this.switchy$switchyPresets = presets;
+		switchy$switchyPresets = presets;
 	}
 
 	@Override

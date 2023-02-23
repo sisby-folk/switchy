@@ -35,14 +35,14 @@ public class FabricationArmorCompat implements SwitchyModule {
 	@Override
 	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
 		if (player instanceof GetSuppressedSlots gss) {
-			this.suppressedSlots = new HashSet<>();
-			this.suppressedSlots.addAll(gss.fabrication$getSuppressedSlots());
+			suppressedSlots = new HashSet<>();
+			suppressedSlots.addAll(gss.fabrication$getSuppressedSlots());
 		}
 	}
 
 	@Override
 	public void applyToPlayer(ServerPlayerEntity player) {
-		if (this.suppressedSlots != null && player instanceof GetSuppressedSlots gss) {
+		if (suppressedSlots != null && player instanceof GetSuppressedSlots gss) {
 			gss.fabrication$getSuppressedSlots().clear();
 			gss.fabrication$getSuppressedSlots().addAll(suppressedSlots);
 

@@ -1,18 +1,15 @@
 package folk.sisby.switchy.api.events;
 
-import folk.sisby.switchy.Switchy;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.UUID;
 
 public class SwitchySwitchEvent {
-	public static final Identifier S2C_EVENT_SWITCH = new Identifier(Switchy.ID, "s2c_event_switch");
 	public final UUID player;
 	public final @Nullable String previousPreset; // Null previous preset means "joined"
 	public final @Nullable String currentPreset; // Null current preset means "disconnected"
@@ -23,10 +20,10 @@ public class SwitchySwitchEvent {
 	private static final String KEY_PREVIOUS_PRESET = "previousName";
 	private static final String KEY_ENABLED_MODULES = "enabledModules";
 
-	public SwitchySwitchEvent(UUID player, @Nullable String currentName, @Nullable String previousName, List<String> enabledModules) {
+	public SwitchySwitchEvent(UUID player, @Nullable String currentPreset, @Nullable String previousPreset, List<String> enabledModules) {
 		this.player = player;
-		this.previousPreset = previousName;
-		this.currentPreset = currentName;
+		this.previousPreset = previousPreset;
+		this.currentPreset = currentPreset;
 		this.enabledModules = enabledModules;
 	}
 

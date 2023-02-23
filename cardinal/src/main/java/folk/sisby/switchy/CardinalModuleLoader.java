@@ -35,20 +35,17 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 
 	@Override
 	protected void apply(Map<Identifier, JsonElement> prepared, ResourceManager manager, Profiler profiler) {
-		for (Map.Entry<Identifier, JsonElement> file : prepared.entrySet()) {
-			Identifier moduleId = file.getKey(); // namespace:filename
-			if (SwitchyModuleRegistry.SUPPLIERS.containsKey(moduleId)) {
-				continue;
+		prepared.forEach((moduleId, contents) -> {
+			if (SwitchyModuleRegistry.containsModule(moduleId)) {
+				return;
 			}
-
-			JsonObject componentOptions = file.getValue().getAsJsonObject();
-
-			if (!componentOptions.has(KEY_DEFAULT)|| !componentOptions.has(KEY_EDITABLE) || !componentOptions.has(KEY_COMPONENTS)) {
-				Switchy.LOGGER.warn("[Switchy] CCA module '{}' is missing options, skipping...", file.getKey());
-				continue;
+			JsonObject componentOptions = contents.getAsJsonObject();
+			if (!componentOptions.has(KEY_DEFAULT) || !componentOptions.has(KEY_EDITABLE) || !componentOptions.has(KEY_COMPONENTS)) {
+				Switchy.LOGGER.warn("[Switchy] CCA module '{}' is missing options, skipping...", moduleId);
+				return;
 			}
 			if (componentOptions.has(KEY_IF_MODS_LOADED) && !StreamSupport.stream(componentOptions.get(KEY_IF_MODS_LOADED).getAsJsonArray().spliterator(), true).map(JsonElement::getAsString).allMatch(QuiltLoader::isModLoaded)) {
-				continue;
+				return;
 			}
 			try {
 				SwitchyModuleEditable componentEditable = SwitchyModuleEditable.valueOf(componentOptions.get(KEY_EDITABLE).getAsString());
@@ -57,7 +54,7 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 				for (JsonElement componentEntry : componentOptions.get(KEY_COMPONENTS).getAsJsonArray()) {
 					Identifier componentId = Identifier.tryParse(componentEntry.getAsString());
 					if (componentId == null) {
-						Switchy.LOGGER.warn("[Switchy] Cardinal component '{}' from module {} is not a valid identifier, skipping...", componentEntry.getAsString(), file.getKey());
+						Switchy.LOGGER.warn("[Switchy] Cardinal component '{}' from module {} is not a valid identifier, skipping...", componentEntry.getAsString(), moduleId);
 						componentIds.clear();
 						break;
 					}
@@ -67,15 +64,15 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 					try {
 						CardinalSerializerCompat.register(moduleId, componentIds, componentDefault, componentEditable);
 					} catch (IllegalStateException ignored) {
-						Switchy.LOGGER.warn("[Switchy] CCA module {} tried to register a component that already has a module!, skipping...", file.getKey());
+						Switchy.LOGGER.warn("[Switchy] CCA module {} tried to register a component that already has a module!, skipping...", moduleId);
 					}
 				}
 			} catch (UnsupportedOperationException e) {
-				Switchy.LOGGER.warn("[Switchy] CCA module '{}' has non-boolean options, skipping...", file.getKey());
+				Switchy.LOGGER.warn("[Switchy] CCA module '{}' has non-boolean options, skipping...", moduleId);
 			} catch (IllegalArgumentException e) {
-				Switchy.LOGGER.warn("[Switchy] CCA module '{}' has invalid editable option, skipping...", file.getKey());
+				Switchy.LOGGER.warn("[Switchy] CCA module '{}' has invalid editable option, skipping...", moduleId);
 			}
-		}
+		});
 	}
 
 	@Override

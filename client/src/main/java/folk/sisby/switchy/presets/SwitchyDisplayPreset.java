@@ -15,12 +15,12 @@ import java.util.Map;
 @ClientOnly
 public class SwitchyDisplayPreset extends SwitchyPresetData<SwitchyDisplayModule> {
 	public SwitchyDisplayPreset(String name, Map<Identifier, Boolean> modules) {
-		super(name, modules, SwitchyDisplayModuleRegistry.MODULE_SUPPLIERS);
+		super(name, modules, SwitchyDisplayModuleRegistry::supplyModule);
 	}
 
 	public Map<Identifier, Pair<Component, SwitchySwitchScreenPosition>> getDisplayComponents() {
 		Map<Identifier, Pair<Component, SwitchySwitchScreenPosition>> map = new HashMap<>();
-		modules.forEach((id, module) -> {
+		getModules().forEach((id, module) -> {
 			@Nullable Pair<Component, SwitchySwitchScreenPosition> component = module.getDisplayComponent();
 			if (component != null) {
 				map.put(id, component);

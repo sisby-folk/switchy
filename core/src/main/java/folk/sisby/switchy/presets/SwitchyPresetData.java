@@ -3,26 +3,31 @@ package folk.sisby.switchy.presets;
 import folk.sisby.switchy.api.SwitchySerializable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.ApiStatus;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 public class SwitchyPresetData<Module extends SwitchySerializable> implements SwitchySerializable {
-	public final Map<Identifier, Module> modules;
-	public String name;
+	private final Map<Identifier, Module> modules;
+	private String name;
 
-	public SwitchyPresetData(String name, Map<Identifier, Boolean> modules, Map<Identifier, Supplier<Module>> moduleSupplier) {
+	public SwitchyPresetData(String name, Map<Identifier, Boolean> modules, Function<Identifier, Module> moduleSupplier) {
 		this.name = name;
-		this.modules = modules.entrySet().stream().filter(Map.Entry::getValue).collect(Collectors.toMap(
-				Map.Entry::getKey,
-				e -> moduleSupplier.get(e.getKey()).get()
-		));
+		Map<Identifier, Module> suppliedModules = new HashMap<>();
+		modules.forEach((id, enabled) -> {
+			if (enabled) {
+				Module module = moduleSupplier.apply(id);
+				if (module != null) suppliedModules.put(id, moduleSupplier.apply(id));
+			}
+		});
+		this.modules = suppliedModules;
 	}
 
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
-		this.modules.forEach((id, module) -> outNbt.put(id.toString(), module.toNbt()));
+		modules.forEach((id, module) -> outNbt.put(id.toString(), module.toNbt()));
 		return outNbt;
 	}
 
@@ -30,8 +35,43 @@ public class SwitchyPresetData<Module extends SwitchySerializable> implements Sw
 		modules.forEach((id, module) -> module.fillFromNbt(nbt.getCompound(id.toString())));
 	}
 
+	// Modules Accessors
+
+	@ApiStatus.Internal
+	public Map<Identifier, Module> getModules() {
+		return modules;
+	}
+
+	@ApiStatus.Internal
+	public Module getModule(Identifier id) {
+		return modules.get(id);
+	}
+
+	@ApiStatus.Internal
+	public void putModule(Identifier id, Module module) {
+		modules.put(id, module);
+	}
+
+	public boolean containsModule(Identifier id) {
+		return modules.containsKey(id);
+	}
+
+	public void removeModule(Identifier id) {
+		modules.remove(id);
+	}
+
+	// Name Accessors
+
+	public String getName() {
+		return name;
+	}
+
+	void setName(String name) {
+		this.name = name;
+	}
+
 	@Override
 	public String toString() {
-		return name;
+		return getName();
 	}
 }

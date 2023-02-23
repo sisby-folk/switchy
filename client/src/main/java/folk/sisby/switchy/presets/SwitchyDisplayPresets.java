@@ -13,7 +13,7 @@ import java.util.HashMap;
 @ClientOnly
 public class SwitchyDisplayPresets extends SwitchyPresetsData<SwitchyDisplayModule, SwitchyDisplayPreset> {
 	public SwitchyDisplayPresets() {
-		super(new HashMap<>(), SwitchyDisplayPreset::new, SwitchyDisplayModuleRegistry.MODULE_SUPPLIERS, true, SwitchyClient.LOGGER);
+		super(new HashMap<>(), SwitchyDisplayPreset::new, SwitchyDisplayModuleRegistry::supplyModule, true, SwitchyClient.LOGGER);
 	}
 
 	@Override // Don't Log. Don't check for existence. `modules` is expected to be desync'd from the DisplayModules.
@@ -21,7 +21,7 @@ public class SwitchyDisplayPresets extends SwitchyPresetsData<SwitchyDisplayModu
 		list.forEach((e) -> {
 			Identifier id;
 			if (e instanceof NbtString s && (id = Identifier.tryParse(s.asString())) != null) {
-				modules.put(id, enabled);
+				getModules().put(id, enabled);
 			}
 		});
 	}

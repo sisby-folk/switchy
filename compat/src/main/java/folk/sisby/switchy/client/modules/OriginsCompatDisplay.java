@@ -52,7 +52,7 @@ public class OriginsCompatDisplay implements SwitchyDisplayModule {
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		NbtList originLayerList = new NbtList();
-		if (this.origins != null) {
+		if (origins != null) {
 			origins.forEach((key, value) -> {
 				NbtCompound layerTag = new NbtCompound();
 				layerTag.putString(KEY_LAYER, key);
@@ -66,12 +66,12 @@ public class OriginsCompatDisplay implements SwitchyDisplayModule {
 
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
-		this.origins = new HashMap<>();
+		origins = new HashMap<>();
 		if (nbt.contains(KEY_ORIGINS_LIST, NbtElement.LIST_TYPE)) {
 			NbtList originLayerList = nbt.getList(KEY_ORIGINS_LIST, NbtElement.COMPOUND_TYPE);
 			for (NbtElement layerElement : originLayerList) {
 				if (layerElement instanceof NbtCompound layerCompound) {
-					this.origins.put(layerCompound.getString(KEY_LAYER), new Identifier(layerCompound.getString(KEY_ORIGIN)));
+					origins.put(layerCompound.getString(KEY_LAYER), new Identifier(layerCompound.getString(KEY_ORIGIN)));
 				}
 			}
 		}

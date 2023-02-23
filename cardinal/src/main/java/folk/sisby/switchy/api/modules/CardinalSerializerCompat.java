@@ -38,12 +38,12 @@ public class CardinalSerializerCompat implements SwitchyModule {
 
 	@Override
 	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
-		this.moduleNbt = new NbtCompound();
+		moduleNbt = new NbtCompound();
 		componentConfigs.forEach((id, componentConfig) -> {
 			NbtCompound componentCompound = new NbtCompound();
 			Component component = componentConfig.registryKey.get(player);
 			component.writeToNbt(componentCompound);
-			this.moduleNbt.put(id.toString(), componentCompound);
+			moduleNbt.put(id.toString(), componentCompound);
 		});
 	}
 
@@ -64,7 +64,7 @@ public class CardinalSerializerCompat implements SwitchyModule {
 
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
-		this.moduleNbt.copyFrom(nbt);
+		moduleNbt.copyFrom(nbt);
 	}
 
 	public CardinalSerializerCompat(Map<Identifier, ComponentConfig<? extends Component>> componentConfigs) {
@@ -76,10 +76,10 @@ public class CardinalSerializerCompat implements SwitchyModule {
 		return new CardinalSerializerCompat(Map.of(registryKey.getId(), new ComponentConfig<>(registryKey, preApplyClear, postApplySync)));
 	}
 
-	public static void register(Identifier moduleId, Set<Identifier> componentKeyId, Boolean isDefault, SwitchyModuleEditable editable) {
+	public static void register(Identifier moduleId, Set<Identifier> componentKeyIds, Boolean isDefault, SwitchyModuleEditable editable) {
 			SwitchyModuleRegistry.registerModule(moduleId, () -> {
 				Map<Identifier, ComponentConfig<?>> map = new HashMap<>();
-				for (Identifier identifier : componentKeyId) {
+				for (Identifier identifier : componentKeyIds) {
 					ComponentKey<?> componentKey = ComponentRegistry.get(identifier);
 					if (componentKey == null) {
 						Switchy.LOGGER.warn("[Switchy] cardinal module {} failed to instantiate, as its component isn't created yet.", moduleId);
@@ -88,6 +88,6 @@ public class CardinalSerializerCompat implements SwitchyModule {
 					map.put(identifier, new ComponentConfig<>(componentKey, (k, p) -> {}, (k, p) -> {}));
 				}
 				return new CardinalSerializerCompat(map);
-			}, new SwitchyModuleInfo(isDefault, editable, Set.of(), componentKeyId));
+			}, new SwitchyModuleInfo(isDefault, editable, Set.of(), componentKeyIds));
 	}
 }

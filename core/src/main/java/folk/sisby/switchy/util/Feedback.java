@@ -84,7 +84,7 @@ public class Feedback {
 		return Text.literal(string);
 	}
 
-	public static MutableText getIdText(List<Identifier> identifiers) {
+	public static MutableText getIdListText(List<Identifier> identifiers) {
 		return literal("[").append(Texts.join(
 				identifiers,
 				literal(", "),

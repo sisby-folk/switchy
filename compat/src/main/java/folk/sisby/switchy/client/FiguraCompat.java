@@ -24,7 +24,7 @@ public class FiguraCompat implements FiguraAPI {
 
 	@Override
 	public Collection<Class<?>> getWhitelistedClasses() {
-		return List.of(this.getClass());
+		return List.of(getClass());
 	}
 
 	@LuaWhitelist

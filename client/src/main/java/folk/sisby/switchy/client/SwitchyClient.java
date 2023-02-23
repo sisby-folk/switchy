@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SwitchyClient implements ClientModInitializer {
-
 	public static final String ID = "switchy_client";
 	public static final Logger LOGGER = LoggerFactory.getLogger(Switchy.ID + "-client");
 	public static final String EXPORT_PATH = "config/switchy";

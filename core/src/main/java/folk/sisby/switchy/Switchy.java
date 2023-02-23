@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Switchy implements ModInitializer {
-
 	public static final String ID = "switchy";
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
@@ -19,6 +18,6 @@ public class Switchy implements ModInitializer {
 	@Override
 	public void onInitialize(ModContainer mod) {
 		SwitchyEvents.INIT.invoker().onInitialize();
-		Switchy.LOGGER.info("[Switchy] Initialized! Registered Modules: " + SwitchyModuleRegistry.SUPPLIERS.keySet());
+		Switchy.LOGGER.info("[Switchy] Initialized! Registered Modules: " + SwitchyModuleRegistry.getModules());
 	}
 }

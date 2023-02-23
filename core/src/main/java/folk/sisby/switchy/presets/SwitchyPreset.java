@@ -12,11 +12,11 @@ import java.util.Set;
 
 public class SwitchyPreset extends SwitchyPresetData<SwitchyModule> {
 	public SwitchyPreset(String name, Map<Identifier, Boolean> modules) {
-		super(name, modules, SwitchyModuleRegistry.SUPPLIERS);
+		super(name, modules, SwitchyModuleRegistry::supplyModule);
 	}
 
 	public void updateFromPlayer(ServerPlayerEntity player, String nextPreset) {
-		this.modules.forEach((id, module) -> {
+		getModules().forEach((id, module) -> {
 			try {
 				module.updateFromPlayer(player, nextPreset);
 			} catch (Exception ex) {
@@ -30,7 +30,7 @@ public class SwitchyPreset extends SwitchyPresetData<SwitchyModule> {
 		if (!registeredModules.contains(id) && modules.containsKey(id)) {
 			try {
 				SwitchyModule module = modules.get(id);
-				SwitchyModuleRegistry.INFO.get(id).applyDependencies().forEach((depId) -> tryApplyModule(modules, depId, player, registeredModules));
+				SwitchyModuleRegistry.getApplyDependencies(id).forEach((depId) -> tryApplyModule(modules, depId, player, registeredModules));
 				module.applyToPlayer(player);
 			} catch (Exception ex) {
 				Switchy.LOGGER.error("[Switchy] Module " + id + " failed to apply! Error:");
@@ -41,6 +41,6 @@ public class SwitchyPreset extends SwitchyPresetData<SwitchyModule> {
 	}
 
 	public void applyToPlayer(ServerPlayerEntity player) {
-		this.modules.forEach((id, module) -> tryApplyModule(modules, id, player, new HashSet<>()));
+		getModules().forEach((id, module) -> tryApplyModule(getModules(), id, player, new HashSet<>()));
 	}
 }

@@ -23,14 +23,14 @@ public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleDispla
 	@Override
 	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
 		NicknameHolder holder = NicknameHolder.of(player);
-		this.styled_nickname = holder.sn_get();
+		styled_nickname = holder.sn_get();
 	}
 
 	@Override
 	public void applyToPlayer(ServerPlayerEntity player) {
 		NicknameHolder holder = NicknameHolder.of(player);
 		String oldName = player.getDisplayName().getString();
-		holder.sn_set(this.styled_nickname, false);
+		holder.sn_set(styled_nickname, false);
 		String newName = player.getDisplayName().getString();
 		if (!Objects.equals(oldName, newName)) Switchy.LOGGER.info("[Switchy] Player Nickname Change: '" + oldName + "' -> '" + newName + "' [" + player.getGameProfile().getName() + "]");
 	}
@@ -38,20 +38,20 @@ public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleDispla
 	@Override
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
-		if (this.styled_nickname != null) outNbt.putString(KEY_NICKNAME, this.styled_nickname);
+		if (styled_nickname != null) outNbt.putString(KEY_NICKNAME, styled_nickname);
 		return outNbt;
 	}
 
 	@Override
 	public NbtCompound toDisplayNbt() {
 		NbtCompound outNbt = new NbtCompound();
-		if (this.styled_nickname != null) outNbt.putString(KEY_NICKNAME, Text.Serializer.toJsonTree(TextParserUtils.formatText(this.styled_nickname)).getAsString());
+		if (styled_nickname != null) outNbt.putString(KEY_NICKNAME, Text.Serializer.toJsonTree(TextParserUtils.formatText(styled_nickname)).getAsString());
 		return outNbt;
 	}
 
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
-		this.styled_nickname = nbt.contains(KEY_NICKNAME) ? nbt.getString(KEY_NICKNAME) : null;
+		styled_nickname = nbt.contains(KEY_NICKNAME) ? nbt.getString(KEY_NICKNAME) : null;
 	}
 
 	public static void touch() {
