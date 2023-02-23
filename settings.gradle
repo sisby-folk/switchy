@@ -80,6 +80,7 @@ dependencyResolutionManagement {
 			version('playerDataApi', "0.2.2+${mc}")
 			version('styledNicknames', "1.1.2+${mc_major}")
 			version('placeholder', "2.0.0-beta.7+${mc_major}")
+			version('figura', "0.1.0-rc.13")
 
 			library('drogtor', 'maven.modrinth', 'drogtor').versionRef('drogtor')
 			library('fabrictailor', 'maven.modrinth', 'fabrictailor').versionRef('fabrictailor')
@@ -91,6 +92,7 @@ dependencyResolutionManagement {
 			library('playerDataApi', 'eu.pb4', 'player-data-api').versionRef('playerDataApi')
 			library('styledNicknames', 'maven.modrinth', 'styled-nicknames').versionRef('styledNicknames')
 			library('placeholder', 'eu.pb4', 'placeholder-api').versionRef('placeholder')
+			library('figura', 'com.github.Kingdom-of-The-Moon', 'FiguraRewriteRewrite').versionRef('figura')
 
 			bundle('compat_compile', [
 					'qfapi',
@@ -99,7 +101,8 @@ dependencyResolutionManagement {
 					'pehkui',
 					'fabrication',
 					'styledNicknames',
-					'placeholder'
+					'placeholder',
+					'figura'
 			])
 			bundle('compat_runtime', [
 					'drogtor',
