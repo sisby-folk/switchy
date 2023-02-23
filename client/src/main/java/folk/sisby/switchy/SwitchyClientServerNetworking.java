@@ -19,7 +19,7 @@ import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 import java.util.List;
 
 import static folk.sisby.switchy.Switchy.LOGGER;
-import static folk.sisby.switchy.SwitchyModules.getEditable;
+import static folk.sisby.switchy.api.module.SwitchyModuleRegistry.getEditable;
 import static folk.sisby.switchy.util.Feedback.*;
 
 public class SwitchyClientServerNetworking {

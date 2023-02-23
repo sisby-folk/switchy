@@ -1,6 +1,7 @@
 package folk.sisby.switchy;
 
 import folk.sisby.switchy.api.SwitchyEvents;
+import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.loader.api.config.QuiltConfig;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
@@ -18,6 +19,6 @@ public class Switchy implements ModInitializer {
 	@Override
 	public void onInitialize(ModContainer mod) {
 		SwitchyEvents.INIT.invoker().onInitialize();
-		Switchy.LOGGER.info("[Switchy] Initialized! Registered Modules: " + SwitchyModules.MODULE_SUPPLIERS.keySet());
+		Switchy.LOGGER.info("[Switchy] Initialized! Registered Modules: " + SwitchyModuleRegistry.SUPPLIERS.keySet());
 	}
 }

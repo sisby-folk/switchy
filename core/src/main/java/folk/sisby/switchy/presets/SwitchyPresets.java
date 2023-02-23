@@ -1,7 +1,7 @@
 package folk.sisby.switchy.presets;
 
 import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.SwitchyModules;
+import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.api.events.SwitchySwitchEvent;
 import folk.sisby.switchy.api.module.SwitchyModule;
@@ -16,9 +16,15 @@ import java.util.stream.Collectors;
 
 public class SwitchyPresets extends SwitchyPresetsData<SwitchyModule, SwitchyPreset> {
 	public SwitchyPresets(boolean forPlayer) {
-		super(SwitchyModules.MODULE_SUPPLIERS.entrySet().stream()
-				.filter(e -> e.getValue().get() != null)
-				.collect(Collectors.toMap(Map.Entry::getKey, e -> SwitchyModules.MODULE_INFO.get(e.getKey()).isDefault())), SwitchyPreset::new, forPlayer, Switchy.LOGGER);
+		super(
+				SwitchyModuleRegistry.SUPPLIERS.entrySet().stream()
+						.filter(e -> e.getValue().get() != null)
+						.collect(Collectors.toMap(Map.Entry::getKey, e -> SwitchyModuleRegistry.INFO.get(e.getKey()).isDefault())),
+				SwitchyPreset::new,
+				SwitchyModuleRegistry.SUPPLIERS,
+				forPlayer,
+				Switchy.LOGGER
+		);
 	}
 
 	public void importFromOther(@Nullable ServerPlayerEntity player, SwitchyPresets other) {
@@ -27,30 +33,12 @@ public class SwitchyPresets extends SwitchyPresetsData<SwitchyModule, SwitchyPre
 
 	public void importFromOther(@Nullable ServerPlayerEntity player, Map<String, SwitchyPreset> other) {
 		// Replace enabled modules for colliding current preset
-		if (other.containsKey(this.currentPreset.presetName) && player != null) {
-			other.get(this.currentPreset.presetName).modules.forEach((moduleId, module) ->
+		if (other.containsKey(this.currentPreset.name) && player != null) {
+			other.get(this.currentPreset.name).modules.forEach((moduleId, module) ->
 					duckCurrentModule(player, moduleId, (duckedModule) -> duckedModule.fillFromNbt(duckedModule.toNbt()))
 			);
 		}
-		other.remove(currentPreset.presetName);
-
-		// Replace enabled modules for collisions
-		other.entrySet().stream().filter(e -> presets.containsKey(e.getKey())).forEach(e -> e.getValue().modules.forEach((moduleId, module) -> {
-			presets.get(e.getKey()).modules.remove(moduleId);
-			presets.get(e.getKey()).modules.put(moduleId, module);
-		}));
-
-		// Add non-colliding presets
-		other.forEach((name, preset) -> {
-			if (!presets.containsKey(name)) {
-				modules.forEach((moduleId, enabled) -> {
-					if (enabled && !preset.modules.containsKey(moduleId)) { // Add missing modules
-						preset.modules.put(moduleId, SwitchyModules.MODULE_SUPPLIERS.get(moduleId).get());
-					}
-				});
-				addPreset(preset);
-			}
-		});
+		importFromOther(other);
 	}
 
 	public String switchCurrentPreset(ServerPlayerEntity player, String presetName) throws IllegalArgumentException, IllegalStateException {
@@ -58,19 +46,19 @@ public class SwitchyPresets extends SwitchyPresetsData<SwitchyModule, SwitchyPre
 		if (presetName.equalsIgnoreCase(Objects.toString(currentPreset, "")))
 			throw new IllegalStateException("Specified preset is already current");
 
-		SwitchyPreset newPreset = presets.get(presetName);
+		SwitchyPreset nextPreset = presets.get(presetName);
 
 		// Perform Switch
-		currentPreset.updateFromPlayer(player, newPreset.presetName);
-		newPreset.applyToPlayer(player);
+		currentPreset.updateFromPlayer(player, nextPreset.name);
+		nextPreset.applyToPlayer(player);
 
 		SwitchySwitchEvent switchEvent = new SwitchySwitchEvent(
-				player.getUuid(), newPreset.presetName, Objects.toString(currentPreset, null), getEnabledModuleNames()
+				player.getUuid(), nextPreset.name, Objects.toString(currentPreset, null), getEnabledModuleNames()
 		);
-		currentPreset = newPreset;
+		currentPreset = nextPreset;
 		SwitchyEvents.SWITCH.invoker().onSwitch(player, switchEvent);
 
-		return currentPreset.presetName;
+		return currentPreset.name;
 	}
 
 	public void saveCurrentPreset(ServerPlayerEntity player) {
@@ -85,12 +73,5 @@ public class SwitchyPresets extends SwitchyPresetsData<SwitchyModule, SwitchyPre
 		module.updateFromPlayer(player, null);
 		mutator.accept(module);
 		module.applyToPlayer(player);
-	}
-
-	public void enableModule(Identifier id) throws IllegalArgumentException, IllegalStateException {
-		if (!modules.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
-		if (modules.get(id)) throw new IllegalStateException("Specified module is already enabled");
-		modules.put(id, true);
-		presets.values().forEach(preset -> preset.modules.put(id, SwitchyModules.MODULE_SUPPLIERS.get(id).get()));
 	}
 }

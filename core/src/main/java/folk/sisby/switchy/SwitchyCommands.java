@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.function.Predicate;
 
 import static folk.sisby.switchy.Switchy.LOGGER;
-import static folk.sisby.switchy.SwitchyModules.MODULE_INFO;
+import static folk.sisby.switchy.api.module.SwitchyModuleRegistry.INFO;
 import static folk.sisby.switchy.util.Command.*;
 import static folk.sisby.switchy.util.Feedback.*;
 
@@ -152,7 +152,7 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 		}
 
 		if (!HISTORY.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command("switchy module disable " + moduleId))) {
-			sendMessage(player, MODULE_INFO.get(moduleId).disableConfirmation().setStyle(FORMAT_WARN.getLeft()));
+			sendMessage(player, INFO.get(moduleId).disableConfirmation().setStyle(FORMAT_WARN.getLeft()));
 			tellInvalidTry(player, "commands.switchy.module.disable.confirmation", "commands.switchy.module.disable.command", literal(moduleId.toString()));
 		} else {
 			presets.disableModule(moduleId);

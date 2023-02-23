@@ -2,6 +2,7 @@ package folk.sisby.switchy.modules;
 
 import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
+import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -56,7 +57,7 @@ public class PehkuiCompat implements SwitchyModule {
 
 	// Runs on touch() - but only once.
 	static {
-		SwitchyModuleRegistry.registerModule(ID, PehkuiCompat::new, true, SwitchyModuleEditable.OPERATOR);
+		SwitchyModuleRegistry.registerModule(ID, PehkuiCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.OPERATOR));
 		List.of(ScaleTypes.HEIGHT, ScaleTypes.WIDTH, ScaleTypes.MODEL_HEIGHT, ScaleTypes.MODEL_WIDTH).forEach(PehkuiCompat::addScaleType);
 	}
 }

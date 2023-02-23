@@ -7,6 +7,7 @@ import com.unascribed.fabrication.interfaces.GetSuppressedSlots;
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
+import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -84,6 +85,6 @@ public class FabricationArmorCompat implements SwitchyModule {
 
 	// Runs on touch() - but only once.
 	static {
-		SwitchyModuleRegistry.registerModule(ID, FabricationArmorCompat::new, true, SwitchyModuleEditable.ALLOWED, QuiltLoader.isModLoaded("fabrictailor") ? Set.of(FabricTailorCompat.ID) : Set.of());
+		SwitchyModuleRegistry.registerModule(ID, FabricationArmorCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALLOWED, QuiltLoader.isModLoaded("fabrictailor") ? Set.of(FabricTailorCompat.ID) : Set.of()));
 	}
 }

@@ -1,10 +1,7 @@
 package folk.sisby.switchy.modules;
 
 import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.api.module.SwitchyModule;
-import folk.sisby.switchy.api.module.SwitchyModuleDisplayable;
-import folk.sisby.switchy.api.module.SwitchyModuleEditable;
-import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
+import folk.sisby.switchy.api.module.*;
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.origin.Origin;
 import io.github.apace100.origins.origin.OriginLayer;
@@ -102,6 +99,6 @@ public class OriginsCompat implements SwitchyModule, SwitchyModuleDisplayable {
 	// Runs on touch() - but only once.
 
 	static {
-		SwitchyModuleRegistry.registerModule(ID, OriginsCompat::new, true, SwitchyModuleEditable.ALLOWED);
+		SwitchyModuleRegistry.registerModule(ID, OriginsCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALLOWED));
 	}
 }

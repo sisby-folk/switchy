@@ -1,9 +1,6 @@
 package folk.sisby.switchy.modules;
 
-import folk.sisby.switchy.api.module.SwitchyModule;
-import folk.sisby.switchy.api.module.SwitchyModuleDisplayable;
-import folk.sisby.switchy.api.module.SwitchyModuleEditable;
-import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
+import folk.sisby.switchy.api.module.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
@@ -35,6 +32,6 @@ public class FabricTailorCompat extends FabricTailorCompatData implements Switch
 
 	// Runs on touch() - but only once.
 	static {
-		SwitchyModuleRegistry.registerModule(ID, FabricTailorCompat::new, true, SwitchyModuleEditable.ALWAYS_ALLOWED);
+		SwitchyModuleRegistry.registerModule(ID, FabricTailorCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALWAYS_ALLOWED));
 	}
 }

@@ -2,10 +2,7 @@ package folk.sisby.switchy.modules;
 
 import com.unascribed.drogtor.DrogtorPlayer;
 import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.api.module.SwitchyModule;
-import folk.sisby.switchy.api.module.SwitchyModuleDisplayable;
-import folk.sisby.switchy.api.module.SwitchyModuleEditable;
-import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
+import folk.sisby.switchy.api.module.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
@@ -42,6 +39,6 @@ public class DrogtorCompat extends DrogtorCompatData implements SwitchyModule, S
 
 	// Runs on touch() - but only once.
 	static {
-		SwitchyModuleRegistry.registerModule(ID, DrogtorCompat::new, true, SwitchyModuleEditable.ALWAYS_ALLOWED);
+		SwitchyModuleRegistry.registerModule(ID, DrogtorCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALWAYS_ALLOWED));
 	}
 }

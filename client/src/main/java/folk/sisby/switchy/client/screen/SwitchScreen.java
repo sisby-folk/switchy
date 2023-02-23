@@ -54,7 +54,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 			horizontalFlow.mouseEnter().subscribe(() -> horizontalFlow.surface(Surface.DARK_PANEL.and(Surface.outline(Color.WHITE.argb()))));
 			horizontalFlow.mouseLeave().subscribe(() -> horizontalFlow.surface(Surface.DARK_PANEL));
 			horizontalFlow.mouseDown().subscribe((x, y, button) -> {
-				SwitchyClientNetworking.sendSwitch(preset.presetName);
+				SwitchyClientNetworking.sendSwitch(preset.name);
 				return true;
 			});
 		}
@@ -100,8 +100,9 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 		rootComponent.surface(Surface.VANILLA_TRANSLUCENT);
 		rootComponent.horizontalAlignment(HorizontalAlignment.CENTER);
 		rootComponent.verticalAlignment(VerticalAlignment.CENTER);
+		rootComponent.gap(2);
 
-		List<Component> presetFlows = new ArrayList<>(displayPresets.presets.values().stream().map(preset -> generatePresetComponent(preset, Objects.equals(preset.presetName, displayPresets.currentPreset.toString()))).toList());
+		List<Component> presetFlows = new ArrayList<>(displayPresets.presets.values().stream().map(preset -> generatePresetComponent(preset, Objects.equals(preset.name, displayPresets.currentPreset.toString()))).toList());
 
 		VerticalFlowLayout presetsLayout = Containers.verticalFlow(Sizing.content(), Sizing.content());
 		presetsLayout.padding(Insets.of(6));
@@ -115,13 +116,8 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 		presetsScroll.padding(Insets.of(4));
 
 		LabelComponent screenLabel = Components.label(Text.literal("Switchy Presets"));
-
-		VerticalFlowLayout screenLabelFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
-		screenLabelFlow.horizontalAlignment(HorizontalAlignment.CENTER);
-		screenLabelFlow.gap(2);
-		screenLabelFlow.children(List.of(screenLabel, presetsScroll));
-
-		rootComponent.child(screenLabelFlow);
+		rootComponent.child(screenLabel);
+		rootComponent.child(presetsScroll);
 	}
 
 	static {
@@ -135,6 +131,6 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 		});
 
 		// Add base components
-		registerBasicPresetComponent(displayPreset -> Pair.of(Components.label(Text.literal(displayPreset.presetName)), SwitchySwitchScreenPosition.SIDE_LEFT));
+		registerBasicPresetComponent(displayPreset -> Pair.of(Components.label(Text.literal(displayPreset.name)), SwitchySwitchScreenPosition.SIDE_LEFT));
 	}
 }

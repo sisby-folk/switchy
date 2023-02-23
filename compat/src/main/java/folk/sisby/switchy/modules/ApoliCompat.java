@@ -3,6 +3,7 @@ package folk.sisby.switchy.modules;
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
+import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.InventoryPower;
@@ -93,6 +94,6 @@ public class ApoliCompat implements SwitchyModule {
 
 	// Runs on touch() - but only once.
 	static {
-		SwitchyModuleRegistry.registerModule(ID, ApoliCompat::new, true, SwitchyModuleEditable.OPERATOR, Set.of(OriginsCompat.ID));
+		SwitchyModuleRegistry.registerModule(ID, ApoliCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.OPERATOR, Set.of(OriginsCompat.ID)));
 	}
 }

@@ -26,11 +26,11 @@ public class PresetConverter {
 
 		NbtCompound listNbt = new NbtCompound();
 		for (SwitchyPreset preset : presets.presets.values()) {
-			listNbt.put(preset.presetName, presetToNbt(preset));
+			listNbt.put(preset.name, presetToNbt(preset));
 		}
 		outNbt.put(KEY_PRESET_LIST, listNbt);
 
-		if (presets.currentPreset != null) outNbt.putString(KEY_PRESET_CURRENT, presets.currentPreset.presetName);
+		if (presets.currentPreset != null) outNbt.putString(KEY_PRESET_CURRENT, presets.currentPreset.name);
 		return outNbt;
 	}
 

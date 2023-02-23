@@ -4,8 +4,9 @@ import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModule;
+import folk.sisby.switchy.api.module.SwitchyModuleEditable;
+import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -87,6 +88,6 @@ public class CardinalSerializerCompat implements SwitchyModule {
 					map.put(identifier, new ComponentConfig<>(componentKey, (k, p) -> {}, (k, p) -> {}));
 				}
 				return new CardinalSerializerCompat(map);
-			}, isDefault, editable, Set.of(), componentKeyId);
+			}, new SwitchyModuleInfo(isDefault, editable, Set.of(), componentKeyId));
 	}
 }

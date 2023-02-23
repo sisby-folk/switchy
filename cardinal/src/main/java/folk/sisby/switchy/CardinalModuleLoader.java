@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
+import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.api.modules.CardinalSerializerCompat;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
@@ -36,7 +37,7 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 	protected void apply(Map<Identifier, JsonElement> prepared, ResourceManager manager, Profiler profiler) {
 		for (Map.Entry<Identifier, JsonElement> file : prepared.entrySet()) {
 			Identifier moduleId = file.getKey(); // namespace:filename
-			if (SwitchyModules.MODULE_SUPPLIERS.containsKey(moduleId)) {
+			if (SwitchyModuleRegistry.SUPPLIERS.containsKey(moduleId)) {
 				continue;
 			}
 

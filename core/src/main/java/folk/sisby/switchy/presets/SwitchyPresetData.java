@@ -5,15 +5,19 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 
 import java.util.Map;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class SwitchyPresetData<Module extends SwitchySerializable> implements SwitchySerializable {
 	public final Map<Identifier, Module> modules;
+	public String name;
 
-	public String presetName;
-
-	public SwitchyPresetData(String name, Map<Identifier, Module> modules) {
-		this.presetName = name;
-		this.modules = modules;
+	public SwitchyPresetData(String name, Map<Identifier, Boolean> modules, Map<Identifier, Supplier<Module>> moduleSupplier) {
+		this.name = name;
+		this.modules = modules.entrySet().stream().filter(Map.Entry::getValue).collect(Collectors.toMap(
+				Map.Entry::getKey,
+				e -> moduleSupplier.get(e.getKey()).get()
+		));
 	}
 
 	public NbtCompound toNbt() {
@@ -28,6 +32,6 @@ public class SwitchyPresetData<Module extends SwitchySerializable> implements Sw
 
 	@Override
 	public String toString() {
-		return presetName;
+		return name;
 	}
 }

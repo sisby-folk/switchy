@@ -3,10 +3,7 @@ package folk.sisby.switchy.modules;
 import eu.pb4.placeholders.api.TextParserUtils;
 import eu.pb4.stylednicknames.NicknameHolder;
 import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.api.module.SwitchyModule;
-import folk.sisby.switchy.api.module.SwitchyModuleDisplayable;
-import folk.sisby.switchy.api.module.SwitchyModuleEditable;
-import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
+import folk.sisby.switchy.api.module.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -62,6 +59,6 @@ public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleDispla
 
 	// Runs on touch() - but only once.
 	static {
-		SwitchyModuleRegistry.registerModule(ID, StyledNicknamesCompat::new, true, SwitchyModuleEditable.ALWAYS_ALLOWED);
+		SwitchyModuleRegistry.registerModule(ID, StyledNicknamesCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALWAYS_ALLOWED));
 	}
 }

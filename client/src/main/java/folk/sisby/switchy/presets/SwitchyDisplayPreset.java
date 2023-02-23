@@ -11,14 +11,11 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @ClientOnly
 public class SwitchyDisplayPreset extends SwitchyPresetData<SwitchyDisplayModule> {
-	public SwitchyDisplayPreset(String presetName, Map<Identifier, Boolean> modules) {
-		super(presetName, SwitchyDisplayModuleRegistry.MODULE_SUPPLIERS.entrySet().stream()
-				.filter(e -> modules.containsKey(e.getKey()))
-				.collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().get())));
+	public SwitchyDisplayPreset(String name, Map<Identifier, Boolean> modules) {
+		super(name, modules, SwitchyDisplayModuleRegistry.MODULE_SUPPLIERS);
 	}
 
 	public Map<Identifier, Pair<Component, SwitchySwitchScreenPosition>> getDisplayComponents() {
