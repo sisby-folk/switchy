@@ -28,7 +28,7 @@ public class FiguraCompat implements FiguraAPI {
 	}
 
 	@LuaWhitelist
-	public static void register(LuaFunction function) {
+	public static void registerSwitchListener(LuaFunction function) {
 		SwitchyClientEvents.SWITCH.register((event) -> function.invoke(
 				LuaValue.varargsOf(new LuaValue[]{
 						LuaValue.valueOf(event.player.toString()),

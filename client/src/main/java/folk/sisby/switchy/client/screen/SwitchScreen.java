@@ -102,7 +102,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 		rootComponent.verticalAlignment(VerticalAlignment.CENTER);
 		rootComponent.gap(2);
 
-		List<Component> presetFlows = new ArrayList<>(displayPresets.presets.values().stream().map(preset -> generatePresetComponent(preset, Objects.equals(preset.name, displayPresets.currentPreset.toString()))).toList());
+		List<Component> presetFlows = displayPresets.presets.values().stream().map(preset -> generatePresetComponent(preset, Objects.equals(preset.name, displayPresets.currentPreset.toString()))).toList();
 
 		VerticalFlowLayout presetsLayout = Containers.verticalFlow(Sizing.content(), Sizing.content());
 		presetsLayout.padding(Insets.of(6));
