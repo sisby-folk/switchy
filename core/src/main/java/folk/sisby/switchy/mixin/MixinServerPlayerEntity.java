@@ -36,7 +36,9 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Sw
 	@SuppressWarnings("unused")
 	@Inject(at = @At("TAIL"), method = "readCustomDataFromNbt(Lnet/minecraft/nbt/NbtCompound;)V")
 	public void readCustomDataFromNbt(NbtCompound tag, CallbackInfo ci) {
-		switchy$switchyPresets = SwitchyPresets.fromNbt(tag.getCompound("switchy:presets"), true);
+		SwitchyPresets presets = new SwitchyPresets(true);
+		presets.fillFromNbt(tag.getCompound("switchy:presets"));
+		switchy$switchyPresets = presets;
 	}
 
 	@Inject(at = @At("HEAD"), method = "copyFrom(Lnet/minecraft/server/network/ServerPlayerEntity;Z)V")

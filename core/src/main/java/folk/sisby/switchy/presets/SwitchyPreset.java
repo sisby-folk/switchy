@@ -3,7 +3,6 @@ package folk.sisby.switchy.presets;
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.SwitchyModules;
 import folk.sisby.switchy.api.module.SwitchyModule;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -12,28 +11,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class SwitchyPreset {
-	public final Map<Identifier, SwitchyModule> modules;
-
-	public String presetName;
-
+public class SwitchyPreset extends SwitchyPresetData<SwitchyModule> {
 	public SwitchyPreset(String name, Map<Identifier, Boolean> moduleToggles) {
-		this.presetName = name;
-		this.modules = moduleToggles.entrySet().stream()
+		super(name, moduleToggles.entrySet().stream()
 				.filter(Map.Entry::getValue)
-				.collect(Collectors.toMap(Map.Entry::getKey, e -> SwitchyModules.MODULE_SUPPLIERS.get(e.getKey()).get()));
-	}
-
-	public NbtCompound toNbt() {
-		NbtCompound outNbt = new NbtCompound();
-		this.modules.forEach((id, module) -> outNbt.put(id.toString(), module.toNbt()));
-		return outNbt;
-	}
-
-	public static SwitchyPreset fromNbt(String presetName, NbtCompound nbt, Map<Identifier, Boolean> moduleToggles) {
-		SwitchyPreset outPreset = new SwitchyPreset(presetName, moduleToggles);
-		outPreset.modules.forEach((id, module) -> module.fillFromNbt(nbt.getCompound(id.toString())));
-		return outPreset;
+				.collect(Collectors.toMap(Map.Entry::getKey, e -> SwitchyModules.MODULE_SUPPLIERS.get(e.getKey()).get())));
 	}
 
 	public void updateFromPlayer(ServerPlayerEntity player, String nextPreset) {
@@ -63,10 +45,5 @@ public class SwitchyPreset {
 
 	public void applyToPlayer(ServerPlayerEntity player) {
 		this.modules.forEach((id, module) -> tryApplyModule(modules, id, player, new HashSet<>()));
-	}
-
-	@Override
-	public String toString() {
-		return presetName;
 	}
 }

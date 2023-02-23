@@ -1,11 +1,11 @@
 package folk.sisby.switchy.modules;
 
-import folk.sisby.switchy.api.module.SwitchyModuleData;
+import folk.sisby.switchy.api.SwitchySerializable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-public class FabricTailorCompatData implements SwitchyModuleData {
+public class FabricTailorCompatData implements SwitchySerializable {
 	public static final Identifier ID = new Identifier("switchy", "fabric_tailor");
 
 	public static final String KEY_SKIN_VALUE = "skinValue";

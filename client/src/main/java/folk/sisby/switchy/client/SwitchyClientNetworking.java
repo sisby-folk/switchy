@@ -56,8 +56,10 @@ public class SwitchyClientNetworking {
 
 	private static void displayPresets(MinecraftClient client, @Nullable NbtCompound displayPresetsNbt) {
 		if (displayPresetsNbt != null) {
+			SwitchyDisplayPresets displayPresets = new SwitchyDisplayPresets();
+			displayPresets.fillFromNbt(displayPresetsNbt);
 			client.execute(() ->
-					client.setScreen(new SwitchScreen(SwitchyDisplayPresets.fromNbt(displayPresetsNbt)))
+					client.setScreen(new SwitchScreen(displayPresets))
 			);
 		}
 	}

@@ -1,12 +1,12 @@
 package folk.sisby.switchy.modules;
 
-import folk.sisby.switchy.api.module.SwitchyModuleData;
+import folk.sisby.switchy.api.SwitchySerializable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-public class DrogtorCompatData implements SwitchyModuleData {
+public class DrogtorCompatData implements SwitchySerializable {
 	public static final Identifier ID = new Identifier("switchy",  "drogtor");
 
 	public static final String KEY_NICKNAME = "nickname";

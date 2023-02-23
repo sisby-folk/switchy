@@ -17,8 +17,9 @@ public class SwitchyPlayConnectionListener implements ServerPlayConnectionEvents
 		ServerPlayerEntity player = handler.getPlayer();
 		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 		if (presets == null) {
-			((SwitchyPlayer) player).switchy$setPresets(SwitchyPresets.fromNbt(new NbtCompound(), true));
-			presets = ((SwitchyPlayer) player).switchy$getPresets();
+			presets = new SwitchyPresets(true);
+			presets.fillFromNbt(new NbtCompound());
+			((SwitchyPlayer) player).switchy$setPresets(presets);
 		}
 		SwitchySwitchEvent switchEvent = new SwitchySwitchEvent(
 				handler.getPlayer().getUuid(), presets.getCurrentPreset().presetName, null, presets.getEnabledModuleNames()

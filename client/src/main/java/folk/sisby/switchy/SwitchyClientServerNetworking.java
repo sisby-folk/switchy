@@ -75,7 +75,8 @@ public class SwitchyClientServerNetworking {
 
 		SwitchyPresets importedPresets;
 		try {
-			importedPresets = SwitchyPresets.fromNbt(presetNbt, false);
+			importedPresets = new SwitchyPresets(false);
+			importedPresets.fillFromNbt(presetNbt);
 		} catch (Exception e) {
 			tellInvalid(player, "commands.switchy.import.fail.construct");
 			return;
