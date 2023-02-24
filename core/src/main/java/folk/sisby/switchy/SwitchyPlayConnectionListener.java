@@ -3,7 +3,8 @@ package folk.sisby.switchy;
 import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.api.SwitchyPlayer;
 import folk.sisby.switchy.api.events.SwitchySwitchEvent;
-import folk.sisby.switchy.presets.SwitchyPresets;
+import folk.sisby.switchy.api.presets.SwitchyPresets;
+import folk.sisby.switchy.presets.SwitchyPresetsImpl;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -17,7 +18,7 @@ public class SwitchyPlayConnectionListener implements ServerPlayConnectionEvents
 		ServerPlayerEntity player = handler.getPlayer();
 		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 		if (presets == null) {
-			presets = new SwitchyPresets(true);
+			presets = new SwitchyPresetsImpl(true);
 			presets.fillFromNbt(new NbtCompound());
 			((SwitchyPlayer) player).switchy$setPresets(presets);
 		}

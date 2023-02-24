@@ -1,13 +1,12 @@
 package folk.sisby.switchy.util;
 
 import folk.sisby.switchy.api.module.SwitchyModuleDisplayable;
-import folk.sisby.switchy.presets.SwitchyPreset;
-import folk.sisby.switchy.presets.SwitchyPresets;
+import folk.sisby.switchy.api.presets.SwitchyPreset;
+import folk.sisby.switchy.api.presets.SwitchyPresets;
+import folk.sisby.switchy.api.presets.SwitchyPresetsData;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
-
-import static folk.sisby.switchy.presets.SwitchyPresets.*;
 
 public class PresetConverter {
 	public static NbtCompound presetsToNbt(SwitchyPresets presets) {
@@ -21,14 +20,14 @@ public class PresetConverter {
 			if (!value) disabledList.add(NbtString.of(key.toString()));
 		});
 
-		outNbt.put(KEY_PRESET_MODULE_ENABLED, enabledList);
-		outNbt.put(KEY_PRESET_MODULE_DISABLED, disabledList);
+		outNbt.put(SwitchyPresetsData.KEY_PRESET_MODULE_ENABLED, enabledList);
+		outNbt.put(SwitchyPresetsData.KEY_PRESET_MODULE_DISABLED, disabledList);
 
 		NbtCompound listNbt = new NbtCompound();
 		presets.getPresets().forEach((name, preset) -> listNbt.put(name, presetToNbt(preset)));
-		outNbt.put(KEY_PRESET_LIST, listNbt);
+		outNbt.put(SwitchyPresetsData.KEY_PRESET_LIST, listNbt);
 
-		outNbt.putString(KEY_PRESET_CURRENT, presets.getCurrentPresetName());
+		outNbt.putString(SwitchyPresetsData.KEY_PRESET_CURRENT, presets.getCurrentPresetName());
 		return outNbt;
 	}
 

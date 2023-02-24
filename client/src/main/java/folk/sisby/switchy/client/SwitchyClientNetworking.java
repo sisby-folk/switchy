@@ -3,7 +3,8 @@ package folk.sisby.switchy.client;
 import folk.sisby.switchy.api.events.SwitchySwitchEvent;
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
 import folk.sisby.switchy.client.screen.SwitchScreen;
-import folk.sisby.switchy.presets.SwitchyDisplayPresets;
+import folk.sisby.switchy.api.module.presets.SwitchyDisplayPresets;
+import folk.sisby.switchy.presets.SwitchyDisplayPresetsImpl;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
@@ -55,7 +56,7 @@ public class SwitchyClientNetworking {
 
 	private static void displayPresets(MinecraftClient client, @Nullable NbtCompound displayPresetsNbt) {
 		if (displayPresetsNbt != null) {
-			SwitchyDisplayPresets displayPresets = new SwitchyDisplayPresets();
+			SwitchyDisplayPresets displayPresets = new SwitchyDisplayPresetsImpl();
 			displayPresets.fillFromNbt(displayPresetsNbt);
 			client.execute(() ->
 					client.setScreen(new SwitchScreen(displayPresets))

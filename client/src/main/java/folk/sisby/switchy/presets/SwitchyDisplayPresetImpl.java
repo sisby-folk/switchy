@@ -1,6 +1,7 @@
 package folk.sisby.switchy.presets;
 
 import com.mojang.datafixers.util.Pair;
+import folk.sisby.switchy.api.module.presets.SwitchyDisplayPreset;
 import folk.sisby.switchy.client.api.SwitchySwitchScreenPosition;
 import folk.sisby.switchy.client.api.module.SwitchyDisplayModule;
 import folk.sisby.switchy.client.api.module.SwitchyDisplayModuleRegistry;
@@ -13,11 +14,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ClientOnly
-public class SwitchyDisplayPreset extends SwitchyPresetData<SwitchyDisplayModule> {
-	public SwitchyDisplayPreset(String name, Map<Identifier, Boolean> modules) {
+public class SwitchyDisplayPresetImpl extends SwitchyPresetDataImpl<SwitchyDisplayModule> implements SwitchyDisplayPreset {
+	public SwitchyDisplayPresetImpl(String name, Map<Identifier, Boolean> modules) {
 		super(name, modules, SwitchyDisplayModuleRegistry::supplyModule);
 	}
 
+	@Override
 	public Map<Identifier, Pair<Component, SwitchySwitchScreenPosition>> getDisplayComponents() {
 		Map<Identifier, Pair<Component, SwitchySwitchScreenPosition>> map = new HashMap<>();
 		getModules().forEach((id, module) -> {

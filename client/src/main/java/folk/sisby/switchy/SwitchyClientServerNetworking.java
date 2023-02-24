@@ -3,7 +3,8 @@ package folk.sisby.switchy;
 import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.api.SwitchyPlayer;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
-import folk.sisby.switchy.presets.SwitchyPresets;
+import folk.sisby.switchy.api.presets.SwitchyPresets;
+import folk.sisby.switchy.presets.SwitchyPresetsImpl;
 import folk.sisby.switchy.util.PresetConverter;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -76,9 +77,9 @@ public class SwitchyClientServerNetworking {
 			return;
 		}
 
-		SwitchyPresets importedPresets;
+		SwitchyPresetsImpl importedPresets;
 		try {
-			importedPresets = new SwitchyPresets(false);
+			importedPresets = new SwitchyPresetsImpl(false);
 			importedPresets.fillFromNbt(presetNbt);
 		} catch (Exception e) {
 			tellInvalid(player, "commands.switchy.import.fail.construct");

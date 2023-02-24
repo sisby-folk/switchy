@@ -5,23 +5,26 @@ import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.api.events.SwitchySwitchEvent;
 import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
+import folk.sisby.switchy.api.presets.SwitchyPreset;
+import folk.sisby.switchy.api.presets.SwitchyPresets;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class SwitchyPresets extends SwitchyPresetsData<SwitchyModule, SwitchyPreset> {
-	public SwitchyPresets(boolean forPlayer) {
+public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, SwitchyPreset> implements SwitchyPresets {
+	public SwitchyPresetsImpl(boolean forPlayer) {
 		super(
 				SwitchyModuleRegistry.getModuleDefaults(),
-				SwitchyPreset::new,
+				SwitchyPresetImpl::new,
 				SwitchyModuleRegistry::supplyModule,
 				forPlayer,
 				Switchy.LOGGER
 		);
 	}
 
+	@Override
 	public void importFromOther(ServerPlayerEntity player, Map<String, SwitchyPreset> other) {
 		// Replace enabled modules for colliding current preset
 		if (other.containsKey(getCurrentPresetName())) {
@@ -32,10 +35,12 @@ public class SwitchyPresets extends SwitchyPresetsData<SwitchyModule, SwitchyPre
 		importFromOther(other);
 	}
 
+	@Override
 	public void importFromOther(ServerPlayerEntity player, SwitchyPresets other) {
 		importFromOther(player, other.getPresets());
 	}
 
+	@Override
 	public String switchCurrentPreset(ServerPlayerEntity player, String name) throws IllegalArgumentException, IllegalStateException {
 		if (!containsPreset(name)) throw new IllegalArgumentException("Specified preset does not exist");
 		if (getCurrentPresetName().equalsIgnoreCase(name)) throw new IllegalStateException("Specified preset is already current");
@@ -55,13 +60,12 @@ public class SwitchyPresets extends SwitchyPresetsData<SwitchyModule, SwitchyPre
 		return getCurrentPresetName();
 	}
 
+	@Override
 	public void saveCurrentPreset(ServerPlayerEntity player) {
 		getCurrentPreset().updateFromPlayer(player, null);
 	}
 
-	/**
-	 * Allows you to modify the data associated with the current preset for a specified module, by saving it, mutating it, then loading it all in one swoop.
-	 **/
+	@Override
 	public void duckCurrentModule(ServerPlayerEntity player, Identifier id, Consumer<SwitchyModule> mutator) throws IllegalArgumentException, IllegalStateException {
 		if (!containsModule(id)) throw new IllegalArgumentException("Specified module does not exist");
 		if (!isModuleEnabled(id)) throw new IllegalStateException("Specified module is not enabled");

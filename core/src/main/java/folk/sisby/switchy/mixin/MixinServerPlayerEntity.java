@@ -2,7 +2,8 @@ package folk.sisby.switchy.mixin;
 
 import com.mojang.authlib.GameProfile;
 import folk.sisby.switchy.api.SwitchyPlayer;
-import folk.sisby.switchy.presets.SwitchyPresets;
+import folk.sisby.switchy.api.presets.SwitchyPresets;
+import folk.sisby.switchy.presets.SwitchyPresetsImpl;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.encryption.PlayerPublicKey;
@@ -36,7 +37,7 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Sw
 	@SuppressWarnings("unused")
 	@Inject(at = @At("TAIL"), method = "readCustomDataFromNbt(Lnet/minecraft/nbt/NbtCompound;)V")
 	public void readCustomDataFromNbt(NbtCompound tag, CallbackInfo ci) {
-		SwitchyPresets presets = new SwitchyPresets(true);
+		SwitchyPresets presets = new SwitchyPresetsImpl(true);
 		presets.fillFromNbt(tag.getCompound("switchy:presets"));
 		switchy$switchyPresets = presets;
 	}

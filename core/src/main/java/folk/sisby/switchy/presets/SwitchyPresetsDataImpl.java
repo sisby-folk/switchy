@@ -1,6 +1,8 @@
 package folk.sisby.switchy.presets;
 
 import folk.sisby.switchy.api.SwitchySerializable;
+import folk.sisby.switchy.api.presets.SwitchyPresetData;
+import folk.sisby.switchy.api.presets.SwitchyPresetsData;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -19,7 +21,7 @@ import java.util.function.Function;
 
 import static folk.sisby.switchy.util.Feedback.getIdListText;
 
-public class SwitchyPresetsData<Module extends SwitchySerializable, Preset extends SwitchyPresetData<Module>> implements SwitchySerializable {
+public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset extends SwitchyPresetData<Module>> implements SwitchyPresetsData<Module, Preset> {
 	private final Map<String, Preset> presets = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 	private final Map<Identifier, Boolean> modules;
 	private Preset currentPreset;
@@ -29,12 +31,7 @@ public class SwitchyPresetsData<Module extends SwitchySerializable, Preset exten
 	private final boolean forPlayer;
 	private final Logger logger;
 
-	public static final String KEY_PRESET_CURRENT = "current";
-	public static final String KEY_PRESET_MODULE_ENABLED = "enabled";
-	public static final String KEY_PRESET_MODULE_DISABLED = "disabled";
-	public static final String KEY_PRESET_LIST = "list";
-
-	SwitchyPresetsData(Map<Identifier, Boolean> modules, BiFunction<String, Map<Identifier, Boolean>, Preset> presetConstructor, Function<Identifier, Module> moduleSupplier, boolean forPlayer, Logger logger) {
+	SwitchyPresetsDataImpl(Map<Identifier, Boolean> modules, BiFunction<String, Map<Identifier, Boolean>, Preset> presetConstructor, Function<Identifier, Module> moduleSupplier, boolean forPlayer, Logger logger) {
 		this.modules = modules;
 		this.presetConstructor = presetConstructor;
 		this.moduleSupplier = moduleSupplier;
@@ -42,6 +39,7 @@ public class SwitchyPresetsData<Module extends SwitchySerializable, Preset exten
 		this.logger = logger;
 	}
 
+	@Override
 	public void fillFromNbt(NbtCompound nbt) {
 		toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE), true, !forPlayer);
 		toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_DISABLED, NbtElement.STRING_TYPE), false, !forPlayer);
@@ -70,6 +68,7 @@ public class SwitchyPresetsData<Module extends SwitchySerializable, Preset exten
 		}
 	}
 
+	@Override
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 
@@ -94,7 +93,8 @@ public class SwitchyPresetsData<Module extends SwitchySerializable, Preset exten
 		return outNbt;
 	}
 
-	void toggleModulesFromNbt(NbtList list, Boolean enabled, Boolean silent) {
+	@Override
+	public void toggleModulesFromNbt(NbtList list, Boolean enabled, Boolean silent) {
 		list.forEach((e) -> {
 			Identifier id;
 			if (e instanceof NbtString s && (id = Identifier.tryParse(s.asString())) != null && modules.containsKey(id)) {
@@ -106,6 +106,7 @@ public class SwitchyPresetsData<Module extends SwitchySerializable, Preset exten
 		});
 	}
 
+	@Override
 	public void importFromOther(Map<String, Preset> other) {
 		// Don't process the current preset, it won't do anything
 		other.remove(getCurrentPresetName());
@@ -133,16 +134,19 @@ public class SwitchyPresetsData<Module extends SwitchySerializable, Preset exten
 		});
 	}
 
-	void setCurrentPreset(String name) throws IllegalArgumentException {
+	@Override
+	public void setCurrentPreset(String name) throws IllegalArgumentException {
 		if (!presets.containsKey(name)) throw new IllegalArgumentException("Specified preset does not exist");
 		currentPreset = presets.get(name);
 	}
 
+	@Override
 	public void addPreset(Preset preset) throws IllegalStateException {
 		if (containsPreset(preset.getName())) throw new IllegalStateException("Specified preset already exists.");
 		presets.put(preset.getName(), preset);
 	}
 
+	@Override
 	public Preset newPreset(String name) throws IllegalStateException {
 		if (presets.containsKey(name)) throw new IllegalStateException("Specified preset already exists.");
 		Preset newPreset = presetConstructor.apply(name, modules);
@@ -150,6 +154,7 @@ public class SwitchyPresetsData<Module extends SwitchySerializable, Preset exten
 		return newPreset;
 	}
 
+	@Override
 	public void deletePreset(String name, boolean dryRun) throws IllegalArgumentException, IllegalStateException {
 		if (!presets.containsKey(name)) throw new IllegalArgumentException("Specified preset does not exist");
 		if (getCurrentPresetName().equalsIgnoreCase(name)) throw new IllegalStateException("Specified preset is current");
@@ -157,10 +162,12 @@ public class SwitchyPresetsData<Module extends SwitchySerializable, Preset exten
 		presets.remove(name);
 	}
 
+	@Override
 	public void deletePreset(String name) throws IllegalArgumentException, IllegalStateException {
 		deletePreset(name, false);
 	}
 
+	@Override
 	public void renamePreset(String oldName, String newName) throws IllegalArgumentException, IllegalStateException {
 		if (!presets.containsKey(oldName)) throw new IllegalArgumentException("Specified preset does not exist");
 		if (presets.containsKey(newName)) throw new IllegalStateException("Specified preset name already exists");
@@ -170,6 +177,7 @@ public class SwitchyPresetsData<Module extends SwitchySerializable, Preset exten
 		presets.remove(oldName);
 	}
 
+	@Override
 	public void disableModule(Identifier id, boolean dryRun) throws IllegalArgumentException, IllegalStateException {
 		if (!modules.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
 		if (!modules.get(id)) throw new IllegalStateException("Specified module is already disabled");
@@ -178,10 +186,12 @@ public class SwitchyPresetsData<Module extends SwitchySerializable, Preset exten
 		presets.forEach((name, preset) -> preset.removeModule(id));
 	}
 
+	@Override
 	public void disableModule(Identifier id) throws IllegalArgumentException, IllegalStateException {
 		disableModule(id, false);
 	}
 
+	@Override
 	public void enableModule(Identifier id) throws IllegalArgumentException, IllegalStateException {
 		if (!modules.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
 		if (modules.get(id)) throw new IllegalStateException("Specified module is already enabled");
@@ -191,43 +201,51 @@ public class SwitchyPresetsData<Module extends SwitchySerializable, Preset exten
 
 	// Current Preset Accessors
 
+	@Override
 	@ApiStatus.Internal
 	public Preset getCurrentPreset() {
 		return currentPreset;
 	}
 
+	@Override
 	public String getCurrentPresetName() {
 		return currentPreset.getName();
 	}
 
 	// Presets Accessors
 
+	@Override
 	@ApiStatus.Internal
 	public Map<String, Preset> getPresets() {
 		return presets;
 	}
 
+	@Override
 	@ApiStatus.Internal
 	public Preset getPreset(String name) {
 		if (!presets.containsKey(name)) throw new IllegalArgumentException("Specified preset does not exist");
 		return presets.get(name);
 	}
 
+	@Override
 	public List<String> getPresetNames() {
 		return presets.keySet().stream().sorted().toList();
 	}
 
+	@Override
 	public boolean containsPreset(String name) {
 		return presets.containsKey(name);
 	}
 
 	// Modules Accessors
 
+	@Override
 	@ApiStatus.Internal
 	public Map<Identifier, Boolean> getModules() {
 		return modules;
 	}
 
+	@Override
 	public Map<String, Module> getAllOfModule(Identifier id) throws IllegalArgumentException, IllegalStateException {
 		if (!containsModule(id)) throw new IllegalArgumentException("Specified module does not exist");
 		if (!isModuleEnabled(id)) throw new IllegalStateException("Specified module is disabled");
@@ -236,27 +254,33 @@ public class SwitchyPresetsData<Module extends SwitchySerializable, Preset exten
 		return outMap;
 	}
 
+	@Override
 	public List<Identifier> getEnabledModules() {
 		return modules.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).toList();
 	}
 
+	@Override
 	public List<Identifier> getDisabledModules() {
 		return modules.entrySet().stream().filter((e) -> !e.getValue()).map(Map.Entry::getKey).toList();
 	}
 
+	@Override
 	public boolean containsModule(Identifier id) {
 		return modules.containsKey(id);
 	}
 
+	@Override
 	public boolean isModuleEnabled(Identifier id) throws IllegalArgumentException {
 		if (!containsModule(id)) throw new IllegalArgumentException("Specified module does not exist");
 		return modules.get(id);
 	}
 
+	@Override
 	public List<String> getEnabledModuleNames() {
 		return getEnabledModules().stream().map(Identifier::getPath).toList();
 	}
 
+	@Override
 	public MutableText getEnabledModuleText() {
 		return getIdListText(getEnabledModules());
 	}

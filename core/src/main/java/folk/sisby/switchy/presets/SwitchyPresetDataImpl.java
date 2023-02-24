@@ -1,6 +1,7 @@
 package folk.sisby.switchy.presets;
 
 import folk.sisby.switchy.api.SwitchySerializable;
+import folk.sisby.switchy.api.presets.SwitchyPresetData;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus;
@@ -9,11 +10,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public class SwitchyPresetData<Module extends SwitchySerializable> implements SwitchySerializable {
+public class SwitchyPresetDataImpl<Module extends SwitchySerializable> implements SwitchyPresetData<Module> {
 	private final Map<Identifier, Module> modules;
 	private String name;
 
-	public SwitchyPresetData(String name, Map<Identifier, Boolean> modules, Function<Identifier, Module> moduleSupplier) {
+	public SwitchyPresetDataImpl(String name, Map<Identifier, Boolean> modules, Function<Identifier, Module> moduleSupplier) {
 		this.name = name;
 		Map<Identifier, Module> suppliedModules = new HashMap<>();
 		modules.forEach((id, enabled) -> {
@@ -25,48 +26,57 @@ public class SwitchyPresetData<Module extends SwitchySerializable> implements Sw
 		this.modules = suppliedModules;
 	}
 
+	@Override
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		modules.forEach((id, module) -> outNbt.put(id.toString(), module.toNbt()));
 		return outNbt;
 	}
 
+	@Override
 	public void fillFromNbt(NbtCompound nbt) {
 		modules.forEach((id, module) -> module.fillFromNbt(nbt.getCompound(id.toString())));
 	}
 
 	// Modules Accessors
 
+	@Override
 	@ApiStatus.Internal
 	public Map<Identifier, Module> getModules() {
 		return modules;
 	}
 
+	@Override
 	@ApiStatus.Internal
 	public Module getModule(Identifier id) {
 		return modules.get(id);
 	}
 
+	@Override
 	@ApiStatus.Internal
 	public void putModule(Identifier id, Module module) {
 		modules.put(id, module);
 	}
 
+	@Override
 	public boolean containsModule(Identifier id) {
 		return modules.containsKey(id);
 	}
 
+	@Override
 	public void removeModule(Identifier id) {
 		modules.remove(id);
 	}
 
 	// Name Accessors
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
-	void setName(String name) {
+	@Override
+	public void setName(String name) {
 		this.name = name;
 	}
 
