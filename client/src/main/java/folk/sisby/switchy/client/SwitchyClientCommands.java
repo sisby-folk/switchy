@@ -23,7 +23,6 @@ import java.util.List;
 import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_IMPORT;
 import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_REQUEST_PRESETS;
 import static folk.sisby.switchy.client.util.CommandClient.executeClient;
-import static folk.sisby.switchy.util.Command.unwrap;
 import static folk.sisby.switchy.util.Feedback.tellSuccess;
 
 public class SwitchyClientCommands implements ClientCommandRegistrationCallback {
@@ -37,11 +36,11 @@ public class SwitchyClientCommands implements ClientCommandRegistrationCallback 
 						.requires(source -> ClientPlayNetworking.canSend(C2S_IMPORT))
 						.then(ClientCommandManager.literal("import")
 								.then(ClientCommandManager.argument("file", NbtFileArgumentType.create(new File(SwitchyClient.EXPORT_PATH)))
-										.executes(c -> executeClient(c, (context, player) -> importPresets(context, player, unwrap(c, "file", NbtCompound.class))))
+										.executes(c -> executeClient(c, (context, player) -> importPresets(context, player, c.getArgument("file", NbtCompound.class))))
 										.then(ClientCommandManager.argument("excludeModules", IdentifiersFromNbtArgArgumentType.create("file", null, "enabled"))
-												.executes(c -> executeClient(c, (context, player) -> importPresets(context, player, unwrap(c, "file", NbtCompound.class), unwrap(c, "excludeModules", List.class))))
+												.executes(c -> executeClient(c, (context, player) -> importPresets(context, player, c.getArgument("file", NbtCompound.class), c.getArgument("excludeModules", List.class))))
 												.then(ClientCommandManager.argument("opModules", IdentifiersFromNbtArgArgumentType.create("file", "excludeModules", "enabled"))
-														.executes(c -> executeClient(c, (context, player) -> importPresets(context, player, unwrap(c, "file", NbtCompound.class), unwrap(c, "excludeModules", List.class), unwrap(c, "opModules", List.class))))
+														.executes(c -> executeClient(c, (context, player) -> importPresets(context, player, c.getArgument("file", NbtCompound.class), c.getArgument("excludeModules", List.class), c.getArgument("opModules", List.class))))
 												)
 										)
 								)
