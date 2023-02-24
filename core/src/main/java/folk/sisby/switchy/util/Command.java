@@ -11,9 +11,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Pair;
-import org.apache.logging.log4j.util.BiConsumer;
-import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -26,13 +23,7 @@ import static folk.sisby.switchy.Switchy.LOGGER;
 import static folk.sisby.switchy.util.Feedback.tellInvalid;
 
 public class Command {
-	public interface QuadConsumer<A1, A2, A3, A4> {
-		void accept(A1 a1, A2 a2, A3 a3, A4 a4);
-	}
-
-	public interface PentaConsumer<A1, A2, A3, A4, A5> {
-		void accept(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5);
-	}
+	public interface SwitchyServerCommandExecutor { void execute(ServerPlayerEntity player, SwitchyPresets presets); }
 
 	public static CompletableFuture<Suggestions> suggestPresets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, boolean allowCurrent) throws CommandSyntaxException {
 		SwitchyPresets presets = ((SwitchyPlayer) context.getSource().getPlayer()).switchy$getPresets();
@@ -61,7 +52,11 @@ public class Command {
 		}
 	}
 
-	public static <V, V2> int unwrapAndExecute(CommandContext<ServerCommandSource> context, QuadConsumer<ServerPlayerEntity, SwitchyPresets, V, V2> executeFunction, @Nullable Pair<String, Class<V>> argument, @Nullable Pair<String, Class<V2>> argument2) {
+	public static <T> T unwrap(CommandContext<? extends CommandSource> context, String argument, Class<T> argumentClass) {
+		return context.getArgument(argument, argumentClass);
+	}
+
+	public static int execute(CommandContext<ServerCommandSource> context, SwitchyServerCommandExecutor executor) {
 		ServerPlayerEntity player = serverPlayerOrNull(context.getSource());
 		if (player == null) {
 			LOGGER.error("[Switchy] Commands cannot be invoked by a non-player");
@@ -70,25 +65,12 @@ public class Command {
 
 		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 		try {
-			executeFunction.accept(
-					player,
-					presets,
-					(argument != null ? context.getArgument(argument.getLeft(), argument.getRight()) : null),
-					(argument2 != null ? context.getArgument(argument2.getLeft(), argument2.getRight()) : null)
-			);
+			executor.execute(player, presets);
 			return 1;
 		} catch (Exception e) {
 			tellInvalid(player, "commands.switchy.fail");
 			LOGGER.error("[Switchy] Error while executing command: {}", context.getInput(), e);
 			return 0;
 		}
-	}
-
-	public static <V> int unwrapAndExecute(CommandContext<ServerCommandSource> context, TriConsumer<ServerPlayerEntity, SwitchyPresets, V> executeFunction, @Nullable Pair<String, Class<V>> argument) {
-		return unwrapAndExecute(context, (player, preset, arg, ignored) -> executeFunction.accept(player, preset, arg), argument, null);
-	}
-
-	public static int unwrapAndExecute(CommandContext<ServerCommandSource> context, BiConsumer<ServerPlayerEntity, SwitchyPresets> executeFunction) {
-		return unwrapAndExecute(context, (player, preset, ignored) -> executeFunction.accept(player, preset), null);
 	}
 }

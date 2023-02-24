@@ -6,7 +6,6 @@ import folk.sisby.switchy.api.SwitchyPlayer;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.presets.SwitchyPreset;
 import folk.sisby.switchy.presets.SwitchyPresets;
-import folk.sisby.switchy.util.Command;
 import net.minecraft.command.CommandBuildContext;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -17,7 +16,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 import static folk.sisby.switchy.Switchy.LOGGER;
@@ -32,41 +34,56 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 		dispatcher.register(
 				CommandManager.literal("switchy")
 						.then(CommandManager.literal("help")
-								.executes((c) -> Command.unwrapAndExecute(c, SwitchyCommands::displayHelp)))
+								.executes(c -> execute(c, SwitchyCommands::displayHelp))
+						)
 						.then(CommandManager.literal("list")
-								.executes((c) -> unwrapAndExecute(c, SwitchyCommands::listPresets)))
+								.executes(c -> execute(c, SwitchyCommands::listPresets))
+						)
 						.then(CommandManager.literal("new")
 								.then(CommandManager.argument("preset", StringArgumentType.word())
-										.executes((c) -> unwrapAndExecute(c, SwitchyCommands::newPreset, new Pair<>("preset", String.class)))))
+										.executes(c -> execute(c, (player, presets) -> newPreset(player, presets, unwrap(c, "preset", String.class))))
+								)
+						)
 						.then(CommandManager.literal("set")
 								.then(CommandManager.argument("preset", StringArgumentType.word())
 										.suggests((c, b) -> suggestPresets(c, b, false))
-										.executes((c) -> unwrapAndExecute(c, SwitchyCommands::setPreset, new Pair<>("preset", String.class)))))
+										.executes(c -> execute(c, (player, presets) -> setPreset(player, presets, unwrap(c, "preset", String.class))))
+								)
+						)
 						.then(CommandManager.literal("delete")
 								.then(CommandManager.argument("preset", StringArgumentType.word())
 										.suggests((c, b) -> suggestPresets(c, b, false))
-										.executes((c) -> unwrapAndExecute(c, SwitchyCommands::deletePreset, new Pair<>("preset", String.class)))))
+										.executes(c -> execute(c, (player, presets) -> deletePreset(player, presets, unwrap(c, "preset", String.class))))
+								)
+						)
 						.then(CommandManager.literal("rename")
 								.then(CommandManager.argument("preset", StringArgumentType.word())
 										.suggests((c, b) -> suggestPresets(c, b, true))
 										.then(CommandManager.argument("name", StringArgumentType.word())
-												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::renamePreset, new Pair<>("preset", String.class), new Pair<>("name", String.class))))))
+												.executes(c -> execute(c, (player, presets) -> renamePreset(player, presets, unwrap(c, "preset", String.class), unwrap(c, "name", String.class))))
+										)
+								)
+						)
 						.then(CommandManager.literal("module")
 								.then(CommandManager.literal("enable")
 										.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
 												.suggests((c, b) -> suggestModules(c, b, false))
-												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::enableModule, new Pair<>("module", Identifier.class)))))
+												.executes(c -> execute(c, (player, presets) -> enableModule(player, presets, unwrap(c, "module", Identifier.class)))))
+								)
 								.then(CommandManager.literal("disable")
 										.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
 												.suggests((c, b) -> suggestModules(c, b, true))
-												.executes((c) -> unwrapAndExecute(c, SwitchyCommands::disableModule, new Pair<>("module", Identifier.class))))))
+												.executes(c -> execute(c, (player, presets) -> disableModule(player, presets, unwrap(c, "module", Identifier.class)))))
+								)
+						)
 		);
 
 		dispatcher.register(
 				CommandManager.literal("switch")
 						.then(CommandManager.argument("preset", StringArgumentType.word())
 								.suggests((c, b) -> suggestPresets(c, b, false))
-								.executes((c) -> unwrapAndExecute(c, SwitchyCommands::setPreset, new Pair<>("preset", String.class))))
+								.executes(c -> execute(c, (player, presets) -> setPreset(player, presets, unwrap(c, "preset", String.class))))
+						)
 		);
 	}
 
