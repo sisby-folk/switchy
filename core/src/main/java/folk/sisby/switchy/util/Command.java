@@ -52,10 +52,6 @@ public class Command {
 		}
 	}
 
-	public static <T> T unwrap(CommandContext<? extends CommandSource> context, String argument, Class<T> argumentClass) {
-		return context.getArgument(argument, argumentClass);
-	}
-
 	public static int execute(CommandContext<ServerCommandSource> context, SwitchyServerCommandExecutor executor) {
 		ServerPlayerEntity player = serverPlayerOrNull(context.getSource());
 		if (player == null) {
