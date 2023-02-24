@@ -21,6 +21,11 @@ import java.util.function.Function;
 
 import static folk.sisby.switchy.util.Feedback.getIdListText;
 
+/**
+ * @author Sisby folk
+ * @since 2.0.0
+ * @see SwitchyPresetsData
+ */
 public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset extends SwitchyPresetData<Module>> implements SwitchyPresetsData<Module, Preset> {
 	private final Map<String, Preset> presets = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 	private final Map<Identifier, Boolean> modules;

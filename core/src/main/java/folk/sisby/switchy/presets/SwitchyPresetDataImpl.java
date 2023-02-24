@@ -10,6 +10,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * @author Sisby folk
+ * @since 2.0.0
+ * @see SwitchyPresetData
+ */
 public class SwitchyPresetDataImpl<Module extends SwitchySerializable> implements SwitchyPresetData<Module> {
 	private final Map<Identifier, Module> modules;
 	private String name;

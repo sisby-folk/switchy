@@ -22,6 +22,11 @@ import java.util.function.Function;
 import static folk.sisby.switchy.Switchy.LOGGER;
 import static folk.sisby.switchy.util.Feedback.tellInvalid;
 
+/**
+ * @author Sisby folk
+ * @since 1.8.13
+ * Utilities for registering and executing server commands
+ */
 public class Command {
 	public interface SwitchyServerCommandExecutor { void execute(ServerPlayerEntity player, SwitchyPresets presets); }
 

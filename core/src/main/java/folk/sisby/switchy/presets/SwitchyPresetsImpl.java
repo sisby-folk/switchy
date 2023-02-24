@@ -13,6 +13,11 @@ import net.minecraft.util.Identifier;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * @author Sisby folk
+ * @since 1.0.0
+ * @see SwitchyPresets
+ */
 public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, SwitchyPreset> implements SwitchyPresets {
 	public SwitchyPresetsImpl(boolean forPlayer) {
 		super(

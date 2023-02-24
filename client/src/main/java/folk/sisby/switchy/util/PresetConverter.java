@@ -9,6 +9,8 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 
 public class PresetConverter {
+	// Figure out how to add this to a file or something. Mixin feels wrong but maybe.
+
 	public static NbtCompound presetsToNbt(SwitchyPresets presets) {
 		NbtCompound outNbt = new NbtCompound();
 

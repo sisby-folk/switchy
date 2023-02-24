@@ -1,8 +1,8 @@
 package folk.sisby.switchy.presets;
 
 import folk.sisby.switchy.Switchy;
-import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.api.module.SwitchyModule;
+import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.api.presets.SwitchyPreset;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -11,6 +11,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @author Sisby folk
+ * @since 1.0.0
+ * @see SwitchyPreset
+ */
 public class SwitchyPresetImpl extends SwitchyPresetDataImpl<SwitchyModule> implements SwitchyPreset {
 	public SwitchyPresetImpl(String name, Map<Identifier, Boolean> modules) {
 		super(name, modules, SwitchyModuleRegistry::supplyModule);

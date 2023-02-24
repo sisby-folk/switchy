@@ -12,6 +12,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.quiltmc.qsl.networking.api.PacketSender;
 import org.quiltmc.qsl.networking.api.ServerPlayConnectionEvents;
 
+/**
+ * @author Sisby folk
+ * @since 2.0.0
+ * Forwards player connection events as Switchy events. Ensures player data is set up on first join.
+ */
 public class SwitchyPlayConnectionListener implements ServerPlayConnectionEvents.Join, ServerPlayConnectionEvents.Disconnect {
 	@Override
 	public void onPlayReady(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {

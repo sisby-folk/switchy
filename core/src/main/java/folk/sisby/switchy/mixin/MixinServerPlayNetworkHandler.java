@@ -10,6 +10,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * @author Garden System
+ * @since 2.0.0
+ * @see SwitchyCommands
+ * Records commands after they're executed into a map of previous commands per player UUID.
+ */
 @Mixin(ServerPlayNetworkHandler.class)
 public abstract class MixinServerPlayNetworkHandler {
 	@Shadow

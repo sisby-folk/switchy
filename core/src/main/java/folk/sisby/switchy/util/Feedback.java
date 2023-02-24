@@ -11,6 +11,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
+/**
+ * @author Sisby folk
+ * @since 1.6.1
+ * Utilities for styling text and sending translatable feedback
+ */
 public class Feedback {
 	public static final Pair<Style, Style> FORMAT_SUCCESS = new Pair<>(Style.EMPTY.withColor(Formatting.GREEN), Style.EMPTY.withColor(Formatting.WHITE).withItalic(true));
 	public static final Pair<Style, Style> FORMAT_INVALID = new Pair<>(Style.EMPTY.withColor(Formatting.YELLOW), Style.EMPTY.withColor(Formatting.WHITE).withItalic(true));

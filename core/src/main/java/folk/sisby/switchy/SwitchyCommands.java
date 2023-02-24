@@ -26,6 +26,11 @@ import static folk.sisby.switchy.Switchy.LOGGER;
 import static folk.sisby.switchy.util.Command.*;
 import static folk.sisby.switchy.util.Feedback.*;
 
+/**
+ * @author Sisby folk
+ * @since 1.0.0
+ * Registration and logic for core commands.
+ */
 public class SwitchyCommands implements CommandRegistrationCallback {
 	public static final Map<UUID, String> HISTORY = new HashMap<>();
 

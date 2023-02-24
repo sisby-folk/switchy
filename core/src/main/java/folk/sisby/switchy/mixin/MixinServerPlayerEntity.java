@@ -16,6 +16,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * @author Sisby folk
+ * @since 1.0.0
+ * Integrates Switchy preset data into player data.
+ */
 @Mixin(ServerPlayerEntity.class)
 public abstract class MixinServerPlayerEntity extends PlayerEntity implements SwitchyPlayer {
 

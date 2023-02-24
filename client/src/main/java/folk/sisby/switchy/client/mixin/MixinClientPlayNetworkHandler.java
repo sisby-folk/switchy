@@ -9,6 +9,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * @author Garden System
+ * @since 2.0.0
+ * @see SwitchyClientCommands
+ * Records server commands before they're sent into a map of previous commands per player UUID.
+ */
 @Mixin(ClientPlayNetworkHandler.class)
 public abstract class MixinClientPlayNetworkHandler {
 

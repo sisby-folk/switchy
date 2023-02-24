@@ -8,6 +8,12 @@ import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Sisby folk
+ * @since 1.0.0
+ * @see SwitchyPlayConnectionListener
+ * Initializes core addons by invoking {@link SwitchyEvents.Init}. Responsible for logging initial modules.
+ */
 public class Switchy implements ModInitializer {
 	public static final String ID = "switchy";
 
