@@ -1,17 +1,17 @@
 package folk.sisby.switchy.api.presets;
 
 import folk.sisby.switchy.api.SwitchySerializable;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;
 
+/**
+ * @author Sisby folk
+ * @since 2.0.0
+ *
+ */
 public interface SwitchyPresetData<Module extends SwitchySerializable> extends SwitchySerializable {
-	NbtCompound toNbt();
-
-	void fillFromNbt(NbtCompound nbt);
-
 	@ApiStatus.Internal
 	Map<Identifier, Module> getModules();
 

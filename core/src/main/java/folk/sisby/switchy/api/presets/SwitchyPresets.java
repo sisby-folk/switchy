@@ -7,6 +7,13 @@ import net.minecraft.util.Identifier;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * @author Sisby folk
+ * @since 1.0.0
+ * @see SwitchyPresetsData
+ * @see folk.sisby.switchy.api.SwitchyPlayer
+ *
+ */
 public interface SwitchyPresets extends SwitchyPresetsData<SwitchyModule, SwitchyPreset> {
 	void importFromOther(ServerPlayerEntity player, Map<String, SwitchyPreset> other);
 

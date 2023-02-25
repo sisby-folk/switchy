@@ -1,7 +1,6 @@
 package folk.sisby.switchy.api.presets;
 
 import folk.sisby.switchy.api.SwitchySerializable;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Identifier;
@@ -10,15 +9,16 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Sisby folk
+ * @since 2.0.0
+ *
+ */
 public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset extends SwitchyPresetData<Module>> extends SwitchySerializable {
 	String KEY_PRESET_CURRENT = "current";
 	String KEY_PRESET_MODULE_ENABLED = "enabled";
 	String KEY_PRESET_MODULE_DISABLED = "disabled";
 	String KEY_PRESET_LIST = "list";
-
-	void fillFromNbt(NbtCompound nbt);
-
-	NbtCompound toNbt();
 
 	void toggleModulesFromNbt(NbtList list, Boolean enabled, Boolean silent);
 
