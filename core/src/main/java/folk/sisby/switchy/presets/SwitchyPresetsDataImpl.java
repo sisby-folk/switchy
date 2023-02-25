@@ -134,6 +134,11 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 						preset.putModule(id, moduleSupplier.apply(id));
 					}
 				});
+				preset.getModules().forEach((id, module) -> { // Remove non-enabled modules
+					if (!modules.getOrDefault(id, false)) {
+						preset.removeModule(id);
+					}
+				});
 				addPreset(preset);
 			}
 		});
