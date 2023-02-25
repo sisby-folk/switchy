@@ -37,6 +37,9 @@ public final class SwitchyEvents {
 	 */
 	@FunctionalInterface
 	public interface Init extends EventAwareListener {
+		/**
+		 * Occurs when Switchy loads modules during initialization.
+		 */
 		void onInitialize();
 	}
 
@@ -46,6 +49,10 @@ public final class SwitchyEvents {
 	 */
 	@FunctionalInterface
 	public interface Switch extends EventAwareListener {
+		/**
+		 * @param player The relevant player.
+		 * @param event The switch event that has occurred
+		 */
 		void onSwitch(ServerPlayerEntity player, SwitchySwitchEvent event);
 	}
 }

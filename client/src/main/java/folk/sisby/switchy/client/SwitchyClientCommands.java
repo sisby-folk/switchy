@@ -23,7 +23,7 @@ import java.util.List;
 import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_IMPORT;
 import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_REQUEST_PRESETS;
 import static folk.sisby.switchy.client.util.CommandClient.executeClient;
-import static folk.sisby.switchy.util.Feedback.tellSuccess;
+import static folk.sisby.switchy.client.util.FeedbackClient.tellSuccess;
 
 public class SwitchyClientCommands implements ClientCommandRegistrationCallback {
 	public static String HISTORY = "";

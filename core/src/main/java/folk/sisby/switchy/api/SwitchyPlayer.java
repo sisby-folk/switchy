@@ -9,8 +9,14 @@ import org.jetbrains.annotations.ApiStatus;
  * A {@link net.minecraft.server.network.ServerPlayerEntity} mixin-implemented interface for storing the per-player Presets object.
  */
 public interface SwitchyPlayer {
+	/**
+	 * @param presets a new presets object for the player
+	 */
 	@ApiStatus.Internal
 	void switchy$setPresets(SwitchyPresets presets);
 
+	/**
+	 * @return the presets object for the player.
+	 */
 	SwitchyPresets switchy$getPresets();
 }

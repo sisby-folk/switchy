@@ -19,6 +19,9 @@ import java.util.function.Consumer;
  * @see SwitchyPresets
  */
 public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, SwitchyPreset> implements SwitchyPresets {
+	/**
+	 * @param forPlayer whether the presets object is "for a player" - affects recovering lost presets, and logging failures.
+	 */
 	public SwitchyPresetsImpl(boolean forPlayer) {
 		super(
 				SwitchyModuleRegistry.getModuleDefaults(),

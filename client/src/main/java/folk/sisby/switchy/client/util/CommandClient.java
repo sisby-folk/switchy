@@ -5,7 +5,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import org.quiltmc.qsl.command.api.client.QuiltClientCommandSource;
 
 import static folk.sisby.switchy.Switchy.LOGGER;
-import static folk.sisby.switchy.util.Feedback.tellInvalid;
+import static folk.sisby.switchy.client.util.FeedbackClient.tellInvalid;
 
 public class CommandClient {
 	public interface SwitchyClientCommandExecutor { void execute(CommandContext<QuiltClientCommandSource> context, ClientPlayerEntity player); }

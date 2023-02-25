@@ -15,10 +15,19 @@ import org.slf4j.LoggerFactory;
  * Initializes core addons by invoking {@link SwitchyEvents.Init}. Responsible for logging initial modules.
  */
 public class Switchy implements ModInitializer {
+	/**
+	 * The switchy namespace
+	 */
 	public static final String ID = "switchy";
 
+	/**
+	 * The switchy logger
+	 */
 	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
 
+	/**
+	 * The config object for switchy, containing the current state of {@code /config/switchy/config.toml}
+	 */
 	public static final SwitchyConfig CONFIG = QuiltConfig.create(ID, "config", SwitchyConfig.class);
 
 	@Override

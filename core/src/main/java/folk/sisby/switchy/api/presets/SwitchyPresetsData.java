@@ -15,9 +15,21 @@ import java.util.Map;
  * All contained presets have identical modules (called "enabled" modules).
  */
 public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset extends SwitchyPresetData<Module>> extends SwitchySerializable {
+	/**
+	 * NBT key for the current preset
+	 */
 	String KEY_PRESET_CURRENT = "current";
+	/**
+	 * NBT key for the list of enabled modules
+	 */
 	String KEY_PRESET_MODULE_ENABLED = "enabled";
+	/**
+	 * NBT key for the list of disabled modules
+	 */
 	String KEY_PRESET_MODULE_DISABLED = "disabled";
+	/**
+	 * NBT key for the list of presets
+	 */
 	String KEY_PRESET_LIST = "list";
 
 	/**
@@ -41,7 +53,7 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	void addPreset(Preset preset) throws IllegalStateException;
 
 	/**
-	 * @param name the case-insensitive name of a preset
+	 * @param name the desired name for the new preset.
 	 * @return the newly created preset
 	 * @throws IllegalStateException when a preset with the provided name already exists
 	 */

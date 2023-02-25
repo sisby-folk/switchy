@@ -39,6 +39,12 @@ public class SwitchySwitchEvent {
 	private static final String KEY_PREVIOUS_PRESET = "previousName";
 	private static final String KEY_ENABLED_MODULES = "enabledModules";
 
+	/**
+	 * @param player The relevant player.
+	 * @param currentPreset The name of the previous preset in the switch. On player join, this will be null.
+	 * @param previousPreset The name of the new current preset in the switch. On player disconnect, this wil be null.
+	 * @param enabledModules A list of enabled module names for the presets.
+	 */
 	public SwitchySwitchEvent(UUID player, @Nullable String currentPreset, @Nullable String previousPreset, List<String> enabledModules) {
 		this.player = player;
 		this.previousPreset = previousPreset;
@@ -46,6 +52,9 @@ public class SwitchySwitchEvent {
 		this.enabledModules = enabledModules;
 	}
 
+	/**
+	 * @return an NBT representation of the event
+	 */
 	public NbtCompound toNbt() {
 		NbtCompound nbt = new NbtCompound();
 		nbt.putUuid(KEY_PLAYER, player);
@@ -57,6 +66,10 @@ public class SwitchySwitchEvent {
 		return nbt;
 	}
 
+	/**
+	 * @param nbt an NBT representation of the event
+	 * @return an event constructed from the NBT
+	 */
 	public static SwitchySwitchEvent fromNbt(NbtCompound nbt) {
 		return new SwitchySwitchEvent(nbt.getUuid(KEY_PLAYER), nbt.getString(KEY_CURRENT_PRESET), nbt.contains(KEY_PREVIOUS_PRESET, NbtElement.STRING_TYPE) ? nbt.getString(KEY_PREVIOUS_PRESET) : null, nbt.getList(KEY_ENABLED_MODULES, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).toList());
 	}

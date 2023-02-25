@@ -30,18 +30,38 @@ import static folk.sisby.switchy.util.Feedback.tellInvalid;
 public class Command {
 	public interface SwitchyServerCommandExecutor { void execute(ServerPlayerEntity player, SwitchyPresets presets); }
 
+	/**
+	 * @param context the command context to suggest with
+	 * @param builder the suggestion builder
+	 * @param allowCurrent whether to include the player's current preset
+	 * @return the suggestion promise
+	 * @throws CommandSyntaxException when the source is not a player
+	 * Suggests presets for the typing player
+	 */
 	public static CompletableFuture<Suggestions> suggestPresets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, boolean allowCurrent) throws CommandSyntaxException {
 		SwitchyPresets presets = ((SwitchyPlayer) context.getSource().getPlayer()).switchy$getPresets();
 		CommandSource.suggestMatching(presets.getPresetNames().stream().filter((s) -> allowCurrent || !Objects.equals(s, presets.getCurrentPresetName())), builder);
 		return builder.buildFuture();
 	}
 
+	/**
+	 * @param context the command context to suggest with
+	 * @param builder the suggestion builder
+	 * @param enabled whether to show enabled or disabled modules
+	 * @return the suggestion promise
+	 * @throws CommandSyntaxException when the source is not a player
+	 * Suggests switchy modules for the typing player
+	 */
 	public static CompletableFuture<Suggestions> suggestModules(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, boolean enabled) throws CommandSyntaxException {
 		SwitchyPresets presets = ((SwitchyPlayer) context.getSource().getPlayer()).switchy$getPresets();
 		CommandSource.suggestIdentifiers(presets.getModules().entrySet().stream().filter(e -> e.getValue() == enabled).map(Map.Entry::getKey), builder);
 		return builder.buildFuture();
 	}
 
+	/**
+	 * @param source the command context to retrieve the player from
+	 * @return {@link ServerPlayerEntity} if possible, null otherwise.
+	 */
 	public static @Nullable ServerPlayerEntity serverPlayerOrNull(ServerCommandSource source) {
 		try {
 			return source.getPlayer();
@@ -50,6 +70,13 @@ public class Command {
 		}
 	}
 
+	/**
+	 * @param buf the received packet
+	 * @param parser a function that parses NBT into an event object
+	 * @param eventHandler a handler for the parsed event object
+	 * @param <EventType> the type of event
+	 * Simplifies receiving serialized packets and parsing them into objects.
+	 */
 	public static <EventType> void consumeEventPacket(PacketByteBuf buf, Function<NbtCompound, EventType> parser, Consumer<EventType> eventHandler) {
 		NbtCompound eventNbt = buf.readNbt();
 		if (eventNbt != null) {
@@ -57,6 +84,12 @@ public class Command {
 		}
 	}
 
+	/**
+	 * @param context the command context to execute with
+	 * @param executor a function executing a command method, utilizing the provided player and presets objects
+	 * @return an integer representing the command outcome. 1 for executed, 0 for exceptions.
+	 * @see folk.sisby.switchy.SwitchyCommands
+	 */
 	public static int execute(CommandContext<ServerCommandSource> context, SwitchyServerCommandExecutor executor) {
 		ServerPlayerEntity player = serverPlayerOrNull(context.getSource());
 		if (player == null) {

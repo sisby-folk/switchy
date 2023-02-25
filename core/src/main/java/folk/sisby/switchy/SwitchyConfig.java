@@ -11,11 +11,17 @@ import org.quiltmc.config.api.values.ValueMap;
  * Handles module cold-editing permission configuration (including importing). Saved as {@code config/switchy/config.toml}
  */
 public class SwitchyConfig extends WrappedConfig {
+	/**
+	 * Editable list of ALLOWED/OPERATOR {@link SwitchyModuleEditable} values for all relevant registered module IDs
+	 */
 	@Comment("Permission for editing module data")
 	@Comment("Allowed: Non-operators can import this module, and it's imported by default")
 	@Comment("Operator: Operators can import this module using command flags")
 	public final ValueMap<SwitchyModuleEditable> moduleEditable = ValueMap.builder(SwitchyModuleEditable.OPERATOR).build();
 
+	/**
+	 * Read-only list of ALWAYS_ALLOWED/NEVER {@link SwitchyModuleEditable} values for all relevant registered module IDs
+	 */
 	@Comment("Permission for editing module data")
 	@Comment("These values are read-only - changing them here has no effect.")
 	@Comment("Always_Allowed: Non-operators can import this module")

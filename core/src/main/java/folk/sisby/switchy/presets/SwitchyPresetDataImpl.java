@@ -19,6 +19,11 @@ public class SwitchyPresetDataImpl<Module extends SwitchySerializable> implement
 	private final Map<Identifier, Module> modules;
 	private String name;
 
+	/**
+	 * @param name the desired name for the new preset.
+	 * @param modules the enabled status of modules from the presets object
+	 * @param moduleSupplier a function to supply module instances from their ID, usually from a registry.
+	 */
 	public SwitchyPresetDataImpl(String name, Map<Identifier, Boolean> modules, Function<Identifier, Module> moduleSupplier) {
 		this.name = name;
 		Map<Identifier, Module> suppliedModules = new HashMap<>();

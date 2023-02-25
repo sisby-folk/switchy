@@ -32,6 +32,10 @@ import static folk.sisby.switchy.util.Feedback.*;
  * Registration and logic for core commands.
  */
 public class SwitchyCommands implements CommandRegistrationCallback {
+	/**
+	 * A map of the previously executed command, per player UUID.
+	 * Can be used for "repeat-style" command confirmation - if the command in here matches the one being executed, that's a confirmation.
+	 */
 	public static final Map<UUID, String> HISTORY = new HashMap<>();
 
 	@Override
@@ -121,6 +125,11 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 		}
 	}
 
+	/**
+	 * @param player the relevant player
+	 * @param presets the player's presets object
+	 * @param name the case-insensitive name of a preset to switch to
+	 */
 	public static void setPreset(ServerPlayerEntity player, SwitchyPresets presets, String name) {
 		String oldName = presets.getCurrentPreset().toString();
 		try {
@@ -193,6 +202,13 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 		}
 	}
 
+	/**
+	 * @param player The player to show confirmation and import presets to.
+	 * @param importedPresets The presets to be imported.
+	 * @param modules The modules to be imported.
+	 * @param command The command to use for repeat-style confirmation
+	 * @return true if import was confirmed and performed, false if the confirmation screen was sent instead.
+	 */
 	public static boolean confirmAndImportPresets(ServerPlayerEntity player, Map<String, SwitchyPreset> importedPresets, List<Identifier> modules, String command) {
 		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 

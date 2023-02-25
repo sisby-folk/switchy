@@ -24,15 +24,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerPlayerEntity.class)
 public abstract class MixinServerPlayerEntity extends PlayerEntity implements SwitchyPlayer {
 
-	public MixinServerPlayerEntity(World world, BlockPos blockPos, float f, GameProfile gameProfile, @Nullable PlayerPublicKey playerPublicKey) {
+	private MixinServerPlayerEntity(World world, BlockPos blockPos, float f, GameProfile gameProfile, @Nullable PlayerPublicKey playerPublicKey) {
 		super(world, blockPos, f, gameProfile, playerPublicKey);
 	}
 
-	SwitchyPresets switchy$switchyPresets;
+	private SwitchyPresets switchy$switchyPresets;
 
 	@SuppressWarnings("unused")
 	@Inject(at = @At("TAIL"), method = "writeCustomDataToNbt(Lnet/minecraft/nbt/NbtCompound;)V")
-	public void writeCustomDataToNbt(NbtCompound tag, CallbackInfo ci) {
+	private void writeCustomDataToNbt(NbtCompound tag, CallbackInfo ci) {
 		if (switchy$switchyPresets != null) {
 			switchy$switchyPresets.saveCurrentPreset((ServerPlayerEntity) (Object) this);
 			tag.put("switchy:presets", switchy$switchyPresets.toNbt());
@@ -41,14 +41,14 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Sw
 
 	@SuppressWarnings("unused")
 	@Inject(at = @At("TAIL"), method = "readCustomDataFromNbt(Lnet/minecraft/nbt/NbtCompound;)V")
-	public void readCustomDataFromNbt(NbtCompound tag, CallbackInfo ci) {
+	private void readCustomDataFromNbt(NbtCompound tag, CallbackInfo ci) {
 		SwitchyPresets presets = new SwitchyPresetsImpl(true);
 		presets.fillFromNbt(tag.getCompound("switchy:presets"));
 		switchy$switchyPresets = presets;
 	}
 
 	@Inject(at = @At("HEAD"), method = "copyFrom(Lnet/minecraft/server/network/ServerPlayerEntity;Z)V")
-	public void copyFrom(ServerPlayerEntity oldPlayer, boolean alive, CallbackInfo ci) {
+	private void copyFrom(ServerPlayerEntity oldPlayer, boolean alive, CallbackInfo ci) {
 		if (oldPlayer instanceof SwitchyPlayer them) {
 			((SwitchyPlayer) (Object) this).switchy$setPresets(them.switchy$getPresets());
 		}

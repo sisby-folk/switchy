@@ -18,8 +18,10 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 
 import static folk.sisby.switchy.SwitchyClientServerNetworking.*;
+import static folk.sisby.switchy.client.util.FeedbackClient.tellInvalid;
+import static folk.sisby.switchy.client.util.FeedbackClient.tellSuccess;
 import static folk.sisby.switchy.util.Command.consumeEventPacket;
-import static folk.sisby.switchy.util.Feedback.*;
+import static folk.sisby.switchy.util.Feedback.literal;
 
 public class SwitchyClientNetworking {
 	public static void InitializeReceivers() {
