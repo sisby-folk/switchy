@@ -98,8 +98,13 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 		return outNbt;
 	}
 
-	@Override
-	public void toggleModulesFromNbt(NbtList list, Boolean enabled, Boolean silent) {
+	/**
+	 * @param list serialized module list
+	 * @param enabled whether to enable or disable modules from the list
+	 * @param silent whether to log missing or invalid modules
+	 * Toggles the enabled module map using an NBTList
+	 */
+	void toggleModulesFromNbt(NbtList list, Boolean enabled, Boolean silent) {
 		list.forEach((e) -> {
 			Identifier id;
 			if (e instanceof NbtString s && (id = Identifier.tryParse(s.asString())) != null && modules.containsKey(id)) {
@@ -178,13 +183,13 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 	}
 
 	@Override
-	public void renamePreset(String oldName, String newName) throws IllegalArgumentException, IllegalStateException {
-		if (!presets.containsKey(oldName)) throw new IllegalArgumentException("Specified preset does not exist");
+	public void renamePreset(String name, String newName) throws IllegalArgumentException, IllegalStateException {
+		if (!presets.containsKey(name)) throw new IllegalArgumentException("Specified preset does not exist");
 		if (presets.containsKey(newName)) throw new IllegalStateException("Specified preset name already exists");
-		Preset preset = presets.get(oldName);
+		Preset preset = presets.get(name);
 		preset.setName(newName);
 		presets.put(newName, preset);
-		presets.remove(oldName);
+		presets.remove(name);
 	}
 
 	@Override
