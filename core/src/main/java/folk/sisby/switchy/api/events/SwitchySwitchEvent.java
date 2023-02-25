@@ -9,10 +9,29 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * @author Ami
+ * @since 1.8.2
+ * Describes a "Switch Event" - emitted when a player joins, switches presets, or disconnects
+ */
 public class SwitchySwitchEvent {
+	/**
+	 * The relevant player.
+	 */
 	public final UUID player;
+	/**
+	 * The name of the previous preset in the switch.
+	 * On player join, this will be null.
+	 */
 	public final @Nullable String previousPreset; // Null previous preset means "joined"
+	/**
+	 * The name of the new current preset in the switch.
+	 * On player disconnect, this wil be null.
+	 */
 	public final @Nullable String currentPreset; // Null current preset means "disconnected"
+	/**
+	 * A list of enabled module names for the presets.
+	 */
 	public final List<String> enabledModules;
 
 	private static final String KEY_PLAYER = "player";

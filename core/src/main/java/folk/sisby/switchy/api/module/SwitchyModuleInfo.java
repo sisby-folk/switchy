@@ -8,6 +8,7 @@ import java.util.Set;
 
 import static folk.sisby.switchy.util.Feedback.translatable;
 
+
 public record SwitchyModuleInfo(boolean isDefault, SwitchyModuleEditable editable, Collection<Identifier> applyDependencies, Collection<Identifier> uniqueIds, MutableText disableConfirmation) {
 	private static final String KEY_DEFAULT_DISABLE = "commands.switchy.module.disable.warn";
 
