@@ -27,17 +27,17 @@ import static io.github.apace100.origins.registry.ModItems.ORB_OF_ORIGIN;
 
 /**
  * @author Sisby folk
- * @since 2.0.0
  * @see SwitchyDisplayModule
  * @see folk.sisby.switchy.modules.OriginsCompat
  * The client-displayable variant of a module that switches layered Origins from Apace's Origins
+ * @since 2.0.0
  */
 @ClientOnly
 public class OriginsCompatDisplay implements SwitchyDisplayModule {
 	/**
 	 * Identifier for this module. Must match {@link folk.sisby.switchy.modules.OriginsCompat}
 	 */
-	public static final Identifier ID = new Identifier("switchy",  "origins");
+	public static final Identifier ID = new Identifier("switchy", "origins");
 
 	/**
 	 * The NBT key where the list of origins is stored. Must match {@link folk.sisby.switchy.modules.OriginsCompat#toDisplayNbt()}
@@ -52,10 +52,20 @@ public class OriginsCompatDisplay implements SwitchyDisplayModule {
 	 */
 	public static final String KEY_ORIGIN = "Origin";
 
+	static {
+		SwitchyDisplayModuleRegistry.registerModule(ID, OriginsCompatDisplay::new);
+	}
+
 	/**
 	 * The origin identifiers per layer
 	 */
 	public Map<String, Identifier> origins;
+
+	/**
+	 * Executes {@code static} the first time it's invoked
+	 */
+	public static void touch() {
+	}
 
 	@Override
 	public Pair<Component, SwitchySwitchScreenPosition> getDisplayComponent() {
@@ -65,7 +75,7 @@ public class OriginsCompatDisplay implements SwitchyDisplayModule {
 		originsFlow.verticalAlignment(VerticalAlignment.CENTER);
 		originsFlow.child(Components.item(ORB_OF_ORIGIN.getDefaultStack()));
 		originsFlow.child(Components.label(Text.literal(
-				origins.values().stream().map(Identifier::getPath).collect(Collectors.joining(" | ")))
+						origins.values().stream().map(Identifier::getPath).collect(Collectors.joining(" | ")))
 				.setStyle(Style.EMPTY.withColor(Formatting.GRAY))));
 
 		return Pair.of(originsFlow, SwitchySwitchScreenPosition.LEFT);
@@ -98,14 +108,5 @@ public class OriginsCompatDisplay implements SwitchyDisplayModule {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Executes {@code static} the first time it's invoked
-	 */
-	public static void touch() {}
-
-	static {
-		SwitchyDisplayModuleRegistry.registerModule(ID, OriginsCompatDisplay::new);
 	}
 }

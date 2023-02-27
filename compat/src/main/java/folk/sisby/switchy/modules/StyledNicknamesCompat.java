@@ -14,25 +14,36 @@ import java.util.Objects;
 
 /**
  * @author Sisby folk
- * @since 1.7.2
  * @see SwitchyModule
  * A module that switches nicknames from Patbox's Styled Nicknames.
+ * @since 1.7.2
  */
 public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleDisplayable {
 	/**
 	 * Identifier for this module
 	 */
-	public static final Identifier ID = new Identifier("switchy",  "styled_nicknames");
+	public static final Identifier ID = new Identifier("switchy", "styled_nicknames");
 
 	/**
 	 * The NBT key where the nickname is stored
 	 */
 	public static final String KEY_NICKNAME = "styled_nickname";
 
+	// Runs on touch() - but only once.
+	static {
+		SwitchyModuleRegistry.registerModule(ID, StyledNicknamesCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALWAYS_ALLOWED));
+	}
+
 	/**
 	 * The styled nickname, in placeholder API simplified text format
 	 */
 	@Nullable public String styled_nickname;
+
+	/**
+	 * Executes {@code static} the first time it's invoked
+	 */
+	public static void touch() {
+	}
 
 	@Override
 	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
@@ -46,7 +57,8 @@ public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleDispla
 		String oldName = player.getDisplayName().getString();
 		if (styled_nickname != null) holder.sn_set(styled_nickname, false);
 		String newName = player.getDisplayName().getString();
-		if (!Objects.equals(oldName, newName)) Switchy.LOGGER.info("[Switchy] Player Nickname Change: '" + oldName + "' -> '" + newName + "' [" + player.getGameProfile().getName() + "]");
+		if (!Objects.equals(oldName, newName))
+			Switchy.LOGGER.info("[Switchy] Player Nickname Change: '" + oldName + "' -> '" + newName + "' [" + player.getGameProfile().getName() + "]");
 	}
 
 	@Override
@@ -59,23 +71,13 @@ public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleDispla
 	@Override
 	public NbtCompound toDisplayNbt() {
 		NbtCompound outNbt = new NbtCompound();
-		if (styled_nickname != null) outNbt.putString(KEY_NICKNAME, Text.Serializer.toJsonTree(TextParserUtils.formatText(styled_nickname)).getAsString());
+		if (styled_nickname != null)
+			outNbt.putString(KEY_NICKNAME, Text.Serializer.toJsonTree(TextParserUtils.formatText(styled_nickname)).getAsString());
 		return outNbt;
 	}
 
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
 		styled_nickname = nbt.contains(KEY_NICKNAME) ? nbt.getString(KEY_NICKNAME) : null;
-	}
-
-	/**
-	 * Executes {@code static} the first time it's invoked
-	 */
-	public static void touch() {
-	}
-
-	// Runs on touch() - but only once.
-	static {
-		SwitchyModuleRegistry.registerModule(ID, StyledNicknamesCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALWAYS_ALLOWED));
 	}
 }

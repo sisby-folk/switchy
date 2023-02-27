@@ -23,12 +23,9 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  * An argument type allowing the user to select any file within a folder matching an extension.
  */
 public class FileArgumentType implements ArgumentType<File> {
+	private static final SimpleCommandExceptionType FILE_NOT_FOUND = new SimpleCommandExceptionType(translatable("command.exception.file.not_found"));
 	private final File folder;
 	private final String extension;
-
-	private FilenameFilter extensionFilter() {
-		return (dir, name) -> FileNameUtils.getExtension(name).toLowerCase().equals(extension);
-	}
 
 	FileArgumentType(final File folder, final String extension) {
 		this.folder = folder;
@@ -36,7 +33,7 @@ public class FileArgumentType implements ArgumentType<File> {
 	}
 
 	/**
-	 * @param folder the folder to allow files to be picked from
+	 * @param folder    the folder to allow files to be picked from
 	 * @param extension the file extension the files must match
 	 * @return an instance
 	 */
@@ -44,7 +41,9 @@ public class FileArgumentType implements ArgumentType<File> {
 		return new FileArgumentType(folder, extension);
 	}
 
-	private static final SimpleCommandExceptionType FILE_NOT_FOUND = new SimpleCommandExceptionType(translatable("command.exception.file.not_found"));
+	private FilenameFilter extensionFilter() {
+		return (dir, name) -> FileNameUtils.getExtension(name).toLowerCase().equals(extension);
+	}
 
 	@Override
 	public File parse(StringReader reader) throws CommandSyntaxException {

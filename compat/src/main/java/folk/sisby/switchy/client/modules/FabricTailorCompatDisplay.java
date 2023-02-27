@@ -24,17 +24,28 @@ import java.util.UUID;
 
 /**
  * @author Sisby folk
- * @since 2.0.0
  * @see SwitchyDisplayModule
  * @see folk.sisby.switchy.modules.FabricTailorCompat
  * The client-displayable variant of a module that switches player skins from samolego's Fabric Tailor
+ * @since 2.0.0
  */
 @ClientOnly
 public class FabricTailorCompatDisplay extends FabricTailorCompatData implements SwitchyDisplayModule {
+	static {
+		SwitchyDisplayModuleRegistry.registerModule(ID, FabricTailorCompatDisplay::new);
+	}
+
+	/**
+	 * Executes {@code static} the first time it's invoked
+	 */
+	public static void touch() {
+	}
+
 	@Override
 	public Pair<Component, SwitchySwitchScreenPosition> getDisplayComponent() {
 		if (skinValue == null) return null;
 		MinecraftClient client = MinecraftClient.getInstance();
+		if (client.world == null) return null;
 
 		Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
 		MinecraftTexturesPayload payload = gson.fromJson(new String(Base64.getDecoder().decode(skinValue)), MinecraftTexturesPayload.class);
@@ -52,14 +63,5 @@ public class FabricTailorCompatDisplay extends FabricTailorCompatData implements
 		skinPreview.scale(0.5F);
 
 		return Pair.of(skinPreview, SwitchySwitchScreenPosition.SIDE_RIGHT);
-	}
-
-	/**
-	 * Executes {@code static} the first time it's invoked
-	 */
-	public static void touch() {}
-
-	static {
-		SwitchyDisplayModuleRegistry.registerModule(ID, FabricTailorCompatDisplay::new);
 	}
 }

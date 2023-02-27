@@ -8,16 +8,16 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Sisby folk
- * @since 1.0.0
  * @see SwitchySerializable
  * @see FabricTailorCompat
  * The data component of a module that switches nicknames from unascribed's Drogtor The Nickinator
+ * @since 1.0.0
  */
 public class DrogtorCompatData implements SwitchySerializable {
 	/**
 	 * Identifier for this module
 	 */
-	public static final Identifier ID = new Identifier("switchy",  "drogtor");
+	public static final Identifier ID = new Identifier("switchy", "drogtor");
 
 	/**
 	 * The NBT key where the nickname is stored
@@ -39,7 +39,7 @@ public class DrogtorCompatData implements SwitchySerializable {
 	/**
 	 * The nickname colour
 	 */
-	@Nullable public Formatting namecolor;
+	@Nullable public Formatting nameColor;
 	/**
 	 * The "bio" (nickname hover text)
 	 */
@@ -49,7 +49,7 @@ public class DrogtorCompatData implements SwitchySerializable {
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		if (nickname != null) outNbt.putString(KEY_NICKNAME, nickname);
-		if (namecolor != null) outNbt.putString(KEY_NAME_COLOR, namecolor.getName());
+		if (nameColor != null) outNbt.putString(KEY_NAME_COLOR, nameColor.getName());
 		if (bio != null) outNbt.putString(KEY_BIO, bio);
 		return outNbt;
 	}
@@ -57,7 +57,7 @@ public class DrogtorCompatData implements SwitchySerializable {
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
 		nickname = nbt.contains(KEY_NICKNAME) ? nbt.getString(KEY_NICKNAME) : null;
-		namecolor = nbt.contains(KEY_NAME_COLOR) ? Formatting.byName(nbt.getString(KEY_NAME_COLOR)) : null;
+		nameColor = nbt.contains(KEY_NAME_COLOR) ? Formatting.byName(nbt.getString(KEY_NAME_COLOR)) : null;
 		bio = nbt.contains(KEY_BIO) ? nbt.getString(KEY_BIO) : null;
 	}
 }

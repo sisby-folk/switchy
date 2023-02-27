@@ -10,9 +10,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author Sisby folk
- * @since 1.0.0
  * @see SwitchyPlayConnectionListener
  * Initializes core addons by invoking {@link SwitchyEvents.Init}. Responsible for logging initial modules.
+ * @since 1.0.0
  */
 public class Switchy implements ModInitializer {
 	/**

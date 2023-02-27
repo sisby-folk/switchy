@@ -1,9 +1,9 @@
 package folk.sisby.switchy.client;
 
 import folk.sisby.switchy.api.events.SwitchySwitchEvent;
+import folk.sisby.switchy.api.module.presets.SwitchyDisplayPresets;
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
 import folk.sisby.switchy.client.screen.SwitchScreen;
-import folk.sisby.switchy.api.module.presets.SwitchyDisplayPresets;
 import folk.sisby.switchy.presets.SwitchyDisplayPresetsImpl;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
@@ -40,7 +40,7 @@ public class SwitchyClientNetworking {
 
 	/**
 	 * @param name the case-insensitive name of a preset
-	 * Switches to the specified preset on the server
+	 *             Switches to the specified preset on the server
 	 */
 	public static void switchCurrentPreset(String name) {
 		PacketByteBuf buf = PacketByteBufs.create();

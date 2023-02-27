@@ -14,24 +14,12 @@ import static folk.sisby.switchy.client.util.FeedbackClient.tellInvalid;
  */
 public class CommandClient {
 	/**
-	 * A simple representation of a Switchy Client command method
-	 */
-	public interface SwitchyClientCommandExecutor {
-		/**
-		 * @param context the command context
-		 * @param player the client player
-		 */
-		void execute(CommandContext<QuiltClientCommandSource> context, ClientPlayerEntity player);
-	}
-
-	/**
 	 * @param context  the command context to execute with
 	 * @param executor a function executing a command method, utilizing the provided context and player objects
 	 * @return an integer representing the command outcome. 1 for executed, 0 for exceptions.
 	 * @see folk.sisby.switchy.client.SwitchyClientCommands
 	 */
-	public static int executeClient(CommandContext<QuiltClientCommandSource> context, SwitchyClientCommandExecutor executor)
-	{
+	public static int executeClient(CommandContext<QuiltClientCommandSource> context, SwitchyClientCommandExecutor executor) {
 		ClientPlayerEntity player = context.getSource().getPlayer();
 		try {
 			executor.execute(context, player);
@@ -41,5 +29,16 @@ public class CommandClient {
 			LOGGER.error("[Switchy] Error while executing command: {}", context.getInput(), e);
 			return 0;
 		}
+	}
+
+	/**
+	 * A simple representation of a Switchy Client command method
+	 */
+	public interface SwitchyClientCommandExecutor {
+		/**
+		 * @param context the command context
+		 * @param player  the client player
+		 */
+		void execute(CommandContext<QuiltClientCommandSource> context, ClientPlayerEntity player);
 	}
 }

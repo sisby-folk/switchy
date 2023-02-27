@@ -8,12 +8,22 @@ import org.samo_lego.fabrictailor.casts.TailoredPlayer;
 
 /**
  * @author Sisby folk
- * @since 1.0.0
  * @see SwitchyModule
  * @see FabricTailorCompatData
  * A module that switches player skins from samolego's Fabric Tailor
+ * @since 1.0.0
  */
 public class FabricTailorCompat extends FabricTailorCompatData implements SwitchyModule, SwitchyModuleDisplayable {
+	static {
+		SwitchyModuleRegistry.registerModule(ID, FabricTailorCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALWAYS_ALLOWED));
+	}
+
+	/**
+	 * Executes {@code static} the first time it's invoked
+	 */
+	public static void touch() {
+	}
+
 	@Override
 	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
 		TailoredPlayer tailoredPlayer = (TailoredPlayer) player;
@@ -32,14 +42,5 @@ public class FabricTailorCompat extends FabricTailorCompatData implements Switch
 	@Override
 	public NbtCompound toDisplayNbt() {
 		return toNbt();
-	}
-
-	/**
-	 * Executes {@code static} the first time it's invoked
-	 */
-	public static void touch() {}
-
-	static {
-		SwitchyModuleRegistry.registerModule(ID, FabricTailorCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALWAYS_ALLOWED));
 	}
 }

@@ -14,8 +14,8 @@ import java.util.HashMap;
 
 /**
  * @author Sisby folk
- * @since 1.9.1
  * @see SwitchyDisplayPresets
+ * @since 1.9.1
  */
 @ClientOnly
 public class SwitchyDisplayPresetsImpl extends SwitchyPresetsDataImpl<SwitchyDisplayModule, SwitchyDisplayPreset> implements SwitchyDisplayPresets {

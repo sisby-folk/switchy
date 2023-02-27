@@ -23,7 +23,11 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  */
 public class IdentifiersArgumentType implements ArgumentType<List<Identifier>> {
 
-	IdentifiersArgumentType() {}
+	private static final SimpleCommandExceptionType EXPECTED_NAMESPACE = new SimpleCommandExceptionType(translatable("command.exception.identifiers.expected_namespace"));
+	private static final SimpleCommandExceptionType EXPECTED_PATH = new SimpleCommandExceptionType(translatable("command.exception.identifiers.expected_path"));
+
+	IdentifiersArgumentType() {
+	}
 
 	/**
 	 * @return an instance.
@@ -45,9 +49,6 @@ public class IdentifiersArgumentType implements ArgumentType<List<Identifier>> {
 		return character == '_' || character == '-' || character >= 'a' && character <= 'z' || character >= '0' && character <= '9' || character == '.';
 	}
 
-	private static final SimpleCommandExceptionType EXPECTED_NAMESPACE = new SimpleCommandExceptionType(translatable("command.exception.identifiers.expected_namespace"));
-	private static final SimpleCommandExceptionType EXPECTED_PATH = new SimpleCommandExceptionType(translatable("command.exception.identifiers.expected_path"));
-
 	@Override
 	public List<Identifier> parse(StringReader reader) throws CommandSyntaxException {
 		List<Identifier> outList = new ArrayList<>();
@@ -56,7 +57,7 @@ public class IdentifiersArgumentType implements ArgumentType<List<Identifier>> {
 			return outList;
 		}
 		while (true) {
-			if(reader.canRead() && reader.peek() == ',') {
+			if (reader.canRead() && reader.peek() == ',') {
 				reader.skip();
 			}
 			final int start = reader.getCursor();

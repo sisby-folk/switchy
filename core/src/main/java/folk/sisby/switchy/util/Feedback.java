@@ -43,29 +43,29 @@ public class Feedback {
 
 	/**
 	 * @param player the player to send the message to
-	 * @param text the text to send
+	 * @param text   the text to send
 	 */
 	public static void sendMessage(ServerPlayerEntity player, Text text) {
 		player.sendMessage(literal("[Switchy] ").setStyle(Style.EMPTY.withColor(Formatting.AQUA)).append(text), false);
 	}
 
 	/**
-	 * @param player the player to send the message to
-	 * @param keyHelp a translation key explaining the command
+	 * @param player     the player to send the message to
+	 * @param keyHelp    a translation key explaining the command
 	 * @param keyCommand a translation key with a command
-	 * @param keyArgs the translation key arguments to pass to the command text
-	 * Sends feedback to the player with a suggested command, using the {@link Feedback#FORMAT_INVALID} style
+	 * @param keyArgs    the translation key arguments to pass to the command text
+	 *                   Sends feedback to the player with a suggested command, using the {@link Feedback#FORMAT_INVALID} style
 	 */
 	public static void tellHelp(ServerPlayerEntity player, String keyHelp, String keyCommand, String... keyArgs) {
 		sendMessage(player, translatableWithArgs("commands.switchy.help.line", translatableWithArgs(keyCommand, FORMAT_COMMAND, translatable(keyArgs)), translatableWithArgs(keyHelp, FORMAT_HELP)));
 	}
 
 	/**
-	 * @param player the player to send the message to
-	 * @param keyFail a translation key explaining why the user action failed
-	 * @param keyCommand a translation key with a suggested command
+	 * @param player      the player to send the message to
+	 * @param keyFail     a translation key explaining why the user action failed
+	 * @param keyCommand  a translation key with a suggested command
 	 * @param commandArgs the literal arguments to pass to the command text
-	 * Sends feedback to the player with a suggested command, using the {@link Feedback#FORMAT_INVALID} style
+	 *                    Sends feedback to the player with a suggested command, using the {@link Feedback#FORMAT_INVALID} style
 	 */
 	public static void tellInvalidTry(ServerPlayerEntity player, String keyFail, String keyCommand, MutableText... commandArgs) {
 		sendMessage(player, translatableWithArgs(keyFail, FORMAT_INVALID, translatableWithArgs(keyCommand, commandArgs)));
@@ -73,9 +73,9 @@ public class Feedback {
 
 	/**
 	 * @param player the player to send the message to
-	 * @param key a translation key
-	 * @param args the literal arguments to pass to the translatable text
-	 * Sends feedback to the player using the {@link Feedback#FORMAT_INVALID} style
+	 * @param key    a translation key
+	 * @param args   the literal arguments to pass to the translatable text
+	 *               Sends feedback to the player using the {@link Feedback#FORMAT_INVALID} style
 	 */
 	public static void tellInvalid(ServerPlayerEntity player, String key, MutableText... args) {
 		sendMessage(player, translatableWithArgs(key, FORMAT_INVALID, args));
@@ -84,9 +84,9 @@ public class Feedback {
 
 	/**
 	 * @param player the player to send the message to
-	 * @param key a translation key
-	 * @param args the literal arguments to pass to the translatable text
-	 * Sends feedback to the player using the {@link Feedback#FORMAT_SUCCESS} style
+	 * @param key    a translation key
+	 * @param args   the literal arguments to pass to the translatable text
+	 *               Sends feedback to the player using the {@link Feedback#FORMAT_SUCCESS} style
 	 */
 	public static void tellSuccess(ServerPlayerEntity player, String key, MutableText... args) {
 		sendMessage(player, translatableWithArgs(key, FORMAT_SUCCESS, args));
@@ -94,9 +94,9 @@ public class Feedback {
 
 	/**
 	 * @param player the player to send the message to
-	 * @param key a translation key
-	 * @param args the literal arguments to pass to the translatable text
-	 * Sends feedback to the player using the {@link Feedback#FORMAT_WARN} style
+	 * @param key    a translation key
+	 * @param args   the literal arguments to pass to the translatable text
+	 *               Sends feedback to the player using the {@link Feedback#FORMAT_WARN} style
 	 */
 	public static void tellWarn(ServerPlayerEntity player, String key, MutableText... args) {
 		sendMessage(player, translatableWithArgs(key, FORMAT_WARN, args));
@@ -119,9 +119,9 @@ public class Feedback {
 	}
 
 	/**
-	 * @param key a translation key
+	 * @param key         a translation key
 	 * @param formatStyle a pair of styles - left applies to the translatable text, right to the arguments.
-	 * @param args the literal arguments to pass to the translatable text
+	 * @param args        the literal arguments to pass to the translatable text
 	 * @return the resultant translatable text
 	 */
 	public static MutableText translatableWithArgs(String key, Pair<Style, Style> formatStyle, MutableText... args) {
@@ -129,7 +129,7 @@ public class Feedback {
 	}
 
 	/**
-	 * @param key a translation key
+	 * @param key  a translation key
 	 * @param args the literal arguments to pass to the translatable text
 	 * @return the resultant translatable text
 	 */
@@ -158,7 +158,7 @@ public class Feedback {
 	}
 
 	/**
-	 * @param list an arbitrary list of strings
+	 * @param list        an arbitrary list of strings
 	 * @param highlighter a list of "highlighters" - formatting with predicates to apply to the string before applying.
 	 * @return a text representation of the list with formatting applied to the strings based on the highlighters.
 	 * Highlighters are first-in first-serve.
@@ -175,5 +175,7 @@ public class Feedback {
 	 * @param string a command string without a slash.
 	 * @return a command as might be returned by context.getInput(). Identical in 1.19+
 	 */
-	public static String command(String string) { return "" + string; }
+	public static String command(String string) {
+		return "" + string;
+	}
 }

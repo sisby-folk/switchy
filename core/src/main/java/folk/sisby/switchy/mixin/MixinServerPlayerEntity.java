@@ -24,13 +24,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerPlayerEntity.class)
 public abstract class MixinServerPlayerEntity extends PlayerEntity implements SwitchyPlayer {
 
+	private SwitchyPresets switchy$switchyPresets;
+
 	private MixinServerPlayerEntity(World world, BlockPos blockPos, float f, GameProfile gameProfile, @Nullable PlayerPublicKey playerPublicKey) {
 		super(world, blockPos, f, gameProfile, playerPublicKey);
 	}
 
-	private SwitchyPresets switchy$switchyPresets;
-
-	@SuppressWarnings("unused")
+	@SuppressWarnings({"unused", "DataFlowIssue"})
 	@Inject(at = @At("TAIL"), method = "writeCustomDataToNbt(Lnet/minecraft/nbt/NbtCompound;)V")
 	private void writeCustomDataToNbt(NbtCompound tag, CallbackInfo ci) {
 		if (switchy$switchyPresets != null) {
@@ -47,6 +47,7 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Sw
 		switchy$switchyPresets = presets;
 	}
 
+	@SuppressWarnings("RedundantCast")
 	@Inject(at = @At("HEAD"), method = "copyFrom(Lnet/minecraft/server/network/ServerPlayerEntity;Z)V")
 	private void copyFrom(ServerPlayerEntity oldPlayer, boolean alive, CallbackInfo ci) {
 		if (oldPlayer instanceof SwitchyPlayer them) {

@@ -7,10 +7,10 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Sisby folk
- * @since 1.0.0
  * @see SwitchySerializable
  * @see FabricTailorCompat
  * The data component of a module that switches player skins from samolego's Fabric Tailor
+ * @since 1.0.0
  */
 public class FabricTailorCompatData implements SwitchySerializable {
 	/**

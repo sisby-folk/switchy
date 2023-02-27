@@ -20,9 +20,9 @@ import java.util.stream.Collectors;
 
 /**
  * @author Sisby folk
- * @since 1.7.3
  * @see IdentifiersArgumentType
  * An argument type allowing the user to enter a list of identifiers using an NBT compound returning previous argument.
+ * @since 1.7.3
  */
 public class IdentifiersFromNbtArgArgumentType implements ArgumentType<List<Identifier>> {
 	private final IdentifiersArgumentType identifiersArgumentType;
@@ -39,9 +39,9 @@ public class IdentifiersFromNbtArgArgumentType implements ArgumentType<List<Iden
 	}
 
 	/**
-	 * @param nbtArgument the name of the NBT-compound returning arugumnet.
+	 * @param nbtArgument     the name of the NBT-compound returning argument.
 	 * @param excludeArgument an optional Identifier List argument to remove suggestions for
-	 * @param nbtListKey the key of the NBT compound that contains a list of identifiers to suggest
+	 * @param nbtListKey      the key of the NBT compound that contains a list of identifiers to suggest
 	 * @return an instance
 	 */
 	public static IdentifiersFromNbtArgArgumentType create(String nbtArgument, @Nullable String excludeArgument, String nbtListKey) {

@@ -29,17 +29,6 @@ import static folk.sisby.switchy.util.Feedback.tellInvalid;
  */
 public class Command {
 	/**
-	 * A simple representation of a Switchy command method
-	 */
-	public interface SwitchyServerCommandExecutor {
-		/**
-		 * @param player the relevant player
-		 * @param presets the relevant player's presets
-		 */
-		void execute(ServerPlayerEntity player, SwitchyPresets presets);
-	}
-
-	/**
 	 * @param context      the command context to suggest with
 	 * @param builder      the suggestion builder
 	 * @param allowCurrent whether to include the player's current preset
@@ -115,5 +104,16 @@ public class Command {
 			LOGGER.error("[Switchy] Error while executing command: {}", context.getInput(), e);
 			return 0;
 		}
+	}
+
+	/**
+	 * A simple representation of a Switchy command method
+	 */
+	public interface SwitchyServerCommandExecutor {
+		/**
+		 * @param player  the relevant player
+		 * @param presets the relevant player's presets
+		 */
+		void execute(ServerPlayerEntity player, SwitchyPresets presets);
 	}
 }

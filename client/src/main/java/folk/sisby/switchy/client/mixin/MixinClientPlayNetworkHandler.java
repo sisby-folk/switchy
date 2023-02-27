@@ -11,23 +11,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * @author Garden System
- * @since 2.0.0
  * @see SwitchyClientCommands
  * Records server commands before they're sent into a map of previous commands per player UUID.
+ * @since 2.0.0
  */
 @Mixin(ClientPlayNetworkHandler.class)
 public abstract class MixinClientPlayNetworkHandler {
 
 	/**
 	 * @param packet a packet being sent to the server
-	 * @param ci callback info
-	 * Intercepts outgoing chat packets and updates the command history using them
+	 * @param ci     callback info
+	 *               Intercepts outgoing chat packets and updates the command history using them
 	 */
 	@Inject(at = @At("HEAD"), method = "sendPacket")
-	public void sendPacket(Packet<?> packet, CallbackInfo ci)
-	{
-		if (packet instanceof ChatCommandC2SPacket chatPacket)
-		{
+	public void sendPacket(Packet<?> packet, CallbackInfo ci) {
+		if (packet instanceof ChatCommandC2SPacket chatPacket) {
 			SwitchyClientCommands.HISTORY = chatPacket.command();
 		}
 	}

@@ -51,7 +51,7 @@ public final class SwitchyEvents {
 	public interface Switch extends EventAwareListener {
 		/**
 		 * @param player The relevant player.
-		 * @param event The switch event that has occurred
+		 * @param event  The switch event that has occurred
 		 */
 		void onSwitch(ServerPlayerEntity player, SwitchySwitchEvent event);
 	}

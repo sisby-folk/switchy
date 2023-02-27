@@ -13,28 +13,16 @@ import java.util.Set;
 
 /**
  * @author Sisby folk
- * @since 1.0.0
  * @see SwitchyPreset
+ * @since 1.0.0
  */
 public class SwitchyPresetImpl extends SwitchyPresetDataImpl<SwitchyModule> implements SwitchyPreset {
 	/**
-	 * @param name the desired name for the new preset.
+	 * @param name    the desired name for the new preset.
 	 * @param modules the enabled status of modules from the presets object
 	 */
 	public SwitchyPresetImpl(String name, Map<Identifier, Boolean> modules) {
 		super(name, modules, SwitchyModuleRegistry::supplyModule);
-	}
-
-	@Override
-	public void updateFromPlayer(ServerPlayerEntity player, String nextPreset) {
-		getModules().forEach((id, module) -> {
-			try {
-				module.updateFromPlayer(player, nextPreset);
-			} catch (Exception ex) {
-				Switchy.LOGGER.error("[Switchy] Module " + id + " failed to update! Error:");
-				Switchy.LOGGER.error(ex.toString());
-			}
-		});
 	}
 
 	static void tryApplyModule(Map<Identifier, SwitchyModule> modules, Identifier id, ServerPlayerEntity player, Set<Identifier> registeredModules) {
@@ -49,6 +37,18 @@ public class SwitchyPresetImpl extends SwitchyPresetDataImpl<SwitchyModule> impl
 			}
 			registeredModules.add(id);
 		}
+	}
+
+	@Override
+	public void updateFromPlayer(ServerPlayerEntity player, String nextPreset) {
+		getModules().forEach((id, module) -> {
+			try {
+				module.updateFromPlayer(player, nextPreset);
+			} catch (Exception ex) {
+				Switchy.LOGGER.error("[Switchy] Module " + id + " failed to update! Error:");
+				Switchy.LOGGER.error(ex.toString());
+			}
+		});
 	}
 
 	@Override

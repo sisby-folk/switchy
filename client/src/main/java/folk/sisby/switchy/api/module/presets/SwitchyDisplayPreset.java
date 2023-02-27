@@ -11,10 +11,10 @@ import java.util.Map;
 
 /**
  * @author Sisby folk
- * @since 2.0.0
  * @see SwitchyDisplayModule
  * @see folk.sisby.switchy.api.presets.SwitchyPreset
  * A named collection of {@link SwitchyDisplayModule}s, representing a {@link folk.sisby.switchy.api.presets.SwitchyPreset} from the server.
+ * @since 2.0.0
  */
 public interface SwitchyDisplayPreset extends SwitchyPresetData<SwitchyDisplayModule> {
 	/**

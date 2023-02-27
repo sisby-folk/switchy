@@ -15,13 +15,13 @@ import java.util.Map;
 
 /**
  * @author Sisby folk
- * @since 1.9.1
  * @see SwitchyDisplayPreset
+ * @since 1.9.1
  */
 @ClientOnly
 public class SwitchyDisplayPresetImpl extends SwitchyPresetDataImpl<SwitchyDisplayModule> implements SwitchyDisplayPreset {
 	/**
-	 * @param name the desired name for the new preset.
+	 * @param name    the desired name for the new preset.
 	 * @param modules the enabled status of modules from the display presets object
 	 */
 	public SwitchyDisplayPresetImpl(String name, Map<Identifier, Boolean> modules) {

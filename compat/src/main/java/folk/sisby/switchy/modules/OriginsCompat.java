@@ -20,15 +20,15 @@ import java.util.Map;
 
 /**
  * @author Sisby folk
- * @since 1.0.0
  * @see SwitchyModule
  * A module that switches layered Origins from Apace's Origins
+ * @since 1.0.0
  */
 public class OriginsCompat implements SwitchyModule, SwitchyModuleDisplayable {
 	/**
 	 * Identifier for this module
 	 */
-	public static final Identifier ID = new Identifier("switchy",  "origins");
+	public static final Identifier ID = new Identifier("switchy", "origins");
 
 	/**
 	 * The NBT key where the list of origins is stored
@@ -43,11 +43,28 @@ public class OriginsCompat implements SwitchyModule, SwitchyModuleDisplayable {
 	 */
 	public static final String KEY_ORIGIN = "Origin";
 
+	static {
+		SwitchyModuleRegistry.registerModule(ID, OriginsCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALLOWED));
+	}
 
 	/**
 	 * The origins per layer
 	 */
 	@Nullable public Map<OriginLayer, Origin> origins;
+
+	private static void setOrigin(ServerPlayerEntity player, OriginLayer layer, Origin origin) {
+		OriginComponent component = ModComponents.ORIGIN.get(player);
+		component.setOrigin(layer, origin);
+		OriginComponent.sync(player);
+		boolean hadOriginBefore = component.hadOriginBefore();
+		OriginComponent.partialOnChosen(player, hadOriginBefore, origin);
+	}
+
+	/**
+	 * Executes {@code static} the first time it's invoked
+	 */
+	public static void touch() {
+	}
 
 	@Override
 	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
@@ -62,14 +79,6 @@ public class OriginsCompat implements SwitchyModule, SwitchyModuleDisplayable {
 				setOrigin(player, layer, origins.get(layer));
 			}
 		}
-	}
-
-	private static void setOrigin(ServerPlayerEntity player, OriginLayer layer, Origin origin) {
-		OriginComponent component = ModComponents.ORIGIN.get(player);
-		component.setOrigin(layer, origin);
-		OriginComponent.sync(player);
-		boolean hadOriginBefore = component.hadOriginBefore();
-		OriginComponent.partialOnChosen(player, hadOriginBefore, origin);
 	}
 
 	@Override
@@ -113,14 +122,5 @@ public class OriginsCompat implements SwitchyModule, SwitchyModuleDisplayable {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Executes {@code static} the first time it's invoked
-	 */
-	public static void touch() {}
-
-	static {
-		SwitchyModuleRegistry.registerModule(ID, OriginsCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALLOWED));
 	}
 }

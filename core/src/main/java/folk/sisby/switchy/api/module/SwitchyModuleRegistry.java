@@ -12,10 +12,10 @@ import java.util.function.Supplier;
 
 /**
  * @author Sisby folk
- * @since 2.0.0
  * @see SwitchyModule
  * Provides access to module registration for addons, and exposes information about the current state of the registry.
  * Effectively Static.
+ * @since 2.0.0
  */
 public class SwitchyModuleRegistry {
 	private static final List<SwitchyModuleEditable> EDITABLE_CONFIGURABLE = List.of(SwitchyModuleEditable.ALLOWED, SwitchyModuleEditable.OPERATOR);
@@ -25,11 +25,12 @@ public class SwitchyModuleRegistry {
 
 	/**
 	 * Allows addons to register {@link SwitchyModule} implementations to be used by Switchy.
-	 * @param id A unique identifier to associate with the module being registered.
+	 *
+	 * @param id                A unique identifier to associate with the module being registered.
 	 * @param moduleConstructor Usually {@code ModuleName::new} - this will be called on player join.
-	 * @param moduleInfo The static settings for the module. See {@link SwitchyModuleInfo}
+	 * @param moduleInfo        The static settings for the module. See {@link SwitchyModuleInfo}
 	 * @throws IllegalArgumentException when {@code id} is already associated with a registered module.
-	 * @throws IllegalStateException when a {@code uniqueId} provided in {@link SwitchyModuleInfo} collides with one already registered
+	 * @throws IllegalStateException    when a {@code uniqueId} provided in {@link SwitchyModuleInfo} collides with one already registered
 	 */
 	public static void registerModule(Identifier id, Supplier<SwitchyModule> moduleConstructor, SwitchyModuleInfo moduleInfo) throws IllegalArgumentException, IllegalStateException {
 		if (SUPPLIERS.containsKey(id)) {

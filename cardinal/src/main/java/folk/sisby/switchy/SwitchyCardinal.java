@@ -7,9 +7,9 @@ import org.quiltmc.qsl.resource.loader.api.ResourceLoader;
 
 /**
  * @author Ampflower
- * @since 1.8.4
  * @see SwitchyEvents
  * Initializer for the Switchy Cardinal addon
+ * @since 1.8.4
  */
 public class SwitchyCardinal implements SwitchyEvents.Init {
 	@Override

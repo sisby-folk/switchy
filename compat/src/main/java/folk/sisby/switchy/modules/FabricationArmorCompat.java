@@ -26,10 +26,10 @@ import java.util.*;
 
 /**
  * @author Sisby folk
- * @since 1.4.0
  * @see SwitchyModule
  * A module that switches whether armor is hidden using unascribed's Fabrication's {@code /hidearmor} feature
  * "Sticky" - i.e. data will copy from existing presets to new ones, assuming players will prefer the same setup.
+ * @since 1.4.0
  */
 public class FabricationArmorCompat implements SwitchyModule {
 	/**
@@ -42,10 +42,20 @@ public class FabricationArmorCompat implements SwitchyModule {
 	 */
 	public static final String KEY_SUPPRESSED_SLOTS = "suppressedSlots";
 
+	static {
+		SwitchyModuleRegistry.registerModule(ID, FabricationArmorCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALLOWED, QuiltLoader.isModLoaded("fabrictailor") ? Set.of(FabricTailorCompat.ID) : Set.of()));
+	}
+
 	/**
 	 * The NBT key where the list of EquipmentSlots to hide is stored
 	 */
 	private @Nullable Set<EquipmentSlot> suppressedSlots;
+
+	/**
+	 * Executes {@code static} the first time it's invoked
+	 */
+	public static void touch() {
+	}
 
 	@Override
 	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
@@ -93,15 +103,5 @@ public class FabricationArmorCompat implements SwitchyModule {
 				suppressedSlots.add(slot);
 			}
 		}
-	}
-
-	/**
-	 * Executes {@code static} the first time it's invoked
-	 */
-	public static void touch() {
-	}
-
-	static {
-		SwitchyModuleRegistry.registerModule(ID, FabricationArmorCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALLOWED, QuiltLoader.isModLoaded("fabrictailor") ? Set.of(FabricTailorCompat.ID) : Set.of()));
 	}
 }

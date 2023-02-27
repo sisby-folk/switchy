@@ -4,10 +4,10 @@ import net.minecraft.nbt.NbtCompound;
 
 /**
  * @author Sisby folk
- * @since 2.0.0
  * @see SwitchyModule
  * @see folk.sisby.switchy.client.api.module.SwitchyDisplayModule
  * An extension for {@link SwitchyModule}s that is able to serialize into a format understood by a matching {@link folk.sisby.switchy.client.api.module.SwitchyDisplayModule}
+ * @since 2.0.0
  */
 public interface SwitchyModuleDisplayable {
 	/**

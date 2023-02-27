@@ -15,7 +15,7 @@ import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_REQUEST_DISPL
  * @since 1.9.0
  * Registration for client keybindings
  */
-public class SwitchyKeybinds {
+public class SwitchyKeybindings {
 	/**
 	 * registers all keybindings for Switchy Client
 	 */

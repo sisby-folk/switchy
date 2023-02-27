@@ -14,17 +14,25 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 /**
  * @author Sisby folk
- * @since 2.0.0
  * @see SwitchyDisplayModule
  * @see folk.sisby.switchy.modules.StyledNicknamesCompat
  * The client-displayable variant of a module that switches nicknames from Patbox's Styled Nicknames.
+ * @since 2.0.0
  */
 @ClientOnly
 public class StyledNicknamesCompatDisplay implements SwitchyDisplayModule {
 	/**
 	 * Identifier for this module. Must match {@link folk.sisby.switchy.modules.StyledNicknamesCompat}
 	 */
-	public static final Identifier ID = new Identifier("switchy",  "styled_nicknames");
+	public static final Identifier ID = new Identifier("switchy", "styled_nicknames");
+	/**
+	 * The NBT key where the nickname (in serialized text format) is stored. Must match {@link folk.sisby.switchy.modules.StyledNicknamesCompat#toDisplayNbt()}
+	 */
+	public static final String KEY_NICKNAME = "styled_nickname";
+
+	static {
+		SwitchyDisplayModuleRegistry.registerModule(ID, StyledNicknamesCompatDisplay::new);
+	}
 
 	/**
 	 * The styled nickname, in Text format
@@ -32,9 +40,10 @@ public class StyledNicknamesCompatDisplay implements SwitchyDisplayModule {
 	public @Nullable Text styled_nickname;
 
 	/**
-	 * The NBT key where the nickname (in serialized text format) is stored. Must match {@link folk.sisby.switchy.modules.StyledNicknamesCompat#toDisplayNbt()}
+	 * Executes {@code static} the first time it's invoked
 	 */
-	public static final String KEY_NICKNAME = "styled_nickname";
+	public static void touch() {
+	}
 
 	@Override
 	public Pair<Component, SwitchySwitchScreenPosition> getDisplayComponent() {
@@ -54,14 +63,5 @@ public class StyledNicknamesCompatDisplay implements SwitchyDisplayModule {
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
 		if (nbt.contains(KEY_NICKNAME)) styled_nickname = Text.Serializer.fromJson(nbt.getString(KEY_NICKNAME));
-	}
-
-	/**
-	 * Executes {@code static} the first time it's invoked
-	 */
-	public static void touch() {}
-
-	static {
-		SwitchyDisplayModuleRegistry.registerModule(ID, StyledNicknamesCompatDisplay::new);
 	}
 }

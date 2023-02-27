@@ -24,9 +24,9 @@ import java.util.Set;
 
 /**
  * @author MerchantPug
- * @since 1.5.0
  * @see SwitchyModule
  * A module that switches power data from Apace's Apoli
+ * @since 1.5.0
  */
 public class ApoliCompat implements SwitchyModule {
 	/**
@@ -39,10 +39,24 @@ public class ApoliCompat implements SwitchyModule {
 	 */
 	public static final String KEY_POWER_DATA_LIST = "PowerData";
 
+	static {
+		SwitchyModuleRegistry.registerModule(ID, ApoliCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.OPERATOR, Set.of(OriginsCompat.ID)));
+	}
+
 	/**
 	 * The NBT data for each power
 	 */
 	public final Map<PowerType<?>, NbtElement> powerNbt = new HashMap<>();
+
+	private static void clearInventories(List<InventoryPower> powers) {
+		powers.forEach(InventoryPower::clear);
+	}
+
+	/**
+	 * Executes {@code static} the first time it's invoked
+	 */
+	public static void touch() {
+	}
 
 	@Override
 	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
@@ -64,10 +78,6 @@ public class ApoliCompat implements SwitchyModule {
 				power.fromTag(nbt);
 			}
 		});
-	}
-
-	private static void clearInventories(List<InventoryPower> powers) {
-		powers.forEach(InventoryPower::clear);
 	}
 
 	@Override
@@ -102,14 +112,5 @@ public class ApoliCompat implements SwitchyModule {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Executes {@code static} the first time it's invoked
-	 */
-	public static void touch() {}
-
-	static {
-		SwitchyModuleRegistry.registerModule(ID, ApoliCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.OPERATOR, Set.of(OriginsCompat.ID)));
 	}
 }

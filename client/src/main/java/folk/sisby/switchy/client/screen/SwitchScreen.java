@@ -1,11 +1,11 @@
 package folk.sisby.switchy.client.screen;
 
 import com.mojang.datafixers.util.Pair;
-import folk.sisby.switchy.client.api.SwitchySwitchScreenPosition;
-import folk.sisby.switchy.client.SwitchyClientNetworking;
-import folk.sisby.switchy.client.api.SwitchyClientEvents;
 import folk.sisby.switchy.api.module.presets.SwitchyDisplayPreset;
 import folk.sisby.switchy.api.module.presets.SwitchyDisplayPresets;
+import folk.sisby.switchy.client.SwitchyClientNetworking;
+import folk.sisby.switchy.client.api.SwitchyClientEvents;
+import folk.sisby.switchy.client.api.SwitchySwitchScreenPosition;
 import io.wispforest.owo.ui.base.BaseOwoScreen;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.component.LabelComponent;
@@ -15,7 +15,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -25,18 +27,23 @@ import java.util.function.Function;
  * Allows the client to preview presets, and switch to a desired one.
  */
 public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
-	final SwitchyDisplayPresets displayPresets;
-
 	private static final List<Function<SwitchyDisplayPreset, Pair<Component, SwitchySwitchScreenPosition>>> basicComponents = new ArrayList<>();
 
-	/**
-	 * @param componentFunction a function that can generate a positioned component to display with every preset
-	 * Registers a component to display alongside every preset (e.g. the preset name) for addons.
-	 * Modules should instead use {@link folk.sisby.switchy.client.api.module.SwitchyDisplayModule}
-	 */
-	public static void registerBasicPresetComponent(Function<SwitchyDisplayPreset, Pair<Component, SwitchySwitchScreenPosition>> componentFunction) {
-		basicComponents.add(componentFunction);
+	static {
+		// Close on switch
+		SwitchyClientEvents.SWITCH.register(event -> {
+			MinecraftClient client = MinecraftClient.getInstance();
+			if (Objects.equals(client.getSession().getPlayerUuid(), event.player))
+				client.execute(() -> {
+					if (client.currentScreen instanceof SwitchScreen) client.setScreen(null);
+				});
+		});
+
+		// Add base components
+		registerBasicPresetComponent(displayPreset -> Pair.of(Components.label(Text.literal(displayPreset.getName())), SwitchySwitchScreenPosition.SIDE_LEFT));
 	}
+
+	final SwitchyDisplayPresets displayPresets;
 
 	/**
 	 * @param displayPresets a display presets object to preview and switch with
@@ -44,6 +51,15 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 	public SwitchScreen(SwitchyDisplayPresets displayPresets) {
 		super();
 		this.displayPresets = displayPresets;
+	}
+
+	/**
+	 * @param componentFunction a function that can generate a positioned component to display with every preset
+	 *                          Registers a component to display alongside every preset (e.g. the preset name) for addons.
+	 *                          Modules should instead use {@link folk.sisby.switchy.client.api.module.SwitchyDisplayModule}
+	 */
+	public static void registerBasicPresetComponent(Function<SwitchyDisplayPreset, Pair<Component, SwitchySwitchScreenPosition>> componentFunction) {
+		basicComponents.add(componentFunction);
 	}
 
 	@Override
@@ -135,19 +151,5 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 		}
 
 		if (currentPresetComponent != null) presetsScroll.scrollTo(currentPresetComponent);
-	}
-
-	static {
-		// Close on switch
-		SwitchyClientEvents.SWITCH.register(event -> {
-			MinecraftClient client = MinecraftClient.getInstance();
-			if (Objects.equals(client.getSession().getPlayerUuid(), event.player))
-				client.execute(() -> {
-					if (client.currentScreen instanceof SwitchScreen) client.setScreen(null);
-				});
-		});
-
-		// Add base components
-		registerBasicPresetComponent(displayPreset -> Pair.of(Components.label(Text.literal(displayPreset.getName())), SwitchySwitchScreenPosition.SIDE_LEFT));
 	}
 }

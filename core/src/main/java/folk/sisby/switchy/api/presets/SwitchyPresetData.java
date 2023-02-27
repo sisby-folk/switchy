@@ -26,7 +26,7 @@ public interface SwitchyPresetData<Module extends SwitchySerializable> extends S
 	Module getModule(Identifier id);
 
 	/**
-	 * @param id a module identifier
+	 * @param id     a module identifier
 	 * @param module a module to add to or replace in the module map
 	 */
 	@ApiStatus.Internal
@@ -40,7 +40,7 @@ public interface SwitchyPresetData<Module extends SwitchySerializable> extends S
 
 	/**
 	 * @param id a module identifier
-	 * removes the specified module from the preset
+	 *           removes the specified module from the preset
 	 */
 	void removeModule(Identifier id);
 
@@ -51,8 +51,8 @@ public interface SwitchyPresetData<Module extends SwitchySerializable> extends S
 
 	/**
 	 * @param name a new name for this preset
-	 * Must be a single word matching {@code azAZ09_-.+}
-	 * In a presets object, a preset must be renamed using {@link SwitchyPresets#renamePreset(String, String)}
+	 *             Must be a single word matching {@code azAZ09_-.+}
+	 *             In a presets object, a preset must be renamed using {@link SwitchyPresets#renamePreset(String, String)}
 	 */
 	@ApiStatus.Internal
 	void setName(String name);

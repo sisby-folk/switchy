@@ -12,16 +12,16 @@ import java.util.function.Function;
 
 /**
  * @author Sisby folk
- * @since 2.0.0
  * @see SwitchyPresetData
+ * @since 2.0.0
  */
 public class SwitchyPresetDataImpl<Module extends SwitchySerializable> implements SwitchyPresetData<Module> {
 	private final Map<Identifier, Module> modules;
 	private String name;
 
 	/**
-	 * @param name the desired name for the new preset.
-	 * @param modules the enabled status of modules from the presets object
+	 * @param name           the desired name for the new preset.
+	 * @param modules        the enabled status of modules from the presets object
 	 * @param moduleSupplier a function to supply module instances from their ID, usually from a registry.
 	 */
 	public SwitchyPresetDataImpl(String name, Map<Identifier, Boolean> modules, Function<Identifier, Module> moduleSupplier) {

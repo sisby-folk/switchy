@@ -14,28 +14,29 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 /**
  * @author Sisby folk
- * @since 2.0.0
  * @see SwitchyDisplayModule
  * @see folk.sisby.switchy.modules.DrogtorCompat
  * The client-displayable variant of a module that switches nicknames from unascribed's Drogtor The Nickinator
+ * @since 2.0.0
  */
 @ClientOnly
 public class DrogtorCompatDisplay extends DrogtorCompatData implements SwitchyDisplayModule {
-	@Override
-	public Pair<Component, SwitchySwitchScreenPosition> getDisplayComponent() {
-		if (nickname == null) return null;
-		Style style = Style.EMPTY;
-		if (namecolor != null) style = style.withColor(namecolor);
-		if (bio != null) style = style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(bio)));
-		return Pair.of(Components.label(Text.literal(nickname).setStyle(style)), SwitchySwitchScreenPosition.LEFT);
+	static {
+		SwitchyDisplayModuleRegistry.registerModule(DrogtorCompatDisplay.ID, DrogtorCompatDisplay::new);
 	}
 
 	/**
 	 * Executes {@code static} the first time it's invoked
 	 */
-	public static void touch() {}
+	public static void touch() {
+	}
 
-	static {
-		SwitchyDisplayModuleRegistry.registerModule(DrogtorCompatDisplay.ID, DrogtorCompatDisplay::new);
+	@Override
+	public Pair<Component, SwitchySwitchScreenPosition> getDisplayComponent() {
+		if (nickname == null) return null;
+		Style style = Style.EMPTY;
+		if (nameColor != null) style = style.withColor(nameColor);
+		if (bio != null) style = style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(bio)));
+		return Pair.of(Components.label(Text.literal(nickname).setStyle(style)), SwitchySwitchScreenPosition.LEFT);
 	}
 }

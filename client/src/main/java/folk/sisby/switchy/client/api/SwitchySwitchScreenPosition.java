@@ -4,9 +4,9 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 /**
  * @author Sisby folk
- * @since 1.9.0
  * @see folk.sisby.switchy.client.screen.SwitchScreen
  * Defines the placement of a component in the horizontal flow used to preview presets in the quick-switcher screen.
+ * @since 1.9.0
  */
 @ClientOnly
 public enum SwitchySwitchScreenPosition {

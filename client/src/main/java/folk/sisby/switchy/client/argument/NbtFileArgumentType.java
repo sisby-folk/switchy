@@ -19,11 +19,12 @@ import static folk.sisby.switchy.util.Feedback.translatable;
 
 /**
  * @author Sisby folk
- * @since 1.7.3
  * @see FileArgumentType
  * An argument type allowing the user to select any .dat file within a folder, which is parsed as compressed NBT.
+ * @since 1.7.3
  */
 public class NbtFileArgumentType implements ArgumentType<NbtCompound> {
+	private static final SimpleCommandExceptionType PARSE_FAIL = new SimpleCommandExceptionType(translatable("command.exception.file.invalid_nbt"));
 	private final FileArgumentType fileArgumentType;
 
 	NbtFileArgumentType(File folder) {
@@ -37,8 +38,6 @@ public class NbtFileArgumentType implements ArgumentType<NbtCompound> {
 	public static NbtFileArgumentType create(File folder) {
 		return new NbtFileArgumentType(folder);
 	}
-
-	private static final SimpleCommandExceptionType PARSE_FAIL = new SimpleCommandExceptionType(translatable("command.exception.file.invalid_nbt"));
 
 	@Override
 	public NbtCompound parse(StringReader reader) throws CommandSyntaxException {

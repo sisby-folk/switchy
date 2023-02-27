@@ -15,8 +15,8 @@ import java.util.function.Consumer;
 
 /**
  * @author Sisby folk
- * @since 1.0.0
  * @see SwitchyPresets
+ * @since 1.0.0
  */
 public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, SwitchyPreset> implements SwitchyPresets {
 	/**
@@ -51,7 +51,8 @@ public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, Sw
 	@Override
 	public String switchCurrentPreset(ServerPlayerEntity player, String name) throws IllegalArgumentException, IllegalStateException {
 		if (!containsPreset(name)) throw new IllegalArgumentException("Specified preset does not exist");
-		if (getCurrentPresetName().equalsIgnoreCase(name)) throw new IllegalStateException("Specified preset is already current");
+		if (getCurrentPresetName().equalsIgnoreCase(name))
+			throw new IllegalStateException("Specified preset is already current");
 
 		SwitchyPreset nextPreset = getPreset(name);
 

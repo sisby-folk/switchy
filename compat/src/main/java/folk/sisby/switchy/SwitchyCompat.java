@@ -6,10 +6,10 @@ import org.quiltmc.loader.api.QuiltLoader;
 
 /**
  * @author Ampflower
- * @since 1.8.4
  * @see SwitchyEvents
  * Initializer for the Switchy Compat addon.
  * Provides modules for switching mod data for various mods.
+ * @since 1.8.4
  */
 public class SwitchyCompat implements SwitchyEvents.Init {
 	/**

@@ -11,10 +11,10 @@ import java.util.function.Supplier;
 
 /**
  * @author Sisby folk
- * @since 2.0.0
  * @see SwitchyDisplayModule
  * Provides access to module registration for client display addons.
  * Effectively Static.
+ * @since 2.0.0
  */
 @ClientOnly
 public class SwitchyDisplayModuleRegistry {
@@ -22,7 +22,8 @@ public class SwitchyDisplayModuleRegistry {
 
 	/**
 	 * Allows addons to register {@link SwitchyDisplayModule} implementations to be used by Switchy Client.
-	 * @param id A unique identifier to associate with the module being registered.
+	 *
+	 * @param id                A unique identifier to associate with the module being registered.
 	 * @param moduleConstructor Usually {@code ModuleName::new} - this will be called on player join.
 	 * @throws IllegalArgumentException when {@code id} is already associated with a registered module.
 	 */
