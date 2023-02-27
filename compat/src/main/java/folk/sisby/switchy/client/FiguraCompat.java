@@ -11,6 +11,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * @author Sisby folk
+ * @since 2.0.0
+ * @see SwitchyClientEvents
+ * A Figura API that exposes Switchy events to its avatar scripting system
+ */
 public class FiguraCompat implements FiguraAPI {
 	@Override
 	public FiguraAPI build(Avatar avatar) {
@@ -27,6 +33,10 @@ public class FiguraCompat implements FiguraAPI {
 		return List.of(getClass());
 	}
 
+	/**
+	 * @param function a lua callback (UUID, current, previous, modules[])
+	 * @see SwitchyClientEvents#SWITCH
+	 */
 	@LuaWhitelist
 	public static void registerSwitchListener(LuaFunction function) {
 		SwitchyClientEvents.SWITCH.register((event) -> function.invoke(

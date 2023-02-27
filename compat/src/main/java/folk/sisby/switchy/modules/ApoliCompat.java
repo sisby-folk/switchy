@@ -22,11 +22,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @author MerchantPug
+ * @since 1.5.0
+ * @see SwitchyModule
+ * A module that switches power data from Apace's Apoli
+ */
 public class ApoliCompat implements SwitchyModule {
+	/**
+	 * Identifier for this module
+	 */
 	public static final Identifier ID = new Identifier("switchy", "apoli");
 
+	/**
+	 * The NBT key where the list of power data is stored
+	 */
 	public static final String KEY_POWER_DATA_LIST = "PowerData";
 
+	/**
+	 * The NBT data for each power
+	 */
 	public final Map<PowerType<?>, NbtElement> powerNbt = new HashMap<>();
 
 	@Override
@@ -89,10 +104,11 @@ public class ApoliCompat implements SwitchyModule {
 		}
 	}
 
-	public static void touch() {
-	}
+	/**
+	 * Executes {@code static} the first time it's invoked
+	 */
+	public static void touch() {}
 
-	// Runs on touch() - but only once.
 	static {
 		SwitchyModuleRegistry.registerModule(ID, ApoliCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.OPERATOR, Set.of(OriginsCompat.ID)));
 	}

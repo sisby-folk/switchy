@@ -8,6 +8,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+/**
+ * @author Sisby folk
+ * @since 1.7.2
+ * Modifies Styled Nicknames to allow nicknames to be self-assigned by any player, with colour and tooltips.
+ */
 @Mixin(value = ConfigManager.class, remap = false)
 public abstract class ConfigManagerMixin {
 	@Shadow private static Config CONFIG;

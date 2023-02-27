@@ -18,14 +18,35 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Sisby folk
+ * @since 1.0.0
+ * @see SwitchyModule
+ * A module that switches layered Origins from Apace's Origins
+ */
 public class OriginsCompat implements SwitchyModule, SwitchyModuleDisplayable {
+	/**
+	 * Identifier for this module
+	 */
 	public static final Identifier ID = new Identifier("switchy",  "origins");
 
+	/**
+	 * The NBT key where the list of origins is stored
+	 */
 	public static final String KEY_ORIGINS_LIST = "OriginLayers";
+	/**
+	 * The NBT key where the layer is stored in each list item
+	 */
 	public static final String KEY_LAYER = "Layer";
+	/**
+	 * The NBT key where the origin ID is stored in each list item
+	 */
 	public static final String KEY_ORIGIN = "Origin";
 
-	// Overwritten on save when null
+
+	/**
+	 * The origins per layer
+	 */
 	@Nullable public Map<OriginLayer, Origin> origins;
 
 	@Override
@@ -93,10 +114,11 @@ public class OriginsCompat implements SwitchyModule, SwitchyModuleDisplayable {
 			}
 		}
 	}
-	public static void touch() {
-	}
 
-	// Runs on touch() - but only once.
+	/**
+	 * Executes {@code static} the first time it's invoked
+	 */
+	public static void touch() {}
 
 	static {
 		SwitchyModuleRegistry.registerModule(ID, OriginsCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALLOWED));

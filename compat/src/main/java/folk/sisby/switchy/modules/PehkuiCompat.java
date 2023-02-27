@@ -16,10 +16,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Sisby folk
+ * @since 1.3.0
+ * @see SwitchyModule
+ * A module that switches scale values from Virtuoel's Pehkui
+ */
 public class PehkuiCompat implements SwitchyModule {
+	/**
+	 * Identifier for this module
+	 */
 	public static final Identifier ID = new Identifier("switchy", "pehkui");
 
+	/**
+	 * The NBT keys where each scale value is stored, per ScaleType
+	 */
 	public static final Map<ScaleType, String> scaleKeys = new HashMap<>();
+	/**
+	 * The value of each ScaleType
+	 */
 	public final Map<ScaleType, @Nullable Float> scaleValues = new HashMap<>();
 
 	@Override
@@ -44,18 +59,22 @@ public class PehkuiCompat implements SwitchyModule {
 		scaleKeys.forEach((type, key) -> {if (nbt.contains(key)) scaleValues.put(type, nbt.getFloat(key));});
 	}
 
-	public PehkuiCompat() {
+	PehkuiCompat() {
 		scaleKeys.forEach((type, key) -> scaleValues.put(type, null));
 	}
 
-	public static void touch() {
-	}
-
+	/**
+	 * @param type the scale type to request be switched
+	 */
 	public static void addScaleType(ScaleType type) {
 		scaleKeys.put(type, ScaleRegistries.SCALE_TYPES.inverse().get(type).getPath());
 	}
 
-	// Runs on touch() - but only once.
+	/**
+	 * Executes {@code static} the first time it's invoked
+	 */
+	public static void touch() {}
+
 	static {
 		SwitchyModuleRegistry.registerModule(ID, PehkuiCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.OPERATOR));
 		List.of(ScaleTypes.HEIGHT, ScaleTypes.WIDTH, ScaleTypes.MODEL_HEIGHT, ScaleTypes.MODEL_WIDTH).forEach(PehkuiCompat::addScaleType);

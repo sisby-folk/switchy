@@ -6,6 +6,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
 import org.samo_lego.fabrictailor.casts.TailoredPlayer;
 
+/**
+ * @author Sisby folk
+ * @since 1.0.0
+ * @see SwitchyModule
+ * @see FabricTailorCompatData
+ * A module that switches player skins from samolego's Fabric Tailor
+ */
 public class FabricTailorCompat extends FabricTailorCompatData implements SwitchyModule, SwitchyModuleDisplayable {
 	@Override
 	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
@@ -27,10 +34,11 @@ public class FabricTailorCompat extends FabricTailorCompatData implements Switch
 		return toNbt();
 	}
 
-	public static void touch() {
-	}
+	/**
+	 * Executes {@code static} the first time it's invoked
+	 */
+	public static void touch() {}
 
-	// Runs on touch() - but only once.
 	static {
 		SwitchyModuleRegistry.registerModule(ID, FabricTailorCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALWAYS_ALLOWED));
 	}

@@ -12,6 +12,13 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import org.quiltmc.loader.api.minecraft.ClientOnly;
 
+/**
+ * @author Sisby folk
+ * @since 2.0.0
+ * @see SwitchyDisplayModule
+ * @see folk.sisby.switchy.modules.DrogtorCompat
+ * The client-displayable variant of a module that switches nicknames from unascribed's Drogtor The Nickinator
+ */
 @ClientOnly
 public class DrogtorCompatDisplay extends DrogtorCompatData implements SwitchyDisplayModule {
 	@Override
@@ -23,7 +30,12 @@ public class DrogtorCompatDisplay extends DrogtorCompatData implements SwitchyDi
 		return Pair.of(Components.label(Text.literal(nickname).setStyle(style)), SwitchySwitchScreenPosition.LEFT);
 	}
 
-	public static void touch() {
+	/**
+	 * Executes {@code static} the first time it's invoked
+	 */
+	public static void touch() {}
+
+	static {
 		SwitchyDisplayModuleRegistry.registerModule(DrogtorCompatDisplay.ID, DrogtorCompatDisplay::new);
 	}
 }

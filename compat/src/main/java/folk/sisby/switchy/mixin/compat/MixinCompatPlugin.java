@@ -8,6 +8,11 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * @author SilverAndro
+ * @since 1.7.2
+ * A simple mixin plugin that loads mixins in sub-folders if they match the ID of a loaded mod
+ */
 public class MixinCompatPlugin implements IMixinConfigPlugin {
 	@Override
 	public void onLoad(String mixinPackage) {

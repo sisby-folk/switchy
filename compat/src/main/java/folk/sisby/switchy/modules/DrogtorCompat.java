@@ -9,6 +9,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
+/**
+ * @author Sisby folk
+ * @since 1.0.0
+ * @see SwitchyModule
+ * @see DrogtorCompatData
+ * A module that switches nicknames from unascribed's Drogtor The Nickinator
+ */
 public class DrogtorCompat extends DrogtorCompatData implements SwitchyModule, SwitchyModuleDisplayable {
 	@Override
 	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
@@ -34,10 +41,11 @@ public class DrogtorCompat extends DrogtorCompatData implements SwitchyModule, S
 		return toNbt();
 	}
 
-	public static void touch() {
-	}
+	/**
+	 * Executes {@code static} the first time it's invoked
+	 */
+	public static void touch() {}
 
-	// Runs on touch() - but only once.
 	static {
 		SwitchyModuleRegistry.registerModule(ID, DrogtorCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALWAYS_ALLOWED));
 	}

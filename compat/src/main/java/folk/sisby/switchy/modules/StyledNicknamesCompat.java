@@ -12,12 +12,26 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
+/**
+ * @author Sisby folk
+ * @since 1.7.2
+ * @see SwitchyModule
+ * A module that switches nicknames from Patbox's Styled Nicknames.
+ */
 public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleDisplayable {
+	/**
+	 * Identifier for this module
+	 */
 	public static final Identifier ID = new Identifier("switchy",  "styled_nicknames");
 
+	/**
+	 * The NBT key where the nickname is stored
+	 */
 	public static final String KEY_NICKNAME = "styled_nickname";
 
-	// Overwritten on save when null
+	/**
+	 * The styled nickname, in placeholder API simplified text format
+	 */
 	@Nullable public String styled_nickname;
 
 	@Override
@@ -30,7 +44,7 @@ public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleDispla
 	public void applyToPlayer(ServerPlayerEntity player) {
 		NicknameHolder holder = NicknameHolder.of(player);
 		String oldName = player.getDisplayName().getString();
-		holder.sn_set(styled_nickname, false);
+		if (styled_nickname != null) holder.sn_set(styled_nickname, false);
 		String newName = player.getDisplayName().getString();
 		if (!Objects.equals(oldName, newName)) Switchy.LOGGER.info("[Switchy] Player Nickname Change: '" + oldName + "' -> '" + newName + "' [" + player.getGameProfile().getName() + "]");
 	}
@@ -54,6 +68,9 @@ public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleDispla
 		styled_nickname = nbt.contains(KEY_NICKNAME) ? nbt.getString(KEY_NICKNAME) : null;
 	}
 
+	/**
+	 * Executes {@code static} the first time it's invoked
+	 */
 	public static void touch() {
 	}
 

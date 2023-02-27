@@ -4,7 +4,17 @@ import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.modules.*;
 import org.quiltmc.loader.api.QuiltLoader;
 
+/**
+ * @author Ampflower
+ * @since 1.8.4
+ * @see SwitchyEvents
+ * Initializer for the Switchy Compat addon.
+ * Provides modules for switching mod data for various mods.
+ */
 public class SwitchyCompat implements SwitchyEvents.Init {
+	/**
+	 * The switchy compat namespace
+	 */
 	public static final String ID = "switchy_compat";
 
 	@Override

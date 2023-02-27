@@ -6,16 +6,43 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * @author Sisby folk
+ * @since 1.0.0
+ * @see SwitchySerializable
+ * @see FabricTailorCompat
+ * The data component of a module that switches nicknames from unascribed's Drogtor The Nickinator
+ */
 public class DrogtorCompatData implements SwitchySerializable {
+	/**
+	 * Identifier for this module
+	 */
 	public static final Identifier ID = new Identifier("switchy",  "drogtor");
 
+	/**
+	 * The NBT key where the nickname is stored
+	 */
 	public static final String KEY_NICKNAME = "nickname";
+	/**
+	 * The NBT key where the color name is stored
+	 */
 	public static final String KEY_NAME_COLOR = "nameColor";
+	/**
+	 * The NBT key where the "bio" (hover text) is stored
+	 */
 	public static final String KEY_BIO = "bio";
 
-	// Overwritten on save when null
+	/**
+	 * The raw nickname
+	 */
 	@Nullable public String nickname;
+	/**
+	 * The nickname colour
+	 */
 	@Nullable public Formatting namecolor;
+	/**
+	 * The "bio" (nickname hover text)
+	 */
 	@Nullable public String bio;
 
 	@Override

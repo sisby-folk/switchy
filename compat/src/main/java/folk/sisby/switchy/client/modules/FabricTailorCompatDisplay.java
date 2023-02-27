@@ -22,6 +22,13 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
 import java.util.Base64;
 import java.util.UUID;
 
+/**
+ * @author Sisby folk
+ * @since 2.0.0
+ * @see SwitchyDisplayModule
+ * @see folk.sisby.switchy.modules.FabricTailorCompat
+ * The client-displayable variant of a module that switches player skins from samolego's Fabric Tailor
+ */
 @ClientOnly
 public class FabricTailorCompatDisplay extends FabricTailorCompatData implements SwitchyDisplayModule {
 	@Override
@@ -47,6 +54,9 @@ public class FabricTailorCompatDisplay extends FabricTailorCompatData implements
 		return Pair.of(skinPreview, SwitchySwitchScreenPosition.SIDE_RIGHT);
 	}
 
+	/**
+	 * Executes {@code static} the first time it's invoked
+	 */
 	public static void touch() {}
 
 	static {

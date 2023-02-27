@@ -25,14 +25,37 @@ import java.util.stream.Collectors;
 
 import static io.github.apace100.origins.registry.ModItems.ORB_OF_ORIGIN;
 
+/**
+ * @author Sisby folk
+ * @since 2.0.0
+ * @see SwitchyDisplayModule
+ * @see folk.sisby.switchy.modules.OriginsCompat
+ * The client-displayable variant of a module that switches layered Origins from Apace's Origins
+ */
 @ClientOnly
 public class OriginsCompatDisplay implements SwitchyDisplayModule {
+	/**
+	 * Identifier for this module. Must match {@link folk.sisby.switchy.modules.OriginsCompat}
+	 */
 	public static final Identifier ID = new Identifier("switchy",  "origins");
-	public Map<String, Identifier> origins;
 
+	/**
+	 * The NBT key where the list of origins is stored. Must match {@link folk.sisby.switchy.modules.OriginsCompat#toDisplayNbt()}
+	 */
 	public static final String KEY_ORIGINS_LIST = "OriginLayers";
+	/**
+	 * The NBT key where the layer is stored in each list item. Must match {@link folk.sisby.switchy.modules.OriginsCompat#toDisplayNbt()}
+	 */
 	public static final String KEY_LAYER = "Layer";
+	/**
+	 * The NBT key where the origin ID is stored in each list item. Must match {@link folk.sisby.switchy.modules.OriginsCompat#toDisplayNbt()}
+	 */
 	public static final String KEY_ORIGIN = "Origin";
+
+	/**
+	 * The origin identifiers per layer
+	 */
+	public Map<String, Identifier> origins;
 
 	@Override
 	public Pair<Component, SwitchySwitchScreenPosition> getDisplayComponent() {
@@ -77,6 +100,9 @@ public class OriginsCompatDisplay implements SwitchyDisplayModule {
 		}
 	}
 
+	/**
+	 * Executes {@code static} the first time it's invoked
+	 */
 	public static void touch() {}
 
 	static {

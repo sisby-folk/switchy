@@ -24,12 +24,27 @@ import org.quiltmc.loader.api.QuiltLoader;
 
 import java.util.*;
 
+/**
+ * @author Sisby folk
+ * @since 1.4.0
+ * @see SwitchyModule
+ * A module that switches whether armor is hidden using unascribed's Fabrication's {@code /hidearmor} feature
+ * "Sticky" - i.e. data will copy from existing presets to new ones, assuming players will prefer the same setup.
+ */
 public class FabricationArmorCompat implements SwitchyModule {
+	/**
+	 * Identifier for this module
+	 */
 	public static final Identifier ID = new Identifier("switchy", "fabrication_hidearmor");
 
+	/**
+	 * The NBT key where the list of EquipmentSlots to hide is stored
+	 */
 	public static final String KEY_SUPPRESSED_SLOTS = "suppressedSlots";
 
-	// Overwritten on save when null
+	/**
+	 * The NBT key where the list of EquipmentSlots to hide is stored
+	 */
 	private @Nullable Set<EquipmentSlot> suppressedSlots;
 
 	@Override
@@ -80,10 +95,12 @@ public class FabricationArmorCompat implements SwitchyModule {
 		}
 	}
 
+	/**
+	 * Executes {@code static} the first time it's invoked
+	 */
 	public static void touch() {
 	}
 
-	// Runs on touch() - but only once.
 	static {
 		SwitchyModuleRegistry.registerModule(ID, FabricationArmorCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALLOWED, QuiltLoader.isModLoaded("fabrictailor") ? Set.of(FabricTailorCompat.ID) : Set.of()));
 	}

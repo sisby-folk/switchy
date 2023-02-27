@@ -12,12 +12,28 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.loader.api.minecraft.ClientOnly;
 
+/**
+ * @author Sisby folk
+ * @since 2.0.0
+ * @see SwitchyDisplayModule
+ * @see folk.sisby.switchy.modules.StyledNicknamesCompat
+ * The client-displayable variant of a module that switches nicknames from Patbox's Styled Nicknames.
+ */
 @ClientOnly
 public class StyledNicknamesCompatDisplay implements SwitchyDisplayModule {
+	/**
+	 * Identifier for this module. Must match {@link folk.sisby.switchy.modules.StyledNicknamesCompat}
+	 */
 	public static final Identifier ID = new Identifier("switchy",  "styled_nicknames");
 
+	/**
+	 * The styled nickname, in Text format
+	 */
 	public @Nullable Text styled_nickname;
 
+	/**
+	 * The NBT key where the nickname (in serialized text format) is stored. Must match {@link folk.sisby.switchy.modules.StyledNicknamesCompat#toDisplayNbt()}
+	 */
 	public static final String KEY_NICKNAME = "styled_nickname";
 
 	@Override
@@ -40,6 +56,9 @@ public class StyledNicknamesCompatDisplay implements SwitchyDisplayModule {
 		if (nbt.contains(KEY_NICKNAME)) styled_nickname = Text.Serializer.fromJson(nbt.getString(KEY_NICKNAME));
 	}
 
+	/**
+	 * Executes {@code static} the first time it's invoked
+	 */
 	public static void touch() {}
 
 	static {

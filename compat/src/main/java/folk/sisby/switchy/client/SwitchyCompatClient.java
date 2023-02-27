@@ -7,6 +7,13 @@ import folk.sisby.switchy.client.modules.OriginsCompatDisplay;
 import folk.sisby.switchy.client.modules.StyledNicknamesCompatDisplay;
 import org.quiltmc.loader.api.QuiltLoader;
 
+/**
+ * @author Sisby folk
+ * @since 2.0.0
+ * @see SwitchyClientEvents
+ * Initializer for the Switchy Compat addon for Switchy Client.
+ * Provides display modules for some modules registered by {@link folk.sisby.switchy.SwitchyCompat}
+ */
 public class SwitchyCompatClient implements SwitchyClientEvents.Init {
 	@Override
 	public void onInitialize() {
