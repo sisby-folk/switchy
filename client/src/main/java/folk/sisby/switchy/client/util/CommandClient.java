@@ -7,6 +7,11 @@ import org.quiltmc.qsl.command.api.client.QuiltClientCommandSource;
 import static folk.sisby.switchy.Switchy.LOGGER;
 import static folk.sisby.switchy.client.util.FeedbackClient.tellInvalid;
 
+/**
+ * @author Sisby folk
+ * @since 1.8.13
+ * Utilities for registering and executing client commands
+ */
 public class CommandClient {
 	public interface SwitchyClientCommandExecutor { void execute(CommandContext<QuiltClientCommandSource> context, ClientPlayerEntity player); }
 

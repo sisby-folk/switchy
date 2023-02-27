@@ -18,6 +18,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.function.Function;
 
+/**
+ * @author Sisby folk
+ * @since 1.9.0
+ * The quick-switcher screen, populated by a {@link SwitchyDisplayPresets} object.
+ * Allows the client to preview presets, and switch to a desired one.
+ */
 public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 	public final SwitchyDisplayPresets displayPresets;
 

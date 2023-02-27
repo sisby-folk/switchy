@@ -5,6 +5,13 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
 import org.quiltmc.qsl.base.api.event.Event;
 import org.quiltmc.qsl.base.api.event.client.ClientEventAwareListener;
 
+/**
+ * @author Ami
+ * @since 1.8.2
+ * Events emitted by Switchy during its operation.
+ * Mostly forwarded to the client via relays in {@link folk.sisby.switchy.SwitchyClientServerNetworking}
+ * Any class implementing the below interfaces can use the entrypoint {@code events} to be invoked without registration.
+ */
 @ClientOnly
 public class SwitchyClientEvents {
 	public static final Event<Init> INIT = Event.create(Init.class, callbacks -> () -> {

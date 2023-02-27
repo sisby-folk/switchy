@@ -8,10 +8,15 @@ import org.quiltmc.qsl.lifecycle.api.client.event.ClientTickEvents;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
-import static folk.sisby.switchy.SwitchyClientServerNetworking.*;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_REQUEST_DISPLAY_PRESETS;
 
+/**
+ * @author Sisby folk
+ * @since 1.9.0
+ * Registration for client keybindings
+ */
 public class SwitchyKeybinds {
-	public static void initializeKeybinds() {
+	public static void initializeKeybindings() {
 		KeyBind switchKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBind(
 				"key.switchy.switch",
 				InputUtil.Type.KEYSYM,

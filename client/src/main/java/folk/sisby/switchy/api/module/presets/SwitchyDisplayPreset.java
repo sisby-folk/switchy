@@ -9,6 +9,16 @@ import net.minecraft.util.Identifier;
 
 import java.util.Map;
 
+/**
+ * @author Sisby folk
+ * @since 2.0.0
+ * @see SwitchyDisplayModule
+ * @see folk.sisby.switchy.api.presets.SwitchyPreset
+ * A named collection of {@link SwitchyDisplayModule}s, representing a {@link folk.sisby.switchy.api.presets.SwitchyPreset} from the server.
+ */
 public interface SwitchyDisplayPreset extends SwitchyPresetData<SwitchyDisplayModule> {
+	/**
+	 * @return all displayable components representing the preset's modules, by module ID.
+	 */
 	Map<Identifier, Pair<Component, SwitchySwitchScreenPosition>> getDisplayComponents();
 }

@@ -7,6 +7,11 @@ import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Sisby folk
+ * @since 1.7.0
+ * Mod initializer for client-side Switchy Client
+ */
 public class SwitchyClient implements ClientModInitializer {
 	public static final String ID = "switchy_client";
 	public static final Logger LOGGER = LoggerFactory.getLogger(Switchy.ID + "-client");
@@ -15,7 +20,7 @@ public class SwitchyClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient(ModContainer mod) {
 		SwitchyClientNetworking.InitializeReceivers();
-		SwitchyKeybinds.initializeKeybinds();
+		SwitchyKeybinds.initializeKeybindings();
 		SwitchyClientEvents.INIT.invoker().onInitialize();
 		LOGGER.info("[Switchy Client] Initialized.");
 	}

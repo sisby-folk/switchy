@@ -8,6 +8,11 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 
+/**
+ * @author Sisby folk
+ * @since 2.0.0
+ * Used to convert SwitchyPresets objects into NBT data usable by SwitchyDisplayPresets
+ */
 public class PresetConverter {
 	// Figure out how to add this to a file or something. Mixin feels wrong but maybe.
 

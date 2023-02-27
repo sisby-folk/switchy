@@ -9,6 +9,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+/**
+ * @author Sisby folk
+ * @since 2.0.0
+ * @see SwitchyDisplayModule
+ * Provides access to module registration for client display addons.
+ * Effectively Static.
+ */
 @ClientOnly
 public class SwitchyDisplayModuleRegistry {
 	private static final Map<Identifier, Supplier<SwitchyDisplayModule>> SUPPLIERS = new HashMap<>();

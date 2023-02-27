@@ -22,6 +22,11 @@ import static folk.sisby.switchy.Switchy.LOGGER;
 import static folk.sisby.switchy.api.module.SwitchyModuleRegistry.getEditable;
 import static folk.sisby.switchy.util.Feedback.*;
 
+/**
+ * @author Sisby folk
+ * @since 2.0.0
+ * Server-side network handling for client interactions with Switchy
+ */
 public class SwitchyClientServerNetworking {
 	// Client API
 	public static final Identifier C2S_REQUEST_PRESETS = new Identifier(Switchy.ID, "c2s_export");

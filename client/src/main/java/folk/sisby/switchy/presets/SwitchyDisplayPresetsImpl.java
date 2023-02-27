@@ -12,6 +12,11 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 import java.util.HashMap;
 
+/**
+ * @author Sisby folk
+ * @since 1.9.1
+ * @see SwitchyDisplayPresets
+ */
 @ClientOnly
 public class SwitchyDisplayPresetsImpl extends SwitchyPresetsDataImpl<SwitchyDisplayModule, SwitchyDisplayPreset> implements SwitchyDisplayPresets {
 	public SwitchyDisplayPresetsImpl() {

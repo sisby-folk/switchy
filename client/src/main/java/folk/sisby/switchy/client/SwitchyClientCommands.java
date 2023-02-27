@@ -25,6 +25,11 @@ import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_REQUEST_PRESE
 import static folk.sisby.switchy.client.util.CommandClient.executeClient;
 import static folk.sisby.switchy.client.util.FeedbackClient.tellSuccess;
 
+/**
+ * @author Sisby folk
+ * @since 1.7.0
+ * Registration and logic for client commands.
+ */
 public class SwitchyClientCommands implements ClientCommandRegistrationCallback {
 	public static String HISTORY = "";
 

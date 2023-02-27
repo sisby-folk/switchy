@@ -23,6 +23,11 @@ import static folk.sisby.switchy.client.util.FeedbackClient.tellSuccess;
 import static folk.sisby.switchy.util.Command.consumeEventPacket;
 import static folk.sisby.switchy.util.Feedback.literal;
 
+/**
+ * @author Sisby folk
+ * @since 1.9.1
+ * Client-side network handling for client interactions with Switchy
+ */
 public class SwitchyClientNetworking {
 	public static void InitializeReceivers() {
 		ClientPlayNetworking.registerGlobalReceiver(S2C_PRESETS, (client, handler, buf, sender) -> exportPresets(client, buf));
