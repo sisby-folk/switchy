@@ -25,14 +25,22 @@ import java.util.function.Function;
  * Allows the client to preview presets, and switch to a desired one.
  */
 public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
-	public final SwitchyDisplayPresets displayPresets;
+	final SwitchyDisplayPresets displayPresets;
 
 	private static final List<Function<SwitchyDisplayPreset, Pair<Component, SwitchySwitchScreenPosition>>> basicComponents = new ArrayList<>();
 
+	/**
+	 * @param componentFunction a function that can generate a positioned component to display with every preset
+	 * Registers a component to display alongside every preset (e.g. the preset name) for addons.
+	 * Modules should instead use {@link folk.sisby.switchy.client.api.module.SwitchyDisplayModule}
+	 */
 	public static void registerBasicPresetComponent(Function<SwitchyDisplayPreset, Pair<Component, SwitchySwitchScreenPosition>> componentFunction) {
 		basicComponents.add(componentFunction);
 	}
 
+	/**
+	 * @param displayPresets a display presets object to preview and switch with
+	 */
 	public SwitchScreen(SwitchyDisplayPresets displayPresets) {
 		super();
 		this.displayPresets = displayPresets;
