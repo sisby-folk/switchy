@@ -33,7 +33,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 		// Close on switch
 		SwitchyClientEvents.SWITCH.register(event -> {
 			MinecraftClient client = MinecraftClient.getInstance();
-			if (Objects.equals(client.getSession().getPlayerUuid(), event.player))
+			if (Objects.equals(client.getSession().getPlayerUuid(), event.player()))
 				client.execute(() -> {
 					if (client.currentScreen instanceof SwitchScreen) client.setScreen(null);
 				});

@@ -10,53 +10,35 @@ import java.util.List;
 import java.util.UUID;
 
 /**
+ * @param player         The relevant player.
+ * @param previousPreset The name of the previous preset in the switch.
+ *                       On player join, this will be null.
+ *                       Null previous preset means "joined"
+ * @param currentPreset  The name of the new current preset in the switch.
+ *                       On player disconnect, this wil be null.
+ *                       Null current preset means "disconnected"
+ * @param enabledModules A list of enabled module names for the presets.
  * @author Ami
  * @since 1.8.2
  * Describes a "Switch Event" - emitted when a player joins, switches presets, or disconnects
  */
-public class SwitchySwitchEvent {
+public record SwitchySwitchEvent(UUID player, @Nullable String currentPreset, @Nullable String previousPreset, List<String> enabledModules) {
 	private static final String KEY_PLAYER = "player";
 	private static final String KEY_CURRENT_PRESET = "currentName";
 	private static final String KEY_PREVIOUS_PRESET = "previousName";
 	private static final String KEY_ENABLED_MODULES = "enabledModules";
-	/**
-	 * The relevant player.
-	 */
-	public final UUID player;
-	/**
-	 * The name of the previous preset in the switch.
-	 * On player join, this will be null.
-	 */
-	public final @Nullable String previousPreset; // Null previous preset means "joined"
-	/**
-	 * The name of the new current preset in the switch.
-	 * On player disconnect, this wil be null.
-	 */
-	public final @Nullable String currentPreset; // Null current preset means "disconnected"
-	/**
-	 * A list of enabled module names for the presets.
-	 */
-	public final List<String> enabledModules;
-
-	/**
-	 * @param player         The relevant player.
-	 * @param currentPreset  The name of the previous preset in the switch. On player join, this will be null.
-	 * @param previousPreset The name of the new current preset in the switch. On player disconnect, this wil be null.
-	 * @param enabledModules A list of enabled module names for the presets.
-	 */
-	public SwitchySwitchEvent(UUID player, @Nullable String currentPreset, @Nullable String previousPreset, List<String> enabledModules) {
-		this.player = player;
-		this.previousPreset = previousPreset;
-		this.currentPreset = currentPreset;
-		this.enabledModules = enabledModules;
-	}
 
 	/**
 	 * @param nbt an NBT representation of the event
 	 * @return an event constructed from the NBT
 	 */
 	public static SwitchySwitchEvent fromNbt(NbtCompound nbt) {
-		return new SwitchySwitchEvent(nbt.getUuid(KEY_PLAYER), nbt.getString(KEY_CURRENT_PRESET), nbt.contains(KEY_PREVIOUS_PRESET, NbtElement.STRING_TYPE) ? nbt.getString(KEY_PREVIOUS_PRESET) : null, nbt.getList(KEY_ENABLED_MODULES, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).toList());
+		return new SwitchySwitchEvent(
+				nbt.getUuid(KEY_PLAYER),
+				nbt.getString(KEY_CURRENT_PRESET),
+				nbt.contains(KEY_PREVIOUS_PRESET, NbtElement.STRING_TYPE) ? nbt.getString(KEY_PREVIOUS_PRESET) : null,
+				nbt.getList(KEY_ENABLED_MODULES, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).toList()
+		);
 	}
 
 	/**

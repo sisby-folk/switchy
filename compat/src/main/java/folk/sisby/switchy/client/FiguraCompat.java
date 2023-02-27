@@ -26,10 +26,10 @@ public class FiguraCompat implements FiguraAPI {
 	public static void registerSwitchListener(LuaFunction function) {
 		SwitchyClientEvents.SWITCH.register((event) -> function.invoke(
 				LuaValue.varargsOf(new LuaValue[]{
-						LuaValue.valueOf(event.player.toString()),
-						LuaValue.valueOf(Objects.requireNonNullElse(event.currentPreset, "")),
-						LuaValue.valueOf(Objects.requireNonNullElse(event.previousPreset, "")),
-						LuaValue.listOf(event.enabledModules.stream().map(LuaValue::valueOf).toArray(LuaValue[]::new))
+						LuaValue.valueOf(event.player().toString()),
+						LuaValue.valueOf(Objects.requireNonNullElse(event.currentPreset(), "")),
+						LuaValue.valueOf(Objects.requireNonNullElse(event.previousPreset(), "")),
+						LuaValue.listOf(event.enabledModules().stream().map(LuaValue::valueOf).toArray(LuaValue[]::new))
 				})
 		));
 	}
