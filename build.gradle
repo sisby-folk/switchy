@@ -143,6 +143,8 @@ allprojects {
 		mappings variantOf(libs.qm) { classifier "intermediary-v2" }
 		modImplementation libs.bundles.base
 		modRuntimeOnly libs.bundles.runtime
+
+		modLocalRuntime libs.bundles.local.conveniences
 	}
 
 	processResources {
