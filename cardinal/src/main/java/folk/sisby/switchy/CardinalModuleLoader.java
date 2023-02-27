@@ -3,6 +3,7 @@ package folk.sisby.switchy;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.api.modules.CardinalSerializerCompat;
@@ -19,19 +20,37 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.StreamSupport;
 
+/**
+ * @author Sisby folk
+ * @since 1.8.0
+ * @see CardinalSerializerCompat
+ * A reloader responsible for creating data-driven {@link SwitchyModule}s for swapping Cardinal Components API entity component data.
+ * Will load json files in {@code data/{namespace}/switchy_cardinal/{path}.json} into modules with namespace:path IDs in the below format:
+ * {@code
+ *   {
+ *    "default": boolean,
+ *    "editable": SwitchyModuleEditable,
+ *    "ifModsLoaded": ["mod-id"],
+ *    "components": ["component-id"]
+ * 	}
+ * }
+ */
 public class CardinalModuleLoader extends JsonDataLoader implements IdentifiableResourceReloader {
-	private static final Identifier ID = new Identifier(Switchy.ID, "switchy_cca_modules");
+	private static final Identifier ID = new Identifier(Switchy.ID, "switchy_cardinal");
 
 	private static final String KEY_DEFAULT = "default";
 	private static final String KEY_EDITABLE = "editable";
 	private static final String KEY_IF_MODS_LOADED = "ifModsLoaded";
 	private static final String KEY_COMPONENTS = "components";
 
-	public static final CardinalModuleLoader INSTANCE = new CardinalModuleLoader(new Gson());
-
-	public CardinalModuleLoader(Gson gson) {
+	CardinalModuleLoader(Gson gson) {
 		super(gson, "switchy_cca_modules");
 	}
+
+	/**
+	 * The global instance for this resource loader
+	 */
+	public static final CardinalModuleLoader INSTANCE = new CardinalModuleLoader(new Gson());
 
 	@Override
 	protected void apply(Map<Identifier, JsonElement> prepared, ResourceManager manager, Profiler profiler) {

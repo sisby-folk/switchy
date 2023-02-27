@@ -5,6 +5,12 @@ import net.minecraft.resource.ResourceType;
 import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.qsl.resource.loader.api.ResourceLoader;
 
+/**
+ * @author Ampflower
+ * @since 1.8.4
+ * @see SwitchyEvents
+ * Initializer for the Switchy Cardinal addon
+ */
 public class SwitchyCardinal implements SwitchyEvents.Init {
 	@Override
 	public void onInitialize() {
