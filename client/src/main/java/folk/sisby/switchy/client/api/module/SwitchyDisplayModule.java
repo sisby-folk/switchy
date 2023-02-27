@@ -18,5 +18,8 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
  */
 @ClientOnly
 public interface SwitchyDisplayModule extends SwitchySerializable {
+	/**
+	 * @return a render-able component, and the position on the preset preview it should be placed
+	 */
 	@Nullable Pair<Component, SwitchySwitchScreenPosition> getDisplayComponent();
 }

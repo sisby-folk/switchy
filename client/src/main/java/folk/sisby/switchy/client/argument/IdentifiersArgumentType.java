@@ -16,11 +16,18 @@ import java.util.concurrent.CompletableFuture;
 
 import static folk.sisby.switchy.util.Feedback.translatable;
 
+/**
+ * @author Sisby folk
+ * @since 1.7.3
+ * An argument type allowing the user to enter a list of identifiers.
+ */
 public class IdentifiersArgumentType implements ArgumentType<List<Identifier>> {
 
-	protected IdentifiersArgumentType() {
-	}
+	IdentifiersArgumentType() {}
 
+	/**
+	 * @return an instance.
+	 */
 	public static IdentifiersArgumentType create() {
 		return new IdentifiersArgumentType();
 	}

@@ -18,6 +18,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ClientPlayNetworkHandler.class)
 public abstract class MixinClientPlayNetworkHandler {
 
+	/**
+	 * @param packet a packet being sent to the server
+	 * @param ci callback info
+	 * Intercepts outgoing chat packets and updates the command history using them
+	 */
 	@Inject(at = @At("HEAD"), method = "sendPacket")
 	public void sendPacket(Packet<?> packet, CallbackInfo ci)
 	{

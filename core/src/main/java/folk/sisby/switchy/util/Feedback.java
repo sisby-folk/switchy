@@ -16,11 +16,29 @@ import java.util.function.Predicate;
  * Utilities for styling text and sending translatable feedback
  */
 public class Feedback {
+	/**
+	 * Green text with white italic arguments
+	 */
 	public static final Pair<Style, Style> FORMAT_SUCCESS = new Pair<>(Style.EMPTY.withColor(Formatting.GREEN), Style.EMPTY.withColor(Formatting.WHITE).withItalic(true));
+	/**
+	 * Yellow text with white italic arguments
+	 */
 	public static final Pair<Style, Style> FORMAT_INVALID = new Pair<>(Style.EMPTY.withColor(Formatting.YELLOW), Style.EMPTY.withColor(Formatting.WHITE).withItalic(true));
+	/**
+	 * Grey italic text with white arguments
+	 */
 	public static final Pair<Style, Style> FORMAT_INFO = new Pair<>(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true), Style.EMPTY.withColor(Formatting.WHITE));
+	/**
+	 * Gold text with grey arguments
+	 */
 	public static final Pair<Style, Style> FORMAT_WARN = new Pair<>(Style.EMPTY.withColor(Formatting.GOLD), Style.EMPTY.withColor(Formatting.GRAY));
+	/**
+	 * Grey italic text with grey italic arguments
+	 */
 	public static final Pair<Style, Style> FORMAT_COMMAND = new Pair<>(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true), Style.EMPTY.withColor(Formatting.GRAY).withItalic(true));
+	/**
+	 * White text with white arguments
+	 */
 	public static final Pair<Style, Style> FORMAT_HELP = new Pair<>(Style.EMPTY.withColor(Formatting.WHITE), Style.EMPTY.withColor(Formatting.WHITE));
 
 	/**

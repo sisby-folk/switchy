@@ -10,8 +10,20 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
  */
 @ClientOnly
 public enum SwitchySwitchScreenPosition {
+	/**
+	 * On the left side of the overall horizontal flow
+	 */
 	SIDE_LEFT,
+	/**
+	 * Within the centered, left aligned vertical flow inside the overall horizontal flow
+	 */
 	LEFT,
+	/**
+	 * Within the centered, right aligned vertical flow inside the overall horizontal flow
+	 */
 	RIGHT,
+	/**
+	 * On the right side of the overall horizontal flow
+	 */
 	SIDE_RIGHT
 }

@@ -13,8 +13,17 @@ import org.slf4j.LoggerFactory;
  * Mod initializer for client-side Switchy Client
  */
 public class SwitchyClient implements ClientModInitializer {
+	/**
+	 * the Switchy Client namespace
+	 */
 	public static final String ID = "switchy_client";
+	/**
+	 * the Switchy Client logger
+	 */
 	public static final Logger LOGGER = LoggerFactory.getLogger(Switchy.ID + "-client");
+	/**
+	 * the path to export presets to, relative to .minecraft
+	 */
 	public static final String EXPORT_PATH = "config/switchy";
 
 	@Override

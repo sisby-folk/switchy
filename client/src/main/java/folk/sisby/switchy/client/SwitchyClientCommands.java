@@ -31,6 +31,10 @@ import static folk.sisby.switchy.client.util.FeedbackClient.tellSuccess;
  * Registration and logic for client commands.
  */
 public class SwitchyClientCommands implements ClientCommandRegistrationCallback {
+	/**
+	 * A map of the previously executed command, per player UUID.
+	 * Can be used for "repeat-style" command confirmation - if the command in here matches the one being executed, that's a confirmation.
+	 */
 	public static String HISTORY = "";
 
 	@Override

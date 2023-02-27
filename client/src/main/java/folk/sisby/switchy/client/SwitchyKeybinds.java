@@ -16,6 +16,9 @@ import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_REQUEST_DISPL
  * Registration for client keybindings
  */
 public class SwitchyKeybinds {
+	/**
+	 * registers all keybindings for Switchy Client
+	 */
 	public static void initializeKeybindings() {
 		KeyBind switchKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBind(
 				"key.switchy.switch",

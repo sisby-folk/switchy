@@ -19,13 +19,16 @@ import java.util.HashMap;
  */
 @ClientOnly
 public class SwitchyDisplayPresetsImpl extends SwitchyPresetsDataImpl<SwitchyDisplayModule, SwitchyDisplayPreset> implements SwitchyDisplayPresets {
+	/**
+	 * Returns an empty display presets object
+	 */
 	public SwitchyDisplayPresetsImpl() {
 		super(new HashMap<>(), SwitchyDisplayPresetImpl::new, SwitchyDisplayModuleRegistry::supplyModule, true, SwitchyClient.LOGGER);
 	}
 
 	@Override
-	public // Don't Log. Don't check for existence. `modules` is expected to be desync'd from the DisplayModules.
 	void toggleModulesFromNbt(NbtList list, Boolean enabled, Boolean silent) {
+		// Don't Log. Don't check for existence. `modules` is expected to be desync'd from the DisplayModules.
 		list.forEach((e) -> {
 			Identifier id;
 			if (e instanceof NbtString s && (id = Identifier.tryParse(s.asString())) != null) {

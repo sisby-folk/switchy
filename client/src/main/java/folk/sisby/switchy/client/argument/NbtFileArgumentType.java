@@ -17,13 +17,23 @@ import java.util.concurrent.CompletableFuture;
 
 import static folk.sisby.switchy.util.Feedback.translatable;
 
+/**
+ * @author Sisby folk
+ * @since 1.7.3
+ * @see FileArgumentType
+ * An argument type allowing the user to select any .dat file within a folder, which is parsed as compressed NBT.
+ */
 public class NbtFileArgumentType implements ArgumentType<NbtCompound> {
 	private final FileArgumentType fileArgumentType;
 
-	protected NbtFileArgumentType(File folder) {
+	NbtFileArgumentType(File folder) {
 		this.fileArgumentType = FileArgumentType.create(folder, "dat");
 	}
 
+	/**
+	 * @param folder the folder to allow files to be picked from
+	 * @return an instance
+	 */
 	public static NbtFileArgumentType create(File folder) {
 		return new NbtFileArgumentType(folder);
 	}

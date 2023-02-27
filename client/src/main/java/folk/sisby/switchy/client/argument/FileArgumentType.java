@@ -17,6 +17,11 @@ import java.util.concurrent.CompletableFuture;
 
 import static folk.sisby.switchy.util.Feedback.translatable;
 
+/**
+ * @author Sisby folk
+ * @since 1.7.3
+ * An argument type allowing the user to select any file within a folder matching an extension.
+ */
 public class FileArgumentType implements ArgumentType<File> {
 	private final File folder;
 	private final String extension;
@@ -25,11 +30,16 @@ public class FileArgumentType implements ArgumentType<File> {
 		return (dir, name) -> FileNameUtils.getExtension(name).toLowerCase().equals(extension);
 	}
 
-	protected FileArgumentType(final File folder, final String extension) {
+	FileArgumentType(final File folder, final String extension) {
 		this.folder = folder;
 		this.extension = extension;
 	}
 
+	/**
+	 * @param folder the folder to allow files to be picked from
+	 * @param extension the file extension the files must match
+	 * @return an instance
+	 */
 	public static FileArgumentType create(File folder, String extension) {
 		return new FileArgumentType(folder, extension);
 	}

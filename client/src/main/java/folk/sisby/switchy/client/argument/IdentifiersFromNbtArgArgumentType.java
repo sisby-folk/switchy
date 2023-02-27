@@ -18,6 +18,12 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+/**
+ * @author Sisby folk
+ * @since 1.7.3
+ * @see IdentifiersArgumentType
+ * An argument type allowing the user to enter a list of identifiers using an NBT compound returning previous argument.
+ */
 public class IdentifiersFromNbtArgArgumentType implements ArgumentType<List<Identifier>> {
 	private final IdentifiersArgumentType identifiersArgumentType;
 	private final String nbtArgument;
@@ -25,13 +31,19 @@ public class IdentifiersFromNbtArgArgumentType implements ArgumentType<List<Iden
 	private final String nbtListKey;
 
 
-	protected IdentifiersFromNbtArgArgumentType(String nbtArgument, @Nullable String excludeArgument, String nbtListKey) {
+	IdentifiersFromNbtArgArgumentType(String nbtArgument, @Nullable String excludeArgument, String nbtListKey) {
 		this.identifiersArgumentType = IdentifiersArgumentType.create();
 		this.nbtArgument = nbtArgument;
 		this.excludeArgument = excludeArgument;
 		this.nbtListKey = nbtListKey;
 	}
 
+	/**
+	 * @param nbtArgument the name of the NBT-compound returning arugumnet.
+	 * @param excludeArgument an optional Identifier List argument to remove suggestions for
+	 * @param nbtListKey the key of the NBT compound that contains a list of identifiers to suggest
+	 * @return an instance
+	 */
 	public static IdentifiersFromNbtArgArgumentType create(String nbtArgument, @Nullable String excludeArgument, String nbtListKey) {
 		return new IdentifiersFromNbtArgArgumentType(nbtArgument, excludeArgument, nbtListKey);
 	}

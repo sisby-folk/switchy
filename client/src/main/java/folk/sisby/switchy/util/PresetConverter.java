@@ -16,6 +16,10 @@ import net.minecraft.nbt.NbtString;
 public class PresetConverter {
 	// Figure out how to add this to a file or something. Mixin feels wrong but maybe.
 
+	/**
+	 * @param presets an arbitrary presets object
+	 * @return its serialized displayable representation to be used in {@link folk.sisby.switchy.api.module.presets.SwitchyDisplayPresets#fillFromNbt(NbtCompound)}
+	 */
 	public static NbtCompound presetsToNbt(SwitchyPresets presets) {
 		NbtCompound outNbt = new NbtCompound();
 
@@ -38,6 +42,10 @@ public class PresetConverter {
 		return outNbt;
 	}
 
+	/**
+	 * @param preset an arbitrary preset object
+	 * @return its serialized displayable representation to be used in {@link folk.sisby.switchy.api.module.presets.SwitchyDisplayPreset#fillFromNbt(NbtCompound)}
+	 */
 	public static NbtCompound presetToNbt(SwitchyPreset preset) {
 		NbtCompound outNbt = new NbtCompound();
 		preset.getModules().forEach((id, module) -> {
