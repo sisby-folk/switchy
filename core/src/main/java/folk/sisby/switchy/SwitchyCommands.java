@@ -71,6 +71,7 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 
 	/**
 	 * Switches to another preset, providing chat feedback to the player based on success.
+	 *
 	 * @param player  the relevant player.
 	 * @param presets the player's presets object.
 	 * @param name    the case-insensitive name of a preset to switch to.
@@ -149,6 +150,7 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 
 	/**
 	 * Imports presets, providing chat feedback for confirmation if this is the first time.
+	 *
 	 * @param player          The player to show confirmation and import presets to.
 	 * @param importedPresets The presets to be imported.
 	 * @param modules         The modules to be imported.

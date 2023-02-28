@@ -1,6 +1,10 @@
 {
   "default": true,
   "editable": "OPERATOR",
-  "ifModsLoaded": ["arcpocalypse"],
-  "components": ["arcpocalypse:nekoarc"]
+  "ifModsLoaded": [
+    "arcpocalypse"
+  ],
+  "components": [
+    "arcpocalypse:nekoarc"
+  ]
 }

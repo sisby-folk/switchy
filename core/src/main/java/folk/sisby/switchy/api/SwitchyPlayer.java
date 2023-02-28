@@ -12,6 +12,7 @@ import org.jetbrains.annotations.ApiStatus;
 public interface SwitchyPlayer {
 	/**
 	 * Set the presets object associated with the player.
+	 *
 	 * @param presets a new presets object for the player.
 	 */
 	@ApiStatus.Internal
@@ -19,6 +20,7 @@ public interface SwitchyPlayer {
 
 	/**
 	 * Gets the presets object associated with this player.
+	 *
 	 * @return the presets object for the player.
 	 */
 	SwitchyPresets switchy$getPresets();

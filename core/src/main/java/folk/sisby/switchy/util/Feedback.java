@@ -44,6 +44,7 @@ public class Feedback {
 
 	/**
 	 * Sends feedback to the player.
+	 *
 	 * @param player the player to send the message to.
 	 * @param text   the text to send.
 	 */

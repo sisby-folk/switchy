@@ -86,13 +86,13 @@
       "import": {
         "command": "/switchy_client import {}",
         "help": "load exported presets",
-        "warn" : {
+        "warn": {
           "info": "You are about to import {} presets with {} modules:",
           "collision": "Red presets will have these modules overwritten:"
         },
         "confirmation": "Confirm using {}",
         "success": "Import succeeded: added {} and updated {} presets",
-        "fail" : {
+        "fail": {
           "parse": "Failed to parse imported NBT",
           "construct": "Failed to construct Presets from NBT",
           "permission": "You do not have permission to specify operator modules: {}"

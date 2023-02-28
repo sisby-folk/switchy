@@ -222,6 +222,7 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 
 	/**
 	 * Whether a specified module is enabled.
+	 *
 	 * @param id a module identifier.
 	 * @return true if the module is enabled, false otherwise.
 	 * @throws IllegalArgumentException when the specified module doesn't exist
@@ -230,12 +231,14 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 
 	/**
 	 * Gets a list of all enabled modules as ID paths.
+	 *
 	 * @return a list of all enabled module names (paths).
 	 */
 	List<String> getEnabledModuleNames();
 
 	/**
 	 * Creates a compact text representation of all modules.
+	 *
 	 * @return a text representation of all module IDs, showing paths with full IDs on hover.
 	 */
 	MutableText getEnabledModuleText();

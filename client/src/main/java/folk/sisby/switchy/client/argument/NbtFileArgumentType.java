@@ -34,6 +34,7 @@ public class NbtFileArgumentType implements ArgumentType<NbtCompound> {
 
 	/**
 	 * Creates an instance of this argument type.
+	 *
 	 * @param folder the folder to allow files to be picked from.
 	 * @return an instance.
 	 */

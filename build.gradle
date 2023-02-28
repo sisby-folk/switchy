@@ -149,20 +149,20 @@ allprojects {
 
 	processResources {
 		final Map<String, String> map = [
-				"switchy": version.toString(),
-				"mc"  : libs.versions.mc.get(),
-				"ql"  : libs.versions.ql.get(),
-				"qsl"  : libs.versions.qsl.get(),
-				"lib39": libs.versions.lib39.get(),
+				"switchy"              : version.toString(),
+				"mc"                   : libs.versions.mc.get(),
+				"ql"                   : libs.versions.ql.get(),
+				"qsl"                  : libs.versions.qsl.get(),
+				"lib39"                : libs.versions.lib39.get(),
 				"serverTranslationsAPI": libs.versions.serverTranslationsApi.get(),
-				"qfapi"  : libs.versions.qfapi.get(),
-				"owo"  : libs.versions.owo.get(),
-				"drogtor"  : libs.versions.drogtor.get(),
-				"styledNicknames"  : libs.versions.styledNicknames.get(),
-				"fabrictailor"  : libs.versions.fabrictailor.get(),
-				"origins"  : libs.versions.origins.get().replaceFirst('v', ''),
-				"pehkui"  : libs.versions.pehkui.get(),
-				"fabrication"  : libs.versions.fabrication.get(),
+				"qfapi"                : libs.versions.qfapi.get(),
+				"owo"                  : libs.versions.owo.get(),
+				"drogtor"              : libs.versions.drogtor.get(),
+				"styledNicknames"      : libs.versions.styledNicknames.get(),
+				"fabrictailor"         : libs.versions.fabrictailor.get(),
+				"origins"              : libs.versions.origins.get().replaceFirst('v', ''),
+				"pehkui"               : libs.versions.pehkui.get(),
+				"fabrication"          : libs.versions.fabrication.get(),
 		]
 
 		inputs.properties(map)
