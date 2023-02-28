@@ -29,6 +29,7 @@ import static folk.sisby.switchy.util.Feedback.*;
  * @since 2.0.0
  */
 public class SwitchyClientServerNetworking {
+	// Data Requests
 	/**
 	 * Request serialized presets for exporting.
 	 */
@@ -37,6 +38,8 @@ public class SwitchyClientServerNetworking {
 	 * Request displayable serialized presets for previewing.
 	 */
 	public static final Identifier C2S_REQUEST_DISPLAY_PRESETS = new Identifier(Switchy.ID, "c2s_display_presets");
+
+	// Actions
 	/**
 	 * Send serialized presets to import.
 	 */
@@ -45,7 +48,28 @@ public class SwitchyClientServerNetworking {
 	 * Send switch action with preset name.
 	 */
 	public static final Identifier C2S_SWITCH = new Identifier(Switchy.ID, "c2s_switch");
+	/**
+	 * Send new preset action with preset name.
+	 */
+	public static final Identifier C2S_PRESETS_NEW = new Identifier(Switchy.ID, "c2s_presets_new");
+	/**
+	 * Send delete preset action with preset name.
+	 */
+	public static final Identifier C2S_PRESETS_DELETE = new Identifier(Switchy.ID, "c2s_presets_delete");
+	/**
+	 * Send rename preset action with preset name and new name.
+	 */
+	public static final Identifier C2S_PRESETS_RENAME = new Identifier(Switchy.ID, "c2s_presets_rename");
+	/**
+	 * Send disable module action with module ID.
+	 */
+	public static final Identifier C2S_PRESETS_MODULE_DISABLE = new Identifier(Switchy.ID, "c2s_presets_module_disable");
+	/**
+	 * Send enable module action with module ID.
+	 */
+	public static final Identifier C2S_PRESETS_MODULE_ENABLE = new Identifier(Switchy.ID, "c2s_presets_module_enable");
 
+	// Responses
 	/**
 	 * Serialized presets for exporting.
 	 */
@@ -55,6 +79,7 @@ public class SwitchyClientServerNetworking {
 	 */
 	public static final Identifier S2C_DISPLAY_PRESETS = new Identifier(Switchy.ID, "s2c_display_presets");
 
+	// Events
 	/**
 	 * @see SwitchyEvents.Switch
 	 */
@@ -64,10 +89,39 @@ public class SwitchyClientServerNetworking {
 	 * Register server-side receivers for Switchy Client.
 	 */
 	public static void InitializeReceivers() {
+		// Data Requests
 		ServerPlayNetworking.registerGlobalReceiver(C2S_REQUEST_PRESETS, (server, player, handler, buf, sender) -> sendPresets(player));
 		ServerPlayNetworking.registerGlobalReceiver(C2S_REQUEST_DISPLAY_PRESETS, (server, player, handler, buf, sender) -> sendDisplayPresets(player));
+		// Actions
 		ServerPlayNetworking.registerGlobalReceiver(C2S_IMPORT, (server, player, handler, buf, sender) -> importPresets(player, buf.readNbt()));
-		ServerPlayNetworking.registerGlobalReceiver(C2S_SWITCH, (server, player, handler, buf, sender) -> SwitchyCommands.switchPreset(player, ((SwitchyPlayer) player).switchy$getPresets(), buf.readString()));
+		ServerPlayNetworking.registerGlobalReceiver(C2S_SWITCH, (server, player, handler, buf, sender) -> {
+			SwitchyCommands.switchPreset(player, ((SwitchyPlayer) player).switchy$getPresets(), buf.readString());
+			sendDisplayPresets(player);
+		});
+		ServerPlayNetworking.registerGlobalReceiver(C2S_PRESETS_NEW, (server, player, handler, buf, sender) -> {
+			SwitchyCommands.newPreset(player, ((SwitchyPlayer) player).switchy$getPresets(), buf.readString());
+			sendDisplayPresets(player);
+		});
+		ServerPlayNetworking.registerGlobalReceiver(C2S_PRESETS_DELETE, (server, player, handler, buf, sender) -> {
+			String name = buf.readString();
+			SwitchyCommands.HISTORY.put(player.getUuid(), command("switchy delete " + name));
+			SwitchyCommands.deletePreset(player, ((SwitchyPlayer) player).switchy$getPresets(), name);
+			sendDisplayPresets(player);
+		});
+		ServerPlayNetworking.registerGlobalReceiver(C2S_PRESETS_RENAME, (server, player, handler, buf, sender) -> {
+			SwitchyCommands.renamePreset(player, ((SwitchyPlayer) player).switchy$getPresets(), buf.readString(), buf.readString());
+			sendDisplayPresets(player);
+		});
+		ServerPlayNetworking.registerGlobalReceiver(C2S_PRESETS_MODULE_DISABLE, (server, player, handler, buf, sender) -> {
+			String id = buf.readString();
+			SwitchyCommands.HISTORY.put(player.getUuid(), command("switchy module disable " + id));
+			SwitchyCommands.disableModule(player, ((SwitchyPlayer) player).switchy$getPresets(), Identifier.tryParse(id));
+			sendDisplayPresets(player);
+		});
+		ServerPlayNetworking.registerGlobalReceiver(C2S_PRESETS_MODULE_ENABLE, (server, player, handler, buf, sender) -> {
+			SwitchyCommands.enableModule(player, ((SwitchyPlayer) player).switchy$getPresets(), Identifier.tryParse(buf.readString()));
+			sendDisplayPresets(player);
+		});
 	}
 
 	/**

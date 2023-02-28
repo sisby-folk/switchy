@@ -60,7 +60,16 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 		sendMessage(player, translatableWithArgs("commands.switchy.list.current", FORMAT_INFO, literal(presets.getCurrentPreset().toString())));
 	}
 
-	private static void newPreset(ServerPlayerEntity player, SwitchyPresets presets, String name) {
+	/**
+	 * Creates a new preset.
+	 * Provides chat feedback to the player based on success.
+	 *
+	 * @param player  the relevant player.
+	 * @param presets the player's presets object.
+	 * @param name    the case-insensitive name of a preset.
+	 * @see SwitchyPresets#newPreset(String)
+	 */
+	public static void newPreset(ServerPlayerEntity player, SwitchyPresets presets, String name) {
 		try {
 			SwitchyPreset newPreset = presets.newPreset(name);
 			tellSuccess(player, "commands.switchy.new.success", literal(newPreset.getName()));
@@ -70,11 +79,13 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 	}
 
 	/**
-	 * Switches to another preset, providing chat feedback to the player based on success.
+	 * Switches to the specified preset.
+	 * Provides chat feedback to the player based on success.
 	 *
 	 * @param player  the relevant player.
 	 * @param presets the player's presets object.
-	 * @param name    the case-insensitive name of a preset to switch to.
+	 * @param name    the case-insensitive name of a preset.
+	 * @see SwitchyPresets#switchCurrentPreset(ServerPlayerEntity, String)
 	 */
 	public static void switchPreset(ServerPlayerEntity player, SwitchyPresets presets, String name) {
 		String oldName = presets.getCurrentPreset().toString();
@@ -89,7 +100,17 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 		}
 	}
 
-	private static void renamePreset(ServerPlayerEntity player, SwitchyPresets presets, String name, String newName) {
+	/**
+	 * Switches to the specified preset.
+	 * Provides chat feedback to the player based on success.
+	 *
+	 * @param player  the relevant player.
+	 * @param presets the player's presets object.
+	 * @param name    the case-insensitive name of a preset.
+	 * @param newName the new name for the specified preset. a single word matching {@code azAZ09_-.+}.
+	 * @see SwitchyPresets#renamePreset(String, String)
+	 */
+	public static void renamePreset(ServerPlayerEntity player, SwitchyPresets presets, String name, String newName) {
 		try {
 			presets.renamePreset(name, newName);
 			tellSuccess(player, "commands.switchy.rename.success", literal(name), literal(newName));
@@ -100,7 +121,16 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 		}
 	}
 
-	private static void deletePreset(ServerPlayerEntity player, SwitchyPresets presets, String name) {
+	/**
+	 * Deletes the specified preset. Lossy.
+	 * Provides chat feedback to the player based on success.
+	 *
+	 * @param player  the relevant player.
+	 * @param presets the player's presets object.
+	 * @param name    the case-insensitive name of a preset.
+	 * @see SwitchyPresets#deletePreset(String)
+	 */
+	public static void deletePreset(ServerPlayerEntity player, SwitchyPresets presets, String name) {
 		try {
 			presets.deletePreset(name, true);
 		} catch (IllegalArgumentException ignored) {
@@ -119,7 +149,16 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 		}
 	}
 
-	private static void disableModule(ServerPlayerEntity player, SwitchyPresets presets, Identifier id) {
+	/**
+	 * Disables the specified module. Lossy.
+	 * Provides chat feedback to the player based on success.
+	 *
+	 * @param player  the relevant player.
+	 * @param presets the player's presets object.
+	 * @param id      a module identifier
+	 * @see SwitchyPresets#disableModule(Identifier)
+	 */
+	public static void disableModule(ServerPlayerEntity player, SwitchyPresets presets, Identifier id) {
 		try {
 			presets.disableModule(id, true);
 		} catch (IllegalArgumentException ignored) {
@@ -137,7 +176,16 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 		}
 	}
 
-	private static void enableModule(ServerPlayerEntity player, SwitchyPresets presets, Identifier id) {
+	/**
+	 * Enables the specified module.
+	 * Provides chat feedback to the player based on success.
+	 *
+	 * @param player  the relevant player.
+	 * @param presets the player's presets object.
+	 * @param id      a module identifier
+	 * @see SwitchyPresets#enableModule(Identifier)
+	 */
+	public static void enableModule(ServerPlayerEntity player, SwitchyPresets presets, Identifier id) {
 		try {
 			presets.enableModule(id);
 			tellSuccess(player, "commands.switchy.module.enable.success", literal(id.toString()));
@@ -179,59 +227,8 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 
 	@Override
 	public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandBuildContext buildContext, CommandManager.RegistrationEnvironment environment) {
-		dispatcher.register(
-				CommandManager.literal("switchy")
-						.then(CommandManager.literal("help")
-								.executes(c -> execute(c, SwitchyCommands::displayHelp))
-						)
-						.then(CommandManager.literal("list")
-								.executes(c -> execute(c, SwitchyCommands::listPresets))
-						)
-						.then(CommandManager.literal("new")
-								.then(CommandManager.argument("preset", StringArgumentType.word())
-										.executes(c -> execute(c, (player, presets) -> newPreset(player, presets, c.getArgument("preset", String.class))))
-								)
-						)
-						.then(CommandManager.literal("set")
-								.then(CommandManager.argument("preset", StringArgumentType.word())
-										.suggests((c, b) -> suggestPresets(c, b, false))
-										.executes(c -> execute(c, (player, presets) -> switchPreset(player, presets, c.getArgument("preset", String.class))))
-								)
-						)
-						.then(CommandManager.literal("delete")
-								.then(CommandManager.argument("preset", StringArgumentType.word())
-										.suggests((c, b) -> suggestPresets(c, b, false))
-										.executes(c -> execute(c, (player, presets) -> deletePreset(player, presets, c.getArgument("preset", String.class))))
-								)
-						)
-						.then(CommandManager.literal("rename")
-								.then(CommandManager.argument("preset", StringArgumentType.word())
-										.suggests((c, b) -> suggestPresets(c, b, true))
-										.then(CommandManager.argument("name", StringArgumentType.word())
-												.executes(c -> execute(c, (player, presets) -> renamePreset(player, presets, c.getArgument("preset", String.class), c.getArgument("name", String.class))))
-										)
-								)
-						)
-						.then(CommandManager.literal("module")
-								.then(CommandManager.literal("enable")
-										.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
-												.suggests((c, b) -> suggestModules(c, b, false))
-												.executes(c -> execute(c, (player, presets) -> enableModule(player, presets, c.getArgument("module", Identifier.class)))))
-								)
-								.then(CommandManager.literal("disable")
-										.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
-												.suggests((c, b) -> suggestModules(c, b, true))
-												.executes(c -> execute(c, (player, presets) -> disableModule(player, presets, c.getArgument("module", Identifier.class)))))
-								)
-						)
-		);
+		dispatcher.register(CommandManager.literal("switchy").then(CommandManager.literal("help").executes(c -> execute(c, SwitchyCommands::displayHelp))).then(CommandManager.literal("list").executes(c -> execute(c, SwitchyCommands::listPresets))).then(CommandManager.literal("new").then(CommandManager.argument("preset", StringArgumentType.word()).executes(c -> execute(c, (player, presets) -> newPreset(player, presets, c.getArgument("preset", String.class)))))).then(CommandManager.literal("set").then(CommandManager.argument("preset", StringArgumentType.word()).suggests((c, b) -> suggestPresets(c, b, false)).executes(c -> execute(c, (player, presets) -> switchPreset(player, presets, c.getArgument("preset", String.class)))))).then(CommandManager.literal("delete").then(CommandManager.argument("preset", StringArgumentType.word()).suggests((c, b) -> suggestPresets(c, b, false)).executes(c -> execute(c, (player, presets) -> deletePreset(player, presets, c.getArgument("preset", String.class)))))).then(CommandManager.literal("rename").then(CommandManager.argument("preset", StringArgumentType.word()).suggests((c, b) -> suggestPresets(c, b, true)).then(CommandManager.argument("name", StringArgumentType.word()).executes(c -> execute(c, (player, presets) -> renamePreset(player, presets, c.getArgument("preset", String.class), c.getArgument("name", String.class))))))).then(CommandManager.literal("module").then(CommandManager.literal("enable").then(CommandManager.argument("module", IdentifierArgumentType.identifier()).suggests((c, b) -> suggestModules(c, b, false)).executes(c -> execute(c, (player, presets) -> enableModule(player, presets, c.getArgument("module", Identifier.class)))))).then(CommandManager.literal("disable").then(CommandManager.argument("module", IdentifierArgumentType.identifier()).suggests((c, b) -> suggestModules(c, b, true)).executes(c -> execute(c, (player, presets) -> disableModule(player, presets, c.getArgument("module", Identifier.class))))))));
 
-		dispatcher.register(
-				CommandManager.literal("switch")
-						.then(CommandManager.argument("preset", StringArgumentType.word())
-								.suggests((c, b) -> suggestPresets(c, b, false))
-								.executes(c -> execute(c, (player, presets) -> switchPreset(player, presets, c.getArgument("preset", String.class))))
-						)
-		);
+		dispatcher.register(CommandManager.literal("switch").then(CommandManager.argument("preset", StringArgumentType.word()).suggests((c, b) -> suggestPresets(c, b, false)).executes(c -> execute(c, (player, presets) -> switchPreset(player, presets, c.getArgument("preset", String.class))))));
 	}
 }

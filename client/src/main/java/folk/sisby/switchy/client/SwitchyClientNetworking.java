@@ -9,6 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
@@ -40,14 +41,78 @@ public class SwitchyClientNetworking {
 	}
 
 	/**
-	 * Switches to the specified preset on the server
+	 * Switches to the specified preset on the server.
 	 *
 	 * @param name the case-insensitive name of a preset.
+	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#switchCurrentPreset(net.minecraft.server.network.ServerPlayerEntity, String)
 	 */
 	public static void switchCurrentPreset(String name) {
 		PacketByteBuf buf = PacketByteBufs.create();
 		buf.writeString(name);
 		ClientPlayNetworking.send(C2S_SWITCH, buf);
+	}
+
+	/**
+	 * Creates a new preset on the server.
+	 *
+	 * @param name the case-insensitive name of a preset.
+	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#newPreset(String)
+	 */
+	public static void newPreset(String name) {
+		PacketByteBuf buf = PacketByteBufs.create();
+		buf.writeString(name);
+		ClientPlayNetworking.send(C2S_PRESETS_NEW, buf);
+	}
+
+	/**
+	 * Switches to the specified preset on the server.
+	 * Lossy.
+	 *
+	 * @param name the case-insensitive name of a preset.
+	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#deletePreset(String)
+	 */
+	public static void deletePreset(String name) {
+		PacketByteBuf buf = PacketByteBufs.create();
+		buf.writeString(name);
+		ClientPlayNetworking.send(C2S_PRESETS_DELETE, buf);
+	}
+
+	/**
+	 * Changes the name of the specified preset on the server.
+	 *
+	 * @param name the case-insensitive name of a preset.
+	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#renamePreset(String, String)
+	 */
+	public static void renamePreset(String name, String newName) {
+		PacketByteBuf buf = PacketByteBufs.create();
+		buf.writeString(name);
+		buf.writeString(newName);
+		ClientPlayNetworking.send(C2S_PRESETS_RENAME, buf);
+	}
+
+	/**
+	 * Disables the specified module on the server.
+	 * Lossy.
+	 *
+	 * @param id a module identifier.
+	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#disableModule(Identifier)
+	 */
+	public static void disableModule(Identifier id) {
+		PacketByteBuf buf = PacketByteBufs.create();
+		buf.writeString(id.toString());
+		ClientPlayNetworking.send(C2S_PRESETS_MODULE_DISABLE, buf);
+	}
+
+	/**
+	 * Enables the specified module on the server.
+	 *
+	 * @param id a module identifier.
+	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#enableModule(Identifier)
+	 */
+	public static void enableModule(Identifier id) {
+		PacketByteBuf buf = PacketByteBufs.create();
+		buf.writeString(id.toString());
+		ClientPlayNetworking.send(C2S_PRESETS_MODULE_ENABLE, buf);
 	}
 
 	private static void exportPresets(MinecraftClient client, PacketByteBuf buf) {
@@ -74,9 +139,7 @@ public class SwitchyClientNetworking {
 		if (displayPresetsNbt != null) {
 			SwitchyDisplayPresets displayPresets = new SwitchyDisplayPresetsImpl();
 			displayPresets.fillFromNbt(displayPresetsNbt);
-			client.execute(() ->
-					client.setScreen(new SwitchScreen(displayPresets))
-			);
+			client.execute(() -> client.setScreen(new SwitchScreen(displayPresets)));
 		}
 	}
 }
