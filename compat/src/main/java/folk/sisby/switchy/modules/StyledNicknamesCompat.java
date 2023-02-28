@@ -13,19 +13,20 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 /**
+ * A module that switches nicknames from Patbox's Styled Nicknames.
+ *
  * @author Sisby folk
  * @see SwitchyModule
- * A module that switches nicknames from Patbox's Styled Nicknames.
  * @since 1.7.2
  */
 public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleDisplayable {
 	/**
-	 * Identifier for this module
+	 * Identifier for this module.
 	 */
 	public static final Identifier ID = new Identifier("switchy", "styled_nicknames");
 
 	/**
-	 * The NBT key where the nickname is stored
+	 * The NBT key where the nickname is stored.
 	 */
 	public static final String KEY_NICKNAME = "styled_nickname";
 
@@ -35,12 +36,12 @@ public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleDispla
 	}
 
 	/**
-	 * The styled nickname, in placeholder API simplified text format
+	 * The styled nickname, in placeholder API simplified text format.
 	 */
 	@Nullable public String styled_nickname;
 
 	/**
-	 * Executes {@code static} the first time it's invoked
+	 * Executes {@code static} the first time it's invoked.
 	 */
 	public static void touch() {
 	}

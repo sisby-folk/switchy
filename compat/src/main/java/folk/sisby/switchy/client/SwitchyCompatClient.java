@@ -8,10 +8,11 @@ import folk.sisby.switchy.client.modules.StyledNicknamesCompatDisplay;
 import org.quiltmc.loader.api.QuiltLoader;
 
 /**
+ * Initializer for the Switchy Compat addon for Switchy Client.
+ * Provides display modules for some modules registered by {@link folk.sisby.switchy.SwitchyCompat}.
+ *
  * @author Sisby folk
  * @see SwitchyClientEvents
- * Initializer for the Switchy Compat addon for Switchy Client.
- * Provides display modules for some modules registered by {@link folk.sisby.switchy.SwitchyCompat}
  * @since 2.0.0
  */
 public class SwitchyCompatClient implements SwitchyClientEvents.Init {

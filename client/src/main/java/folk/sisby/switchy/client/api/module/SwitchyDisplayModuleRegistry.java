@@ -10,10 +10,11 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /**
- * @author Sisby folk
- * @see SwitchyDisplayModule
  * Provides access to module registration for client display addons.
  * Effectively Static.
+ *
+ * @author Sisby folk
+ * @see SwitchyDisplayModule
  * @since 2.0.0
  */
 @ClientOnly
@@ -36,8 +37,10 @@ public class SwitchyDisplayModuleRegistry {
 	}
 
 	/**
-	 * @param id a module identifier
-	 * @return An instance of the module
+	 * Gets an instance of a module using a registered supplier.
+	 *
+	 * @param id a module identifier.
+	 * @return An instance of the module.
 	 * @see SwitchyDisplayModule
 	 */
 	public static @Nullable SwitchyDisplayModule supplyModule(Identifier id) {

@@ -11,13 +11,14 @@ import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_REQUEST_DISPLAY_PRESETS;
 
 /**
+ * Registration for client keybindings.
+ *
  * @author Sisby folk
  * @since 1.9.0
- * Registration for client keybindings
  */
 public class SwitchyKeybindings {
 	/**
-	 * registers all keybindings for Switchy Client
+	 * registers all keybindings for Switchy Client.
 	 */
 	public static void initializeKeybindings() {
 		KeyBind switchKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBind(

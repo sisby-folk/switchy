@@ -10,10 +10,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 /**
+ * A module that switches nicknames from unascribed's Drogtor The Nickinator.
+ *
  * @author Sisby folk
  * @see SwitchyModule
  * @see DrogtorCompatData
- * A module that switches nicknames from unascribed's Drogtor The Nickinator
  * @since 1.0.0
  */
 public class DrogtorCompat extends DrogtorCompatData implements SwitchyModule, SwitchyModuleDisplayable {
@@ -22,7 +23,7 @@ public class DrogtorCompat extends DrogtorCompatData implements SwitchyModule, S
 	}
 
 	/**
-	 * Executes {@code static} the first time it's invoked
+	 * Executes {@code static} the first time it's invoked.
 	 */
 	public static void touch() {
 	}

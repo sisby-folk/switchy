@@ -8,9 +8,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
+ * Records client commands after they're executed into a map of previous commands per player UUID.
+ *
  * @author Garden System
  * @see SwitchyClientCommands
- * Records client commands after they're executed into a map of previous commands per player UUID.
  * @since 2.0.0
  */
 @Mixin(value = ClientCommandInternals.class, remap = false)

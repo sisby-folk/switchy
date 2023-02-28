@@ -23,10 +23,11 @@ import java.util.Base64;
 import java.util.UUID;
 
 /**
+ * The client-displayable variant of a module that switches player skins from samolego's Fabric Tailor.
+ *
  * @author Sisby folk
  * @see SwitchyDisplayModule
  * @see folk.sisby.switchy.modules.FabricTailorCompat
- * The client-displayable variant of a module that switches player skins from samolego's Fabric Tailor
  * @since 2.0.0
  */
 @ClientOnly
@@ -36,7 +37,7 @@ public class FabricTailorCompatDisplay extends FabricTailorCompatData implements
 	}
 
 	/**
-	 * Executes {@code static} the first time it's invoked
+	 * Executes {@code static} the first time it's invoked.
 	 */
 	public static void touch() {
 	}

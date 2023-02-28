@@ -19,7 +19,7 @@ import java.util.Set;
 public class SwitchyPresetImpl extends SwitchyPresetDataImpl<SwitchyModule> implements SwitchyPreset {
 	/**
 	 * @param name    the desired name for the new preset.
-	 * @param modules the enabled status of modules from the presets object
+	 * @param modules the enabled status of modules from the presets object.
 	 */
 	public SwitchyPresetImpl(String name, Map<Identifier, Boolean> modules) {
 		super(name, modules, SwitchyModuleRegistry::supplyModule);

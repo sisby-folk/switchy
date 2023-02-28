@@ -21,7 +21,7 @@ public class SwitchyPresetDataImpl<Module extends SwitchySerializable> implement
 
 	/**
 	 * @param name           the desired name for the new preset.
-	 * @param modules        the enabled status of modules from the presets object
+	 * @param modules        the enabled status of modules from the presets object.
 	 * @param moduleSupplier a function to supply module instances from their ID, usually from a registry.
 	 */
 	public SwitchyPresetDataImpl(String name, Map<Identifier, Boolean> modules, Function<Identifier, Module> moduleSupplier) {
@@ -47,8 +47,6 @@ public class SwitchyPresetDataImpl<Module extends SwitchySerializable> implement
 	public void fillFromNbt(NbtCompound nbt) {
 		modules.forEach((id, module) -> module.fillFromNbt(nbt.getCompound(id.toString())));
 	}
-
-	// Modules Accessors
 
 	@Override
 	@ApiStatus.Internal
@@ -77,8 +75,6 @@ public class SwitchyPresetDataImpl<Module extends SwitchySerializable> implement
 	public void removeModule(Identifier id) {
 		modules.remove(id);
 	}
-
-	// Name Accessors
 
 	@Override
 	public String getName() {

@@ -11,7 +11,8 @@
         "command": "/switchy_client import {}",
         "success": "Presets sent to server"
       }
-    }
+    },
+    "fail": "Error occurred while executing command: '{}' - Check the server log for more details."
   },
   "command": {
     "exception": {

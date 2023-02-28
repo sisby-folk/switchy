@@ -20,7 +20,7 @@ import java.util.HashMap;
 @ClientOnly
 public class SwitchyDisplayPresetsImpl extends SwitchyPresetsDataImpl<SwitchyDisplayModule, SwitchyDisplayPreset> implements SwitchyDisplayPresets {
 	/**
-	 * Returns an empty display presets object
+	 * Returns an empty display presets object.
 	 */
 	public SwitchyDisplayPresetsImpl() {
 		super(new HashMap<>(), SwitchyDisplayPresetImpl::new, SwitchyDisplayModuleRegistry::supplyModule, true, SwitchyClient.LOGGER);

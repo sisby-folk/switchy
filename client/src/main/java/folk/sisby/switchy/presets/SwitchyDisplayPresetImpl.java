@@ -22,7 +22,7 @@ import java.util.Map;
 public class SwitchyDisplayPresetImpl extends SwitchyPresetDataImpl<SwitchyDisplayModule> implements SwitchyDisplayPreset {
 	/**
 	 * @param name    the desired name for the new preset.
-	 * @param modules the enabled status of modules from the display presets object
+	 * @param modules the enabled status of modules from the display presets object.
 	 */
 	public SwitchyDisplayPresetImpl(String name, Map<Identifier, Boolean> modules) {
 		super(name, modules, SwitchyDisplayModuleRegistry::supplyModule);

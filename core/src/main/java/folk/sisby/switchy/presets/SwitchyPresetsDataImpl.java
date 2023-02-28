@@ -98,9 +98,9 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 	}
 
 	/**
-	 * @param list    serialized module list
-	 * @param enabled whether to enable or disable modules from the list
-	 * @param silent  whether to log missing or invalid modules
+	 * @param list    serialized module list.
+	 * @param enabled whether to enable or disable modules from the list.
+	 * @param silent  whether to log missing or invalid modules.
 	 *                Toggles the enabled module map using an NBTList
 	 */
 	void toggleModulesFromNbt(NbtList list, Boolean enabled, Boolean silent) {
@@ -214,8 +214,6 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 		return currentPreset;
 	}
 
-	// Current Preset Accessors
-
 	@Override
 	public void setCurrentPreset(String name) throws IllegalArgumentException {
 		if (!presets.containsKey(name)) throw new IllegalArgumentException("Specified preset does not exist");
@@ -226,8 +224,6 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 	public String getCurrentPresetName() {
 		return currentPreset.getName();
 	}
-
-	// Presets Accessors
 
 	@Override
 	@ApiStatus.Internal
@@ -251,8 +247,6 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 	public boolean containsPreset(String name) {
 		return presets.containsKey(name);
 	}
-
-	// Modules Accessors
 
 	@Override
 	@ApiStatus.Internal

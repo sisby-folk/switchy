@@ -7,11 +7,12 @@ import org.quiltmc.qsl.base.api.event.Event;
 import org.quiltmc.qsl.base.api.event.client.ClientEventAwareListener;
 
 /**
+ * Events emitted by Switchy during its operation.
+ * Mostly forwarded to the client via relays in {@link folk.sisby.switchy.SwitchyClientServerNetworking}.
+ * Any class implementing the below interfaces can use the entrypoint {@code events} to be invoked without registration.
+ *
  * @author Ami
  * @since 1.8.2
- * Events emitted by Switchy during its operation.
- * Mostly forwarded to the client via relays in {@link folk.sisby.switchy.SwitchyClientServerNetworking}
- * Any class implementing the below interfaces can use the entrypoint {@code events} to be invoked without registration.
  */
 @ClientOnly
 public class SwitchyClientEvents {
@@ -34,9 +35,10 @@ public class SwitchyClientEvents {
 	});
 
 	/**
+	 * Occurs when Switchy Client initializes.
+	 * Use this to register your {@link SwitchyDisplayModule}s.
+	 *
 	 * @see folk.sisby.switchy.client.SwitchyClient
-	 * Occurs when Switchy Client initializes
-	 * Use this to register your {@link SwitchyDisplayModule}s
 	 */
 	@FunctionalInterface
 	public interface Init extends ClientEventAwareListener {
@@ -47,13 +49,14 @@ public class SwitchyClientEvents {
 	}
 
 	/**
-	 * @see SwitchySwitchEvent
 	 * Occurs when a player joins, switches presets, or disconnects.
+	 *
+	 * @see SwitchySwitchEvent
 	 */
 	@FunctionalInterface
 	public interface Switch extends ClientEventAwareListener {
 		/**
-		 * @param event The switch event that has occurred
+		 * @param event The switch event that has occurred.
 		 */
 		void onSwitch(SwitchySwitchEvent event);
 	}

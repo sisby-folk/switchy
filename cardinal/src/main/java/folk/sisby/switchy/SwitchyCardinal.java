@@ -6,9 +6,10 @@ import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.qsl.resource.loader.api.ResourceLoader;
 
 /**
+ * Initializer for the Switchy Cardinal addon.
+ *
  * @author Ampflower
  * @see SwitchyEvents
- * Initializer for the Switchy Cardinal addon
  * @since 1.8.4
  */
 public class SwitchyCardinal implements SwitchyEvents.Init {

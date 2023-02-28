@@ -17,19 +17,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * A module that switches scale values from Virtuoel's Pehkui.
+ *
  * @author Sisby folk
  * @see SwitchyModule
- * A module that switches scale values from Virtuoel's Pehkui
  * @since 1.3.0
  */
 public class PehkuiCompat implements SwitchyModule {
 	/**
-	 * Identifier for this module
+	 * Identifier for this module.
 	 */
 	public static final Identifier ID = new Identifier("switchy", "pehkui");
 
 	/**
-	 * The NBT keys where each scale value is stored, per ScaleType
+	 * The NBT keys where each scale value is stored, per ScaleType.
 	 */
 	public static final Map<ScaleType, String> scaleKeys = new HashMap<>();
 
@@ -39,7 +40,7 @@ public class PehkuiCompat implements SwitchyModule {
 	}
 
 	/**
-	 * The value of each ScaleType
+	 * The value of each ScaleType.
 	 */
 	public final Map<ScaleType, @Nullable Float> scaleValues = new HashMap<>();
 
@@ -48,14 +49,14 @@ public class PehkuiCompat implements SwitchyModule {
 	}
 
 	/**
-	 * @param type the scale type to request be switched
+	 * @param type the scale type to request be switched.
 	 */
 	public static void addScaleType(ScaleType type) {
 		scaleKeys.put(type, ScaleRegistries.SCALE_TYPES.inverse().get(type).getPath());
 	}
 
 	/**
-	 * Executes {@code static} the first time it's invoked
+	 * Executes {@code static} the first time it's invoked.
 	 */
 	public static void touch() {
 	}

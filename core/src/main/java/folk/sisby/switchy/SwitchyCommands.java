@@ -27,14 +27,16 @@ import static folk.sisby.switchy.util.Command.*;
 import static folk.sisby.switchy.util.Feedback.*;
 
 /**
+ * Registration and logic for core commands.
+ *
  * @author Sisby folk
  * @since 1.0.0
- * Registration and logic for core commands.
  */
 public class SwitchyCommands implements CommandRegistrationCallback {
 	/**
 	 * A map of the previously executed command, per player UUID.
-	 * Can be used for "repeat-style" command confirmation - if the command in here matches the one being executed, that's a confirmation.
+	 * Can be used for "repeat-style" command confirmation.
+	 * If the command in here matches the one being executed, that's a confirmation.
 	 */
 	public static final Map<UUID, String> HISTORY = new HashMap<>();
 
@@ -68,11 +70,12 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 	}
 
 	/**
-	 * @param player  the relevant player
-	 * @param presets the player's presets object
-	 * @param name    the case-insensitive name of a preset to switch to
+	 * Switches to another preset, providing chat feedback to the player based on success.
+	 * @param player  the relevant player.
+	 * @param presets the player's presets object.
+	 * @param name    the case-insensitive name of a preset to switch to.
 	 */
-	public static void setPreset(ServerPlayerEntity player, SwitchyPresets presets, String name) {
+	public static void switchPreset(ServerPlayerEntity player, SwitchyPresets presets, String name) {
 		String oldName = presets.getCurrentPreset().toString();
 		try {
 			String newName = presets.switchCurrentPreset(player, name);
@@ -125,7 +128,7 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 		}
 
 		if (!HISTORY.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command("switchy module disable " + id))) {
-			sendMessage(player, SwitchyModuleRegistry.getDisableConfirmation(id).setStyle(FORMAT_WARN.getLeft()));
+			sendMessage(player, SwitchyModuleRegistry.getDeletionWarning(id).setStyle(FORMAT_WARN.getLeft()));
 			tellInvalidTry(player, "commands.switchy.module.disable.confirmation", "commands.switchy.module.disable.command", literal(id.toString()));
 		} else {
 			presets.disableModule(id);
@@ -145,10 +148,11 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 	}
 
 	/**
+	 * Imports presets, providing chat feedback for confirmation if this is the first time.
 	 * @param player          The player to show confirmation and import presets to.
 	 * @param importedPresets The presets to be imported.
 	 * @param modules         The modules to be imported.
-	 * @param command         The command to use for repeat-style confirmation
+	 * @param command         The command to use for repeat-style confirmation.
 	 * @return true if import was confirmed and performed, false if the confirmation screen was sent instead.
 	 */
 	public static boolean confirmAndImportPresets(ServerPlayerEntity player, Map<String, SwitchyPreset> importedPresets, List<Identifier> modules, String command) {
@@ -189,7 +193,7 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 						.then(CommandManager.literal("set")
 								.then(CommandManager.argument("preset", StringArgumentType.word())
 										.suggests((c, b) -> suggestPresets(c, b, false))
-										.executes(c -> execute(c, (player, presets) -> setPreset(player, presets, c.getArgument("preset", String.class))))
+										.executes(c -> execute(c, (player, presets) -> switchPreset(player, presets, c.getArgument("preset", String.class))))
 								)
 						)
 						.then(CommandManager.literal("delete")
@@ -224,7 +228,7 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 				CommandManager.literal("switch")
 						.then(CommandManager.argument("preset", StringArgumentType.word())
 								.suggests((c, b) -> suggestPresets(c, b, false))
-								.executes(c -> execute(c, (player, presets) -> setPreset(player, presets, c.getArgument("preset", String.class))))
+								.executes(c -> execute(c, (player, presets) -> switchPreset(player, presets, c.getArgument("preset", String.class))))
 						)
 		);
 	}

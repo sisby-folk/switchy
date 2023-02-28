@@ -12,14 +12,17 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * A Figura API that exposes Switchy events to its avatar scripting system.
+ *
  * @author Sisby folk
  * @see SwitchyClientEvents
- * A Figura API that exposes Switchy events to its avatar scripting system
  * @since 2.0.0
  */
 public class FiguraCompat implements FiguraAPI {
 	/**
-	 * @param function a lua callback (UUID, current, previous, modules[])
+	 * Registers a lua listener for switch events.
+	 *
+	 * @param function a lua callback (UUID, current, previous, modules[]).
 	 * @see SwitchyClientEvents#SWITCH
 	 */
 	@LuaWhitelist

@@ -26,29 +26,34 @@ import java.util.stream.Collectors;
 import static io.github.apace100.origins.registry.ModItems.ORB_OF_ORIGIN;
 
 /**
+ * The client-displayable variant of a module that switches layered Origins from Apace's Origins.
+ *
  * @author Sisby folk
  * @see SwitchyDisplayModule
  * @see folk.sisby.switchy.modules.OriginsCompat
- * The client-displayable variant of a module that switches layered Origins from Apace's Origins
  * @since 2.0.0
  */
 @ClientOnly
 public class OriginsCompatDisplay implements SwitchyDisplayModule {
 	/**
-	 * Identifier for this module. Must match {@link folk.sisby.switchy.modules.OriginsCompat}
+	 * Identifier for this module.
+	 * Must match {@link folk.sisby.switchy.modules.OriginsCompat}.
 	 */
 	public static final Identifier ID = new Identifier("switchy", "origins");
 
 	/**
-	 * The NBT key where the list of origins is stored. Must match {@link folk.sisby.switchy.modules.OriginsCompat#toDisplayNbt()}
+	 * The NBT key where the list of origins is stored.
+	 * Must match {@link folk.sisby.switchy.modules.OriginsCompat#toDisplayNbt()}.
 	 */
 	public static final String KEY_ORIGINS_LIST = "OriginLayers";
 	/**
-	 * The NBT key where the layer is stored in each list item. Must match {@link folk.sisby.switchy.modules.OriginsCompat#toDisplayNbt()}
+	 * The NBT key where the layer is stored in each list item.
+	 * Must match {@link folk.sisby.switchy.modules.OriginsCompat#toDisplayNbt()}.
 	 */
 	public static final String KEY_LAYER = "Layer";
 	/**
-	 * The NBT key where the origin ID is stored in each list item. Must match {@link folk.sisby.switchy.modules.OriginsCompat#toDisplayNbt()}
+	 * The NBT key where the origin ID is stored in each list item.
+	 * Must match {@link folk.sisby.switchy.modules.OriginsCompat#toDisplayNbt()}.
 	 */
 	public static final String KEY_ORIGIN = "Origin";
 
@@ -57,12 +62,12 @@ public class OriginsCompatDisplay implements SwitchyDisplayModule {
 	}
 
 	/**
-	 * The origin identifiers per layer
+	 * The origin identifiers per layer.
 	 */
 	public Map<String, Identifier> origins;
 
 	/**
-	 * Executes {@code static} the first time it's invoked
+	 * Executes {@code static} the first time it's invoked.
 	 */
 	public static void touch() {
 	}

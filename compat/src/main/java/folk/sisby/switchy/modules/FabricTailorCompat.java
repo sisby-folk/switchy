@@ -7,10 +7,11 @@ import org.jetbrains.annotations.Nullable;
 import org.samo_lego.fabrictailor.casts.TailoredPlayer;
 
 /**
+ * A module that switches player skins from samolego's Fabric Tailor.
+ *
  * @author Sisby folk
  * @see SwitchyModule
  * @see FabricTailorCompatData
- * A module that switches player skins from samolego's Fabric Tailor
  * @since 1.0.0
  */
 public class FabricTailorCompat extends FabricTailorCompatData implements SwitchyModule, SwitchyModuleDisplayable {
@@ -19,7 +20,7 @@ public class FabricTailorCompat extends FabricTailorCompatData implements Switch
 	}
 
 	/**
-	 * Executes {@code static} the first time it's invoked
+	 * Executes {@code static} the first time it's invoked.
 	 */
 	public static void touch() {
 	}

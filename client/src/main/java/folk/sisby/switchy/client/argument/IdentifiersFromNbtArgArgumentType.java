@@ -19,9 +19,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
+ * An argument type allowing the user to enter a list of identifiers using an NBT compound returning previous argument.
+ *
  * @author Sisby folk
  * @see IdentifiersArgumentType
- * An argument type allowing the user to enter a list of identifiers using an NBT compound returning previous argument.
  * @since 1.7.3
  */
 public class IdentifiersFromNbtArgArgumentType implements ArgumentType<List<Identifier>> {
@@ -39,10 +40,12 @@ public class IdentifiersFromNbtArgArgumentType implements ArgumentType<List<Iden
 	}
 
 	/**
+	 * Creates an instance of this argument type.
+	 *
 	 * @param nbtArgument     the name of the NBT-compound returning argument.
-	 * @param excludeArgument an optional Identifier List argument to remove suggestions for
-	 * @param nbtListKey      the key of the NBT compound that contains a list of identifiers to suggest
-	 * @return an instance
+	 * @param excludeArgument an optional Identifier List argument to remove suggestions for.
+	 * @param nbtListKey      the key of the NBT compound that contains a list of identifiers to suggest.
+	 * @return an instance.
 	 */
 	public static IdentifiersFromNbtArgArgumentType create(String nbtArgument, @Nullable String excludeArgument, String nbtListKey) {
 		return new IdentifiersFromNbtArgArgumentType(nbtArgument, excludeArgument, nbtListKey);

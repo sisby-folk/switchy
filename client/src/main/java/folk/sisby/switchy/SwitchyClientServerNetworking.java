@@ -23,34 +23,35 @@ import static folk.sisby.switchy.api.module.SwitchyModuleRegistry.getEditable;
 import static folk.sisby.switchy.util.Feedback.*;
 
 /**
+ * Server-side network handling for client interactions with Switchy.
+ *
  * @author Sisby folk
  * @since 2.0.0
- * Server-side network handling for client interactions with Switchy
  */
 public class SwitchyClientServerNetworking {
 	/**
-	 * Request serialized presets for exporting
+	 * Request serialized presets for exporting.
 	 */
 	public static final Identifier C2S_REQUEST_PRESETS = new Identifier(Switchy.ID, "c2s_presets");
 	/**
-	 * Request displayable serialized presets for previewing
+	 * Request displayable serialized presets for previewing.
 	 */
 	public static final Identifier C2S_REQUEST_DISPLAY_PRESETS = new Identifier(Switchy.ID, "c2s_display_presets");
 	/**
-	 * Send serialized presets to import
+	 * Send serialized presets to import.
 	 */
 	public static final Identifier C2S_IMPORT = new Identifier(Switchy.ID, "c2s_import");
 	/**
-	 * Send switch action with preset name
+	 * Send switch action with preset name.
 	 */
 	public static final Identifier C2S_SWITCH = new Identifier(Switchy.ID, "c2s_switch");
 
 	/**
-	 * Serialized presets for exporting
+	 * Serialized presets for exporting.
 	 */
 	public static final Identifier S2C_PRESETS = new Identifier(Switchy.ID, "s2c_presets");
 	/**
-	 * Displayable serialized presets for previewing
+	 * Displayable serialized presets for previewing.
 	 */
 	public static final Identifier S2C_DISPLAY_PRESETS = new Identifier(Switchy.ID, "s2c_display_presets");
 
@@ -60,17 +61,17 @@ public class SwitchyClientServerNetworking {
 	public static final Identifier S2C_EVENT_SWITCH = new Identifier(Switchy.ID, "s2c_event_switch");
 
 	/**
-	 * Register server-side receivers for Switchy Client
+	 * Register server-side receivers for Switchy Client.
 	 */
 	public static void InitializeReceivers() {
 		ServerPlayNetworking.registerGlobalReceiver(C2S_REQUEST_PRESETS, (server, player, handler, buf, sender) -> sendPresets(player));
 		ServerPlayNetworking.registerGlobalReceiver(C2S_REQUEST_DISPLAY_PRESETS, (server, player, handler, buf, sender) -> sendDisplayPresets(player));
 		ServerPlayNetworking.registerGlobalReceiver(C2S_IMPORT, (server, player, handler, buf, sender) -> importPresets(player, buf.readNbt()));
-		ServerPlayNetworking.registerGlobalReceiver(C2S_SWITCH, (server, player, handler, buf, sender) -> SwitchyCommands.setPreset(player, ((SwitchyPlayer) player).switchy$getPresets(), buf.readString()));
+		ServerPlayNetworking.registerGlobalReceiver(C2S_SWITCH, (server, player, handler, buf, sender) -> SwitchyCommands.switchPreset(player, ((SwitchyPlayer) player).switchy$getPresets(), buf.readString()));
 	}
 
 	/**
-	 * Set up "relays" that pass switchy events to the client
+	 * Set up "relays" that pass switchy events to the client.
 	 */
 	public static void InitializeRelays() {
 		SwitchyEvents.SWITCH.register((player, event) -> ServerPlayNetworking.send(player, S2C_EVENT_SWITCH, PacketByteBufs.create().writeNbt(event.toNbt())));

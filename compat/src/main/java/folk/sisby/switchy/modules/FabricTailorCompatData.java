@@ -6,33 +6,34 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 /**
+ * The data component of a module that switches player skins from samolego's Fabric Tailor.
+ *
  * @author Sisby folk
  * @see SwitchySerializable
  * @see FabricTailorCompat
- * The data component of a module that switches player skins from samolego's Fabric Tailor
  * @since 1.0.0
  */
 public class FabricTailorCompatData implements SwitchySerializable {
 	/**
-	 * Identifier for this module
+	 * Identifier for this module.
 	 */
 	public static final Identifier ID = new Identifier("switchy", "fabric_tailor");
 
 	/**
-	 * The NBT key where the base64 encoded json skin value is stored
+	 * The NBT key where the base64 encoded json skin value is stored.
 	 */
 	public static final String KEY_SKIN_VALUE = "skinValue";
 	/**
-	 * The NBT key where the skin signature is stored
+	 * The NBT key where the skin signature is stored.
 	 */
 	public static final String KEY_SKIN_SIGNATURE = "skinSignature";
 
 	/**
-	 * The base64 encoded json skin value
+	 * The base64 encoded json skin value.
 	 */
 	@Nullable public String skinValue;
 	/**
-	 * The skin signature
+	 * The skin signature.
 	 */
 	@Nullable public String skinSignature;
 

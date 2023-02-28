@@ -9,9 +9,10 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * A simple mixin plugin that loads mixins in sub-folders if they match the ID of a loaded mod.
+ *
  * @author SilverAndro
  * @since 1.7.2
- * A simple mixin plugin that loads mixins in sub-folders if they match the ID of a loaded mod
  */
 public class MixinCompatPlugin implements IMixinConfigPlugin {
 	@Override

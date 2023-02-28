@@ -20,9 +20,10 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 /**
+ * A generic module for switching cardinal entity component data using {@link Component#readFromNbt(NbtCompound)} and {@link Component#writeToNbt(NbtCompound)}.
+ *
  * @author Sisby folk
  * @see SwitchyModule
- * A generic module for switching cardinal entity component data using {@link Component#readFromNbt(NbtCompound)} and {@link Component#writeToNbt(NbtCompound)}
  * @since 1.8.0
  */
 public class CardinalSerializerCompat implements SwitchyModule {
@@ -36,13 +37,14 @@ public class CardinalSerializerCompat implements SwitchyModule {
 	}
 
 	/**
-	 * @param registryKey   the key for the cardinal component
-	 * @param preApplyClear operations to perform with the player before applying module data
-	 * @param postApplySync operations to perform with the player after applying module data
-	 * @param <T1>          the component type
-	 * @return a module instance for the specified cardinal component
 	 * A generator for a module instance for a single cardinal component with additional arbitrary "clear" and "sync" callbacks.
 	 * Intended for misbehaving cardinal modules that cause data leakage or desync when serialized/deserialized while in use.
+	 *
+	 * @param registryKey   the key for the cardinal component.
+	 * @param preApplyClear operations to perform with the player before applying module data.
+	 * @param postApplySync operations to perform with the player after applying module data.
+	 * @param <T1>          the component type.
+	 * @return a module instance for the specified cardinal component.
 	 */
 	@SuppressWarnings("unused")
 	public static <T1 extends Component> CardinalSerializerCompat from(ComponentKey<T1> registryKey, BiConsumer<ComponentKey<T1>, PlayerEntity> preApplyClear, BiConsumer<ComponentKey<T1>, PlayerEntity> postApplySync) {
@@ -50,13 +52,14 @@ public class CardinalSerializerCompat implements SwitchyModule {
 	}
 
 	/**
-	 * @param id              A unique identifier to associate with the module being registered.
-	 * @param componentKeyIds a set of cardinal component key IDs to create the module for
-	 * @param isDefault       whether the module should be enabled by default
-	 * @param editable        permissions for cold-editing the module, see {@link SwitchyModuleEditable}
-	 * @see SwitchyModuleRegistry
 	 * Register a variant of this type of module using a supplier specific to the specified cardinal component.
-	 * Equivalent to data-driven json modules loaded using {@link folk.sisby.switchy.CardinalModuleLoader}
+	 * Equivalent to data-driven json modules loaded using {@link folk.sisby.switchy.CardinalModuleLoader}.
+	 *
+	 * @param id              A unique identifier to associate with the module being registered.
+	 * @param componentKeyIds a set of cardinal component key IDs to create the module for.
+	 * @param isDefault       whether the module should be enabled by default.
+	 * @param editable        permissions for cold-editing the module, see {@link SwitchyModuleEditable}.
+	 * @see SwitchyModuleRegistry
 	 */
 	public static void register(Identifier id, Set<Identifier> componentKeyIds, Boolean isDefault, SwitchyModuleEditable editable) {
 		SwitchyModuleRegistry.registerModule(id, () -> {

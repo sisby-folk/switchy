@@ -21,10 +21,8 @@ import java.util.Set;
 import java.util.stream.StreamSupport;
 
 /**
- * @author Sisby folk
- * @see CardinalSerializerCompat
- * A reloader responsible for creating data-driven {@link SwitchyModule}s for swapping Cardinal Components API entity component data.
- * Will load json files in {@code data/{namespace}/switchy_cardinal/{path}.json} into modules with namespace:path IDs in the below format:
+ * A resource loader responsible for creating data-driven {@link SwitchyModule}s for swapping Cardinal Components API entity component data.
+ * Will load json files in {@code data/{namespace}/switchy_cardinal/{path}.json} into modules with {@code namespace:path} IDs in the below format:
  * {@code
  * {
  * "default": boolean,
@@ -33,11 +31,14 @@ import java.util.stream.StreamSupport;
  * "components": ["component-id"]
  * }
  * }
+ *
+ * @author Sisby folk
+ * @see CardinalSerializerCompat
  * @since 1.8.0
  */
 public class CardinalModuleLoader extends JsonDataLoader implements IdentifiableResourceReloader {
 	/**
-	 * The global instance for this resource loader
+	 * The global instance for this resource loader.
 	 */
 	public static final CardinalModuleLoader INSTANCE = new CardinalModuleLoader(new Gson());
 	private static final Identifier ID = new Identifier(Switchy.ID, "switchy_cardinal");

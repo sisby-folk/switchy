@@ -13,9 +13,11 @@ import org.quiltmc.qsl.networking.api.PacketSender;
 import org.quiltmc.qsl.networking.api.ServerPlayConnectionEvents;
 
 /**
+ * Forwards player connection events as Switchy events.
+ * Ensures player data is set up on first join.
+ *
  * @author Sisby folk
  * @since 2.0.0
- * Forwards player connection events as Switchy events. Ensures player data is set up on first join.
  */
 public class SwitchyPlayConnectionListener implements ServerPlayConnectionEvents.Join, ServerPlayConnectionEvents.Disconnect {
 	@Override

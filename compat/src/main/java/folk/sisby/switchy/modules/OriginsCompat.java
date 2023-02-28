@@ -19,27 +19,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * A module that switches layered Origins from Apace's Origins.
+ *
  * @author Sisby folk
  * @see SwitchyModule
- * A module that switches layered Origins from Apace's Origins
  * @since 1.0.0
  */
 public class OriginsCompat implements SwitchyModule, SwitchyModuleDisplayable {
 	/**
-	 * Identifier for this module
+	 * Identifier for this module.
 	 */
 	public static final Identifier ID = new Identifier("switchy", "origins");
 
 	/**
-	 * The NBT key where the list of origins is stored
+	 * The NBT key where the list of origins is stored.
 	 */
 	public static final String KEY_ORIGINS_LIST = "OriginLayers";
 	/**
-	 * The NBT key where the layer is stored in each list item
+	 * The NBT key where the layer is stored in each list item.
 	 */
 	public static final String KEY_LAYER = "Layer";
 	/**
-	 * The NBT key where the origin ID is stored in each list item
+	 * The NBT key where the origin ID is stored in each list item.
 	 */
 	public static final String KEY_ORIGIN = "Origin";
 
@@ -48,7 +49,7 @@ public class OriginsCompat implements SwitchyModule, SwitchyModuleDisplayable {
 	}
 
 	/**
-	 * The origins per layer
+	 * The origins per layer.
 	 */
 	@Nullable public Map<OriginLayer, Origin> origins;
 
@@ -61,7 +62,7 @@ public class OriginsCompat implements SwitchyModule, SwitchyModuleDisplayable {
 	}
 
 	/**
-	 * Executes {@code static} the first time it's invoked
+	 * Executes {@code static} the first time it's invoked.
 	 */
 	public static void touch() {
 	}

@@ -7,52 +7,64 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.Map;
 
 /**
+ * A named, NBT-Serializable object made of {@link SwitchySerializable} modules.
+ *
  * @author Sisby folk
  * @since 2.0.0
- * A named, NBT-Serializable object made of {@link SwitchySerializable} modules.
  */
 public interface SwitchyPresetData<Module extends SwitchySerializable> extends SwitchySerializable {
 	/**
-	 * @return All modules in this preset, mapped by their IDs
+	 * Gets a map of all modules in this preset by ID.
+	 *
+	 * @return All modules in this preset, mapped by their IDs.
 	 */
 	@ApiStatus.Internal
 	Map<Identifier, Module> getModules();
 
 	/**
-	 * @param id a module identifier
-	 * @return the specified module stored in this preset
+	 * Gets the specified module.
+	 *
+	 * @param id a module identifier.
+	 * @return the specified module stored in this preset.
 	 */
 	@ApiStatus.Internal
 	Module getModule(Identifier id);
 
 	/**
-	 * @param id     a module identifier
-	 * @param module a module to add to or replace in the module map
+	 * Adds or replaces the specified module.
+	 *
+	 * @param id     a module identifier.
+	 * @param module a module to add to or replace in the module map.
 	 */
 	@ApiStatus.Internal
 	void putModule(Identifier id, Module module);
 
 	/**
-	 * @param id a module identifier
-	 * @return whether the preset contains a module with the specified ID
+	 * Whether a module with the specified ID exists in this preset.
+	 *
+	 * @param id a module identifier.
+	 * @return true if the preset contains this module, false otherwise.
 	 */
 	boolean containsModule(Identifier id);
 
 	/**
-	 * @param id a module identifier
-	 *           removes the specified module from the preset
+	 * Removes the specified module from the preset.
+	 *
+	 * @param id a module identifier.
 	 */
 	void removeModule(Identifier id);
 
 	/**
-	 * @return the name of this preset
+	 * @return the name of this preset.
 	 */
 	String getName();
 
 	/**
-	 * @param name a new name for this preset
-	 *             Must be a single word matching {@code azAZ09_-.+}
-	 *             In a presets object, a preset must be renamed using {@link SwitchyPresets#renamePreset(String, String)}
+	 * Sets this object's internal preset name.
+	 * Must be a single word matching {@code azAZ09_-.+}.
+	 * In a presets object, a preset must be renamed using {@link SwitchyPresets#renamePreset(String, String)}.
+	 *
+	 * @param name a new name for this preset.
 	 */
 	@ApiStatus.Internal
 	void setName(String name);

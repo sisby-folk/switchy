@@ -3,9 +3,10 @@ package folk.sisby.switchy.api;
 import net.minecraft.nbt.NbtCompound;
 
 /**
+ * Represents any object that can be crushed down to and reconstituted from NBT Compounds.
+ *
  * @author Sisby folk
  * @since 2.0.0
- * Represents any object that can be crushed down to and reconstituted from NBT Compounds.
  */
 public interface SwitchySerializable {
 	/**

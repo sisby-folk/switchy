@@ -13,20 +13,23 @@ import org.jetbrains.annotations.Nullable;
 import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 /**
+ * The client-displayable variant of a module that switches nicknames from Patbox's Styled Nicknames.
+ *
  * @author Sisby folk
  * @see SwitchyDisplayModule
  * @see folk.sisby.switchy.modules.StyledNicknamesCompat
- * The client-displayable variant of a module that switches nicknames from Patbox's Styled Nicknames.
  * @since 2.0.0
  */
 @ClientOnly
 public class StyledNicknamesCompatDisplay implements SwitchyDisplayModule {
 	/**
-	 * Identifier for this module. Must match {@link folk.sisby.switchy.modules.StyledNicknamesCompat}
+	 * Identifier for this module.
+	 * Must match {@link folk.sisby.switchy.modules.StyledNicknamesCompat}.
 	 */
 	public static final Identifier ID = new Identifier("switchy", "styled_nicknames");
 	/**
-	 * The NBT key where the nickname (in serialized text format) is stored. Must match {@link folk.sisby.switchy.modules.StyledNicknamesCompat#toDisplayNbt()}
+	 * The NBT key where the nickname (in serialized text format) is stored.
+	 * Must match {@link folk.sisby.switchy.modules.StyledNicknamesCompat#toDisplayNbt()}.
 	 */
 	public static final String KEY_NICKNAME = "styled_nickname";
 
@@ -35,12 +38,12 @@ public class StyledNicknamesCompatDisplay implements SwitchyDisplayModule {
 	}
 
 	/**
-	 * The styled nickname, in Text format
+	 * The styled nickname, in Text format.
 	 */
 	public @Nullable Text styled_nickname;
 
 	/**
-	 * Executes {@code static} the first time it's invoked
+	 * Executes {@code static} the first time it's invoked.
 	 */
 	public static void touch() {
 	}

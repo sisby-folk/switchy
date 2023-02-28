@@ -21,10 +21,11 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * @author Sisby folk
- * @since 1.9.0
  * The quick-switcher screen, populated by a {@link SwitchyDisplayPresets} object.
  * Allows the client to preview presets, and switch to a desired one.
+ *
+ * @author Sisby folk
+ * @since 1.9.0
  */
 public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 	private static final List<Function<SwitchyDisplayPreset, Pair<Component, SwitchySwitchScreenPosition>>> basicComponents = new ArrayList<>();
@@ -46,7 +47,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 	final SwitchyDisplayPresets displayPresets;
 
 	/**
-	 * @param displayPresets a display presets object to preview and switch with
+	 * @param displayPresets a display presets object to preview and switch with.
 	 */
 	public SwitchScreen(SwitchyDisplayPresets displayPresets) {
 		super();
@@ -54,9 +55,10 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 	}
 
 	/**
-	 * @param componentFunction a function that can generate a positioned component to display with every preset
-	 *                          Registers a component to display alongside every preset (e.g. the preset name) for addons.
-	 *                          Modules should instead use {@link folk.sisby.switchy.client.api.module.SwitchyDisplayModule}
+	 * Registers a component to display alongside every preset (e.g. the preset name) for addons.
+	 * Modules should instead use {@link folk.sisby.switchy.client.api.module.SwitchyDisplayModule}
+	 *
+	 * @param componentFunction a function that can generate a positioned component to display with every preset.
 	 */
 	public static void registerBasicPresetComponent(Function<SwitchyDisplayPreset, Pair<Component, SwitchySwitchScreenPosition>> componentFunction) {
 		basicComponents.add(componentFunction);

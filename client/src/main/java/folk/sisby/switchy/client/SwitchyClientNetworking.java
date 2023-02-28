@@ -24,13 +24,14 @@ import static folk.sisby.switchy.util.Command.consumeEventPacket;
 import static folk.sisby.switchy.util.Feedback.literal;
 
 /**
+ * Client-side network handling for client interactions with Switchy.
+ *
  * @author Sisby folk
  * @since 1.9.1
- * Client-side network handling for client interactions with Switchy
  */
 public class SwitchyClientNetworking {
 	/**
-	 * Register client-side receivers for Switchy Client
+	 * Register client-side receivers for Switchy Client.
 	 */
 	public static void InitializeReceivers() {
 		ClientPlayNetworking.registerGlobalReceiver(S2C_PRESETS, (client, handler, buf, sender) -> exportPresets(client, buf));
@@ -39,8 +40,9 @@ public class SwitchyClientNetworking {
 	}
 
 	/**
-	 * @param name the case-insensitive name of a preset
-	 *             Switches to the specified preset on the server
+	 * Switches to the specified preset on the server
+	 *
+	 * @param name the case-insensitive name of a preset.
 	 */
 	public static void switchCurrentPreset(String name) {
 		PacketByteBuf buf = PacketByteBufs.create();

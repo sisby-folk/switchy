@@ -3,9 +3,10 @@ package folk.sisby.switchy;
 import folk.sisby.switchy.api.SwitchyEvents;
 
 /**
+ * Switchy addon initializer for server-side Switchy Client.
+ *
  * @author Sisby folk
  * @since 2.0.0
- * Switchy addon initializer for server-side Switchy Client
  */
 public class SwitchyClientServer implements SwitchyEvents.Init {
 	@Override

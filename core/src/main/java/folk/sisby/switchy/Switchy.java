@@ -9,24 +9,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Initializes core addons by invoking {@link SwitchyEvents.Init}.
+ * Responsible for logging initial modules.
+ *
  * @author Sisby folk
  * @see SwitchyPlayConnectionListener
- * Initializes core addons by invoking {@link SwitchyEvents.Init}. Responsible for logging initial modules.
  * @since 1.0.0
  */
 public class Switchy implements ModInitializer {
 	/**
-	 * The switchy namespace
+	 * The switchy namespace.
 	 */
 	public static final String ID = "switchy";
 
 	/**
-	 * The switchy logger
+	 * The switchy logger.
 	 */
 	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
 
 	/**
-	 * The config object for switchy, containing the current state of {@code /config/switchy/config.toml}
+	 * The config object for switchy, containing the current state of {@code /config/switchy/config.toml}.
 	 */
 	public static final SwitchyConfig CONFIG = QuiltConfig.create(ID, "config", SwitchyConfig.class);
 

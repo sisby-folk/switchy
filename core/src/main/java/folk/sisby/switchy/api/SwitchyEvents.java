@@ -6,10 +6,11 @@ import org.quiltmc.qsl.base.api.event.Event;
 import org.quiltmc.qsl.base.api.event.EventAwareListener;
 
 /**
- * @author Ami
- * @since 1.8.2
  * Events emitted by Switchy during its operation.
  * Any class implementing the below interfaces can use the entrypoint {@code events} to be invoked without registration.
+ *
+ * @author Ami
+ * @since 1.8.2
  */
 public final class SwitchyEvents {
 	/**
@@ -31,9 +32,10 @@ public final class SwitchyEvents {
 	});
 
 	/**
-	 * @see folk.sisby.switchy.api.module.SwitchyModuleRegistry
 	 * Occurs when Switchy loads modules during initialization.
 	 * Use this event to register your addon modules.
+	 *
+	 * @see folk.sisby.switchy.api.module.SwitchyModuleRegistry
 	 */
 	@FunctionalInterface
 	public interface Init extends EventAwareListener {
@@ -44,14 +46,15 @@ public final class SwitchyEvents {
 	}
 
 	/**
-	 * @see SwitchySwitchEvent
 	 * Occurs when a player joins, switches presets, or disconnects.
+	 *
+	 * @see SwitchySwitchEvent
 	 */
 	@FunctionalInterface
 	public interface Switch extends EventAwareListener {
 		/**
 		 * @param player The relevant player.
-		 * @param event  The switch event that has occurred
+		 * @param event  The switch event that has occurred.
 		 */
 		void onSwitch(ServerPlayerEntity player, SwitchySwitchEvent event);
 	}

@@ -18,9 +18,10 @@ import java.util.concurrent.CompletableFuture;
 import static folk.sisby.switchy.util.Feedback.translatable;
 
 /**
+ * An argument type allowing the user to select any file within a folder matching an extension.
+ *
  * @author Sisby folk
  * @since 1.7.3
- * An argument type allowing the user to select any file within a folder matching an extension.
  */
 public class FileArgumentType implements ArgumentType<File> {
 	private static final SimpleCommandExceptionType FILE_NOT_FOUND = new SimpleCommandExceptionType(translatable("command.exception.file.not_found"));
@@ -33,9 +34,11 @@ public class FileArgumentType implements ArgumentType<File> {
 	}
 
 	/**
-	 * @param folder    the folder to allow files to be picked from
-	 * @param extension the file extension the files must match
-	 * @return an instance
+	 * Creates an instance of this argument type.
+	 *
+	 * @param folder    the folder to allow files to be picked from.
+	 * @param extension the file extension the files must match.
+	 * @return an instance.
 	 */
 	public static FileArgumentType create(File folder, String extension) {
 		return new FileArgumentType(folder, extension);
