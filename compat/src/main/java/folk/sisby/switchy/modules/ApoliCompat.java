@@ -92,6 +92,11 @@ public class ApoliCompat implements SwitchyModule {
 	}
 
 	@Override
+	public void onDelete(ServerPlayerEntity player, boolean fromDisable) {
+		PowerHolderComponent.getPowers(player, InventoryPower.class).forEach(InventoryPower::dropItemsOnLost);
+	}
+
+	@Override
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		NbtList powerNbtList = new NbtList();

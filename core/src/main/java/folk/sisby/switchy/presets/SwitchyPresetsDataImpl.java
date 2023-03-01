@@ -207,7 +207,10 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 		if (!modules.get(id)) throw new IllegalStateException("Specified module is already disabled");
 		if (dryRun) return;
 		modules.put(id, false);
-		presets.forEach((name, preset) -> preset.removeModule(id));
+		presets.forEach((name, preset) -> {
+			preset.removeModule(id);
+		});
+
 	}
 
 	@Override

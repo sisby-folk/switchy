@@ -149,7 +149,7 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 	 */
 	public static void deletePreset(ServerPlayerEntity player, SwitchyPresets presets, String name) {
 		try {
-			presets.deletePreset(name, true);
+			presets.deletePreset(player, name, true);
 		} catch (IllegalArgumentException ignored) {
 			tellInvalidTry(player, "commands.switchy.delete.fail.missing", "commands.switchy.list.command");
 		} catch (IllegalStateException ignored) {
@@ -161,7 +161,7 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 			tellWarn(player, "commands.switchy.list.modules", presets.getEnabledModuleText());
 			tellInvalidTry(player, "commands.switchy.delete.confirmation", "commands.switchy.delete.command", literal(name));
 		} else {
-			presets.deletePreset(name); // Unsure if we can rectify having both confirmation and throw-errors
+			presets.deletePreset(player, name);
 			tellSuccess(player, "commands.switchy.delete.success", literal(name));
 		}
 	}
@@ -177,7 +177,7 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 	 */
 	public static void disableModule(ServerPlayerEntity player, SwitchyPresets presets, Identifier id) {
 		try {
-			presets.disableModule(id, true);
+			presets.disableModule(player, id, true);
 		} catch (IllegalArgumentException ignored) {
 			tellInvalid(player, "commands.switchy.module.disable.fail.missing", literal(id.toString()));
 		} catch (IllegalStateException ignored) {
@@ -188,7 +188,7 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 			tellWarn(player, "commands.switchy.module.disable.warn", SwitchyModuleRegistry.getDeletionWarning(id));
 			tellInvalidTry(player, "commands.switchy.module.disable.confirmation", "commands.switchy.module.disable.command", literal(id.toString()));
 		} else {
-			presets.disableModule(id);
+			presets.disableModule(player, id);
 			tellSuccess(player, "commands.switchy.module.disable.success", literal(id.toString()));
 		}
 	}

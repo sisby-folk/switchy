@@ -2,6 +2,7 @@ package folk.sisby.switchy.api.presets;
 
 import com.mojang.brigadier.StringReader;
 import folk.sisby.switchy.api.SwitchySerializable;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus;
@@ -62,10 +63,11 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 
 	/**
 	 * Deletes a preset from this object.
-	 * For use in situations where throwable-based validation is desired before confirming the action.
+	 * In a presets object, a module must be disabled using {@link SwitchyPresets#deletePreset(ServerPlayerEntity, String, boolean)}.
 	 *
 	 * @param name   the case-insensitive name of a preset.
 	 * @param dryRun whether to skip deleting the preset.
+	 *               For use in situations where throwable-based validation is desired before confirming the action.
 	 * @throws IllegalArgumentException when a preset with the specified name doesn't exist
 	 * @throws IllegalStateException    when the preset with the specified name is the current preset
 	 * @see SwitchyPresets#deletePreset(String)
@@ -75,6 +77,7 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 
 	/**
 	 * Deletes a preset from this object.
+	 * In a presets object, a module must be disabled using {@link SwitchyPresets#deletePreset(ServerPlayerEntity, String)}.
 	 *
 	 * @param name the case-insensitive name of a preset.
 	 * @throws IllegalArgumentException when a preset with the specified name doesn't exist
@@ -95,10 +98,11 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 
 	/**
 	 * Disables a module, deleting its instances from every preset.
-	 * For use in situations where throwable-based validation is desired before confirming the action.
+	 * In a presets object, a module must be disabled using {@link SwitchyPresets#disableModule(ServerPlayerEntity, Identifier, boolean)}.
 	 *
 	 * @param id     a module identifier.
 	 * @param dryRun whether to skip disabling the module.
+	 *               For use in situations where throwable-based validation is desired before confirming the action.
 	 * @throws IllegalArgumentException when the specified module doesn't exist
 	 * @throws IllegalStateException    when the specified module is disabled
 	 * @see SwitchyPresets#disableModule(Identifier)
@@ -108,6 +112,7 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 
 	/**
 	 * Disables a module, deleting its instances from every preset.
+	 * In a presets object, a module must be disabled using {@link SwitchyPresets#disableModule(ServerPlayerEntity, Identifier)}.
 	 *
 	 * @param id a module identifier.
 	 * @throws IllegalArgumentException when the specified module doesn't exist

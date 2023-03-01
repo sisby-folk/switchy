@@ -36,6 +36,30 @@ public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, Sw
 	}
 
 	@Override
+	public void disableModule(ServerPlayerEntity player, Identifier id, boolean dryRun) throws IllegalArgumentException, IllegalStateException {
+		Map<String, SwitchyModule> modules = getAllOfModule(id);
+		disableModule(id, dryRun);
+		modules.forEach((name, module) -> module.onDelete(player, true));
+	}
+
+	@Override
+	public void disableModule(ServerPlayerEntity player, Identifier id) throws IllegalArgumentException, IllegalStateException {
+		disableModule(player, id, false);
+	}
+
+	@Override
+	public void deletePreset(ServerPlayerEntity player, String name, boolean dryRun) throws IllegalArgumentException, IllegalStateException {
+		Map<Identifier, SwitchyModule> modules = getPreset(name).getModules();
+		deletePreset(name, dryRun);
+		modules.forEach((id, module) -> module.onDelete(player, false));
+	}
+
+	@Override
+	public void deletePreset(ServerPlayerEntity player, String name) throws IllegalArgumentException, IllegalStateException {
+		deletePreset(player, name, false);
+	}
+
+	@Override
 	public void importFromOther(ServerPlayerEntity player, Map<String, SwitchyPreset> other) {
 		// Replace enabled modules for colliding current preset
 		if (other.containsKey(getCurrentPresetName())) {
