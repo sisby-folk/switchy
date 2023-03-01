@@ -5,7 +5,6 @@ import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.module.SwitchyModule;
-import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import net.minecraft.entity.player.PlayerEntity;
@@ -57,11 +56,10 @@ public class CardinalSerializerCompat implements SwitchyModule {
 	 *
 	 * @param id              A unique identifier to associate with the module being registered.
 	 * @param componentKeyIds a set of cardinal component key IDs to create the module for.
-	 * @param isDefault       whether the module should be enabled by default.
-	 * @param editable        permissions for cold-editing the module, see {@link SwitchyModuleEditable}.
+	 * @param moduleInfo      The static settings for the module. See {@link SwitchyModuleInfo}.
 	 * @see SwitchyModuleRegistry
 	 */
-	public static void register(Identifier id, Set<Identifier> componentKeyIds, Boolean isDefault, SwitchyModuleEditable editable) {
+	public static void register(Identifier id, Set<Identifier> componentKeyIds, SwitchyModuleInfo moduleInfo) {
 		SwitchyModuleRegistry.registerModule(id, () -> {
 			Map<Identifier, ComponentConfig<?>> map = new HashMap<>();
 			for (Identifier identifier : componentKeyIds) {
@@ -75,7 +73,7 @@ public class CardinalSerializerCompat implements SwitchyModule {
 				}));
 			}
 			return new CardinalSerializerCompat(map);
-		}, new SwitchyModuleInfo(isDefault, editable, Set.of(), componentKeyIds));
+		}, moduleInfo.withUniqueIds(componentKeyIds));
 	}
 
 	@Override

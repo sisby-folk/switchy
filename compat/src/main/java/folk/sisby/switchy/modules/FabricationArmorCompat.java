@@ -24,8 +24,10 @@ import org.quiltmc.loader.api.QuiltLoader;
 
 import java.util.*;
 
+import static folk.sisby.switchy.util.Feedback.translatable;
+
 /**
- * A module that switches whether armor is hidden using unascribed's Fabrication's {@code /hidearmor} feature.
+ * A module that switches hidden armor from unascribed's Fabrication's {@code /hidearmor} feature.
  * "Sticky" - i.e. data will copy from existing presets to new ones, assuming players will prefer the same setup.
  *
  * @author Sisby folk
@@ -36,7 +38,7 @@ public class FabricationArmorCompat implements SwitchyModule {
 	/**
 	 * Identifier for this module.
 	 */
-	public static final Identifier ID = new Identifier("switchy", "fabrication_hidearmor");
+	public static final Identifier ID = new Identifier("switchy", "hidearmor");
 
 	/**
 	 * The NBT key where the list of EquipmentSlots to hide is stored.
@@ -44,7 +46,16 @@ public class FabricationArmorCompat implements SwitchyModule {
 	public static final String KEY_SUPPRESSED_SLOTS = "suppressedSlots";
 
 	static {
-		SwitchyModuleRegistry.registerModule(ID, FabricationArmorCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALLOWED, QuiltLoader.isModLoaded("fabrictailor") ? Set.of(FabricTailorCompat.ID) : Set.of()));
+		SwitchyModuleRegistry.registerModule(ID, FabricationArmorCompat::new, new SwitchyModuleInfo(
+						true,
+						SwitchyModuleEditable.ALLOWED,
+						translatable("switchy.compat.module.hidearmor.description")
+				)
+						.withDescriptionWhenEnabled(translatable("switchy.compat.module.hidearmor.enabled"))
+						.withDescriptionWhenDisabled(translatable("switchy.compat.module.hidearmor.disabled"))
+						.withDeletionWarning(translatable("switchy.compat.module.hidearmor.warning"))
+						.withApplyDependencies(QuiltLoader.isModLoaded("fabrictailor") ? Set.of(FabricTailorCompat.ID) : Set.of())
+		);
 	}
 
 	/**

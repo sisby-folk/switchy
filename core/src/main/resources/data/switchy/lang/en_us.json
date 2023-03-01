@@ -59,6 +59,18 @@
         }
       },
       "module": {
+        "help": {
+          "command": "/switchy module help {}",
+          "help": "show module description",
+          "description": "{} ({}) - {}",
+          "enabled": "When enabled: {}",
+          "enabled.default": "Module data will be saved and switched per-preset.",
+          "disabled": "When disabled: {}",
+          "disabled.default": "Module data will be shared across all presets.",
+          "fail": {
+            "missing": "Module '{}' doesn't exist!"
+          }
+        },
         "enable": {
           "command": "/switchy module enable {}",
           "help": "enable a module",
@@ -71,7 +83,8 @@
         "disable": {
           "command": "/switchy module disable {}",
           "help": "disable a module",
-          "warn": "Warning: Module data will be deleted for all presets",
+          "warn": "Warning: {}",
+          "warn.default": "Module data will be deleted for all presets",
           "confirmation": "Confirm using {}",
           "success": "Disabled {}",
           "fail": {

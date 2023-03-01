@@ -48,6 +48,7 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 		tellHelp(player, "commands.switch.help", "commands.switch.command", "commands.switchy.help.placeholder.preset");
 		tellHelp(player, "commands.switchy.delete.help", "commands.switchy.delete.command", "commands.switchy.help.placeholder.preset");
 		tellHelp(player, "commands.switchy.rename.help", "commands.switchy.rename.command", "commands.switchy.help.placeholder.preset", "commands.switchy.help.placeholder.preset");
+		tellHelp(player, "commands.switchy.module.help.help", "commands.switchy.module.help.command", "commands.switchy.help.placeholder.module");
 		tellHelp(player, "commands.switchy.module.enable.help", "commands.switchy.module.enable.command", "commands.switchy.help.placeholder.module");
 		tellHelp(player, "commands.switchy.module.disable.help", "commands.switchy.module.disable.command", "commands.switchy.help.placeholder.module");
 		tellHelp(player, "commands.switchy.export.help", "commands.switchy.export.command");
@@ -58,6 +59,16 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 		sendMessage(player, translatableWithArgs("commands.switchy.list.presets", FORMAT_INFO, literal(presets.toString())));
 		sendMessage(player, translatableWithArgs("commands.switchy.list.modules", FORMAT_INFO, presets.getEnabledModuleText()));
 		sendMessage(player, translatableWithArgs("commands.switchy.list.current", FORMAT_INFO, literal(presets.getCurrentPreset().toString())));
+	}
+
+	private static void displayModuleHelp(ServerPlayerEntity player, SwitchyPresets presets, Identifier id) {
+		try {
+			sendMessage(player, translatableWithArgs("commands.switchy.module.help.description", FORMAT_INFO, literal(id.toString()), literal(presets.isModuleEnabled(id) ? "enabled" : "disabled"), SwitchyModuleRegistry.getDescription(id)));
+			sendMessage(player, translatableWithArgs("commands.switchy.module.help.enabled", presets.isModuleEnabled(id) ? FORMAT_SUCCESS : FORMAT_INFO, SwitchyModuleRegistry.getDescriptionWhenEnabled(id)));
+			sendMessage(player, translatableWithArgs("commands.switchy.module.help.disabled", presets.isModuleEnabled(id) ? FORMAT_INFO : FORMAT_SUCCESS, SwitchyModuleRegistry.getDescriptionWhenDisabled(id)));
+		} catch (IllegalArgumentException ignored) {
+			tellInvalid(player, "commands.switchy.module.help.fail.missing", literal(id.toString()));
+		}
 	}
 
 	/**
@@ -174,7 +185,7 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 		}
 
 		if (!HISTORY.getOrDefault(player.getUuid(), "").equalsIgnoreCase(command("switchy module disable " + id))) {
-			sendMessage(player, SwitchyModuleRegistry.getDeletionWarning(id).setStyle(FORMAT_WARN.getLeft()));
+			tellWarn(player, "commands.switchy.module.disable.warn", SwitchyModuleRegistry.getDeletionWarning(id));
 			tellInvalidTry(player, "commands.switchy.module.disable.confirmation", "commands.switchy.module.disable.command", literal(id.toString()));
 		} else {
 			presets.disableModule(id);
@@ -254,12 +265,18 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 										.then(CommandManager.argument("name", StringArgumentType.word())
 												.executes(c -> execute(c, (player, presets) -> renamePreset(player, presets, c.getArgument("preset", String.class), c.getArgument("name", String.class)))))))
 						.then(CommandManager.literal("module")
-								.then(CommandManager.literal("enable").then(CommandManager.argument("module", IdentifierArgumentType.identifier())
-										.suggests((c, b) -> suggestModules(c, b, false))
-										.executes(c -> execute(c, (player, presets) -> enableModule(player, presets, c.getArgument("module", Identifier.class))))))
-								.then(CommandManager.literal("disable").then(CommandManager.argument("module", IdentifierArgumentType.identifier())
-										.suggests((c, b) -> suggestModules(c, b, true))
-										.executes(c -> execute(c, (player, presets) -> disableModule(player, presets, c.getArgument("module", Identifier.class))))))));
+								.then(CommandManager.literal("help")
+										.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
+												.suggests((c, b) -> suggestModules(c, b, null))
+												.executes(c -> execute(c, (player, presets) -> displayModuleHelp(player, presets, c.getArgument("module", Identifier.class))))))
+								.then(CommandManager.literal("enable")
+										.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
+												.suggests((c, b) -> suggestModules(c, b, false))
+												.executes(c -> execute(c, (player, presets) -> enableModule(player, presets, c.getArgument("module", Identifier.class))))))
+								.then(CommandManager.literal("disable")
+										.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
+												.suggests((c, b) -> suggestModules(c, b, true))
+												.executes(c -> execute(c, (player, presets) -> disableModule(player, presets, c.getArgument("module", Identifier.class))))))));
 
 		dispatcher.register(
 				CommandManager.literal("switch")

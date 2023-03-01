@@ -1,0 +1,51 @@
+{
+  "lib39:enable_enhanced_lang": true,
+  "switchy" : {
+    "compat" : {
+      "module": {
+        "apoli": {
+          "description": "A module that switches power data from Apace's Apoli.",
+          "enabled": "Power data will be saved alongside each presets' origins.",
+          "disabled": "Powers will be created fresh when switching presets with different origins.",
+          "warning": "All power data (resources, extra inventory, etc.) for other presets' origins will be lost!"
+        },
+        "drogtor": {
+          "description": "A module that switches nicknames from unascribed's Drogtor The Nickinator.",
+          "enabled": "You will be able to set nicknames per-preset.",
+          "disabled": "You will share a single nickname across all presets.",
+          "warning": "All other nicknames will be cleared!"
+        },
+        "hidearmor": {
+          "description": "A module that switches hidden armor from unascribed's Fabrication's /hidearmor.",
+          "enabled": "/hidearmor will change armor visibility per-preset.",
+          "disabled": "/hidearmor will change armor visibility for all presets.",
+          "warning": "All other /hidearmor settings will be cleared!"
+        },
+        "fabrictailor": {
+          "description": "A module that switches player skins from samolego's Fabric Tailor.",
+          "enabled": "You will be able to set a skin per-preset.",
+          "disabled": "You will share a single skin across all presets.",
+          "warning": "All other overridden skins will be cleared!"
+        },
+        "origins": {
+          "description": "A module that switches layered Origins from Apace's Origins.",
+          "enabled": "You will be able to have an origin (or layered set) for each preset. BYO Orbs of Origin.",
+          "disabled": "You will share one set of origins across all presets.",
+          "warning": "All other sets of origins will be lost!"
+        },
+        "pehkui": {
+          "description": "A module that switches scale values (e.g. sizes) from Virtuoel's Pehkui.",
+          "enabled": "Scale changes will apply only to the current preset.",
+          "disabled": "Scale changes will apply regardless of the current preset.",
+          "warning": "All other scale values wil be cleared!"
+        },
+        "styled_nicknames": {
+          "description": "A module that switches nicknames from Patbox's Styled Nicknames.",
+          "enabled": "You will be able to set nicknames per-preset.",
+          "disabled": "You will share a single nickname across all presets.",
+          "warning": "All other nicknames will be cleared!"
+        }
+      }
+    }
+  }
+}

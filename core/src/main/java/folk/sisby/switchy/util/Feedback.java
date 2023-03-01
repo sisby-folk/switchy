@@ -53,7 +53,7 @@ public class Feedback {
 	}
 
 	/**
-	 * Sends feedback to the player with a suggested command, using the {@link Feedback#FORMAT_INVALID} style.
+	 * Sends feedback to the player with a suggested command, using the {@link Feedback#FORMAT_HELP} style.
 	 *
 	 * @param player     the player to send the message to.
 	 * @param keyHelp    a translation key explaining the command.
