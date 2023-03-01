@@ -1,0 +1,136 @@
+<owo-ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/wisp-forest/owo-lib/1.19.3/owo-ui.xsd">
+    <components>
+        <flow-layout direction="vertical">
+            <children>
+                <label>
+                    <text>Switchy Preset Management</text>
+                </label>
+                <flow-layout direction="horizontal">
+                    <children>
+                        <button id="presetsTabButton">
+                            <text>Presets</text>
+                        </button>
+                        <button id="modulesTabButton">
+                            <text>Modules</text>
+                        </button>
+                        <button id="dataTabButton">
+                            <text>Data</text>
+                        </button>
+                    </children>
+                </flow-layout>
+                <flow-layout id="panel" direction="vertical">
+                    <children>
+                        <template name="presets-tab">
+                            <id>presets-tab</id>
+                        </template>
+                        <template name="modules-tab">
+                            <id>modules-tab</id>
+                        </template>
+                        <template name="data-tab">
+                            <id>data-tab</id>
+                        </template>
+                    </children>
+                    <horizontal-alignment>center</horizontal-alignment>
+                    <vertical-alignment>center</vertical-alignment>
+                    <padding>
+                        <all>10</all>
+                    </padding>
+                    <surface>
+                        <panel dark="true"/>
+                    </surface>
+                </flow-layout>
+            </children>
+            <vertical-alignment>center</vertical-alignment>
+            <horizontal-alignment>center</horizontal-alignment>
+            <surface>
+                <vanilla-translucent/>
+            </surface>
+        </flow-layout>
+    </components>
+    <templates>
+        <presets-tab>
+            <scroll id="{{id}}" direction="vertical">
+                <flow-layout id="innerScrollPane" direction="vertical">
+                    <children>
+                        <flow-layout id="presetsFlow" direction="vertical">
+                        </flow-layout>
+                        <button id="newPreset">
+                            <text>New Preset</text>
+                        </button>
+                    </children>
+                    <sizing>
+                        <horizontal method="fixed">200</horizontal>
+                    </sizing>
+                </flow-layout>
+                <sizing>
+                    <vertical method="fill">80</vertical>
+                </sizing>
+            </scroll>
+        </presets-tab>
+        <modules-tab>
+            <flow-layout id="{{id}}" direction="vertical">
+                <children>
+                    <flow-layout id="labelFlow" direction="horizontal">
+                        <children>
+                            <label id="disabledModulesLabel">
+                                <text>Disabled Modules</text>
+                                <sizing>
+                                    <horizontal method="fill">50</horizontal>
+                                </sizing>
+                                <horizontal-text-alignment>center</horizontal-text-alignment>
+                                <vertical-text-alignment>center</vertical-text-alignment>
+                            </label>
+                            <label id="enabledModulesLabel">
+                                <text>Enabled Modules</text>
+                                <sizing>
+                                    <horizontal method="fill">50</horizontal>
+                                </sizing>
+                                <horizontal-text-alignment>center</horizontal-text-alignment>
+                                <vertical-text-alignment>center</vertical-text-alignment>
+                            </label>
+                        </children>
+                    </flow-layout>
+                    <flow-layout id="splitScrollFlow" direction="horizontal">
+                        <children>
+                            <scroll id="disabledScrollPane" direction="vertical">
+                                <flow-layout id="disabledFlow" direction="vertical"/>
+                                <sizing>
+                                    <vertical method="fill">90</vertical>
+                                    <horizontal method = "fill">50</horizontal>
+                                </sizing>
+                            </scroll>
+                            <scroll id="enabledScrollPane" direction="vertical">
+                                <flow-layout id="enabledFlow" direction="vertical"/>
+                                <sizing>
+                                    <vertical method="fill">90</vertical>
+                                    <horizontal method = "fill">50</horizontal>
+                                </sizing>
+                            </scroll>
+                        </children>
+                    </flow-layout>
+                </children>
+
+                <sizing>
+                    <vertical method="fill">80</vertical>
+                    <horizontal method="fixed">300</horizontal>
+                </sizing>
+            </flow-layout>
+        </modules-tab>
+        <data-tab>
+            <scroll id="{{id}}" direction="vertical">
+                <flow-layout direction="vertical">
+                    <children>
+
+                    </children>
+                    <sizing>
+                        <horizontal method="fixed">200</horizontal>
+                    </sizing>
+                </flow-layout>
+                <sizing>
+                    <vertical method="fill">80</vertical>
+                </sizing>
+            </scroll>
+        </data-tab>
+    </templates>
+</owo-ui>

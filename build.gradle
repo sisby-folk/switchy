@@ -43,6 +43,7 @@ dependencies {
 
 	// Re-apply Local Runtime from Subprojects //
 	modLocalRuntime(libs.bundles.compat.runtime)
+	modLocalRuntime(libs.bundles.client.include)
 }
 
 allprojects {
