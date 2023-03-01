@@ -31,7 +31,7 @@ public class SwitchyDisplayPresetsImpl extends SwitchyPresetsDataImpl<SwitchyDis
 	 * @param moduleInfo a map of module info by module ID.
 	 */
 	public SwitchyDisplayPresetsImpl(Map<Identifier, SwitchyModuleInfo> moduleInfo) {
-		super(new HashMap<>(), SwitchyDisplayPresetImpl::new, SwitchyDisplayModuleRegistry::supplyModule, true, SwitchyClient.LOGGER);
+		super(new HashMap<>(), SwitchyDisplayPresetImpl::new, SwitchyDisplayModuleRegistry::supplyModule, (module) -> {},true, SwitchyClient.LOGGER);
 		this.moduleInfo = moduleInfo;
 	}
 

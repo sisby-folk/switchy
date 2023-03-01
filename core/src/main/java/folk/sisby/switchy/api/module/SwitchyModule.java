@@ -14,4 +14,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
  * @since 1.0.0
  */
 public interface SwitchyModule extends SwitchySerializable, SwitchyApplicable<ServerPlayerEntity> {
+	/**
+	 * Runs when a module is instantiated due to being enabled, rather than in a new preset.
+	 * Useful for defining different initial states between the two.
+	 */
+	default void onEnable() {}
 }

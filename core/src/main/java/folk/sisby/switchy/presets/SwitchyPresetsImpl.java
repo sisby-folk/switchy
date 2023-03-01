@@ -29,6 +29,7 @@ public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, Sw
 				SwitchyModuleRegistry.getModuleDefaults(),
 				SwitchyPresetImpl::new,
 				SwitchyModuleRegistry::supplyModule,
+				SwitchyModule::onEnable,
 				forPlayer,
 				Switchy.LOGGER
 		);
