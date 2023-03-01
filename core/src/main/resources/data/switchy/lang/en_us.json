@@ -61,7 +61,7 @@
       "module": {
         "help": {
           "command": "/switchy module help {}",
-          "help": "show module description",
+          "help": "show module info",
           "description": "{} ({}) - {}",
           "enabled": "When enabled: {}",
           "enabled.default": "Module data will be saved and switched per-preset.",
