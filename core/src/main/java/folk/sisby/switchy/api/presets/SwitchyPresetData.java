@@ -17,7 +17,7 @@ public interface SwitchyPresetData<Module extends SwitchySerializable> extends S
 	/**
 	 * Gets a map of all modules in this preset by ID.
 	 *
-	 * @return All modules in this preset, mapped by their IDs.
+	 * @return all modules in this preset, mapped by their IDs.
 	 */
 	@ApiStatus.Internal
 	Map<Identifier, Module> getModules();

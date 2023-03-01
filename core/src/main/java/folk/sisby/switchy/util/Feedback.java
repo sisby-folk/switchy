@@ -157,7 +157,7 @@ public class Feedback {
 	 * Creates literal text from a string.
 	 *
 	 * @param string an arbitrary string.
-	 * @return A literal text instance of the string.
+	 * @return a literal text instance of the string.
 	 */
 	public static MutableText literal(String string) {
 		return Text.literal(string);

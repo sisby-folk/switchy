@@ -60,7 +60,7 @@ public class SwitchyModuleRegistry {
 	/**
 	 * Gets the IDs of all registered modules.
 	 *
-	 * @return A collection of registered module identifiers.
+	 * @return a collection of registered module identifiers.
 	 */
 	public static Collection<Identifier> getModules() {
 		return INFO.keySet();
@@ -70,7 +70,7 @@ public class SwitchyModuleRegistry {
 	 * Gets an instance of a module using a registered supplier.
 	 *
 	 * @param id a module identifier.
-	 * @return An instance of the module.
+	 * @return an instance of the module.
 	 * @throws IllegalArgumentException when the specified module doesn't exist
 	 * @see SwitchyModule
 	 */
@@ -156,7 +156,7 @@ public class SwitchyModuleRegistry {
 	 * Gets warning message that should be displayed when disabling a module.
 	 *
 	 * @param id a module identifier.
-	 * @return The deletion warning for the module.
+	 * @return the deletion warning for the module.
 	 * @throws IllegalArgumentException when the specified module doesn't exist
 	 */
 	public static MutableText getDeletionWarning(Identifier id) throws IllegalArgumentException {
@@ -168,7 +168,7 @@ public class SwitchyModuleRegistry {
 	 * Gets modules that must be applied to the player before the specified one during a switch.
 	 *
 	 * @param id a module identifier.
-	 * @return Collection of module apply dependency IDs for the module.
+	 * @return collection of module apply dependency IDs for the module.
 	 * @throws IllegalArgumentException when the specified module doesn't exist
 	 */
 	public static Collection<Identifier> getApplyDependencies(Identifier id) throws IllegalArgumentException {
@@ -179,7 +179,7 @@ public class SwitchyModuleRegistry {
 	/**
 	 * Gets a map representation of whether a module should be enabled by default for all modules.
 	 *
-	 * @return A map representing which modules are enabled by default.
+	 * @return a map representing which modules are enabled by default.
 	 */
 	public static Map<Identifier, Boolean> getModuleDefaults() {
 		Map<Identifier, Boolean> outMap = new HashMap<>();

@@ -230,7 +230,7 @@ public final class SwitchyModuleInfo {
 	/**
 	 * Gets which other modules need to be applied to the player before this one.
 	 *
-	 * @return Identifiers for other modules that must be applied first.
+	 * @return identifiers for other modules that must be applied first.
 	 */
 	public Set<Identifier> applyDependencies() {
 		return applyDependencies;
