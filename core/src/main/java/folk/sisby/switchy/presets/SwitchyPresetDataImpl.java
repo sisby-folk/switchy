@@ -29,9 +29,7 @@ public class SwitchyPresetDataImpl<Module extends SwitchySerializable> implement
 	 * @throws IllegalArgumentException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)})
 	 */
 	public SwitchyPresetDataImpl(String name, Map<Identifier, Boolean> modules, Function<Identifier, Module> moduleSupplier) throws IllegalArgumentException {
-		if (!name.chars().mapToObj(i -> (char) i).allMatch(StringReader::isAllowedInUnquotedString))
-			throw new IllegalArgumentException("Specified preset name is not a word");
-		this.name = name;
+		setName(name);
 		Map<Identifier, Module> suppliedModules = new HashMap<>();
 		modules.forEach((id, enabled) -> {
 			if (enabled) {
@@ -88,7 +86,9 @@ public class SwitchyPresetDataImpl<Module extends SwitchySerializable> implement
 	}
 
 	@Override
-	public void setName(String name) {
+	public void setName(String name) throws IllegalArgumentException {
+		if (!name.chars().mapToObj(i -> (char) i).allMatch(StringReader::isAllowedInUnquotedString))
+			throw new IllegalArgumentException("Specified preset name is not a word");
 		this.name = name;
 	}
 

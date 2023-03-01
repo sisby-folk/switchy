@@ -89,7 +89,7 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 *
 	 * @param name    the case-insensitive name of a preset.
 	 * @param newName the new name for the specified preset. a single word matching {@code azAZ09_-.+}.
-	 * @throws IllegalArgumentException when a preset with the specified name doesn't exist
+	 * @throws IllegalArgumentException when a preset with the specified name doesn't exist, or when name is not a word.
 	 * @throws IllegalStateException    when a preset with the provided name already exists
 	 */
 	void renamePreset(String name, String newName) throws IllegalArgumentException, IllegalStateException;

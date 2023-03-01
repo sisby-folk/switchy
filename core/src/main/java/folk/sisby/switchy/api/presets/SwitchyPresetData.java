@@ -1,5 +1,6 @@
 package folk.sisby.switchy.api.presets;
 
+import com.mojang.brigadier.StringReader;
 import folk.sisby.switchy.api.SwitchySerializable;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus;
@@ -66,7 +67,8 @@ public interface SwitchyPresetData<Module extends SwitchySerializable> extends S
 	 * In a presets object, a preset must be renamed using {@link SwitchyPresets#renamePreset(String, String)}.
 	 *
 	 * @param name a new name for this preset.
+	 * @throws IllegalArgumentException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)})
 	 */
 	@ApiStatus.Internal
-	void setName(String name);
+	void setName(String name) throws IllegalArgumentException;
 }

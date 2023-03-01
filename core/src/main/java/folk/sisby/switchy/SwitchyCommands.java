@@ -116,8 +116,12 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 		try {
 			presets.renamePreset(name, newName);
 			tellSuccess(player, "commands.switchy.rename.success", literal(name), literal(newName));
-		} catch (IllegalArgumentException ignored) {
-			tellInvalidTry(player, "commands.switchy.rename.fail.missing", "commands.switchy.list.command");
+		} catch (IllegalArgumentException ex) {
+			if (ex.getMessage().equals("Specified preset name is not a word")) { // Kinda sketchy
+				tellInvalid(player, "commands.switchy.rename.fail.invalid");
+			} else {
+				tellInvalidTry(player, "commands.switchy.rename.fail.missing", "commands.switchy.list.command");
+			}
 		} catch (IllegalStateException ignored) {
 			tellInvalidTry(player, "commands.switchy.rename.fail.exists", "commands.switchy.list.command");
 		}

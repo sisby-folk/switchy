@@ -53,6 +53,7 @@
         "help": "rename a preset",
         "success": "Renamed preset from {1} to {2}",
         "fail": {
+          "invalid": "That preset name is invalid!",
           "exists": "That preset already exists! Try {}",
           "missing": "That preset doesn't exist! Try {}"
         }
