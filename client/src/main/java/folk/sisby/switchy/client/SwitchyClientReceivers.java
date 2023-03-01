@@ -15,6 +15,7 @@ import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 
 import static folk.sisby.switchy.SwitchyClientServerNetworking.*;
 import static folk.sisby.switchy.client.util.FeedbackClient.tellInvalid;
@@ -60,7 +61,7 @@ public class SwitchyClientReceivers {
 
 	private static void displayPresets(MinecraftClient client, @Nullable NbtCompound displayPresetsNbt) {
 		if (displayPresetsNbt != null) {
-			SwitchyDisplayPresets displayPresets = new SwitchyDisplayPresetsImpl();
+			SwitchyDisplayPresets displayPresets = new SwitchyDisplayPresetsImpl(new HashMap<>());
 			displayPresets.fillFromNbt(displayPresetsNbt);
 			client.execute(() -> client.setScreen(new SwitchScreen(displayPresets)));
 		}

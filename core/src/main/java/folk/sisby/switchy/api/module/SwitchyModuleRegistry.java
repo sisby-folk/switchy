@@ -1,6 +1,7 @@
 package folk.sisby.switchy.api.module;
 
 import folk.sisby.switchy.Switchy;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus;
@@ -144,5 +145,28 @@ public class SwitchyModuleRegistry {
 			}
 		});
 		return outMap;
+	}
+
+	/**
+	 * Deserialize the module info from NBT.
+	 *
+	 * @param nbt an NBT representation of the module info.
+	 * @return an instance constructed from the NBT.
+	 */
+	public static Map<Identifier, SwitchyModuleInfo> infoFromNbt(NbtCompound nbt) {
+		Map<Identifier, SwitchyModuleInfo> outMap = new HashMap<>();
+		nbt.getKeys().forEach(key -> outMap.put(Identifier.tryParse(key), SwitchyModuleInfo.fromNbt(nbt.getCompound(key))));
+		return outMap;
+	}
+
+	/**
+	 * Serialize the module info to NBT.
+	 *
+	 * @return an NBT representation of the module info.
+	 */
+	public static NbtCompound infoToNbt() {
+		NbtCompound nbt = new NbtCompound();
+		INFO.forEach((id, info) -> nbt.put(id.toString(), info.toNbt()));
+		return nbt;
 	}
 }

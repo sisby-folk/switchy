@@ -1,6 +1,7 @@
 package folk.sisby.switchy.util;
 
 import folk.sisby.switchy.api.module.SwitchyModuleDisplayable;
+import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.api.presets.SwitchyPreset;
 import folk.sisby.switchy.api.presets.SwitchyPresets;
 import folk.sisby.switchy.api.presets.SwitchyPresetsData;
@@ -15,6 +16,10 @@ import net.minecraft.nbt.NbtString;
  * @since 2.0.0
  */
 public class PresetConverter {
+	/**
+	 * The NBT key where module info should be stored.
+	 */
+	public static final String KEY_MODULE_INFO = "moduleInfo";
 	// Figure out how to add this to a file or something. Mixin feels wrong but maybe.
 
 	/**
@@ -40,6 +45,9 @@ public class PresetConverter {
 		outNbt.put(SwitchyPresetsData.KEY_PRESET_LIST, listNbt);
 
 		outNbt.putString(SwitchyPresetsData.KEY_PRESET_CURRENT, presets.getCurrentPresetName());
+
+		outNbt.put(KEY_MODULE_INFO,SwitchyModuleRegistry.infoToNbt());
+
 		return outNbt;
 	}
 
