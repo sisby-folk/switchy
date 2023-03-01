@@ -53,9 +53,9 @@ public class Command {
 	 * @return the suggestion promise.
 	 * @throws CommandSyntaxException when the source is not a player
 	 */
-	public static CompletableFuture<Suggestions> suggestModules(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, boolean enabled) throws CommandSyntaxException {
+	public static CompletableFuture<Suggestions> suggestModules(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, Boolean enabled) throws CommandSyntaxException {
 		SwitchyPresets presets = ((SwitchyPlayer) context.getSource().getPlayer()).switchy$getPresets();
-		CommandSource.suggestIdentifiers(presets.getModules().entrySet().stream().filter(e -> e.getValue() == enabled).map(Map.Entry::getKey), builder);
+		CommandSource.suggestIdentifiers(presets.getModules().entrySet().stream().filter(e -> enabled == null || e.getValue() == enabled).map(Map.Entry::getKey), builder);
 		return builder.buildFuture();
 	}
 

@@ -6,6 +6,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
 import org.samo_lego.fabrictailor.casts.TailoredPlayer;
 
+import static folk.sisby.switchy.util.Feedback.translatable;
+
 /**
  * A module that switches player skins from samolego's Fabric Tailor.
  *
@@ -16,7 +18,15 @@ import org.samo_lego.fabrictailor.casts.TailoredPlayer;
  */
 public class FabricTailorCompat extends FabricTailorCompatData implements SwitchyModule, SwitchyModuleDisplayable {
 	static {
-		SwitchyModuleRegistry.registerModule(ID, FabricTailorCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALWAYS_ALLOWED));
+		SwitchyModuleRegistry.registerModule(ID, FabricTailorCompat::new, new SwitchyModuleInfo(
+						true,
+						SwitchyModuleEditable.ALWAYS_ALLOWED,
+						translatable("switchy.compat.module.fabrictailor.description")
+				)
+						.withDescriptionWhenEnabled(translatable("switchy.compat.module.fabrictailor.enabled"))
+						.withDescriptionWhenDisabled(translatable("switchy.compat.module.fabrictailor.disabled"))
+						.withDeletionWarning(translatable("switchy.compat.module.fabrictailor.warning"))
+		);
 	}
 
 	/**

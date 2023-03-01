@@ -18,6 +18,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+import static folk.sisby.switchy.util.Feedback.translatable;
+
 /**
  * A module that switches layered Origins from Apace's Origins.
  *
@@ -45,7 +47,15 @@ public class OriginsCompat implements SwitchyModule, SwitchyModuleDisplayable {
 	public static final String KEY_ORIGIN = "Origin";
 
 	static {
-		SwitchyModuleRegistry.registerModule(ID, OriginsCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALLOWED));
+		SwitchyModuleRegistry.registerModule(ID, OriginsCompat::new, new SwitchyModuleInfo(
+						true,
+						SwitchyModuleEditable.ALLOWED,
+						translatable("switchy.compat.module.origins.description")
+				)
+						.withDescriptionWhenEnabled(translatable("switchy.compat.module.origins.enabled"))
+						.withDescriptionWhenDisabled(translatable("switchy.compat.module.origins.disabled"))
+						.withDeletionWarning(translatable("switchy.compat.module.origins.warning"))
+		);
 	}
 
 	/**

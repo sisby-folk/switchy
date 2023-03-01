@@ -11,7 +11,7 @@ import net.minecraft.nbt.NbtCompound;
  */
 public interface SwitchyModuleDisplayable {
 	/**
-	 * @return An NBT compound legible to {@link folk.sisby.switchy.client.api.module.SwitchyDisplayModule#fillFromNbt(NbtCompound)} on the client side.
+	 * @return an NBT compound legible to {@link folk.sisby.switchy.client.api.module.SwitchyDisplayModule#fillFromNbt(NbtCompound)} on the client side.
 	 * Runs on the server, must convert data into a format usable for any client with the right {@link folk.sisby.switchy.client.api.module.SwitchyDisplayModule}.
 	 */
 	NbtCompound toDisplayNbt();

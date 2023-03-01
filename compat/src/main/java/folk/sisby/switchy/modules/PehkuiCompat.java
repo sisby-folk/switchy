@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static folk.sisby.switchy.util.Feedback.translatable;
+
 /**
  * A module that switches scale values from Virtuoel's Pehkui.
  *
@@ -35,7 +37,15 @@ public class PehkuiCompat implements SwitchyModule {
 	public static final Map<ScaleType, String> scaleKeys = new HashMap<>();
 
 	static {
-		SwitchyModuleRegistry.registerModule(ID, PehkuiCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.OPERATOR));
+		SwitchyModuleRegistry.registerModule(ID, PehkuiCompat::new, new SwitchyModuleInfo(
+						true,
+						SwitchyModuleEditable.OPERATOR,
+						translatable("switchy.compat.module.pehkui.description")
+				)
+						.withDescriptionWhenEnabled(translatable("switchy.compat.module.pehkui.enabled"))
+						.withDescriptionWhenDisabled(translatable("switchy.compat.module.pehkui.disabled"))
+						.withDeletionWarning(translatable("switchy.compat.module.pehkui.warning"))
+		);
 		List.of(ScaleTypes.HEIGHT, ScaleTypes.WIDTH, ScaleTypes.MODEL_HEIGHT, ScaleTypes.MODEL_WIDTH).forEach(PehkuiCompat::addScaleType);
 	}
 

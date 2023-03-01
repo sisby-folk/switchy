@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static folk.sisby.switchy.util.Feedback.translatable;
+
 /**
  * A module that switches power data from Apace's Apoli.
  *
@@ -41,7 +43,15 @@ public class ApoliCompat implements SwitchyModule {
 	public static final String KEY_POWER_DATA_LIST = "PowerData";
 
 	static {
-		SwitchyModuleRegistry.registerModule(ID, ApoliCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.OPERATOR, Set.of(OriginsCompat.ID)));
+		SwitchyModuleRegistry.registerModule(ID, ApoliCompat::new, new SwitchyModuleInfo(
+				true,
+				SwitchyModuleEditable.OPERATOR,
+				translatable("switchy.compat.module.apoli.description")
+		)
+				.withDescriptionWhenEnabled(translatable("switchy.compat.module.apoli.enabled"))
+				.withDescriptionWhenDisabled(translatable("switchy.compat.module.apoli.disabled"))
+				.withDeletionWarning(translatable("switchy.compat.module.apoli.warning"))
+				.withApplyDependencies(Set.of(OriginsCompat.ID)));
 	}
 
 	/**
@@ -79,6 +89,11 @@ public class ApoliCompat implements SwitchyModule {
 				power.fromTag(nbt);
 			}
 		});
+	}
+
+	@Override
+	public void onDelete(ServerPlayerEntity player, boolean fromDisable) {
+		PowerHolderComponent.getPowers(player, InventoryPower.class).forEach(InventoryPower::dropItemsOnLost);
 	}
 
 	@Override

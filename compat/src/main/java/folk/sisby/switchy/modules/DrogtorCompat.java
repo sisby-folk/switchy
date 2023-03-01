@@ -9,6 +9,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
+import static folk.sisby.switchy.util.Feedback.translatable;
+
 /**
  * A module that switches nicknames from unascribed's Drogtor The Nickinator.
  *
@@ -19,7 +21,15 @@ import java.util.Objects;
  */
 public class DrogtorCompat extends DrogtorCompatData implements SwitchyModule, SwitchyModuleDisplayable {
 	static {
-		SwitchyModuleRegistry.registerModule(ID, DrogtorCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALWAYS_ALLOWED));
+		SwitchyModuleRegistry.registerModule(ID, DrogtorCompat::new, new SwitchyModuleInfo(
+				true,
+				SwitchyModuleEditable.ALWAYS_ALLOWED,
+				translatable("switchy.compat.module.drogtor.description")
+		)
+				.withDescriptionWhenEnabled(translatable("switchy.compat.module.drogtor.enabled"))
+				.withDescriptionWhenDisabled(translatable("switchy.compat.module.drogtor.disabled"))
+				.withDeletionWarning(translatable("switchy.compat.module.drogtor.warning"))
+		);
 	}
 
 	/**

@@ -57,26 +57,27 @@ public class SwitchyModuleRegistry {
 		Switchy.LOGGER.info("[Switchy] Registered module " + id);
 	}
 
-
-	/**
-	 * Gets the cold-editing permissions for the specified module.
-	 *
-	 * @param id a module identifier.
-	 * @return the editable value registered to the specified module.
-	 * @see SwitchyModuleEditable
-	 */
-	public static SwitchyModuleEditable getEditable(Identifier id) {
-		SwitchyModuleEditable baseEditable = INFO.get(id).editable();
-		return EDITABLE_CONFIGURABLE.contains(baseEditable) ? Switchy.CONFIG.moduleEditable.get(id.toString()) : baseEditable;
-	}
-
 	/**
 	 * Gets the IDs of all registered modules.
 	 *
-	 * @return A collection of registered module identifiers.
+	 * @return a collection of registered module identifiers.
 	 */
 	public static Collection<Identifier> getModules() {
 		return INFO.keySet();
+	}
+
+	/**
+	 * Gets an instance of a module using a registered supplier.
+	 *
+	 * @param id a module identifier.
+	 * @return an instance of the module.
+	 * @throws IllegalArgumentException when the specified module doesn't exist
+	 * @see SwitchyModule
+	 */
+	@ApiStatus.Internal
+	public static SwitchyModule supplyModule(Identifier id) throws IllegalArgumentException {
+		if (!SUPPLIERS.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
+		return SUPPLIERS.get(id).get();
 	}
 
 	/**
@@ -94,18 +95,72 @@ public class SwitchyModuleRegistry {
 	 *
 	 * @param id a module identifier.
 	 * @return true if the module is default, false otherwise.
+	 * @throws IllegalArgumentException when the specified module doesn't exist
 	 */
-	public static boolean isDefault(Identifier id) {
+	public static boolean isDefault(Identifier id) throws IllegalArgumentException {
+		if (!INFO.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
 		return INFO.get(id).isDefault();
+	}
+
+	/**
+	 * Gets the cold-editing permissions for the specified module.
+	 *
+	 * @param id a module identifier.
+	 * @return the editable value registered to the specified module.
+	 * @throws IllegalArgumentException when the specified module doesn't exist
+	 * @see SwitchyModuleEditable
+	 */
+	public static SwitchyModuleEditable getEditable(Identifier id) throws IllegalArgumentException {
+		if (!INFO.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
+		SwitchyModuleEditable baseEditable = INFO.get(id).editable();
+		return EDITABLE_CONFIGURABLE.contains(baseEditable) ? Switchy.CONFIG.moduleEditable.get(id.toString()) : baseEditable;
+	}
+
+	/**
+	 * Gets the description for the module.
+	 *
+	 * @param id a module identifier.
+	 * @return a brief text description of the module.
+	 * @throws IllegalArgumentException when the specified module doesn't exist
+	 */
+	public static MutableText getDescription(Identifier id) throws IllegalArgumentException {
+		if (!INFO.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
+		return INFO.get(id).description();
+	}
+
+	/**
+	 * Gets the "when enabled" description of a module.
+	 *
+	 * @param id a module identifier.
+	 * @return the "when enabled" description text.
+	 * @throws IllegalArgumentException when the specified module doesn't exist
+	 */
+	public static MutableText getDescriptionWhenEnabled(Identifier id) throws IllegalArgumentException {
+		if (!INFO.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
+		return INFO.get(id).descriptionWhenEnabled();
+	}
+
+	/**
+	 * Gets the "when disabled" description of a module.
+	 *
+	 * @param id a module identifier.
+	 * @return the "when disabled" description text.
+	 * @throws IllegalArgumentException when the specified module doesn't exist
+	 */
+	public static MutableText getDescriptionWhenDisabled(Identifier id) throws IllegalArgumentException {
+		if (!INFO.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
+		return INFO.get(id).descriptionWhenDisabled();
 	}
 
 	/**
 	 * Gets warning message that should be displayed when disabling a module.
 	 *
 	 * @param id a module identifier.
-	 * @return The deletion warning for the module.
+	 * @return the deletion warning for the module.
+	 * @throws IllegalArgumentException when the specified module doesn't exist
 	 */
-	public static MutableText getDeletionWarning(Identifier id) {
+	public static MutableText getDeletionWarning(Identifier id) throws IllegalArgumentException {
+		if (!INFO.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
 		return INFO.get(id).deletionWarning();
 	}
 
@@ -113,28 +168,18 @@ public class SwitchyModuleRegistry {
 	 * Gets modules that must be applied to the player before the specified one during a switch.
 	 *
 	 * @param id a module identifier.
-	 * @return Collection of module apply dependency IDs for the module.
+	 * @return collection of module apply dependency IDs for the module.
+	 * @throws IllegalArgumentException when the specified module doesn't exist
 	 */
-	public static Collection<Identifier> getApplyDependencies(Identifier id) {
+	public static Collection<Identifier> getApplyDependencies(Identifier id) throws IllegalArgumentException {
+		if (!INFO.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
 		return INFO.get(id).applyDependencies();
-	}
-
-	/**
-	 * Gets an instance of a module using a registered supplier.
-	 *
-	 * @param id a module identifier.
-	 * @return An instance of the module.
-	 * @see SwitchyModule
-	 */
-	@ApiStatus.Internal
-	public static SwitchyModule supplyModule(Identifier id) {
-		return SUPPLIERS.get(id).get();
 	}
 
 	/**
 	 * Gets a map representation of whether a module should be enabled by default for all modules.
 	 *
-	 * @return A map representing which modules are enabled by default.
+	 * @return a map representing which modules are enabled by default.
 	 */
 	public static Map<Identifier, Boolean> getModuleDefaults() {
 		Map<Identifier, Boolean> outMap = new HashMap<>();

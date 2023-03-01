@@ -19,11 +19,59 @@ import java.util.function.Consumer;
  */
 public interface SwitchyPresets extends SwitchyPresetsData<SwitchyModule, SwitchyPreset> {
 	/**
+	 * Disables a module, deleting its instances from every preset.
+	 *
+	 * @param player the relevant player.
+	 * @param id     a module identifier.
+	 * @param dryRun whether to skip disabling the module.
+	 *               For use in situations where throwable-based validation is desired before confirming the action.
+	 * @throws IllegalArgumentException when the specified module doesn't exist
+	 * @throws IllegalStateException    when the specified module is disabled
+	 * @see SwitchyPresetsData#disableModule(Identifier)
+	 */
+	void disableModule(ServerPlayerEntity player, Identifier id, boolean dryRun) throws IllegalArgumentException, IllegalStateException;
+
+	/**
+	 * Disables a module, deleting its instances from every preset.
+	 *
+	 * @param player the relevant player.
+	 * @param id     a module identifier.
+	 * @throws IllegalArgumentException when the specified module doesn't exist
+	 * @throws IllegalStateException    when the specified module is disabled
+	 * @see SwitchyPresetsData#disableModule(Identifier)
+	 */
+	void disableModule(ServerPlayerEntity player, Identifier id) throws IllegalArgumentException, IllegalStateException;
+
+	/**
+	 * Deletes a preset from this object.
+	 *
+	 * @param player the relevant player.
+	 * @param name   the case-insensitive name of a preset.
+	 * @param dryRun whether to skip deleting the preset.
+	 *               For use in situations where throwable-based validation is desired before confirming the action.
+	 * @throws IllegalArgumentException when a preset with the specified name doesn't exist
+	 * @throws IllegalStateException    when the preset with the specified name is the current preset
+	 * @see SwitchyPresets#deletePreset(String)
+	 */
+	void deletePreset(ServerPlayerEntity player, String name, boolean dryRun) throws IllegalArgumentException, IllegalStateException;
+
+	/**
+	 * Deletes a preset from this object.
+	 *
+	 * @param player the relevant player.
+	 * @param name   the case-insensitive name of a preset.
+	 * @throws IllegalArgumentException when a preset with the specified name doesn't exist
+	 * @throws IllegalStateException    when the preset with the specified name is the current preset
+	 * @see SwitchyPresets#deletePreset(String)
+	 */
+	void deletePreset(ServerPlayerEntity player, String name) throws IllegalArgumentException, IllegalStateException;
+
+	/**
 	 * Also hot-modifies the current preset when importing.
 	 * Uses {@link SwitchyPresets#duckCurrentModule(ServerPlayerEntity, Identifier, Consumer)}.
 	 *
 	 * @param player the player this presets object belongs to.
-	 * @param other a collection of presets to import.
+	 * @param other  a collection of presets to import.
 	 * @see SwitchyPresetsData#importFromOther(Map)
 	 */
 	void importFromOther(ServerPlayerEntity player, Map<String, SwitchyPreset> other);

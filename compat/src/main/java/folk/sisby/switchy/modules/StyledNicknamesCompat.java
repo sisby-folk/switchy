@@ -12,6 +12,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
+import static folk.sisby.switchy.util.Feedback.translatable;
+
 /**
  * A module that switches nicknames from Patbox's Styled Nicknames.
  *
@@ -32,7 +34,15 @@ public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleDispla
 
 	// Runs on touch() - but only once.
 	static {
-		SwitchyModuleRegistry.registerModule(ID, StyledNicknamesCompat::new, new SwitchyModuleInfo(true, SwitchyModuleEditable.ALWAYS_ALLOWED));
+		SwitchyModuleRegistry.registerModule(ID, StyledNicknamesCompat::new, new SwitchyModuleInfo(
+						true,
+						SwitchyModuleEditable.ALWAYS_ALLOWED,
+						translatable("switchy.compat.module.styled_nicknames.description")
+				)
+						.withDescriptionWhenEnabled(translatable("switchy.compat.module.styled_nicknames.enabled"))
+						.withDescriptionWhenDisabled(translatable("switchy.compat.module.styled_nicknames.disabled"))
+						.withDeletionWarning(translatable("switchy.compat.module.styled_nicknames.warning"))
+		);
 	}
 
 	/**

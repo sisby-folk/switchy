@@ -40,7 +40,7 @@ public class SwitchyDisplayModuleRegistry {
 	 * Gets an instance of a module using a registered supplier.
 	 *
 	 * @param id a module identifier.
-	 * @return An instance of the module.
+	 * @return an instance of the module.
 	 * @see SwitchyDisplayModule
 	 */
 	public static @Nullable SwitchyDisplayModule supplyModule(Identifier id) {
