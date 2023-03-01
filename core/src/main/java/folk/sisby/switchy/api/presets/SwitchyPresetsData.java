@@ -16,7 +16,6 @@ import java.util.Map;
  * @author Sisby folk
  * @since 2.0.0
  */
-@SuppressWarnings("unused")
 public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset extends SwitchyPresetData<Module>> extends SwitchySerializable {
 	/**
 	 * NBT key for the current preset.

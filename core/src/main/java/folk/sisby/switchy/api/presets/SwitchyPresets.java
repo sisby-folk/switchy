@@ -17,7 +17,6 @@ import java.util.function.Consumer;
  * @see folk.sisby.switchy.api.SwitchyPlayer
  * @since 1.0.0
  */
-@SuppressWarnings("unused")
 public interface SwitchyPresets extends SwitchyPresetsData<SwitchyModule, SwitchyPreset> {
 	/**
 	 * Also hot-modifies the current preset when importing.
