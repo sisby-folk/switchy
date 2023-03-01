@@ -1,5 +1,6 @@
 package folk.sisby.switchy.api.presets;
 
+import com.mojang.brigadier.StringReader;
 import folk.sisby.switchy.api.SwitchySerializable;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Identifier;
@@ -15,6 +16,7 @@ import java.util.Map;
  * @author Sisby folk
  * @since 2.0.0
  */
+@SuppressWarnings("unused")
 public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset extends SwitchyPresetData<Module>> extends SwitchySerializable {
 	/**
 	 * NBT key for the current preset.
@@ -54,9 +56,10 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 *
 	 * @param name the desired name for the new preset.
 	 * @return the newly created preset.
+	 * @throws IllegalArgumentException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)})
 	 * @throws IllegalStateException when a preset with the provided name already exists
 	 */
-	Preset newPreset(String name) throws IllegalStateException;
+	Preset newPreset(String name) throws IllegalArgumentException, IllegalStateException;
 
 	/**
 	 * Deletes a preset from this object.

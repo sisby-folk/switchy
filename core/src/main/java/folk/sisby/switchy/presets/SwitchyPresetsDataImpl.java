@@ -35,6 +35,15 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 	private final Logger logger;
 	private Preset currentPreset;
 
+	/**
+	 * Constructs an instance of the object.
+	 *
+	 * @param modules           the enabled status of modules.
+	 * @param presetConstructor a constructor for the contained presets.
+	 * @param moduleSupplier    a function to supply module instances from their ID, usually from a registry.
+	 * @param forPlayer         whether the presets object is "for a player" - affects recovering lost presets, and logging failures.
+	 * @param logger            the logger to use for construction failures.
+	 */
 	SwitchyPresetsDataImpl(Map<Identifier, Boolean> modules, BiFunction<String, Map<Identifier, Boolean>, Preset> presetConstructor, Function<Identifier, Module> moduleSupplier, boolean forPlayer, Logger logger) {
 		this.modules = modules;
 		this.presetConstructor = presetConstructor;
@@ -54,6 +63,8 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 				newPreset(key).fillFromNbt(listNbt.getCompound(key));
 			} catch (IllegalStateException ignored) {
 				logger.warn("[Switchy] Player data contained duplicate preset '{}'. Data may have been lost.", key);
+			} catch (IllegalArgumentException ignored) {
+				logger.warn("[Switchy] Player data contained invalid preset '{}'. Data may have been lost.", key);
 			}
 		}
 

@@ -29,7 +29,7 @@ public class SwitchyClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient(ModContainer mod) {
-		SwitchyClientNetworking.InitializeReceivers();
+		SwitchyClientReceivers.InitializeReceivers();
 		SwitchyKeybindings.initializeKeybindings();
 		SwitchyClientEvents.INIT.invoker().onInitialize();
 		LOGGER.info("[Switchy Client] Initialized.");

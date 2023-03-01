@@ -20,6 +20,8 @@ import java.util.function.Consumer;
  */
 public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, SwitchyPreset> implements SwitchyPresets {
 	/**
+	 * Constructs an instance of the object.
+	 *
 	 * @param forPlayer whether the presets object is "for a player" - affects recovering lost presets, and logging failures.
 	 */
 	public SwitchyPresetsImpl(boolean forPlayer) {

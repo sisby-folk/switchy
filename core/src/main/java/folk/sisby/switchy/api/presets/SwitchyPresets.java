@@ -17,12 +17,14 @@ import java.util.function.Consumer;
  * @see folk.sisby.switchy.api.SwitchyPlayer
  * @since 1.0.0
  */
+@SuppressWarnings("unused")
 public interface SwitchyPresets extends SwitchyPresetsData<SwitchyModule, SwitchyPreset> {
 	/**
 	 * Also hot-modifies the current preset when importing.
 	 * Uses {@link SwitchyPresets#duckCurrentModule(ServerPlayerEntity, Identifier, Consumer)}.
 	 *
 	 * @param player the player this presets object belongs to.
+	 * @param other a collection of presets to import.
 	 * @see SwitchyPresetsData#importFromOther(Map)
 	 */
 	void importFromOther(ServerPlayerEntity player, Map<String, SwitchyPreset> other);

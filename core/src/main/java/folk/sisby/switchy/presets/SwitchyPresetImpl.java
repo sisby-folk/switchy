@@ -1,5 +1,6 @@
 package folk.sisby.switchy.presets;
 
+import com.mojang.brigadier.StringReader;
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
@@ -18,10 +19,13 @@ import java.util.Set;
  */
 public class SwitchyPresetImpl extends SwitchyPresetDataImpl<SwitchyModule> implements SwitchyPreset {
 	/**
+	 * Constructs an instance of the object.
+	 *
 	 * @param name    the desired name for the new preset.
 	 * @param modules the enabled status of modules from the presets object.
+	 * @throws IllegalArgumentException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)})
 	 */
-	public SwitchyPresetImpl(String name, Map<Identifier, Boolean> modules) {
+	public SwitchyPresetImpl(String name, Map<Identifier, Boolean> modules) throws IllegalArgumentException {
 		super(name, modules, SwitchyModuleRegistry::supplyModule);
 	}
 

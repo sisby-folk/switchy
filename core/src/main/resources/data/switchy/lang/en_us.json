@@ -24,6 +24,7 @@
         "help": "create a new preset",
         "success": "Preset {} created",
         "fail": {
+          "invalid": "That preset name is invalid!",
           "exists": "That preset already exists! Try {}"
         }
       },

@@ -1,5 +1,6 @@
 package folk.sisby.switchy.presets;
 
+import com.mojang.brigadier.StringReader;
 import folk.sisby.switchy.api.SwitchySerializable;
 import folk.sisby.switchy.api.presets.SwitchyPresetData;
 import net.minecraft.nbt.NbtCompound;
@@ -20,11 +21,16 @@ public class SwitchyPresetDataImpl<Module extends SwitchySerializable> implement
 	private String name;
 
 	/**
+	 * Constructs an instance of the object.
+	 *
 	 * @param name           the desired name for the new preset.
 	 * @param modules        the enabled status of modules from the presets object.
 	 * @param moduleSupplier a function to supply module instances from their ID, usually from a registry.
+	 * @throws IllegalArgumentException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)})
 	 */
-	public SwitchyPresetDataImpl(String name, Map<Identifier, Boolean> modules, Function<Identifier, Module> moduleSupplier) {
+	public SwitchyPresetDataImpl(String name, Map<Identifier, Boolean> modules, Function<Identifier, Module> moduleSupplier) throws IllegalArgumentException {
+		if (!name.chars().mapToObj(i -> (char) i).allMatch(StringReader::isAllowedInUnquotedString))
+			throw new IllegalArgumentException("Specified preset name is not a word");
 		this.name = name;
 		Map<Identifier, Module> suppliedModules = new HashMap<>();
 		modules.forEach((id, enabled) -> {

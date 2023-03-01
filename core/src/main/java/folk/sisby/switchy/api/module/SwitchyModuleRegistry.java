@@ -19,6 +19,7 @@ import java.util.function.Supplier;
  * @see SwitchyModule
  * @since 2.0.0
  */
+@SuppressWarnings("unused")
 public class SwitchyModuleRegistry {
 	private static final List<SwitchyModuleEditable> EDITABLE_CONFIGURABLE = List.of(SwitchyModuleEditable.ALLOWED, SwitchyModuleEditable.OPERATOR);
 

@@ -1,5 +1,6 @@
 package folk.sisby.switchy.presets;
 
+import com.mojang.brigadier.StringReader;
 import com.mojang.datafixers.util.Pair;
 import folk.sisby.switchy.api.module.presets.SwitchyDisplayPreset;
 import folk.sisby.switchy.client.api.SwitchySwitchScreenPosition;
@@ -21,10 +22,13 @@ import java.util.Map;
 @ClientOnly
 public class SwitchyDisplayPresetImpl extends SwitchyPresetDataImpl<SwitchyDisplayModule> implements SwitchyDisplayPreset {
 	/**
+	 * Constructs an instance of the object.
+	 *
 	 * @param name    the desired name for the new preset.
 	 * @param modules the enabled status of modules from the display presets object.
+	 * @throws IllegalArgumentException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)})
 	 */
-	public SwitchyDisplayPresetImpl(String name, Map<Identifier, Boolean> modules) {
+	public SwitchyDisplayPresetImpl(String name, Map<Identifier, Boolean> modules) throws IllegalArgumentException {
 		super(name, modules, SwitchyDisplayModuleRegistry::supplyModule);
 	}
 

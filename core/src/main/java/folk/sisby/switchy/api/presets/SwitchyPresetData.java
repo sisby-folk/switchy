@@ -12,6 +12,7 @@ import java.util.Map;
  * @author Sisby folk
  * @since 2.0.0
  */
+@SuppressWarnings("unused")
 public interface SwitchyPresetData<Module extends SwitchySerializable> extends SwitchySerializable {
 	/**
 	 * Gets a map of all modules in this preset by ID.

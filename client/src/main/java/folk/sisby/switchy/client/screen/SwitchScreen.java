@@ -3,7 +3,7 @@ package folk.sisby.switchy.client.screen;
 import com.mojang.datafixers.util.Pair;
 import folk.sisby.switchy.api.module.presets.SwitchyDisplayPreset;
 import folk.sisby.switchy.api.module.presets.SwitchyDisplayPresets;
-import folk.sisby.switchy.client.SwitchyClientNetworking;
+import folk.sisby.switchy.client.api.SwitchyClientApi;
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
 import folk.sisby.switchy.client.api.SwitchySwitchScreenPosition;
 import io.wispforest.owo.ui.base.BaseOwoScreen;
@@ -111,7 +111,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 				horizontalFlow.mouseEnter().subscribe(() -> horizontalFlow.surface(Surface.DARK_PANEL.and(Surface.outline(Color.WHITE.argb()))));
 				horizontalFlow.mouseLeave().subscribe(() -> horizontalFlow.surface(Surface.DARK_PANEL));
 				horizontalFlow.mouseDown().subscribe((x, y, button) -> {
-					SwitchyClientNetworking.switchCurrentPreset(preset.getName());
+					SwitchyClientApi.switchCurrentPreset(preset.getName());
 					return true;
 				});
 			}
