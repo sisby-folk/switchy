@@ -14,9 +14,14 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+
 
 public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> {
 	private final SwitchyDisplayPresets displayPresets;
+	private FlowLayout root;
 
 	public PresetManagementScreen(SwitchyDisplayPresets displayPresets) {
 		super(FlowLayout.class, DataSource.asset(new Identifier("switchy", "preset_management_model")));
@@ -25,27 +30,34 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> {
 
 	@Override
 	protected void build(FlowLayout rootComponent) {
-		rootComponent.gap(2);
-		VerticalFlowLayout presetsFlow = rootComponent.childById(VerticalFlowLayout.class, "presetsFlow");
+		this.root = rootComponent;
+		// Root
+		root.gap(2);
+
+		// Preset Tab
+		ScrollContainer<VerticalFlowLayout> presetsTab = model.expandTemplate(ScrollContainer.class, "presets-tab", Map.of("id", "presetsTab"));
+		VerticalFlowLayout presetsFlow = presetsTab.childById(VerticalFlowLayout.class, "presetsFlow");
 		presetsFlow.gap(2);
 		refreshPresetFlow(presetsFlow);
-		VerticalFlowLayout disabledModulesFlow = rootComponent.childById(VerticalFlowLayout.class, "disabledFlow");
-		VerticalFlowLayout enabledModulesFlow = rootComponent.childById(VerticalFlowLayout.class, "enabledFlow");
-		refreshModulesFlow(disabledModulesFlow, enabledModulesFlow);
-		ScrollContainer<VerticalFlowLayout> presetsTab = rootComponent.childById(ScrollContainer.class, "presets-tab");
-		VerticalFlowLayout modulesTab = rootComponent.childById(VerticalFlowLayout.class, "modules-tab");
-		ScrollContainer<VerticalFlowLayout> dataTab = rootComponent.childById(ScrollContainer.class, "data-tab");
-		VerticalFlowLayout panel = rootComponent.childById(VerticalFlowLayout.class, "panel");
-		ButtonComponent presetsTabButton = rootComponent.childById(ButtonComponent.class, "presetsTabButton");
-		ButtonComponent modulesTabButton = rootComponent.childById(ButtonComponent.class, "modulesTabButton");
-		ButtonComponent dataTabButton = rootComponent.childById(ButtonComponent.class, "dataTabButton");
-
-
-		// Add preset button
-		rootComponent.childById(ButtonComponent.class, "newPreset").onPress(buttonComponent -> {
+		presetsTab.childById(ButtonComponent.class, "newPreset").onPress(buttonComponent -> {
 			presetsFlow.child(getRenameLayout(presetsFlow, null));
 		});
-		// Tab Buttons
+
+		// Modules Tab
+		VerticalFlowLayout modulesTab = model.expandTemplate(VerticalFlowLayout.class, "modules-tab", Map.of("id", "modulesTab"));
+		VerticalFlowLayout disabledModulesFlow = modulesTab.childById(VerticalFlowLayout.class, "disabledFlow");
+		VerticalFlowLayout enabledModulesFlow = modulesTab.childById(VerticalFlowLayout.class, "enabledFlow");
+		refreshModulesFlow(disabledModulesFlow, enabledModulesFlow);
+
+		// Data Tab
+		ScrollContainer<VerticalFlowLayout> dataTab = model.expandTemplate(ScrollContainer.class, "data-tab", Map.of("id", "dataTab"));
+
+
+		// Header
+		VerticalFlowLayout panel = root.childById(VerticalFlowLayout.class, "panel");
+		ButtonComponent presetsTabButton = root.childById(ButtonComponent.class, "presetsTabButton");
+		ButtonComponent modulesTabButton = root.childById(ButtonComponent.class, "modulesTabButton");
+		ButtonComponent dataTabButton = root.childById(ButtonComponent.class, "dataTabButton");
 		presetsTabButton.onPress(buttonComponent -> {
 			panel.clearChildren();
 			panel.child(presetsTab);
@@ -58,8 +70,8 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> {
 			panel.clearChildren();
 			panel.child(dataTab);
 		});
-		panel.removeChild(presetsTab);
-		panel.removeChild(dataTab);
+
+		panel.child(presetsTab); // Default Tab
 	}
 
 	private void refreshPresetFlow(VerticalFlowLayout presetsFlow) {
@@ -74,8 +86,18 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> {
 			});
 			renameButton.horizontalSizing(Sizing.fill(22));
 			ButtonComponent deleteButton = Components.button(Text.literal("Delete"), b -> {
-				displayPresets.deletePreset(name);
-				refreshPresetFlow(presetsFlow);
+				openDialog(
+						"OK",
+						"Cancel",
+						200,
+						okButton -> {
+							displayPresets.deletePreset(name);
+							refreshPresetFlow(presetsFlow);
+						},
+						cancel -> {
+						},
+						List.of(Text.literal("Are you sure you want to delete: "), Text.of(preset.getName()))
+				);
 			});
 			deleteButton.horizontalSizing(Sizing.fill(22));
 			presetFlow.child(presetName);
@@ -87,8 +109,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> {
 		});
 	}
 
-	private void refreshModulesFlow(VerticalFlowLayout disabledModulesFlow, VerticalFlowLayout enabledModulesFlow)
-	{
+	private void refreshModulesFlow(VerticalFlowLayout disabledModulesFlow, VerticalFlowLayout enabledModulesFlow) {
 		disabledModulesFlow.clearChildren();
 		enabledModulesFlow.clearChildren();
 		// Disabled Modules
@@ -113,8 +134,19 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> {
 			LabelComponent moduleName = Components.label(Text.literal(module.toString()));
 			moduleName.horizontalSizing(Sizing.fill(68));
 			ButtonComponent disableButton = Components.button(Text.literal("Disable"), b -> {
-				displayPresets.disableModule(module);
-				refreshModulesFlow(disabledModulesFlow, enabledModulesFlow);
+				openDialog(
+						"OK",
+						"Cancel",
+						200,
+						okButton -> {
+							displayPresets.disableModule(module);
+							refreshModulesFlow(disabledModulesFlow, enabledModulesFlow);
+						},
+						cancel -> {
+						},
+						List.of(Text.literal("Are you sure you want to disable: "), Text.of(module.toString()))
+				);
+
 			});
 			disableButton.horizontalSizing(Sizing.fill(28));
 			moduleFlow.child(moduleName);
@@ -125,15 +157,14 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> {
 		});
 	}
 
-	private HorizontalFlowLayout getRenameLayout(VerticalFlowLayout presetsFlow, @Nullable String presetName)
-	{
+	private HorizontalFlowLayout getRenameLayout(VerticalFlowLayout presetsFlow, @Nullable String presetName) {
 		HorizontalFlowLayout renamePresetFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 		TextBoxComponent nameEntry = Components.textBox(Sizing.fill(54), (presetName != null) ? presetName : "Preset Name");
 		renamePresetFlow.child(nameEntry);
 		ButtonComponent confirmButton = Components.button(Text.literal("Confirm"), (presetName != null) ? b -> {
 			if (!presetName.equals(nameEntry.getText())) displayPresets.renamePreset(presetName, nameEntry.getText());
 			refreshPresetFlow(presetsFlow);
-		}: b -> {
+		} : b -> {
 			displayPresets.newPreset(nameEntry.getText());
 			refreshPresetFlow(presetsFlow);
 		});
@@ -147,5 +178,23 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> {
 		renamePresetFlow.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
 		renamePresetFlow.gap(2);
 		return renamePresetFlow;
+	}
+
+	VerticalFlowLayout openDialog(String leftButtonText, String rightButtonText, int hSize, Consumer<ButtonComponent> leftButtonAction, Consumer<ButtonComponent> rightButtonAction, List<Text> messages) {
+		VerticalFlowLayout dialog = model.expandTemplate(VerticalFlowLayout.class, "dialog-box", Map.of("leftText", leftButtonText, "rightText", rightButtonText, "hSize", String.valueOf(hSize)));
+		VerticalFlowLayout messageFlow = dialog.childById(VerticalFlowLayout.class, "messageFlow");
+		ButtonComponent leftButton = dialog.childById(ButtonComponent.class, "leftButton");
+		ButtonComponent rightButton = dialog.childById(ButtonComponent.class, "rightButton");
+		leftButton.onPress(leftB -> {
+			leftButtonAction.accept(leftB);
+			root.removeChild(dialog);
+		});
+		rightButton.onPress(rightB -> {
+			rightButtonAction.accept(rightB);
+			root.removeChild(dialog);
+		});
+		messages.forEach(m -> messageFlow.child(Components.label(m)));
+		root.child(dialog);
+		return dialog;
 	}
 }
