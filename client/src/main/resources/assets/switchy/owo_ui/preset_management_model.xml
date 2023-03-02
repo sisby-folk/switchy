@@ -5,9 +5,18 @@
             <children>
                 <label>
                     <text>Switchy Preset Management</text>
+                    <margins>
+                        <bottom>2</bottom>
+                    </margins>
                 </label>
                 <flow-layout direction="horizontal">
                     <children>
+                        <button id="backButton">
+                            <text>Back</text>
+                            <margins>
+                                <right>40</right>
+                            </margins>
+                        </button>
                         <button id="presetsTabButton">
                             <text>Presets</text>
                         </button>
@@ -18,6 +27,7 @@
                             <text>Data</text>
                         </button>
                     </children>
+                    <vertical-alignment>bottom</vertical-alignment>
                 </flow-layout>
                 <flow-layout id="panel" direction="vertical">
                     <children>

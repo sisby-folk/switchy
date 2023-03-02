@@ -15,10 +15,14 @@ import io.wispforest.owo.ui.core.VerticalAlignment;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
+import org.quiltmc.qsl.networking.api.PacketByteBufs;
+import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+
+import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_REQUEST_DISPLAY_PRESETS;
 
 
 public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implements SwitchyDisplayScreen {
@@ -36,8 +40,6 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 	@Override
 	protected void build(FlowLayout rootComponent) {
 		this.root = rootComponent;
-		// Root
-		root.gap(2);
 
 		// Preset Tab
 		presetsTab = model.expandTemplate(ScrollContainer.class, "presets-tab", Map.of("id", "presetsTab"));
@@ -56,9 +58,14 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 
 		// Header
 		VerticalFlowLayout panel = root.childById(VerticalFlowLayout.class, "panel");
+		ButtonComponent backButton = root.childById(ButtonComponent.class, "backButton");
 		ButtonComponent presetsTabButton = root.childById(ButtonComponent.class, "presetsTabButton");
 		ButtonComponent modulesTabButton = root.childById(ButtonComponent.class, "modulesTabButton");
 		ButtonComponent dataTabButton = root.childById(ButtonComponent.class, "dataTabButton");
+		backButton.onPress(buttonComponent -> {
+			client.setScreen(new SwitchScreen());
+			ClientPlayNetworking.send(C2S_REQUEST_DISPLAY_PRESETS, PacketByteBufs.empty());
+		});
 		presetsTabButton.onPress(buttonComponent -> {
 			panel.clearChildren();
 			panel.child(presetsTab);
@@ -238,14 +245,14 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 	}
 
 	@Override
-	public void updatePresets(SwitchyDisplayPresets presets) {
+	public void updatePresets(SwitchyDisplayPresets displayPresets) {
 		VerticalFlowLayout presetsFlow = presetsTab.childById(VerticalFlowLayout.class, "presetsFlow");
-		refreshPresetFlow(presetsFlow, presets);
+		refreshPresetFlow(presetsFlow, displayPresets);
 		VerticalFlowLayout disabledModulesFlow = modulesTab.childById(VerticalFlowLayout.class, "disabledFlow");
 		VerticalFlowLayout enabledModulesFlow = modulesTab.childById(VerticalFlowLayout.class, "enabledFlow");
-		refreshModulesFlow(disabledModulesFlow, enabledModulesFlow, presets);
+		refreshModulesFlow(disabledModulesFlow, enabledModulesFlow, displayPresets);
 		presetsTab.childById(ButtonComponent.class, "newPreset").onPress(buttonComponent -> {
-			presetsFlow.child(getRenameLayout(presetsFlow, null, presets));
+			presetsFlow.child(getRenameLayout(presetsFlow, null, displayPresets));
 		});
 		if (loadingOverlay != null)
 		{

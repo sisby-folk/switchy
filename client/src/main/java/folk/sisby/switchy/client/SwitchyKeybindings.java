@@ -1,7 +1,7 @@
 package folk.sisby.switchy.client;
 
 import com.mojang.blaze3d.platform.InputUtil;
-import folk.sisby.switchy.client.screen.PresetManagementScreen;
+import folk.sisby.switchy.client.screen.SwitchScreen;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBind;
 import org.lwjgl.glfw.GLFW;
@@ -31,7 +31,7 @@ public class SwitchyKeybindings {
 		ClientTickEvents.END.register(client -> {
 			while (switchKeyBinding.wasPressed()) {
 				if (client.player != null && ClientPlayNetworking.canSend(C2S_REQUEST_DISPLAY_PRESETS)) {
-					client.execute(() -> client.setScreen(new PresetManagementScreen()));
+					client.execute(() -> client.setScreen(new SwitchScreen()));
 					ClientPlayNetworking.send(C2S_REQUEST_DISPLAY_PRESETS, PacketByteBufs.empty());
 				}
 			}
