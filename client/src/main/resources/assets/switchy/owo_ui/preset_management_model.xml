@@ -171,5 +171,21 @@
                 </surface>
             </flow-layout>
         </dialog-box>
+        <loading-overlay>
+            <flow-layout direction="vertical">
+                <children>
+                    <label>
+                        <text>Loading...</text>
+                    </label>
+                </children>
+                <sizing>
+                    <horizontal method="fill">100</horizontal>
+                    <vertical method="fill">100</vertical>
+                </sizing>
+                <positioning type="absolute">0,0</positioning>
+                <vertical-alignment>bottom</vertical-alignment>
+                <horizontal-alignment>left</horizontal-alignment>
+            </flow-layout>
+        </loading-overlay>
     </templates>
 </owo-ui>
