@@ -104,6 +104,7 @@ public class SwitchyModuleRegistry {
 
 	/**
 	 * Gets the cold-editing permissions for the specified module.
+	 * Affected by server configuration.
 	 *
 	 * @param id a module identifier.
 	 * @return the editable value registered to the specified module.
@@ -211,7 +212,11 @@ public class SwitchyModuleRegistry {
 	 */
 	public static NbtCompound infoToNbt() {
 		NbtCompound nbt = new NbtCompound();
-		INFO.forEach((id, info) -> nbt.put(id.toString(), info.toNbt()));
+		INFO.forEach((id, info) -> {
+			SwitchyModuleInfo copy = SwitchyModuleInfo.fromNbt(info.toNbt());
+			copy.withEditable(getEditable(id));
+			nbt.put(id.toString(), copy.toNbt());
+		});
 		return nbt;
 	}
 }
