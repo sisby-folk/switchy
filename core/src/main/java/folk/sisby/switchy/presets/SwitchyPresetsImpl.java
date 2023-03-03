@@ -29,10 +29,14 @@ public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, Sw
 				SwitchyModuleRegistry.getModuleDefaults(),
 				SwitchyPresetImpl::new,
 				SwitchyModuleRegistry::supplyModule,
-				SwitchyModule::onEnable,
 				forPlayer,
 				Switchy.LOGGER
 		);
+	}
+
+	@Override
+	public void enableModule(ServerPlayerEntity player, Identifier id) throws IllegalArgumentException, IllegalStateException {
+		super.enableModuleAndReturn(id).forEach((module) -> module.onEnable(player));
 	}
 
 	@Override

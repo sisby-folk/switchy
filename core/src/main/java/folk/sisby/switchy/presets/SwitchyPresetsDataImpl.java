@@ -12,12 +12,8 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static folk.sisby.switchy.util.Feedback.getIdListText;
@@ -32,7 +28,6 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 	private final Map<Identifier, Boolean> modules;
 	private final BiFunction<String, Map<Identifier, Boolean>, Preset> presetConstructor;
 	private final Function<Identifier, Module> moduleSupplier;
-	private final Consumer<Module> moduleEnabler;
 	private final boolean forPlayer;
 	private final Logger logger;
 	private Preset currentPreset;
@@ -43,15 +38,13 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 	 * @param modules           the enabled status of modules.
 	 * @param presetConstructor a constructor for the contained presets.
 	 * @param moduleSupplier    a function to supply module instances from their ID, usually from a registry.
-	 * @param moduleEnabler 	a method to run when a module is enabled presets-wide.
 	 * @param forPlayer         whether the presets object is "for a player" - affects recovering lost presets, and logging failures.
 	 * @param logger            the logger to use for construction failures.
 	 */
-	SwitchyPresetsDataImpl(Map<Identifier, Boolean> modules, BiFunction<String, Map<Identifier, Boolean>, Preset> presetConstructor, Function<Identifier, Module> moduleSupplier, Consumer<Module> moduleEnabler, boolean forPlayer, Logger logger) {
+	SwitchyPresetsDataImpl(Map<Identifier, Boolean> modules, BiFunction<String, Map<Identifier, Boolean>, Preset> presetConstructor, Function<Identifier, Module> moduleSupplier, boolean forPlayer, Logger logger) {
 		this.modules = modules;
 		this.presetConstructor = presetConstructor;
 		this.moduleSupplier = moduleSupplier;
-		this.moduleEnabler = moduleEnabler;
 		this.forPlayer = forPlayer;
 		this.logger = logger;
 	}
@@ -73,12 +66,11 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 		}
 
 		if (forPlayer) {
-			if (nbt.contains(KEY_PRESET_CURRENT))
-				try {
-					setCurrentPreset(nbt.getString(KEY_PRESET_CURRENT));
-				} catch (IllegalArgumentException ignored) {
-					logger.warn("[Switchy] Unable to set current preset from data. Data may have been lost.");
-				}
+			if (nbt.contains(KEY_PRESET_CURRENT)) try {
+				setCurrentPreset(nbt.getString(KEY_PRESET_CURRENT));
+			} catch (IllegalArgumentException ignored) {
+				logger.warn("[Switchy] Unable to set current preset from data. Data may have been lost.");
+			}
 
 			if (presets.isEmpty() || getCurrentPreset() == null) {
 				// Recover current data as "Default" preset
@@ -207,10 +199,7 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 		if (!modules.get(id)) throw new IllegalStateException("Specified module is already disabled");
 		if (dryRun) return;
 		modules.put(id, false);
-		presets.forEach((name, preset) -> {
-			preset.removeModule(id);
-		});
-
+		presets.forEach((name, preset) -> preset.removeModule(id));
 	}
 
 	@Override
@@ -218,16 +207,22 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 		disableModule(id, false);
 	}
 
-	@Override
-	public void enableModule(Identifier id) throws IllegalArgumentException, IllegalStateException {
+	protected List<Module> enableModuleAndReturn(Identifier id) {
 		if (!modules.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
 		if (modules.get(id)) throw new IllegalStateException("Specified module is already enabled");
+		List<Module> outList = new ArrayList<>();
 		modules.put(id, true);
 		presets.values().forEach(preset -> {
 			Module module = moduleSupplier.apply(id);
 			preset.putModule(id, module);
-			moduleEnabler.accept(module);
+			outList.add(module);
 		});
+		return outList;
+	}
+
+	@Override
+	public void enableModule(Identifier id) throws IllegalArgumentException, IllegalStateException {
+		enableModuleAndReturn(id);
 	}
 
 	@Override

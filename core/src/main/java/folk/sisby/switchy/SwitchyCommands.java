@@ -204,7 +204,7 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 	 */
 	public static void enableModule(ServerPlayerEntity player, SwitchyPresets presets, Identifier id) {
 		try {
-			presets.enableModule(id);
+			presets.enableModule(player, id);
 			tellSuccess(player, "commands.switchy.module.enable.success", literal(id.toString()));
 		} catch (IllegalArgumentException ignored) {
 			tellInvalid(player, "commands.switchy.module.enable.fail.missing", literal(id.toString()));

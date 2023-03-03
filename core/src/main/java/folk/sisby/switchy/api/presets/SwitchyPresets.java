@@ -19,6 +19,16 @@ import java.util.function.Consumer;
  */
 public interface SwitchyPresets extends SwitchyPresetsData<SwitchyModule, SwitchyPreset> {
 	/**
+	 * Enables a module, creating empty instances in every preset.
+	 *
+	 * @param player the relevant player.
+	 * @param id     a module identifier.
+	 * @throws IllegalArgumentException when the specified module doesn't exist
+	 * @throws IllegalStateException    when the specified module is enabled
+	 */
+	void enableModule(ServerPlayerEntity player, Identifier id) throws IllegalArgumentException, IllegalStateException;
+
+	/**
 	 * Disables a module, deleting its instances from every preset.
 	 *
 	 * @param player the relevant player.
