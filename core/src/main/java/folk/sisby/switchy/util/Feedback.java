@@ -53,15 +53,15 @@ public class Feedback {
 	}
 
 	/**
-	 * Sends feedback to the player with a suggested command, using the {@link Feedback#FORMAT_HELP} style.
+	 * Gets formatted text explaining a command using the {@link Feedback#FORMAT_HELP} style.
 	 *
-	 * @param player     the player to send the message to.
 	 * @param keyHelp    a translation key explaining the command.
 	 * @param keyCommand a translation key with a command.
 	 * @param keyArgs    the translation key arguments to pass to the command text.
+	 * @return the resultant translatable text.
 	 */
-	public static void tellHelp(ServerPlayerEntity player, String keyHelp, String keyCommand, String... keyArgs) {
-		sendMessage(player, translatableWithArgs("commands.switchy.help.line", translatableWithArgs(keyCommand, FORMAT_COMMAND, translatable(keyArgs)), translatableWithArgs(keyHelp, FORMAT_HELP)));
+	public static MutableText helpText(String keyHelp, String keyCommand, String... keyArgs) {
+		return translatableWithArgs("commands.switchy.help.line", translatableWithArgs(keyCommand, FORMAT_COMMAND, translatable(keyArgs)), translatableWithArgs(keyHelp, FORMAT_HELP));
 	}
 
 	/**

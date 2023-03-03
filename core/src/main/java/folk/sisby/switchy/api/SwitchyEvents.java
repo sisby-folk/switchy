@@ -1,9 +1,14 @@
 package folk.sisby.switchy.api;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import folk.sisby.switchy.api.events.SwitchySwitchEvent;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import org.quiltmc.qsl.base.api.event.Event;
 import org.quiltmc.qsl.base.api.event.EventAwareListener;
+
+import java.util.function.Consumer;
 
 /**
  * Events emitted by Switchy during its operation.
@@ -32,6 +37,15 @@ public final class SwitchyEvents {
 	});
 
 	/**
+	 * @see CommandInit
+	 */
+	public static final Event<CommandInit> COMMAND_INIT = Event.create(CommandInit.class, callbacks -> (switchyArgument, helpTextRegistry) -> {
+		for (CommandInit callback : callbacks) {
+			callback.registerCommands(switchyArgument, helpTextRegistry);
+		}
+	});
+
+	/**
 	 * Occurs when Switchy loads modules during initialization.
 	 * Use this event to register your addon modules.
 	 *
@@ -43,6 +57,22 @@ public final class SwitchyEvents {
 		 * Occurs when Switchy loads modules during initialization.
 		 */
 		void onInitialize();
+	}
+
+	/**
+	 * Occurs when switchy registers its commands.
+	 * Can be used to register commands under {@code /switchy}.
+	 *
+	 * @see SwitchySwitchEvent
+	 */
+	@FunctionalInterface
+	public interface CommandInit extends EventAwareListener {
+		/**
+		 * @param switchyArgument the literal {@code /switchy} argument to add to.
+		 * @param helpTextRegistry a registry to add lines to {@code /switchy help}.
+		 *                         Lines should be generated using {@link folk.sisby.switchy.util.Feedback#helpText(String, String, String...)}
+		 */
+		void registerCommands(LiteralArgumentBuilder<ServerCommandSource> switchyArgument, Consumer<Text> helpTextRegistry);
 	}
 
 	/**

@@ -2,6 +2,8 @@ package folk.sisby.switchy;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.api.SwitchyPlayer;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.api.presets.SwitchyPreset;
@@ -11,19 +13,18 @@ import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 import static folk.sisby.switchy.Switchy.LOGGER;
 import static folk.sisby.switchy.util.Command.*;
+import static folk.sisby.switchy.util.Command.suggestModules;
 import static folk.sisby.switchy.util.Feedback.*;
 
 /**
@@ -39,20 +40,10 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 	 * If the command in here matches the one being executed, that's a confirmation.
 	 */
 	public static final Map<UUID, String> HISTORY = new HashMap<>();
+	private static final List<Text> HELP_TEXT = new ArrayList<>();
 
 	private static void displayHelp(ServerPlayerEntity player, SwitchyPresets presets) {
-		tellHelp(player, "commands.switchy.help.help", "commands.switchy.help.command");
-		tellHelp(player, "commands.switchy.list.help", "commands.switchy.list.command");
-		tellHelp(player, "commands.switchy.new.help", "commands.switchy.new.command", "commands.switchy.help.placeholder.preset");
-		tellHelp(player, "commands.switchy.set.help", "commands.switchy.set.command", "commands.switchy.help.placeholder.preset");
-		tellHelp(player, "commands.switch.help", "commands.switch.command", "commands.switchy.help.placeholder.preset");
-		tellHelp(player, "commands.switchy.delete.help", "commands.switchy.delete.command", "commands.switchy.help.placeholder.preset");
-		tellHelp(player, "commands.switchy.rename.help", "commands.switchy.rename.command", "commands.switchy.help.placeholder.preset", "commands.switchy.help.placeholder.preset");
-		tellHelp(player, "commands.switchy.module.help.help", "commands.switchy.module.help.command", "commands.switchy.help.placeholder.module");
-		tellHelp(player, "commands.switchy.module.enable.help", "commands.switchy.module.enable.command", "commands.switchy.help.placeholder.module");
-		tellHelp(player, "commands.switchy.module.disable.help", "commands.switchy.module.disable.command", "commands.switchy.help.placeholder.module");
-		tellHelp(player, "commands.switchy.export.help", "commands.switchy.export.command");
-		tellHelp(player, "commands.switchy.import.help", "commands.switchy.import.command", "commands.switchy.help.placeholder.file");
+		HELP_TEXT.forEach(t -> sendMessage(player, t));
 	}
 
 	private static void listPresets(ServerPlayerEntity player, SwitchyPresets presets) {
@@ -244,44 +235,66 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 
 	@Override
 	public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandBuildContext buildContext, CommandManager.RegistrationEnvironment environment) {
-		dispatcher.register(
-				CommandManager.literal("switchy")
-						.then(CommandManager.literal("help").executes(c -> execute(c, SwitchyCommands::displayHelp)))
-						.then(CommandManager.literal("list").executes(c -> execute(c, SwitchyCommands::listPresets)))
-						.then(CommandManager.literal("new")
-								.then(CommandManager.argument("preset", StringArgumentType.word())
-										.executes(c -> execute(c, (player, presets) -> newPreset(player, presets, c.getArgument("preset", String.class))))))
-						.then(CommandManager.literal("set")
-								.then(CommandManager.argument("preset", StringArgumentType.word())
-										.suggests((c, b) -> suggestPresets(c, b, false))
-										.executes(c -> execute(c, (player, presets) -> switchPreset(player, presets, c.getArgument("preset", String.class))))))
-						.then(CommandManager.literal("delete")
-								.then(CommandManager.argument("preset", StringArgumentType.word())
-										.suggests((c, b) -> suggestPresets(c, b, false))
-										.executes(c -> execute(c, (player, presets) -> deletePreset(player, presets, c.getArgument("preset", String.class))))))
-						.then(CommandManager.literal("rename")
-								.then(CommandManager.argument("preset", StringArgumentType.word())
-										.suggests((c, b) -> suggestPresets(c, b, true))
-										.then(CommandManager.argument("name", StringArgumentType.word())
-												.executes(c -> execute(c, (player, presets) -> renamePreset(player, presets, c.getArgument("preset", String.class), c.getArgument("name", String.class)))))))
-						.then(CommandManager.literal("module")
-								.then(CommandManager.literal("help")
-										.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
-												.suggests((c, b) -> suggestModules(c, b, null))
-												.executes(c -> execute(c, (player, presets) -> displayModuleHelp(player, presets, c.getArgument("module", Identifier.class))))))
-								.then(CommandManager.literal("enable")
-										.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
-												.suggests((c, b) -> suggestModules(c, b, false))
-												.executes(c -> execute(c, (player, presets) -> enableModule(player, presets, c.getArgument("module", Identifier.class))))))
-								.then(CommandManager.literal("disable")
-										.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
-												.suggests((c, b) -> suggestModules(c, b, true))
-												.executes(c -> execute(c, (player, presets) -> disableModule(player, presets, c.getArgument("module", Identifier.class))))))));
+		LiteralArgumentBuilder<ServerCommandSource> switchyRoot = CommandManager.literal("switchy");
+		SwitchyEvents.COMMAND_INIT.invoker().registerCommands(switchyRoot, HELP_TEXT::add);
+		dispatcher.register(switchyRoot);
 
 		dispatcher.register(
 				CommandManager.literal("switch")
 						.then(CommandManager.argument("preset", StringArgumentType.word())
 								.suggests((c, b) -> suggestPresets(c, b, false))
 								.executes(c -> execute(c, (player, presets) -> switchPreset(player, presets, c.getArgument("preset", String.class))))));
+	}
+
+	static {
+		SwitchyEvents.COMMAND_INIT.register((switchyRoot, helpTextRegistry) -> {
+			switchyRoot.then(CommandManager.literal("help").executes(c -> execute(c, SwitchyCommands::displayHelp)));
+			switchyRoot.then(CommandManager.literal("list").executes(c -> execute(c, SwitchyCommands::listPresets)));
+			switchyRoot.then(CommandManager.literal("new")
+					.then(CommandManager.argument("preset", StringArgumentType.word())
+							.executes(c -> execute(c, (player, presets) -> newPreset(player, presets, c.getArgument("preset", String.class))))));
+			switchyRoot.then(CommandManager.literal("set")
+					.then(CommandManager.argument("preset", StringArgumentType.word())
+							.suggests((c, b) -> suggestPresets(c, b, false))
+							.executes(c -> execute(c, (player, presets) -> switchPreset(player, presets, c.getArgument("preset", String.class))))));
+			switchyRoot.then(CommandManager.literal("delete")
+					.then(CommandManager.argument("preset", StringArgumentType.word())
+							.suggests((c, b) -> suggestPresets(c, b, false))
+							.executes(c -> execute(c, (player, presets) -> deletePreset(player, presets, c.getArgument("preset", String.class))))));
+			switchyRoot.then(CommandManager.literal("rename")
+					.then(CommandManager.argument("preset", StringArgumentType.word())
+							.suggests((c, b) -> suggestPresets(c, b, true))
+							.then(CommandManager.argument("name", StringArgumentType.word())
+									.executes(c -> execute(c, (player, presets) -> renamePreset(player, presets, c.getArgument("preset", String.class), c.getArgument("name", String.class)))))));
+			switchyRoot.then(CommandManager.literal("module")
+					.then(CommandManager.literal("help")
+							.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
+									.suggests((c, b) -> suggestModules(c, b, null))
+									.executes(c -> execute(c, (player, presets) -> displayModuleHelp(player, presets, c.getArgument("module", Identifier.class))))))
+					.then(CommandManager.literal("enable")
+							.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
+									.suggests((c, b) -> suggestModules(c, b, false))
+									.executes(c -> execute(c, (player, presets) -> enableModule(player, presets, c.getArgument("module", Identifier.class))))))
+					.then(CommandManager.literal("disable")
+							.then(CommandManager.argument("module", IdentifierArgumentType.identifier())
+									.suggests((c, b) -> suggestModules(c, b, true))
+									.executes(c -> execute(c, (player, presets) -> disableModule(player, presets, c.getArgument("module", Identifier.class)))))));
+
+			List.of(helpText("commands.switchy.help.help", "commands.switchy.help.command"),
+					helpText("commands.switchy.list.help", "commands.switchy.list.command"),
+					helpText("commands.switchy.new.help", "commands.switchy.new.command", "commands.switchy.help.placeholder.preset"),
+					helpText("commands.switchy.set.help", "commands.switchy.set.command", "commands.switchy.help.placeholder.preset"),
+					helpText("commands.switch.help", "commands.switch.command", "commands.switchy.help.placeholder.preset"),
+					helpText("commands.switchy.delete.help", "commands.switchy.delete.command", "commands.switchy.help.placeholder.preset"),
+					helpText("commands.switchy.rename.help", "commands.switchy.rename.command", "commands.switchy.help.placeholder.preset", "commands.switchy.help.placeholder.preset"),
+					helpText("commands.switchy.module.help.help", "commands.switchy.module.help.command", "commands.switchy.help.placeholder.module"),
+					helpText("commands.switchy.module.enable.help", "commands.switchy.module.enable.command", "commands.switchy.help.placeholder.module"),
+					helpText("commands.switchy.module.disable.help", "commands.switchy.module.disable.command", "commands.switchy.help.placeholder.module"),
+					helpText("commands.switchy.export.help", "commands.switchy.export.command"),
+					helpText("commands.switchy.import.help", "commands.switchy.import.command", "commands.switchy.help.placeholder.file")
+			).forEach(helpTextRegistry);
+		});
+
+
 	}
 }

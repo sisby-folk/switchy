@@ -207,6 +207,12 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 		disableModule(id, false);
 	}
 
+	/**
+	 * Internal implementation for {@link SwitchyPresetsDataImpl#enableModule(Identifier)}
+	 *
+	 * @param id a module identifier.
+	 * @return the list of module instances that were enabled.
+	 */
 	protected List<Module> enableModuleAndReturn(Identifier id) {
 		if (!modules.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
 		if (modules.get(id)) throw new IllegalStateException("Specified module is already enabled");
