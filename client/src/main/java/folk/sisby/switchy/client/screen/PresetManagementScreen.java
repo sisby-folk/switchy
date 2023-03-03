@@ -69,17 +69,28 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		presetsTabButton.onPress(buttonComponent -> {
 			panel.clearChildren();
 			panel.child(presetsTab);
+			presetsTabButton.active(false);
+			modulesTabButton.active(true);
+			dataTabButton.active(true);
+
 		});
 		modulesTabButton.onPress(buttonComponent -> {
 			panel.clearChildren();
 			panel.child(modulesTab);
+			presetsTabButton.active(true);
+			modulesTabButton.active(false);
+			dataTabButton.active(true);
 		});
 		dataTabButton.onPress(buttonComponent -> {
 			panel.clearChildren();
 			panel.child(dataTab);
+			presetsTabButton.active(true);
+			modulesTabButton.active(true);
+			dataTabButton.active(false);
 		});
 
 		panel.child(presetsTab); // Default Tab
+		presetsTabButton.active(false);
 		lockScreen();
 	}
 
@@ -129,6 +140,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		displayPresets.getDisabledModules().forEach(module -> {
 			HorizontalFlowLayout moduleFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 			LabelComponent moduleName = Components.label(Text.literal(module.toString()));
+			moduleName.tooltip(displayPresets.getModuleInfo().get(module).description());
 			moduleName.horizontalSizing(Sizing.fill(68));
 			ButtonComponent enableButton = Components.button(Text.literal("Enable"), b -> {
 				displayPresets.enableModule(module);
@@ -136,6 +148,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 				lockScreen();
 				SwitchyClientApi.enableModule(module);
 			});
+			enableButton.tooltip(displayPresets.getModuleInfo().get(module).descriptionWhenEnabled());
 			enableButton.horizontalSizing(Sizing.fill(28));
 			moduleFlow.child(moduleName);
 			moduleFlow.child(enableButton);
@@ -147,6 +160,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		displayPresets.getEnabledModules().forEach(module -> {
 			HorizontalFlowLayout moduleFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 			LabelComponent moduleName = Components.label(Text.literal(module.toString()));
+			moduleName.tooltip(displayPresets.getModuleInfo().get(module).description());
 			moduleName.horizontalSizing(Sizing.fill(68));
 			ButtonComponent disableButton = Components.button(Text.literal("Disable"), b -> {
 				openDialog(
@@ -165,6 +179,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 				);
 
 			});
+			disableButton.tooltip(displayPresets.getModuleInfo().get(module).descriptionWhenDisabled());
 			disableButton.horizontalSizing(Sizing.fill(28));
 			moduleFlow.child(moduleName);
 			moduleFlow.child(disableButton);
@@ -183,20 +198,27 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		ButtonComponent confirmButton = Components.button(Text.literal("Confirm"), (presetName != null) ? b -> {
 			if (!presetName.equals(nameEntry.getText()))
 			{
-				displayPresets.renamePreset(presetName, nameEntry.getText());
-				refreshPresetFlow(presetsFlow, displayPresets);
-				lockScreen();
-				SwitchyClientApi.renamePreset(presetName, nameEntry.getText());
+				if (displayPresets.getPresetNames().stream().noneMatch(s -> s.equalsIgnoreCase(nameEntry.getText())))
+				{
+					displayPresets.renamePreset(presetName, nameEntry.getText());
+					refreshPresetFlow(presetsFlow, displayPresets);
+					lockScreen();
+					SwitchyClientApi.renamePreset(presetName, nameEntry.getText());
+				}
 			}
 			else {
 				refreshPresetFlow(presetsFlow, displayPresets);
 			}
 
 		} : b -> {
-			displayPresets.newPreset(nameEntry.getText());
-			refreshPresetFlow(presetsFlow, displayPresets);
-			lockScreen();
-			SwitchyClientApi.newPreset(nameEntry.getText());
+			if (displayPresets.getPresetNames().stream().noneMatch(s -> s.equalsIgnoreCase(nameEntry.getText())))
+			{
+				displayPresets.newPreset(nameEntry.getText());
+				refreshPresetFlow(presetsFlow, displayPresets);
+				lockScreen();
+				SwitchyClientApi.newPreset(nameEntry.getText());
+			}
+
 		});
 		confirmButton.horizontalSizing(Sizing.fill(22));
 		ButtonComponent cancelButton = Components.button(Text.literal("Cancel"), b -> {
