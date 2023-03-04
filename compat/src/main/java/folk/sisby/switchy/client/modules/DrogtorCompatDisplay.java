@@ -7,8 +7,6 @@ import folk.sisby.switchy.client.api.module.SwitchyDisplayModuleRegistry;
 import folk.sisby.switchy.modules.DrogtorCompatData;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.core.Component;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import org.quiltmc.loader.api.minecraft.ClientOnly;
 
@@ -34,10 +32,8 @@ public class DrogtorCompatDisplay extends DrogtorCompatData implements SwitchyDi
 
 	@Override
 	public Pair<Component, SwitchySwitchScreenPosition> getDisplayComponent() {
-		if (nickname == null) return null;
-		Style style = Style.EMPTY;
-		if (nameColor != null) style = style.withColor(nameColor);
-		if (bio != null) style = style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(bio)));
-		return Pair.of(Components.label(Text.literal(nickname).setStyle(style)), SwitchySwitchScreenPosition.LEFT);
+		Text text = getText();
+		if (text == null) return null;
+		return Pair.of(Components.label(text), SwitchySwitchScreenPosition.LEFT);
 	}
 }
