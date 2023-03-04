@@ -125,4 +125,19 @@ public interface SwitchyPresets extends SwitchyPresetsData<SwitchyModule, Switch
 	 * @throws IllegalStateException    when the specified module is disabled
 	 */
 	void duckCurrentModule(ServerPlayerEntity player, Identifier id, Consumer<SwitchyModule> mutator) throws IllegalArgumentException, IllegalStateException;
+
+	/**
+	 * Allows you to "hot modify" the usually inaccessible current-preset data for the specified module.
+	 * Achieves this by saving the module, mutating it, then restoring it all in one swoop.
+	 *
+	 * @param <ModuleType> the class of module to return.
+	 * @param player       the player this presets object belongs to.
+	 * @param id           a module identifier.
+	 * @param mutator      a consumer that will modify the module while ducked.
+	 * @param clazz        the class of the specified module.
+	 * @throws IllegalArgumentException when the specified module doesn't exist.
+	 *                                  when the specified module is not of {@code <ModuleType>}.
+	 * @throws IllegalStateException    when the specified module is disabled.
+	 */
+	<ModuleType extends SwitchyModule> void duckCurrentModule(ServerPlayerEntity player, Identifier id, Consumer<ModuleType> mutator, Class<ModuleType> clazz) throws IllegalArgumentException, IllegalStateException;
 }

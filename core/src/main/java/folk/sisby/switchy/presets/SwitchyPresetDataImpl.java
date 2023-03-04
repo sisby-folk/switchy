@@ -65,6 +65,14 @@ public class SwitchyPresetDataImpl<Module extends SwitchySerializable> implement
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
+	public <ModuleType extends Module> ModuleType getModule(Identifier id, Class<ModuleType> clazz) throws IllegalArgumentException {
+		Module module = getModule(id);
+		if (!clazz.isAssignableFrom(module.getClass())) throw new IllegalArgumentException("Module '" + id.toString() + "' is defined as " + module.getClass().getSimpleName() + ", not " + clazz, new ClassCastException());
+		return (ModuleType) module;
+	}
+
+	@Override
 	@ApiStatus.Internal
 	public void putModule(Identifier id, Module module) {
 		modules.put(id, module);

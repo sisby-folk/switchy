@@ -114,4 +114,14 @@ public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, Sw
 		mutator.accept(module);
 		module.applyToPlayer(player);
 	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <ModuleType extends SwitchyModule> void duckCurrentModule(ServerPlayerEntity player, Identifier id, Consumer<ModuleType> mutator, Class<ModuleType> clazz) throws IllegalArgumentException, IllegalStateException {
+		duckCurrentModule(player, id, (module) -> {
+			if (!clazz.isAssignableFrom(module.getClass()))
+				throw new IllegalArgumentException("Module '" + id.toString() + "' is defined as " + module.getClass().getSimpleName() + ", not " + clazz, new ClassCastException());
+			mutator.accept((ModuleType) module);
+		});
+	}
 }

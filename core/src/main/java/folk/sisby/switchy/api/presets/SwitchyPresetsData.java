@@ -72,7 +72,6 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 * @throws IllegalStateException    when the preset with the specified name is the current preset
 	 * @see SwitchyPresets#deletePreset(String)
 	 */
-	@ApiStatus.Internal
 	void deletePreset(String name, boolean dryRun) throws IllegalArgumentException, IllegalStateException;
 
 	/**
@@ -107,7 +106,6 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 * @throws IllegalStateException    when the specified module is disabled
 	 * @see SwitchyPresets#disableModule(Identifier)
 	 */
-	@ApiStatus.Internal
 	void disableModule(Identifier id, boolean dryRun) throws IllegalArgumentException, IllegalStateException;
 
 	/**
@@ -134,7 +132,6 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 *
 	 * @return the current preset.
 	 */
-	@ApiStatus.Internal
 	Preset getCurrentPreset();
 
 	/**
@@ -159,7 +156,6 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 *
 	 * @return all contained presets.
 	 */
-	@ApiStatus.Internal
 	Map<String, Preset> getPresets();
 
 	/**
@@ -168,7 +164,6 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 * @param name the case-insensitive name of a preset.
 	 * @return the specified preset.
 	 */
-	@ApiStatus.Internal
 	Preset getPreset(String name);
 
 	/**
@@ -191,7 +186,6 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 *
 	 * @return the enabled status of all modules.
 	 */
-	@ApiStatus.Internal
 	Map<Identifier, Boolean> getModules();
 
 	/**
@@ -203,6 +197,19 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 * @throws IllegalStateException    when the specified module is disabled
 	 */
 	Map<String, Module> getAllOfModule(Identifier id) throws IllegalArgumentException, IllegalStateException;
+
+	/**
+	 * Gets every instance of a module mapped by preset name.
+	 *
+	 * @param <ModuleType> the class of module to return.
+	 * @param id a module identifier.
+	 * @param clazz the class of the specified module.
+	 * @return a map of each preset to the specified module.
+	 * @throws IllegalArgumentException when the specified module doesn't exist.
+	 * 									when the specified module is not of {@code <ModuleType>}.
+	 * @throws IllegalStateException    when the specified module is disabled.
+	 */
+	<ModuleType extends Module> Map<String, ModuleType> getAllOfModule(Identifier id, Class<ModuleType> clazz) throws IllegalArgumentException, IllegalStateException;
 
 	/**
 	 * Gets a list of all enabled modules as IDs.

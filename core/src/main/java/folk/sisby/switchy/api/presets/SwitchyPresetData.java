@@ -28,8 +28,18 @@ public interface SwitchyPresetData<Module extends SwitchySerializable> extends S
 	 * @param id a module identifier.
 	 * @return the specified module stored in this preset.
 	 */
-	@ApiStatus.Internal
 	Module getModule(Identifier id);
+
+	/**
+	 * Gets the specified module.
+	 *
+	 * @param <ModuleType> the class of module to return.
+	 * @param id           a module identifier.
+	 * @param clazz        the class of the specified module.
+	 * @throws IllegalArgumentException	when the specified module is not of {@code <ModuleType>}
+	 * @return the specified module stored in this preset.
+	 */
+	<ModuleType extends Module> ModuleType getModule(Identifier id, Class<ModuleType> clazz) throws IllegalArgumentException;
 
 	/**
 	 * Adds or replaces the specified module.
@@ -37,7 +47,6 @@ public interface SwitchyPresetData<Module extends SwitchySerializable> extends S
 	 * @param id     a module identifier.
 	 * @param module a module to add to or replace in the module map.
 	 */
-	@ApiStatus.Internal
 	void putModule(Identifier id, Module module);
 
 	/**

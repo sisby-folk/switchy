@@ -287,6 +287,19 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
+	public <ModuleType extends Module> Map<String, ModuleType> getAllOfModule(Identifier id, Class<ModuleType> clazz) throws IllegalArgumentException, IllegalStateException {
+		Map<String, Module> modules = getAllOfModule(id);
+		Map<String, ModuleType> outModules = new HashMap<>();
+		modules.forEach((name, module) -> {
+			if (!clazz.isAssignableFrom(module.getClass()))
+				throw new IllegalArgumentException("Module '" + id.toString() + "' is defined as " + module.getClass().getSimpleName() + ", not " + clazz, new ClassCastException());
+			outModules.put(name, (ModuleType) module);
+		});
+		return outModules;
+	}
+
+	@Override
 	public List<Identifier> getEnabledModules() {
 		return modules.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).toList();
 	}
