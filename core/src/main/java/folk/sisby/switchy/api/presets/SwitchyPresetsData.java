@@ -162,9 +162,10 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 * Gets the specified preset.
 	 *
 	 * @param name the case-insensitive name of a preset.
+	 * @throws IllegalArgumentException when a preset with the specified name doesn't exist.
 	 * @return the specified preset.
 	 */
-	Preset getPreset(String name);
+	Preset getPreset(String name) throws IllegalArgumentException;
 
 	/**
 	 * Gets a list of all preset names.

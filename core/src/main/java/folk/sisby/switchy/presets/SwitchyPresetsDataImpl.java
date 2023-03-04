@@ -256,7 +256,7 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 
 	@Override
 	@ApiStatus.Internal
-	public Preset getPreset(String name) {
+	public Preset getPreset(String name) throws IllegalArgumentException {
 		if (!presets.containsKey(name)) throw new IllegalArgumentException("Specified preset does not exist");
 		return presets.get(name);
 	}
