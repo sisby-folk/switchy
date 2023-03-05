@@ -65,6 +65,9 @@ public class DrogtorCompatData implements SwitchySerializable {
 		bio = nbt.contains(KEY_BIO) ? nbt.getString(KEY_BIO) : null;
 	}
 
+	/**
+	 * @return a text representation of the stored nickname.
+	 */
 	public Text getText() {
 		if (nickname == null) return null;
 		Style style = Style.EMPTY;

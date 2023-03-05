@@ -42,6 +42,12 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 	public static final Map<UUID, String> HISTORY = new HashMap<>();
 	private static final List<Text> HELP_TEXT = new ArrayList<>();
 
+	/**
+	 * Whether to register the import literal.
+	 * Internal.
+	 */
+	public static boolean IMPORT_ENABLED = false;
+
 	private static void displayHelp(ServerPlayerEntity player, SwitchyPresets presets) {
 		HELP_TEXT.forEach(t -> sendMessage(player, t));
 	}
@@ -235,7 +241,14 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 
 	@Override
 	public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandBuildContext buildContext, CommandManager.RegistrationEnvironment environment) {
+		LiteralArgumentBuilder<ServerCommandSource> switchyImport = CommandManager.literal("import");
 		LiteralArgumentBuilder<ServerCommandSource> switchyRoot = CommandManager.literal("switchy");
+
+		SwitchyEvents.COMMAND_INIT_IMPORT.invoker().registerCommands(switchyImport, HELP_TEXT::add);
+		if (IMPORT_ENABLED) {
+			switchyRoot.then(switchyImport);
+		}
+
 		SwitchyEvents.COMMAND_INIT.invoker().registerCommands(switchyRoot, HELP_TEXT::add);
 		dispatcher.register(switchyRoot);
 

@@ -1,6 +1,7 @@
 package folk.sisby.switchy.api;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import folk.sisby.switchy.SwitchyCommands;
 import folk.sisby.switchy.api.events.SwitchySwitchEvent;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -46,6 +47,16 @@ public final class SwitchyEvents {
 	});
 
 	/**
+	 * @see CommandInitImport
+	 */
+	public static final Event<CommandInitImport> COMMAND_INIT_IMPORT = Event.create(CommandInitImport.class, callbacks -> (importArgument, helpTextRegistry) -> {
+		for (CommandInitImport callback : callbacks) {
+			callback.registerCommands(importArgument, helpTextRegistry);
+			SwitchyCommands.IMPORT_ENABLED = true;
+		}
+	});
+
+	/**
 	 * Occurs when Switchy loads modules during initialization.
 	 * Use this event to register your addon modules.
 	 *
@@ -73,6 +84,22 @@ public final class SwitchyEvents {
 		 *                         Lines should be generated using {@link folk.sisby.switchy.util.Feedback#helpText(String, String, String...)}
 		 */
 		void registerCommands(LiteralArgumentBuilder<ServerCommandSource> switchyArgument, Consumer<Text> helpTextRegistry);
+	}
+
+	/**
+	 * Occurs when switchy registers its import command.
+	 * Can be used to register commands under {@code /switchy import}.
+	 *
+	 * @see SwitchySwitchEvent
+	 */
+	@FunctionalInterface
+	public interface CommandInitImport extends EventAwareListener {
+		/**
+		 * @param importArgument the literal {@code /switchy import} argument to add to.
+		 * @param helpTextRegistry a registry to add lines to {@code /switchy help}.
+		 *                         Lines should be generated using {@link folk.sisby.switchy.util.Feedback#helpText(String, String, String...)}
+		 */
+		void registerCommands(LiteralArgumentBuilder<ServerCommandSource> importArgument, Consumer<Text> helpTextRegistry);
 	}
 
 	/**
