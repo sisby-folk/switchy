@@ -23,8 +23,8 @@ public interface SwitchyPresets extends SwitchyPresetsData<SwitchyModule, Switch
 	 *
 	 * @param player the relevant player.
 	 * @param id     a module identifier.
-	 * @throws IllegalArgumentException when the specified module doesn't exist
-	 * @throws IllegalStateException    when the specified module is enabled
+	 * @throws IllegalArgumentException when the specified module doesn't exist.
+	 * @throws IllegalStateException    when the specified module is enabled.
 	 */
 	void enableModule(ServerPlayerEntity player, Identifier id) throws IllegalArgumentException, IllegalStateException;
 
@@ -35,8 +35,8 @@ public interface SwitchyPresets extends SwitchyPresetsData<SwitchyModule, Switch
 	 * @param id     a module identifier.
 	 * @param dryRun whether to skip disabling the module.
 	 *               For use in situations where throwable-based validation is desired before confirming the action.
-	 * @throws IllegalArgumentException when the specified module doesn't exist
-	 * @throws IllegalStateException    when the specified module is disabled
+	 * @throws IllegalArgumentException when the specified module doesn't exist.
+	 * @throws IllegalStateException    when the specified module is disabled.
 	 * @see SwitchyPresetsData#disableModule(Identifier)
 	 */
 	void disableModule(ServerPlayerEntity player, Identifier id, boolean dryRun) throws IllegalArgumentException, IllegalStateException;
@@ -46,8 +46,8 @@ public interface SwitchyPresets extends SwitchyPresetsData<SwitchyModule, Switch
 	 *
 	 * @param player the relevant player.
 	 * @param id     a module identifier.
-	 * @throws IllegalArgumentException when the specified module doesn't exist
-	 * @throws IllegalStateException    when the specified module is disabled
+	 * @throws IllegalArgumentException when the specified module doesn't exist.
+	 * @throws IllegalStateException    when the specified module is disabled.
 	 * @see SwitchyPresetsData#disableModule(Identifier)
 	 */
 	void disableModule(ServerPlayerEntity player, Identifier id) throws IllegalArgumentException, IllegalStateException;
@@ -59,8 +59,8 @@ public interface SwitchyPresets extends SwitchyPresetsData<SwitchyModule, Switch
 	 * @param name   the case-insensitive name of a preset.
 	 * @param dryRun whether to skip deleting the preset.
 	 *               For use in situations where throwable-based validation is desired before confirming the action.
-	 * @throws IllegalArgumentException when a preset with the specified name doesn't exist
-	 * @throws IllegalStateException    when the preset with the specified name is the current preset
+	 * @throws IllegalArgumentException when a preset with the specified name doesn't exist.
+	 * @throws IllegalStateException    when the preset with the specified name is the current preset.
 	 * @see SwitchyPresets#deletePreset(String)
 	 */
 	void deletePreset(ServerPlayerEntity player, String name, boolean dryRun) throws IllegalArgumentException, IllegalStateException;
@@ -70,8 +70,8 @@ public interface SwitchyPresets extends SwitchyPresetsData<SwitchyModule, Switch
 	 *
 	 * @param player the relevant player.
 	 * @param name   the case-insensitive name of a preset.
-	 * @throws IllegalArgumentException when a preset with the specified name doesn't exist
-	 * @throws IllegalStateException    when the preset with the specified name is the current preset
+	 * @throws IllegalArgumentException when a preset with the specified name doesn't exist.
+	 * @throws IllegalStateException    when the preset with the specified name is the current preset.
 	 * @see SwitchyPresets#deletePreset(String)
 	 */
 	void deletePreset(ServerPlayerEntity player, String name) throws IllegalArgumentException, IllegalStateException;
@@ -101,8 +101,8 @@ public interface SwitchyPresets extends SwitchyPresetsData<SwitchyModule, Switch
 	 * @param player the player this presets object belongs to.
 	 * @param name   the case-insensitive name of a preset.
 	 * @return the (case-corrected) name of the new current preset.
-	 * @throws IllegalArgumentException when a preset with the specified name doesn't exist
-	 * @throws IllegalStateException    when the preset with the specified name is the current preset
+	 * @throws IllegalArgumentException when a preset with the specified name doesn't exist.
+	 * @throws IllegalStateException    when the preset with the specified name is the current preset.
 	 */
 	String switchCurrentPreset(ServerPlayerEntity player, String name) throws IllegalArgumentException, IllegalStateException;
 
@@ -121,8 +121,8 @@ public interface SwitchyPresets extends SwitchyPresetsData<SwitchyModule, Switch
 	 * @param player  the player this presets object belongs to.
 	 * @param id      a module identifier.
 	 * @param mutator a consumer that will modify the module while ducked.
-	 * @throws IllegalArgumentException when the specified module doesn't exist
-	 * @throws IllegalStateException    when the specified module is disabled
+	 * @throws IllegalArgumentException when the specified module doesn't exist.
+	 * @throws IllegalStateException    when the specified module is disabled.
 	 */
 	void duckCurrentModule(ServerPlayerEntity player, Identifier id, Consumer<SwitchyModule> mutator) throws IllegalArgumentException, IllegalStateException;
 

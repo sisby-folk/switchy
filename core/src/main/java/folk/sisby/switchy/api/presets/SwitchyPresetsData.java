@@ -47,7 +47,7 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 * Adds a preset to this object.
 	 *
 	 * @param preset a named preset object.
-	 * @throws IllegalStateException when a preset with the provided name already exists
+	 * @throws IllegalStateException when a preset with the provided name already exists.
 	 */
 	void addPreset(Preset preset) throws IllegalStateException;
 
@@ -56,8 +56,8 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 *
 	 * @param name the desired name for the new preset.
 	 * @return the newly created preset.
-	 * @throws IllegalArgumentException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)})
-	 * @throws IllegalStateException when a preset with the provided name already exists
+	 * @throws IllegalArgumentException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)}).
+	 * @throws IllegalStateException when a preset with the provided name already exists.
 	 */
 	Preset newPreset(String name) throws IllegalArgumentException, IllegalStateException;
 
@@ -68,8 +68,8 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 * @param name   the case-insensitive name of a preset.
 	 * @param dryRun whether to skip deleting the preset.
 	 *               For use in situations where throwable-based validation is desired before confirming the action.
-	 * @throws IllegalArgumentException when a preset with the specified name doesn't exist
-	 * @throws IllegalStateException    when the preset with the specified name is the current preset
+	 * @throws IllegalArgumentException when a preset with the specified name doesn't exist.
+	 * @throws IllegalStateException    when the preset with the specified name is the current preset.
 	 * @see SwitchyPresets#deletePreset(String)
 	 */
 	void deletePreset(String name, boolean dryRun) throws IllegalArgumentException, IllegalStateException;
@@ -79,8 +79,8 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 * In a presets object, a module must be disabled using {@link SwitchyPresets#deletePreset(ServerPlayerEntity, String)}.
 	 *
 	 * @param name the case-insensitive name of a preset.
-	 * @throws IllegalArgumentException when a preset with the specified name doesn't exist
-	 * @throws IllegalStateException    when the preset with the specified name is the current preset
+	 * @throws IllegalArgumentException when a preset with the specified name doesn't exist.
+	 * @throws IllegalStateException    when the preset with the specified name is the current preset.
 	 *                                  Deletes the specified preset, along with any associated data.
 	 */
 	void deletePreset(String name) throws IllegalArgumentException, IllegalStateException;
@@ -91,7 +91,7 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 * @param name    the case-insensitive name of a preset.
 	 * @param newName the new name for the specified preset. a single word matching {@code azAZ09_-.+}.
 	 * @throws IllegalArgumentException when a preset with the specified name doesn't exist, or when name is not a word.
-	 * @throws IllegalStateException    when a preset with the provided name already exists
+	 * @throws IllegalStateException    when a preset with the provided name already exists.
 	 */
 	void renamePreset(String name, String newName) throws IllegalArgumentException, IllegalStateException;
 
@@ -102,8 +102,8 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 * @param id     a module identifier.
 	 * @param dryRun whether to skip disabling the module.
 	 *               For use in situations where throwable-based validation is desired before confirming the action.
-	 * @throws IllegalArgumentException when the specified module doesn't exist
-	 * @throws IllegalStateException    when the specified module is disabled
+	 * @throws IllegalArgumentException when the specified module doesn't exist.
+	 * @throws IllegalStateException    when the specified module is disabled.
 	 * @see SwitchyPresets#disableModule(Identifier)
 	 */
 	void disableModule(Identifier id, boolean dryRun) throws IllegalArgumentException, IllegalStateException;
@@ -113,8 +113,8 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 * In a presets object, a module must be disabled using {@link SwitchyPresets#disableModule(ServerPlayerEntity, Identifier)}.
 	 *
 	 * @param id a module identifier.
-	 * @throws IllegalArgumentException when the specified module doesn't exist
-	 * @throws IllegalStateException    when the specified module is disabled
+	 * @throws IllegalArgumentException when the specified module doesn't exist.
+	 * @throws IllegalStateException    when the specified module is disabled.
 	 */
 	void disableModule(Identifier id) throws IllegalArgumentException, IllegalStateException;
 
@@ -122,8 +122,8 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 * Enables a module, creating empty instances in every preset.
 	 *
 	 * @param id a module identifier.
-	 * @throws IllegalArgumentException when the specified module doesn't exist
-	 * @throws IllegalStateException    when the specified module is enabled
+	 * @throws IllegalArgumentException when the specified module doesn't exist.
+	 * @throws IllegalStateException    when the specified module is enabled.
 	 */
 	void enableModule(Identifier id) throws IllegalArgumentException, IllegalStateException;
 
@@ -139,7 +139,7 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 * Causes data loss when the object is in use.
 	 *
 	 * @param name the case-insensitive name of a preset.
-	 * @throws IllegalArgumentException when a preset with the specified name doesn't exist
+	 * @throws IllegalArgumentException when a preset with the specified name doesn't exist.
 	 */
 	@ApiStatus.Internal
 	void setCurrentPreset(String name) throws IllegalArgumentException;
@@ -194,8 +194,8 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 *
 	 * @param id a module identifier.
 	 * @return a map of each preset to the specified module.
-	 * @throws IllegalArgumentException when the specified module doesn't exist
-	 * @throws IllegalStateException    when the specified module is disabled
+	 * @throws IllegalArgumentException when the specified module doesn't exist.
+	 * @throws IllegalStateException    when the specified module is disabled.
 	 */
 	Map<String, Module> getAllOfModule(Identifier id) throws IllegalArgumentException, IllegalStateException;
 
@@ -240,7 +240,7 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 *
 	 * @param id a module identifier.
 	 * @return true if the module is enabled, false otherwise.
-	 * @throws IllegalArgumentException when the specified module doesn't exist
+	 * @throws IllegalArgumentException when the specified module doesn't exist.
 	 */
 	boolean isModuleEnabled(Identifier id) throws IllegalArgumentException;
 

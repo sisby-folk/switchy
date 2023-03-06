@@ -208,7 +208,7 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 	}
 
 	/**
-	 * Internal implementation for {@link SwitchyPresetsDataImpl#enableModule(Identifier)}
+	 * Internal implementation for {@link SwitchyPresetsDataImpl#enableModule(Identifier)}.
 	 *
 	 * @param id a module identifier.
 	 * @return the list of module instances that were enabled.

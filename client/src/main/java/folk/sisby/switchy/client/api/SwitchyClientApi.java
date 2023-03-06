@@ -16,7 +16,7 @@ import java.util.Collection;
 import static folk.sisby.switchy.SwitchyClientServerNetworking.*;
 
 /**
- * Client-side API for interacting with the client player's presets on the server
+ * Client-side API for interacting with the client player's presets on the server.
  *
  * @author Sisby folk
  * @since 1.9.1
@@ -43,7 +43,7 @@ public class SwitchyClientApi {
 	 *
 	 * @param name the case-insensitive name of a preset.
 	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
-	 * @throws IllegalArgumentException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)})
+	 * @throws IllegalArgumentException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)}).
 	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#newPreset(String)
 	 */
 	public static void newPreset(String name) throws UnsupportedOperationException, IllegalArgumentException {

@@ -26,7 +26,7 @@ public class SwitchyPresetDataImpl<Module extends SwitchySerializable> implement
 	 * @param name           the desired name for the new preset.
 	 * @param modules        the enabled status of modules from the presets object.
 	 * @param moduleSupplier a function to supply module instances from their ID, usually from a registry.
-	 * @throws IllegalArgumentException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)})
+	 * @throws IllegalArgumentException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)}).
 	 */
 	public SwitchyPresetDataImpl(String name, Map<Identifier, Boolean> modules, Function<Identifier, Module> moduleSupplier) throws IllegalArgumentException {
 		setName(name);

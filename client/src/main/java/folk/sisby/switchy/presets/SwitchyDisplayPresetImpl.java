@@ -26,7 +26,7 @@ public class SwitchyDisplayPresetImpl extends SwitchyPresetDataImpl<SwitchyDispl
 	 *
 	 * @param name    the desired name for the new preset.
 	 * @param modules the enabled status of modules from the display presets object.
-	 * @throws IllegalArgumentException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)})
+	 * @throws IllegalArgumentException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)}).
 	 */
 	public SwitchyDisplayPresetImpl(String name, Map<Identifier, Boolean> modules) throws IllegalArgumentException {
 		super(name, modules, SwitchyDisplayModuleRegistry::supplyModule);

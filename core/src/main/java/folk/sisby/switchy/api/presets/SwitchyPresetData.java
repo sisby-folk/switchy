@@ -36,7 +36,7 @@ public interface SwitchyPresetData<Module extends SwitchySerializable> extends S
 	 * @param <ModuleType> the class of module to return.
 	 * @param id           a module identifier.
 	 * @param clazz        the class of the specified module.
-	 * @throws IllegalArgumentException	when the specified module is not of {@code <ModuleType>}
+	 * @throws IllegalArgumentException	when the specified module is not of {@code <ModuleType>}.
 	 * @return the specified module stored in this preset.
 	 */
 	<ModuleType extends Module> ModuleType getModule(Identifier id, Class<ModuleType> clazz) throws IllegalArgumentException;
@@ -75,7 +75,7 @@ public interface SwitchyPresetData<Module extends SwitchySerializable> extends S
 	 * In a presets object, a preset must be renamed using {@link SwitchyPresets#renamePreset(String, String)}.
 	 *
 	 * @param name a new name for this preset.
-	 * @throws IllegalArgumentException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)})
+	 * @throws IllegalArgumentException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)}).
 	 */
 	@ApiStatus.Internal
 	void setName(String name) throws IllegalArgumentException;

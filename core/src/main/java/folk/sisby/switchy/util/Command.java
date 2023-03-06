@@ -36,7 +36,7 @@ public class Command {
 	 * @param builder      the suggestion builder.
 	 * @param allowCurrent whether to include the player's current preset.
 	 * @return the suggestion promise.
-	 * @throws CommandSyntaxException when the source is not a player
+	 * @throws CommandSyntaxException when the source is not a player.
 	 */
 	public static CompletableFuture<Suggestions> suggestPresets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, boolean allowCurrent) throws CommandSyntaxException {
 		SwitchyPresets presets = ((SwitchyPlayer) context.getSource().getPlayer()).switchy$getPresets();
@@ -51,7 +51,7 @@ public class Command {
 	 * @param builder the suggestion builder.
 	 * @param enabled whether to show enabled or disabled modules.
 	 * @return the suggestion promise.
-	 * @throws CommandSyntaxException when the source is not a player
+	 * @throws CommandSyntaxException when the source is not a player.
 	 */
 	public static CompletableFuture<Suggestions> suggestModules(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, Boolean enabled) throws CommandSyntaxException {
 		SwitchyPresets presets = ((SwitchyPlayer) context.getSource().getPlayer()).switchy$getPresets();
