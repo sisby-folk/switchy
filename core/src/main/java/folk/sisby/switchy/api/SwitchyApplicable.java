@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 public interface SwitchyApplicable<Player extends PlayerEntity> {
 	/**
 	 * In Switchy, runs when a preset is being switched out.
-	 * Also runs before exporting, importing, on save, and when being "hot modified" with {@link SwitchyPresets#duckCurrentModule(ServerPlayerEntity, Identifier, Consumer)}.
+	 * Also runs before exporting, importing, on save, and when being "hot modified" with {@link SwitchyPresets#mutateModule(ServerPlayerEntity, String, Identifier, Consumer, Class)}.
 	 *
 	 * @param player     the player to fill the object's data from.
 	 * @param nextPreset the name of the upcoming preset. Intended for special addon logic - null when saving without switching.
@@ -26,7 +26,7 @@ public interface SwitchyApplicable<Player extends PlayerEntity> {
 
 	/**
 	 * In Switchy, runs when the holding preset is being switched in.
-	 * Also runs when being "hot modified" with {@link SwitchyPresets#duckCurrentModule(ServerPlayerEntity, Identifier, Consumer)} (e.g. when importing).
+	 * Also runs when being "hot modified" with {@link SwitchyPresets#mutateModule(ServerPlayerEntity, String, Identifier, Consumer, Class)} (e.g. when importing).
 	 *
 	 * @param player the player to apply the object's data to.
 	 */

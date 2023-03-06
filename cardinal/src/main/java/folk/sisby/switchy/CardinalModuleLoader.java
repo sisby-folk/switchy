@@ -93,13 +93,13 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 						if (moduleOptions.has(KEY_DESCRIPTION_DISABLED)) info.withDescriptionWhenDisabled(Text.literal(moduleOptions.get(KEY_DESCRIPTION_DISABLED).getAsString()));
 						if (moduleOptions.has(KEY_DESCRIPTION_DELETION_WARNING)) info.withDeletionWarning(Text.literal(moduleOptions.get(KEY_DESCRIPTION_DELETION_WARNING).getAsString()));
 						CardinalSerializerCompat.register(moduleId, componentIds, info);
-					} catch (IllegalStateException ignored) {
+					} catch (IllegalStateException ignoredRegistrationEx) {
 						Switchy.LOGGER.warn("[Switchy] CCA module {} tried to register a component that already has a module!, skipping...", moduleId);
 					}
 				}
-			} catch (UnsupportedOperationException e) {
+			} catch (UnsupportedOperationException ignoredGetFromJsonEx) {
 				Switchy.LOGGER.warn("[Switchy] CCA module '{}' has non-boolean options, skipping...", moduleId);
-			} catch (IllegalArgumentException e) {
+			} catch (IllegalArgumentException ignoredValueOfEx) {
 				Switchy.LOGGER.warn("[Switchy] CCA module '{}' has invalid editable option, skipping...", moduleId);
 			}
 		});

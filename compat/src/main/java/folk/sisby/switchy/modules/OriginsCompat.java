@@ -127,8 +127,8 @@ public class OriginsCompat implements SwitchyModule, SwitchyModuleDisplayable {
 						OriginLayer layer = OriginLayers.getLayer(Identifier.tryParse(layerId));
 						Origin origin = OriginRegistry.get(Identifier.tryParse(originId));
 						origins.put(layer, origin);
-					} catch (IllegalArgumentException e) {
-						Switchy.LOGGER.warn("[Switchy] Failed to load preset origin with layer" + layerId + " and origin " + originId);
+					} catch (IllegalArgumentException originGetEx) {
+						Switchy.LOGGER.warn("[Switchy] Failed to load preset origin with layer {} and origin {}. Exception: {}", layerId, originId, originGetEx);
 					}
 				}
 			}

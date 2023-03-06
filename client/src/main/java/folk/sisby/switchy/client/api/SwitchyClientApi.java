@@ -1,6 +1,7 @@
 package folk.sisby.switchy.client.api;
 
 import com.mojang.brigadier.StringReader;
+import folk.sisby.switchy.api.exception.InvalidWordException;
 import folk.sisby.switchy.api.presets.SwitchyPresets;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -43,14 +44,14 @@ public class SwitchyClientApi {
 	 *
 	 * @param name the case-insensitive name of a preset.
 	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
-	 * @throws IllegalArgumentException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)}).
+	 * @throws InvalidWordException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)}).
 	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#newPreset(String)
 	 */
-	public static void newPreset(String name) throws UnsupportedOperationException, IllegalArgumentException {
+	public static void newPreset(String name) throws UnsupportedOperationException, InvalidWordException {
 		if (!ClientPlayNetworking.canSend(C2S_PRESETS_NEW))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
 		if (!name.chars().mapToObj(i -> (char) i).allMatch(StringReader::isAllowedInUnquotedString))
-			throw new IllegalArgumentException("Specified preset name is not a word");
+			throw new InvalidWordException();
 		PacketByteBuf buf = PacketByteBufs.create();
 		buf.writeString(name);
 		ClientPlayNetworking.send(C2S_PRESETS_NEW, buf);

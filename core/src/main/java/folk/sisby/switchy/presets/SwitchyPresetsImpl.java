@@ -3,6 +3,9 @@ package folk.sisby.switchy.presets;
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.api.events.SwitchySwitchEvent;
+import folk.sisby.switchy.api.exception.ClassNotAssignableException;
+import folk.sisby.switchy.api.exception.ModuleNotFoundException;
+import folk.sisby.switchy.api.exception.PresetNotFoundException;
 import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.api.presets.SwitchyPreset;
@@ -11,6 +14,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -35,31 +39,31 @@ public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, Sw
 	}
 
 	@Override
-	public void enableModule(ServerPlayerEntity player, Identifier id) throws IllegalArgumentException, IllegalStateException {
+	public void enableModule(ServerPlayerEntity player, Identifier id) throws ModuleNotFoundException, IllegalStateException {
 		super.enableModuleAndReturn(id).forEach((module) -> module.onEnable(player));
 	}
 
 	@Override
-	public void disableModule(ServerPlayerEntity player, Identifier id, boolean dryRun) throws IllegalArgumentException, IllegalStateException {
+	public void disableModule(ServerPlayerEntity player, Identifier id, boolean dryRun) throws ModuleNotFoundException, IllegalStateException {
 		Map<String, SwitchyModule> modules = getAllOfModule(id);
 		disableModule(id, dryRun);
 		modules.forEach((name, module) -> module.onDelete(player, true));
 	}
 
 	@Override
-	public void disableModule(ServerPlayerEntity player, Identifier id) throws IllegalArgumentException, IllegalStateException {
+	public void disableModule(ServerPlayerEntity player, Identifier id) throws ModuleNotFoundException, IllegalStateException {
 		disableModule(player, id, false);
 	}
 
 	@Override
-	public void deletePreset(ServerPlayerEntity player, String name, boolean dryRun) throws IllegalArgumentException, IllegalStateException {
+	public void deletePreset(ServerPlayerEntity player, String name, boolean dryRun) throws PresetNotFoundException, IllegalStateException {
 		Map<Identifier, SwitchyModule> modules = getPreset(name).getModules();
 		deletePreset(name, dryRun);
 		modules.forEach((id, module) -> module.onDelete(player, false));
 	}
 
 	@Override
-	public void deletePreset(ServerPlayerEntity player, String name) throws IllegalArgumentException, IllegalStateException {
+	public void deletePreset(ServerPlayerEntity player, String name) throws PresetNotFoundException, IllegalStateException {
 		deletePreset(player, name, false);
 	}
 
@@ -68,7 +72,7 @@ public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, Sw
 		// Replace enabled modules for colliding current preset
 		if (other.containsKey(getCurrentPresetName())) {
 			other.get(getCurrentPresetName()).getModules().forEach((id, module) ->
-					duckCurrentModule(player, id, (duckedModule) -> duckedModule.fillFromNbt(duckedModule.toNbt()))
+					mutateModule(player, getCurrentPresetName(), module, (duckedModule) -> duckedModule.fillFromNbt(duckedModule.toNbt()))
 			);
 		}
 		importFromOther(other);
@@ -80,10 +84,10 @@ public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, Sw
 	}
 
 	@Override
-	public String switchCurrentPreset(ServerPlayerEntity player, String name) throws IllegalArgumentException, IllegalStateException {
-		if (!containsPreset(name)) throw new IllegalArgumentException("Specified preset does not exist");
+	public String switchCurrentPreset(ServerPlayerEntity player, String name) throws PresetNotFoundException, IllegalStateException {
+		if (!containsPreset(name)) throw new PresetNotFoundException();
 		if (getCurrentPresetName().equalsIgnoreCase(name))
-			throw new IllegalStateException("Specified preset is already current");
+			throw new IllegalStateException("Specified preset is current");
 
 		SwitchyPreset nextPreset = getPreset(name);
 
@@ -105,23 +109,24 @@ public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, Sw
 		getCurrentPreset().updateFromPlayer(player, null);
 	}
 
-	@Override
-	public void duckCurrentModule(ServerPlayerEntity player, Identifier id, Consumer<SwitchyModule> mutator) throws IllegalArgumentException, IllegalStateException {
-		if (!containsModule(id)) throw new IllegalArgumentException("Specified module does not exist");
-		if (!isModuleEnabled(id)) throw new IllegalStateException("Specified module is not enabled");
-		SwitchyModule module = getCurrentPreset().getModule(id);
-		module.updateFromPlayer(player, null);
+	private <ModuleType extends SwitchyModule> void mutateModule(ServerPlayerEntity player, String name, ModuleType module, Consumer<ModuleType> mutator) {
+		if (name.equalsIgnoreCase(getCurrentPresetName())) module.updateFromPlayer(player, null);
 		mutator.accept(module);
-		module.applyToPlayer(player);
+		if (name.equalsIgnoreCase(getCurrentPresetName())) module.applyToPlayer(player);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <ModuleType extends SwitchyModule> void duckCurrentModule(ServerPlayerEntity player, Identifier id, Consumer<ModuleType> mutator, Class<ModuleType> clazz) throws IllegalArgumentException, IllegalStateException {
-		duckCurrentModule(player, id, (module) -> {
-			if (!clazz.isAssignableFrom(module.getClass()))
-				throw new IllegalArgumentException("Module '" + id.toString() + "' is defined as " + module.getClass().getSimpleName() + ", not " + clazz, new ClassCastException());
-			mutator.accept((ModuleType) module);
-		});
+	public <ModuleType extends SwitchyModule> void mutateModule(ServerPlayerEntity player, String name, Identifier id, Consumer<ModuleType> mutator, Class<ModuleType> clazz) throws PresetNotFoundException, ModuleNotFoundException, ClassNotAssignableException, IllegalStateException {
+		mutateModule(player, name, getModule(name, id, clazz), mutator);
+	}
+
+	@Override
+	public <ModuleType extends SwitchyModule> void mutateAllOfModule(ServerPlayerEntity player, Identifier id, BiConsumer<String, ModuleType> mutator, Class<ModuleType> clazz) throws ModuleNotFoundException, ClassNotAssignableException, IllegalStateException {
+		getAllOfModule(id, clazz).forEach((name, module) -> mutateModule(player, name, module, m -> mutator.accept(name, m)));
+	}
+
+	@Override
+	public void mutatePresetOfModules(ServerPlayerEntity player, String name, BiConsumer<Identifier, SwitchyModule> mutator) throws PresetNotFoundException {
+		getPreset(name).getModules().forEach((id, module) -> mutateModule(player, name, module, m -> mutator.accept(id, m)));
 	}
 }

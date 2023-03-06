@@ -57,9 +57,11 @@ public class CardinalSerializerCompat implements SwitchyModule {
 	 * @param id              A unique identifier to associate with the module being registered.
 	 * @param componentKeyIds a set of cardinal component key IDs to create the module for.
 	 * @param moduleInfo      The static settings for the module. See {@link SwitchyModuleInfo}.
+	 * @throws IllegalArgumentException when {@code id} is already associated with a registered module.
+	 * @throws IllegalStateException    when a {@code uniqueId} provided in {@link SwitchyModuleInfo} collides with one already registered.
 	 * @see SwitchyModuleRegistry
 	 */
-	public static void register(Identifier id, Set<Identifier> componentKeyIds, SwitchyModuleInfo moduleInfo) {
+	public static void register(Identifier id, Set<Identifier> componentKeyIds, SwitchyModuleInfo moduleInfo) throws IllegalArgumentException, IllegalStateException  {
 		SwitchyModuleRegistry.registerModule(id, () -> {
 			Map<Identifier, ComponentConfig<?>> map = new HashMap<>();
 			for (Identifier identifier : componentKeyIds) {

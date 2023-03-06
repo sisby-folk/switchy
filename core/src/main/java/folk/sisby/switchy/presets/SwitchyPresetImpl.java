@@ -2,6 +2,7 @@ package folk.sisby.switchy.presets;
 
 import com.mojang.brigadier.StringReader;
 import folk.sisby.switchy.Switchy;
+import folk.sisby.switchy.api.exception.InvalidWordException;
 import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.api.presets.SwitchyPreset;
@@ -23,9 +24,9 @@ public class SwitchyPresetImpl extends SwitchyPresetDataImpl<SwitchyModule> impl
 	 *
 	 * @param name    the desired name for the new preset.
 	 * @param modules the enabled status of modules from the presets object.
-	 * @throws IllegalArgumentException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)}).
+	 * @throws InvalidWordException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)}).
 	 */
-	public SwitchyPresetImpl(String name, Map<Identifier, Boolean> modules) throws IllegalArgumentException {
+	public SwitchyPresetImpl(String name, Map<Identifier, Boolean> modules) throws InvalidWordException {
 		super(name, modules, SwitchyModuleRegistry::supplyModule);
 	}
 
