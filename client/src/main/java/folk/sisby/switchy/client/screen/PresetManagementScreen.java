@@ -20,6 +20,7 @@ import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_REQUEST_DISPLAY_PRESETS;
@@ -29,7 +30,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 
 	private FlowLayout root;
 	private ScrollContainer<VerticalFlowLayout> presetsTab;
-	private VerticalFlowLayout modulesTab;
+	private HorizontalFlowLayout modulesTab;
 	private ScrollContainer<VerticalFlowLayout> dataTab;
 	private VerticalFlowLayout loadingOverlay;
 
@@ -48,7 +49,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 
 
 		// Modules Tab
-		modulesTab = model.expandTemplate(VerticalFlowLayout.class, "modules-tab", Map.of("id", "modulesTab"));
+		modulesTab = model.expandTemplate(HorizontalFlowLayout.class, "modules-tab", Map.of());
 
 
 
@@ -136,56 +137,64 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 	private void refreshModulesFlow(VerticalFlowLayout disabledModulesFlow, VerticalFlowLayout enabledModulesFlow, SwitchyDisplayPresets displayPresets) {
 		disabledModulesFlow.clearChildren();
 		enabledModulesFlow.clearChildren();
+		int labelSize = 100;
+		disabledModulesFlow.child(getModuleFlow(
+				new Identifier("placeholder", "placeholder"),
+				Text.literal(""),
+				(b,i) -> {},
+				Text.literal("Enable"),
+				Text.literal(""),
+				labelSize
+		).verticalSizing(Sizing.fixed(0)));
+		enabledModulesFlow.child(getModuleFlow(
+				new Identifier("placeholder", "placeholder"),
+				Text.literal(""),
+				(b,i) -> {},
+				Text.literal("Disable"),
+				Text.literal(""),
+				labelSize
+		).verticalSizing(Sizing.fixed(0)));
+
 		// Disabled Modules
 		displayPresets.getDisabledModules().forEach(module -> {
-			HorizontalFlowLayout moduleFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
-			LabelComponent moduleName = Components.label(Text.literal(module.toString()));
-			moduleName.tooltip(displayPresets.getModuleInfo().get(module).description());
-			moduleName.horizontalSizing(Sizing.fill(68));
-			ButtonComponent enableButton = Components.button(Text.literal("Enable"), b -> {
-				displayPresets.enableModule(module);
-				refreshModulesFlow(disabledModulesFlow, enabledModulesFlow, displayPresets);
-				lockScreen();
-				SwitchyClientApi.enableModule(module);
-			});
-			enableButton.tooltip(displayPresets.getModuleInfo().get(module).descriptionWhenEnabled());
-			enableButton.horizontalSizing(Sizing.fill(28));
-			moduleFlow.child(moduleName);
-			moduleFlow.child(enableButton);
-			moduleFlow.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
-			moduleFlow.gap(2);
-			disabledModulesFlow.child(moduleFlow);
+			disabledModulesFlow.child(getModuleFlow(module,
+					displayPresets.getModuleInfo().get(module).description(),
+					(b, id) -> {
+						displayPresets.enableModule(id);
+						refreshModulesFlow(disabledModulesFlow, enabledModulesFlow, displayPresets);
+						lockScreen();
+						SwitchyClientApi.enableModule(id);
+					},
+					Text.literal("Enable"),
+					displayPresets.getModuleInfo().get(module).descriptionWhenEnabled(),
+					labelSize
+					));
 		});
 		// Enabled Modules
 		displayPresets.getEnabledModules().forEach(module -> {
-			HorizontalFlowLayout moduleFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
-			LabelComponent moduleName = Components.label(Text.literal(module.toString()));
-			moduleName.tooltip(displayPresets.getModuleInfo().get(module).description());
-			moduleName.horizontalSizing(Sizing.fill(68));
-			ButtonComponent disableButton = Components.button(Text.literal("Disable"), b -> {
-				openDialog(
-						"OK",
-						"Cancel",
-						200,
-						okButton -> {
-							displayPresets.disableModule(module);
-							refreshModulesFlow(disabledModulesFlow, enabledModulesFlow, displayPresets);
-							lockScreen();
-							SwitchyClientApi.disableModule(module);
-						},
-						cancel -> {
-						},
-						List.of(Text.translatable("commands.switchy_client.disable.confirm", module.toString()),Text.translatable("commands.switchy.module.disable.warn", displayPresets.getModuleInfo().get(module).deletionWarning()))
-				);
-
-			});
-			disableButton.tooltip(displayPresets.getModuleInfo().get(module).descriptionWhenDisabled());
-			disableButton.horizontalSizing(Sizing.fill(28));
-			moduleFlow.child(moduleName);
-			moduleFlow.child(disableButton);
-			moduleFlow.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
-			moduleFlow.gap(2);
-			enabledModulesFlow.child(moduleFlow);
+			enabledModulesFlow.child(getModuleFlow(
+					module,
+					displayPresets.getModuleInfo().get(module).description(),
+					(b, id) -> {
+						openDialog(
+								"OK",
+								"Cancel",
+								200,
+								okButton -> {
+									displayPresets.disableModule(id);
+									refreshModulesFlow(disabledModulesFlow, enabledModulesFlow, displayPresets);
+									lockScreen();
+									SwitchyClientApi.disableModule(id);
+								},
+								cancel -> {
+								},
+								List.of(Text.translatable("commands.switchy_client.disable.confirm", id.toString()),Text.translatable("commands.switchy.module.disable.warn", displayPresets.getModuleInfo().get(id).deletionWarning()))
+						);
+					},
+					Text.literal("Disable"),
+					displayPresets.getModuleInfo().get(module).descriptionWhenDisabled(),
+					labelSize
+			));
 		});
 	}
 
@@ -256,6 +265,30 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		root.child(dialog);
 		return dialog;
 	}
+	HorizontalFlowLayout getModuleFlow(
+			Identifier id,
+			@Nullable Text labelTooltip,
+			BiConsumer<ButtonComponent, Identifier> buttonAction,
+			Text buttonText,
+			@Nullable Text buttonTooltip,
+			int labelSize
+			)
+	{
+		HorizontalFlowLayout moduleFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
+		LabelComponent moduleName = Components.label(Text.literal(id.toString()));
+		moduleName.tooltip(labelTooltip);
+		moduleName.horizontalSizing(Sizing.fixed(labelSize));
+		ButtonComponent enableButton = Components.button(buttonText, b -> {
+			buttonAction.accept(b, id);
+		});
+		enableButton.tooltip(buttonTooltip);
+		enableButton.horizontalSizing(Sizing.content());
+		moduleFlow.child(moduleName);
+		moduleFlow.child(enableButton);
+		moduleFlow.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
+		moduleFlow.gap(2);
+		return moduleFlow;
+	}
 
 	void lockScreen()
 	{
@@ -270,8 +303,8 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 	public void updatePresets(SwitchyDisplayPresets displayPresets) {
 		VerticalFlowLayout presetsFlow = presetsTab.childById(VerticalFlowLayout.class, "presetsFlow");
 		refreshPresetFlow(presetsFlow, displayPresets);
-		VerticalFlowLayout disabledModulesFlow = modulesTab.childById(VerticalFlowLayout.class, "disabledFlow");
-		VerticalFlowLayout enabledModulesFlow = modulesTab.childById(VerticalFlowLayout.class, "enabledFlow");
+		VerticalFlowLayout disabledModulesFlow = modulesTab.childById(VerticalFlowLayout.class, "leftModulesFlow");
+		VerticalFlowLayout enabledModulesFlow = modulesTab.childById(VerticalFlowLayout.class, "rightModulesFlow");
 		refreshModulesFlow(disabledModulesFlow, enabledModulesFlow, displayPresets);
 		presetsTab.childById(ButtonComponent.class, "newPreset").onPress(buttonComponent -> {
 			presetsFlow.child(getRenameLayout(presetsFlow, null, displayPresets));
