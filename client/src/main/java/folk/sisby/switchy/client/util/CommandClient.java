@@ -26,7 +26,7 @@ public class CommandClient {
 	public static int executeClient(CommandContext<QuiltClientCommandSource> context, SwitchyClientCommandExecutor executor) {
 		ClientPlayerEntity player = context.getSource().getPlayer();
 		try {
-			executor.execute(context, player);
+			executor.execute(context.getInput(), player);
 			return 1;
 		} catch (Exception e) {
 			tellInvalid(player, "commands.switchy_client.fail");
@@ -40,9 +40,9 @@ public class CommandClient {
 	 */
 	public interface SwitchyClientCommandExecutor {
 		/**
-		 * @param context the command context.
+		 * @param command the input of the command executed.
 		 * @param player  the client player.
 		 */
-		void execute(CommandContext<QuiltClientCommandSource> context, ClientPlayerEntity player);
+		void execute(String command, ClientPlayerEntity player);
 	}
 }

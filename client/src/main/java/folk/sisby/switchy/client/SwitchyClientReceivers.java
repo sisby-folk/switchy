@@ -8,7 +8,6 @@ import folk.sisby.switchy.presets.SwitchyDisplayPresetsImpl;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.network.PacketByteBuf;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
@@ -34,13 +33,12 @@ public class SwitchyClientReceivers {
 	 * Register client-side receivers for Switchy Client.
 	 */
 	public static void InitializeReceivers() {
-		ClientPlayNetworking.registerGlobalReceiver(S2C_PRESETS, (client, handler, buf, sender) -> exportPresets(client, buf));
+		ClientPlayNetworking.registerGlobalReceiver(S2C_PRESETS, (client, handler, buf, sender) -> exportPresets(client, buf.readNbt()));
 		ClientPlayNetworking.registerGlobalReceiver(S2C_EVENT_SWITCH, (client, handler, buf, sender) -> consumeEventPacket(buf, SwitchySwitchEvent::fromNbt, SwitchyClientEvents.SWITCH.invoker()::onSwitch));
 		ClientPlayNetworking.registerGlobalReceiver(S2C_DISPLAY_PRESETS, (client, handler, buf, sender) -> displayPresets(client, buf.readNbt()));
 	}
 
-	private static void exportPresets(MinecraftClient client, PacketByteBuf buf) {
-		NbtCompound presetNbt = buf.readNbt();
+	private static void exportPresets(MinecraftClient client, @Nullable NbtCompound presetNbt) {
 		if (presetNbt != null) {
 			String filename = (client.isInSingleplayer() ? "Singleplayer_" : "Multiplayer_") + new SimpleDateFormat("MMM-dd_HH-mm-ss").format(new java.util.Date());
 			File exportFile = new File(SwitchyClient.EXPORT_PATH + "/" + filename + ".dat");
