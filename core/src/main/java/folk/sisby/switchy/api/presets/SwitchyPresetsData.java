@@ -40,14 +40,6 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	String KEY_PRESET_LIST = "list";
 
 	/**
-	 * Imports a set of presets, merging by replacing modules where preset names collide.
-	 * Only registered, enabled modules will be imported.
-	 *
-	 * @param other a map of presets to import into this object.
-	 */
-	void importFromOther(Map<String, Preset> other);
-
-	/**
 	 * Adds a preset to this object.
 	 *
 	 * @param preset a named preset object.

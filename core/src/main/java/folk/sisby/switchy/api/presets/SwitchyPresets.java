@@ -86,7 +86,6 @@ public interface SwitchyPresets extends SwitchyPresetsData<SwitchyModule, Switch
 	 *
 	 * @param player the player this presets object belongs to.
 	 * @param other  a collection of presets to import.
-	 * @see SwitchyPresetsData#importFromOther(Map)
 	 */
 	void importFromOther(ServerPlayerEntity player, Map<String, SwitchyPreset> other);
 

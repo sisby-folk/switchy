@@ -127,39 +127,6 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 	}
 
 	@Override
-	public void importFromOther(Map<String, Preset> other) {
-		// Don't process the current preset, it won't do anything
-		other.remove(getCurrentPresetName());
-
-		// Replace enabled modules for collisions
-		other.forEach((name, preset) -> {
-			if (presets.containsKey(name)) {
-				preset.getModules().forEach((id, module) -> {
-					presets.get(name).removeModule(id);
-					presets.get(name).putModule(id, module);
-				});
-			}
-		});
-
-		// Add non-colliding presets
-		other.forEach((name, preset) -> {
-			if (!presets.containsKey(name)) {
-				modules.forEach((id, enabled) -> {
-					if (enabled && !preset.containsModule(id)) { // Add missing modules
-						preset.putModule(id, moduleSupplier.apply(id));
-					}
-				});
-				preset.getModules().forEach((id, module) -> { // Remove non-enabled modules
-					if (!modules.getOrDefault(id, false)) {
-						preset.removeModule(id);
-					}
-				});
-				addPreset(preset);
-			}
-		});
-	}
-
-	@Override
 	public void addPreset(Preset preset) throws IllegalStateException {
 		if (containsPreset(preset.getName())) throw new IllegalStateException("Specified preset already exists.");
 		presets.put(preset.getName(), preset);
