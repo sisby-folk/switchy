@@ -5,14 +5,13 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.api.SwitchyPlayer;
-import folk.sisby.switchy.api.argument.ModuleArgumentType;
-import folk.sisby.switchy.api.argument.PresetArgumentType;
 import folk.sisby.switchy.api.exception.InvalidWordException;
 import folk.sisby.switchy.api.exception.ModuleNotFoundException;
 import folk.sisby.switchy.api.exception.PresetNotFoundException;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.api.presets.SwitchyPreset;
 import folk.sisby.switchy.api.presets.SwitchyPresets;
+import folk.sisby.switchy.util.SwitchyCommand;
 import net.minecraft.command.CommandBuildContext;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -27,8 +26,8 @@ import java.util.*;
 import java.util.function.Predicate;
 
 import static folk.sisby.switchy.Switchy.LOGGER;
-import static folk.sisby.switchy.util.Command.*;
 import static folk.sisby.switchy.util.Feedback.*;
+import static folk.sisby.switchy.util.SwitchyCommand.execute;
 
 /**
  * Registration and logic for core commands.
@@ -255,7 +254,7 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 
 		dispatcher.register(
 				CommandManager.literal("switch")
-						.then(CommandManager.argument("preset", PresetArgumentType.create(false))
+						.then(SwitchyCommand.presetArgument(false)
 								.executes(c -> execute(c, (player, presets) -> switchPreset(player, presets, c.getArgument("preset", String.class))))));
 	}
 
@@ -264,27 +263,27 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 			switchyRoot.then(CommandManager.literal("help").executes(c -> execute(c, SwitchyCommands::displayHelp)));
 			switchyRoot.then(CommandManager.literal("list").executes(c -> execute(c, SwitchyCommands::listPresets)));
 			switchyRoot.then(CommandManager.literal("new")
-					.then(CommandManager.argument("preset", StringArgumentType.word())
-							.executes(c -> execute(c, (player, presets) -> newPreset(player, presets, c.getArgument("preset", String.class))))));
+					.then(CommandManager.argument("name", StringArgumentType.word())
+							.executes(c -> execute(c, (player, presets) -> newPreset(player, presets, c.getArgument("name", String.class))))));
 			switchyRoot.then(CommandManager.literal("set")
-					.then(CommandManager.argument("preset", PresetArgumentType.create(false))
+					.then(SwitchyCommand.presetArgument(false)
 							.executes(c -> execute(c, (player, presets) -> switchPreset(player, presets, c.getArgument("preset", String.class))))));
 			switchyRoot.then(CommandManager.literal("delete")
-					.then(CommandManager.argument("preset", PresetArgumentType.create(false))
+					.then(SwitchyCommand.presetArgument(false)
 							.executes(c -> execute(c, (player, presets) -> deletePreset(player, presets, c.getArgument("preset", String.class))))));
 			switchyRoot.then(CommandManager.literal("rename")
-					.then(CommandManager.argument("preset", PresetArgumentType.create(true))
+					.then(SwitchyCommand.presetArgument(true)
 							.then(CommandManager.argument("name", StringArgumentType.word())
 									.executes(c -> execute(c, (player, presets) -> renamePreset(player, presets, c.getArgument("preset", String.class), c.getArgument("name", String.class)))))));
 			switchyRoot.then(CommandManager.literal("module")
 					.then(CommandManager.literal("help")
-							.then(CommandManager.argument("module", ModuleArgumentType.create())
+							.then(SwitchyCommand.moduleArgument(null)
 									.executes(c -> execute(c, (player, presets) -> displayModuleHelp(player, presets, c.getArgument("module", Identifier.class))))))
 					.then(CommandManager.literal("enable")
-							.then(CommandManager.argument("module", ModuleArgumentType.create(false))
+							.then(SwitchyCommand.moduleArgument(false)
 									.executes(c -> execute(c, (player, presets) -> enableModule(player, presets, c.getArgument("module", Identifier.class))))))
 					.then(CommandManager.literal("disable")
-							.then(CommandManager.argument("module", ModuleArgumentType.create(true))
+							.then(SwitchyCommand.moduleArgument(true)
 									.executes(c -> execute(c, (player, presets) -> disableModule(player, presets, c.getArgument("module", Identifier.class)))))));
 
 			List.of(helpText("commands.switchy.help.help", "commands.switchy.help.command"),
@@ -301,7 +300,5 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 					helpText("commands.switchy.import.help", "commands.switchy.import.command", "commands.switchy.help.placeholder.file")
 			).forEach(helpTextRegistry);
 		});
-
-
 	}
 }
