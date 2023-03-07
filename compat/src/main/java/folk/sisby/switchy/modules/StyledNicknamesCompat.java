@@ -91,4 +91,11 @@ public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleDispla
 	public void fillFromNbt(NbtCompound nbt) {
 		styled_nickname = nbt.contains(KEY_NICKNAME) ? nbt.getString(KEY_NICKNAME) : null;
 	}
+
+	/**
+	 * @return a text representation of the stored nickname.
+	 */
+	public Text getText() {
+		return styled_nickname != null ? TextParserUtils.formatText(styled_nickname) : null;
+	}
 }

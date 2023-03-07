@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinClientPlayNetworkHandler {
 
 	/**
-	 * Intercepts outgoing chat packets and updates the command history using them
+	 * Intercepts outgoing chat packets and updates the command history using them.
 	 *
 	 * @param packet a packet being sent to the server.
 	 * @param ci     callback info.

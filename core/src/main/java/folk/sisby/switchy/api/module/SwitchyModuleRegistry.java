@@ -1,6 +1,7 @@
 package folk.sisby.switchy.api.module;
 
 import folk.sisby.switchy.Switchy;
+import folk.sisby.switchy.api.exception.ModuleNotFoundException;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Identifier;
@@ -33,7 +34,7 @@ public class SwitchyModuleRegistry {
 	 * @param moduleConstructor Usually {@code ModuleName::new} - this will be called on player join.
 	 * @param moduleInfo        The static settings for the module. See {@link SwitchyModuleInfo}.
 	 * @throws IllegalArgumentException when {@code id} is already associated with a registered module.
-	 * @throws IllegalStateException    when a {@code uniqueId} provided in {@link SwitchyModuleInfo} collides with one already registered
+	 * @throws IllegalStateException    when a {@code uniqueId} provided in {@link SwitchyModuleInfo} collides with one already registered.
 	 */
 	public static void registerModule(Identifier id, Supplier<SwitchyModule> moduleConstructor, SwitchyModuleInfo moduleInfo) throws IllegalArgumentException, IllegalStateException {
 		if (SUPPLIERS.containsKey(id)) {
@@ -71,12 +72,12 @@ public class SwitchyModuleRegistry {
 	 *
 	 * @param id a module identifier.
 	 * @return an instance of the module.
-	 * @throws IllegalArgumentException when the specified module doesn't exist
+	 * @throws ModuleNotFoundException when a module with the specified ID doesn't exist.
 	 * @see SwitchyModule
 	 */
 	@ApiStatus.Internal
-	public static SwitchyModule supplyModule(Identifier id) throws IllegalArgumentException {
-		if (!SUPPLIERS.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
+	public static SwitchyModule supplyModule(Identifier id) throws ModuleNotFoundException {
+		if (!SUPPLIERS.containsKey(id)) throw new ModuleNotFoundException();
 		return SUPPLIERS.get(id).get();
 	}
 
@@ -95,23 +96,24 @@ public class SwitchyModuleRegistry {
 	 *
 	 * @param id a module identifier.
 	 * @return true if the module is default, false otherwise.
-	 * @throws IllegalArgumentException when the specified module doesn't exist
+	 * @throws ModuleNotFoundException when a module with the specified ID doesn't exist.
 	 */
-	public static boolean isDefault(Identifier id) throws IllegalArgumentException {
-		if (!INFO.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
+	public static boolean isDefault(Identifier id) throws ModuleNotFoundException {
+		if (!INFO.containsKey(id)) throw new ModuleNotFoundException();
 		return INFO.get(id).isDefault();
 	}
 
 	/**
 	 * Gets the cold-editing permissions for the specified module.
+	 * Affected by server configuration.
 	 *
 	 * @param id a module identifier.
 	 * @return the editable value registered to the specified module.
-	 * @throws IllegalArgumentException when the specified module doesn't exist
+	 * @throws ModuleNotFoundException when a module with the specified ID doesn't exist.
 	 * @see SwitchyModuleEditable
 	 */
-	public static SwitchyModuleEditable getEditable(Identifier id) throws IllegalArgumentException {
-		if (!INFO.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
+	public static SwitchyModuleEditable getEditable(Identifier id) throws ModuleNotFoundException {
+		if (!INFO.containsKey(id)) throw new ModuleNotFoundException();
 		SwitchyModuleEditable baseEditable = INFO.get(id).editable();
 		return EDITABLE_CONFIGURABLE.contains(baseEditable) ? Switchy.CONFIG.moduleEditable.get(id.toString()) : baseEditable;
 	}
@@ -121,10 +123,10 @@ public class SwitchyModuleRegistry {
 	 *
 	 * @param id a module identifier.
 	 * @return a brief text description of the module.
-	 * @throws IllegalArgumentException when the specified module doesn't exist
+	 * @throws ModuleNotFoundException when a module with the specified ID doesn't exist.
 	 */
-	public static MutableText getDescription(Identifier id) throws IllegalArgumentException {
-		if (!INFO.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
+	public static MutableText getDescription(Identifier id) throws ModuleNotFoundException {
+		if (!INFO.containsKey(id)) throw new ModuleNotFoundException();
 		return INFO.get(id).description();
 	}
 
@@ -133,10 +135,10 @@ public class SwitchyModuleRegistry {
 	 *
 	 * @param id a module identifier.
 	 * @return the "when enabled" description text.
-	 * @throws IllegalArgumentException when the specified module doesn't exist
+	 * @throws ModuleNotFoundException when a module with the specified ID doesn't exist.
 	 */
-	public static MutableText getDescriptionWhenEnabled(Identifier id) throws IllegalArgumentException {
-		if (!INFO.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
+	public static MutableText getDescriptionWhenEnabled(Identifier id) throws ModuleNotFoundException {
+		if (!INFO.containsKey(id)) throw new ModuleNotFoundException();
 		return INFO.get(id).descriptionWhenEnabled();
 	}
 
@@ -145,10 +147,10 @@ public class SwitchyModuleRegistry {
 	 *
 	 * @param id a module identifier.
 	 * @return the "when disabled" description text.
-	 * @throws IllegalArgumentException when the specified module doesn't exist
+	 * @throws ModuleNotFoundException when a module with the specified ID doesn't exist.
 	 */
-	public static MutableText getDescriptionWhenDisabled(Identifier id) throws IllegalArgumentException {
-		if (!INFO.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
+	public static MutableText getDescriptionWhenDisabled(Identifier id) throws ModuleNotFoundException {
+		if (!INFO.containsKey(id)) throw new ModuleNotFoundException();
 		return INFO.get(id).descriptionWhenDisabled();
 	}
 
@@ -157,10 +159,10 @@ public class SwitchyModuleRegistry {
 	 *
 	 * @param id a module identifier.
 	 * @return the deletion warning for the module.
-	 * @throws IllegalArgumentException when the specified module doesn't exist
+	 * @throws ModuleNotFoundException when a module with the specified ID doesn't exist.
 	 */
-	public static MutableText getDeletionWarning(Identifier id) throws IllegalArgumentException {
-		if (!INFO.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
+	public static MutableText getDeletionWarning(Identifier id) throws ModuleNotFoundException {
+		if (!INFO.containsKey(id)) throw new ModuleNotFoundException();
 		return INFO.get(id).deletionWarning();
 	}
 
@@ -169,10 +171,10 @@ public class SwitchyModuleRegistry {
 	 *
 	 * @param id a module identifier.
 	 * @return collection of module apply dependency IDs for the module.
-	 * @throws IllegalArgumentException when the specified module doesn't exist
+	 * @throws ModuleNotFoundException when a module with the specified ID doesn't exist.
 	 */
-	public static Collection<Identifier> getApplyDependencies(Identifier id) throws IllegalArgumentException {
-		if (!INFO.containsKey(id)) throw new IllegalArgumentException("Specified module does not exist");
+	public static Collection<Identifier> getApplyDependencies(Identifier id) throws ModuleNotFoundException {
+		if (!INFO.containsKey(id)) throw new ModuleNotFoundException();
 		return INFO.get(id).applyDependencies();
 	}
 
@@ -211,7 +213,11 @@ public class SwitchyModuleRegistry {
 	 */
 	public static NbtCompound infoToNbt() {
 		NbtCompound nbt = new NbtCompound();
-		INFO.forEach((id, info) -> nbt.put(id.toString(), info.toNbt()));
+		INFO.forEach((id, info) -> {
+			SwitchyModuleInfo copy = SwitchyModuleInfo.fromNbt(info.toNbt());
+			copy.withEditable(getEditable(id));
+			nbt.put(id.toString(), copy.toNbt());
+		});
 		return nbt;
 	}
 }

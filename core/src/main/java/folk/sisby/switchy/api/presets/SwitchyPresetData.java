@@ -2,6 +2,9 @@ package folk.sisby.switchy.api.presets;
 
 import com.mojang.brigadier.StringReader;
 import folk.sisby.switchy.api.SwitchySerializable;
+import folk.sisby.switchy.api.exception.ClassNotAssignableException;
+import folk.sisby.switchy.api.exception.InvalidWordException;
+import folk.sisby.switchy.api.exception.ModuleNotFoundException;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -26,10 +29,22 @@ public interface SwitchyPresetData<Module extends SwitchySerializable> extends S
 	 * Gets the specified module.
 	 *
 	 * @param id a module identifier.
+	 * @throws ModuleNotFoundException when a module with the specified ID doesn't exist.
 	 * @return the specified module stored in this preset.
 	 */
-	@ApiStatus.Internal
 	Module getModule(Identifier id);
+
+	/**
+	 * Gets the specified module.
+	 *
+	 * @param <ModuleType> the class of module to return.
+	 * @param id           a module identifier.
+	 * @param clazz        the class of the specified module.
+	 * @throws ModuleNotFoundException when a module with the specified ID doesn't exist.
+	 * @throws ClassNotAssignableException	when the specified module is not of {@code <ModuleType>}.
+	 * @return the specified module stored in this preset.
+	 */
+	<ModuleType extends Module> ModuleType getModule(Identifier id, Class<ModuleType> clazz) throws ModuleNotFoundException, ClassNotAssignableException;
 
 	/**
 	 * Adds or replaces the specified module.
@@ -37,7 +52,6 @@ public interface SwitchyPresetData<Module extends SwitchySerializable> extends S
 	 * @param id     a module identifier.
 	 * @param module a module to add to or replace in the module map.
 	 */
-	@ApiStatus.Internal
 	void putModule(Identifier id, Module module);
 
 	/**
@@ -52,8 +66,9 @@ public interface SwitchyPresetData<Module extends SwitchySerializable> extends S
 	 * Removes the specified module from the preset.
 	 *
 	 * @param id a module identifier.
+	 * @throws ModuleNotFoundException when a module with the specified ID doesn't exist.
 	 */
-	void removeModule(Identifier id);
+	void removeModule(Identifier id) throws ModuleNotFoundException;
 
 	/**
 	 * @return the name of this preset.
@@ -66,8 +81,8 @@ public interface SwitchyPresetData<Module extends SwitchySerializable> extends S
 	 * In a presets object, a preset must be renamed using {@link SwitchyPresets#renamePreset(String, String)}.
 	 *
 	 * @param name a new name for this preset.
-	 * @throws IllegalArgumentException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)})
+	 * @throws InvalidWordException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)}).
 	 */
 	@ApiStatus.Internal
-	void setName(String name) throws IllegalArgumentException;
+	void setName(String name) throws InvalidWordException;
 }

@@ -62,7 +62,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDi
 
 	/**
 	 * Registers a component to display alongside every preset (e.g. the preset name) for addons.
-	 * Modules should instead use {@link folk.sisby.switchy.client.api.module.SwitchyDisplayModule}
+	 * Modules should instead use {@link folk.sisby.switchy.client.api.module.SwitchyDisplayModule}.
 	 *
 	 * @param componentFunction a function that can generate a positioned component to display with every preset.
 	 */

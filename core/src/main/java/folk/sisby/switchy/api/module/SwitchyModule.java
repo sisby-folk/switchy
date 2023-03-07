@@ -17,12 +17,14 @@ public interface SwitchyModule extends SwitchySerializable, SwitchyApplicable<Se
 	/**
 	 * Runs when a module is instantiated due to being enabled, rather than in a new preset.
 	 * Useful for defining different initial states between the two.
+	 *
+	 * @param player the relevant player.
 	 */
-	default void onEnable() {}
+	default void onEnable(ServerPlayerEntity player) {}
 
 	/**
 	 * Runs when a module is being deleted.
-	 * Useful for clearing references or recovering data (dropping inventories etc.)
+	 * Useful for clearing references or recovering data (dropping inventories etc.).
 	 *
 	 * @param player the relevant player.
 	 * @param fromDisable true if all instances of this module are being deleted at once.

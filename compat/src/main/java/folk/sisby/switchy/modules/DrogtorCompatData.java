@@ -2,6 +2,9 @@ package folk.sisby.switchy.modules;
 
 import folk.sisby.switchy.api.SwitchySerializable;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -61,4 +64,16 @@ public class DrogtorCompatData implements SwitchySerializable {
 		nameColor = nbt.contains(KEY_NAME_COLOR) ? Formatting.byName(nbt.getString(KEY_NAME_COLOR)) : null;
 		bio = nbt.contains(KEY_BIO) ? nbt.getString(KEY_BIO) : null;
 	}
+
+	/**
+	 * @return a text representation of the stored nickname.
+	 */
+	public Text getText() {
+		if (nickname == null) return null;
+		Style style = Style.EMPTY;
+		if (nameColor != null) style = style.withColor(nameColor);
+		if (bio != null) style = style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(bio)));
+		return Text.literal(nickname).setStyle(style);
+	}
+
 }

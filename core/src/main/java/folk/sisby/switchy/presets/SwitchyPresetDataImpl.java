@@ -2,6 +2,9 @@ package folk.sisby.switchy.presets;
 
 import com.mojang.brigadier.StringReader;
 import folk.sisby.switchy.api.SwitchySerializable;
+import folk.sisby.switchy.api.exception.ClassNotAssignableException;
+import folk.sisby.switchy.api.exception.InvalidWordException;
+import folk.sisby.switchy.api.exception.ModuleNotFoundException;
 import folk.sisby.switchy.api.presets.SwitchyPresetData;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
@@ -26,9 +29,9 @@ public class SwitchyPresetDataImpl<Module extends SwitchySerializable> implement
 	 * @param name           the desired name for the new preset.
 	 * @param modules        the enabled status of modules from the presets object.
 	 * @param moduleSupplier a function to supply module instances from their ID, usually from a registry.
-	 * @throws IllegalArgumentException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)})
+	 * @throws InvalidWordException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)}).
 	 */
-	public SwitchyPresetDataImpl(String name, Map<Identifier, Boolean> modules, Function<Identifier, Module> moduleSupplier) throws IllegalArgumentException {
+	public SwitchyPresetDataImpl(String name, Map<Identifier, Boolean> modules, Function<Identifier, Module> moduleSupplier) throws InvalidWordException {
 		setName(name);
 		Map<Identifier, Module> suppliedModules = new HashMap<>();
 		modules.forEach((id, enabled) -> {
@@ -60,8 +63,17 @@ public class SwitchyPresetDataImpl<Module extends SwitchySerializable> implement
 
 	@Override
 	@ApiStatus.Internal
-	public Module getModule(Identifier id) {
+	public Module getModule(Identifier id) throws ModuleNotFoundException {
+		if (!containsModule(id)) throw new ModuleNotFoundException();
 		return modules.get(id);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <ModuleType extends Module> ModuleType getModule(Identifier id, Class<ModuleType> clazz) throws ModuleNotFoundException, ClassNotAssignableException {
+		Module module = getModule(id);
+		if (!clazz.isAssignableFrom(module.getClass())) throw new ClassNotAssignableException("Module '" + id.toString(), module, clazz);
+		return (ModuleType) module;
 	}
 
 	@Override
@@ -77,6 +89,7 @@ public class SwitchyPresetDataImpl<Module extends SwitchySerializable> implement
 
 	@Override
 	public void removeModule(Identifier id) {
+		if (!containsModule(id)) throw new ModuleNotFoundException();
 		modules.remove(id);
 	}
 
@@ -86,9 +99,9 @@ public class SwitchyPresetDataImpl<Module extends SwitchySerializable> implement
 	}
 
 	@Override
-	public void setName(String name) throws IllegalArgumentException {
+	public void setName(String name) throws InvalidWordException {
 		if (!name.chars().mapToObj(i -> (char) i).allMatch(StringReader::isAllowedInUnquotedString))
-			throw new IllegalArgumentException("Specified preset name is not a word");
+			throw new InvalidWordException();
 		this.name = name;
 	}
 
