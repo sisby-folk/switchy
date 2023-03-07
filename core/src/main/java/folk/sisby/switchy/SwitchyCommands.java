@@ -42,7 +42,7 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 	 * If the command in here matches the one being executed, that's a confirmation.
 	 */
 	public static final Map<UUID, String> HISTORY = new HashMap<>();
-	private static final List<Text> HELP_TEXT = new ArrayList<>();
+	private static final Map<Text, Predicate<ServerPlayerEntity>> HELP_TEXT = new HashMap<>();
 
 	/**
 	 * Whether to register the import literal.
@@ -51,7 +51,9 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 	public static boolean IMPORT_ENABLED = false;
 
 	private static void displayHelp(ServerPlayerEntity player, SwitchyPresets presets) {
-		HELP_TEXT.forEach(t -> sendMessage(player, t));
+		HELP_TEXT.forEach((t, p) -> {
+			if(p.test(player)) sendMessage(player, t);
+		});
 	}
 
 	private static void listPresets(ServerPlayerEntity player, SwitchyPresets presets) {
@@ -244,12 +246,12 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 		LiteralArgumentBuilder<ServerCommandSource> switchyImport = CommandManager.literal("import");
 		LiteralArgumentBuilder<ServerCommandSource> switchyRoot = CommandManager.literal("switchy");
 
-		SwitchyEvents.COMMAND_INIT_IMPORT.invoker().registerCommands(switchyImport, HELP_TEXT::add);
+		SwitchyEvents.COMMAND_INIT_IMPORT.invoker().registerCommands(switchyImport, HELP_TEXT::put);
 		if (IMPORT_ENABLED) {
 			switchyRoot.then(switchyImport);
 		}
 
-		SwitchyEvents.COMMAND_INIT.invoker().registerCommands(switchyRoot, HELP_TEXT::add);
+		SwitchyEvents.COMMAND_INIT.invoker().registerCommands(switchyRoot, HELP_TEXT::put);
 		dispatcher.register(switchyRoot);
 
 		dispatcher.register(
@@ -295,10 +297,8 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 					helpText("commands.switchy.rename.help", "commands.switchy.rename.command", "commands.switchy.help.placeholder.preset", "commands.switchy.help.placeholder.preset"),
 					helpText("commands.switchy.module.help.help", "commands.switchy.module.help.command", "commands.switchy.help.placeholder.module"),
 					helpText("commands.switchy.module.enable.help", "commands.switchy.module.enable.command", "commands.switchy.help.placeholder.module"),
-					helpText("commands.switchy.module.disable.help", "commands.switchy.module.disable.command", "commands.switchy.help.placeholder.module"),
-					helpText("commands.switchy.export.help", "commands.switchy.export.command"),
-					helpText("commands.switchy.import.help", "commands.switchy.import.command", "commands.switchy.help.placeholder.file")
-			).forEach(helpTextRegistry);
+					helpText("commands.switchy.module.disable.help", "commands.switchy.module.disable.command", "commands.switchy.help.placeholder.module")
+			).forEach(t -> helpTextRegistry.accept(t, (p) -> true));
 		});
 	}
 }

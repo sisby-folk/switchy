@@ -3,6 +3,7 @@
   "commands": {
     "switchy_client": {
       "export": {
+        "command": "/switchy_client export",
         "sent": "Requested export from server",
         "success": "Presets saved to {}",
         "fail": "Saving to file failed! See log for details"

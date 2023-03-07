@@ -9,7 +9,8 @@ import net.minecraft.text.Text;
 import org.quiltmc.qsl.base.api.event.Event;
 import org.quiltmc.qsl.base.api.event.EventAwareListener;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
 /**
  * Events emitted by Switchy during its operation.
@@ -83,7 +84,7 @@ public final class SwitchyEvents {
 		 * @param helpTextRegistry a registry to add lines to {@code /switchy help}.
 		 *                         Lines should be generated using {@link folk.sisby.switchy.util.Feedback#helpText(String, String, String...)}
 		 */
-		void registerCommands(LiteralArgumentBuilder<ServerCommandSource> switchyArgument, Consumer<Text> helpTextRegistry);
+		void registerCommands(LiteralArgumentBuilder<ServerCommandSource> switchyArgument, BiConsumer<Text, Predicate<ServerPlayerEntity>> helpTextRegistry);
 	}
 
 	/**
@@ -97,9 +98,10 @@ public final class SwitchyEvents {
 		/**
 		 * @param importArgument the literal {@code /switchy import} argument to add to.
 		 * @param helpTextRegistry a registry to add lines to {@code /switchy help}.
-		 *                         Lines should be generated using {@link folk.sisby.switchy.util.Feedback#helpText(String, String, String...)}
+		 *                         Lines should be generated using {@link folk.sisby.switchy.util.Feedback#helpText(String, String, String...)}.
+		 *                         Predicate to determine whether commands should be shown.
 		 */
-		void registerCommands(LiteralArgumentBuilder<ServerCommandSource> importArgument, Consumer<Text> helpTextRegistry);
+		void registerCommands(LiteralArgumentBuilder<ServerCommandSource> importArgument, BiConsumer<Text, Predicate<ServerPlayerEntity>> helpTextRegistry);
 	}
 
 	/**

@@ -93,24 +93,12 @@
           }
         }
       },
-      "export": {
-        "command": "/switchy export",
-        "help": "save presets to a file (req. client)",
-        "fail": "Sending to client failed! See log for details"
-      },
       "import": {
-        "command": "/switchy_client import {}",
-        "help": "load exported presets",
+        "confirmation": "Confirm using {}",
+        "success": "Import succeeded: added {} and updated {} presets",
         "warn": {
           "info": "You are about to import {} presets with {} modules:",
           "collision": "Red presets will have these modules overwritten:"
-        },
-        "confirmation": "Confirm using {}",
-        "success": "Import succeeded: added {} and updated {} presets",
-        "fail": {
-          "parse": "Failed to parse imported NBT",
-          "construct": "Failed to construct Presets from NBT",
-          "permission": "You do not have permission to specify operator modules: {}"
         }
       },
       "fail": "Error occurred while executing command: '{}' - Check the server log for more details."

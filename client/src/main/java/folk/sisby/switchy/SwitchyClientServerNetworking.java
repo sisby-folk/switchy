@@ -167,14 +167,14 @@ public class SwitchyClientServerNetworking {
 		} catch (Exception ex) {
 			LOGGER.error(ex.toString());
 			LOGGER.error(ex.getMessage());
-			sendMessage(player, translatableWithArgs("commands.switchy.export.fail", FORMAT_INVALID));
+			sendMessage(player, translatableWithArgs("commands.switchy_client.export.fail", FORMAT_INVALID));
 		}
 	}
 
 	private static void instantImportPresets(ServerPlayerEntity player, @Nullable NbtCompound presetNbt) {
 		SwitchyCommands.HISTORY.put(player.getUuid(), "INSTANT IMPORT");
 		if (presetNbt == null) {
-			tellInvalid(player, "commands.switchy.import.fail.parse");
+			tellInvalid(player, "commands.switchy_client.import.fail.parse");
 			return;
 		}
 		presetNbt.putString(KEY_IMPORT_COMMAND, "INSTANT IMPORT");
@@ -187,7 +187,7 @@ public class SwitchyClientServerNetworking {
 		// Parse Preset NBT //
 
 		if (presetNbt == null || !presetNbt.contains(KEY_IMPORT_COMMAND, NbtElement.STRING_TYPE)) {
-			tellInvalid(player, "commands.switchy.import.fail.parse");
+			tellInvalid(player, "commands.switchy_client.import.fail.parse");
 			return;
 		}
 
@@ -196,7 +196,7 @@ public class SwitchyClientServerNetworking {
 			importedPresets = new SwitchyPresetsImpl(false);
 			importedPresets.fillFromNbt(presetNbt);
 		} catch (Exception e) {
-			tellInvalid(player, "commands.switchy.import.fail.construct");
+			tellInvalid(player, "commands.switchy_client.import.fail.construct");
 			return;
 		}
 
@@ -208,12 +208,12 @@ public class SwitchyClientServerNetworking {
 			excludeModules = presetNbt.getList(KEY_IMPORT_EXCLUDE, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::new).toList();
 			includeModules = presetNbt.getList(KEY_IMPORT_INCLUDE, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::new).toList();
 		} catch (InvalidIdentifierException e) {
-			tellInvalid(player, "commands.switchy.import.fail.parse");
+			tellInvalid(player, "commands.switchy_client.import.fail.parse");
 			return;
 		}
 
 		if (!player.hasPermissionLevel(2) && includeModules.stream().anyMatch(id -> getEditable(id) == SwitchyModuleEditable.OPERATOR)) {
-			tellWarn(player, "commands.switchy.import.fail.permission", getIdListText(includeModules));
+			tellWarn(player, "commands.switchy_client.import.fail.permission", getIdListText(includeModules));
 			return;
 		}
 
