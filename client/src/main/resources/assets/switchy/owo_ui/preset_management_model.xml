@@ -1,5 +1,5 @@
 <owo-ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/wisp-forest/owo-lib/1.19.3/owo-ui.xsd">
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/wisp-forest/owo-lib/1.19/owo-ui.xsd">
     <components>
         <flow-layout direction="vertical">
             <children>
@@ -112,19 +112,40 @@
             </template>
         </modules-tab>
         <data-tab>
-            <scroll id="{{id}}" direction="vertical">
-                <flow-layout direction="vertical">
-                    <children>
-
-                    </children>
-                    <sizing>
-                        <horizontal method="fixed">200</horizontal>
-                    </sizing>
-                </flow-layout>
-                <sizing>
-                    <vertical method="fill">80</vertical>
-                </sizing>
-            </scroll>
+            <flow-layout direction = "vertical">
+                <children>
+                    <flow-layout direction = "horizontal">
+                        <children>
+                            <button id = "importButton">
+                                <text>Import</text>
+                            </button>
+                            <button id = "exportButton">
+                                <text>Export</text>
+                            </button>
+                        </children>
+                    </flow-layout>
+                    <flow-layout direction = "horizontal">
+                        <children>
+                            <label>
+                                <text>Source</text>
+                            </label>
+                            <flow-layout direction="vertical" id = "sourceSelectorPlaceholder"/>
+                        </children>
+                    </flow-layout>
+                    <flow-layout direction = "horizontal">
+                        <children>
+                            <label>
+                                <text>File</text>
+                            </label>
+                            <flow-layout direction="vertical" id = "fileSelectorPlaceholder"/>
+                        </children>
+                    </flow-layout>
+                    <template name = "module-selector">
+                        <leftText>Available</leftText>
+                        <rightText>Included</rightText>
+                    </template>
+                </children>
+            </flow-layout>
         </data-tab>
         <dialog-box>
             <flow-layout direction="vertical">

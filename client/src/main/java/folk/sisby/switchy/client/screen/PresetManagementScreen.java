@@ -2,24 +2,28 @@ package folk.sisby.switchy.client.screen;
 
 import com.mojang.brigadier.StringReader;
 import folk.sisby.switchy.api.module.presets.SwitchyDisplayPresets;
+import folk.sisby.switchy.client.SwitchyClient;
 import folk.sisby.switchy.client.api.SwitchyClientApi;
 import io.wispforest.owo.ui.base.BaseUIModelScreen;
-import io.wispforest.owo.ui.component.ButtonComponent;
-import io.wispforest.owo.ui.component.Components;
-import io.wispforest.owo.ui.component.LabelComponent;
-import io.wispforest.owo.ui.component.TextBoxComponent;
+import io.wispforest.owo.ui.component.*;
 import io.wispforest.owo.ui.container.*;
 import io.wispforest.owo.ui.core.HorizontalAlignment;
+import io.wispforest.owo.ui.core.Positioning;
 import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owo.ui.core.VerticalAlignment;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtIo;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.apache.commons.compress.utils.FileNameUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -31,17 +35,30 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 	private FlowLayout root;
 	private ScrollContainer<VerticalFlowLayout> presetsTab;
 	private HorizontalFlowLayout modulesTab;
-	private ScrollContainer<VerticalFlowLayout> dataTab;
+	private VerticalFlowLayout dataTab;
 	private VerticalFlowLayout loadingOverlay;
 
 	public PresetManagementScreen() {
 		super(FlowLayout.class, DataSource.asset(new Identifier("switchy", "preset_management_model")));
 	}
 
+	private DropdownComponent dropdownButton(DropdownComponent contextMenu, Text text) {
+		DropdownComponent selectorButton = Components.dropdown(Sizing.content());
+		selectorButton.text(text);
+		selectorButton.mouseDown().subscribe((x, y, b) -> {
+			if (!contextMenu.hasParent()) {
+				root.child(contextMenu.positioning(Positioning.absolute(selectorButton.x(), selectorButton.y() + selectorButton.height())));
+			} else {
+				root.removeChild(contextMenu);
+			}
+			return true;
+		});
+		return selectorButton;
+	}
+
 	@Override
 	protected void build(FlowLayout rootComponent) {
 		this.root = rootComponent;
-
 		// Preset Tab
 		presetsTab = model.expandTemplate(ScrollContainer.class, "presets-tab", Map.of("id", "presetsTab"));
 		VerticalFlowLayout presetsFlow = presetsTab.childById(VerticalFlowLayout.class, "presetsFlow");
@@ -54,8 +71,32 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 
 
 		// Data Tab
-		dataTab = model.expandTemplate(ScrollContainer.class, "data-tab", Map.of("id", "dataTab"));
+		dataTab = model.expandTemplate(VerticalFlowLayout.class, "data-tab", Map.of());
 
+		Map<String, NbtCompound> importFiles = new HashMap<>();
+		File[] fileArray = new File(SwitchyClient.EXPORT_PATH).listFiles((dir, name) -> FileNameUtils.getExtension(name).equalsIgnoreCase("dat"));
+		if (fileArray != null) {
+			for (File file : fileArray) {
+				try {
+					NbtCompound nbt = NbtIo.readCompressed(file);
+					nbt.putString("filename", FilenameUtils.getBaseName(file.getName()));
+
+					String name = file.getName();
+					String baseName = FileNameUtils.getBaseName(name);
+					importFiles.put(baseName, nbt);
+				} catch (IOException ignored) {
+				}
+			}
+		}
+
+
+		VerticalFlowLayout fileSelectorPlaceholder = dataTab.childById(VerticalFlowLayout.class, "fileSelectorPlaceholder");
+		List<Text> fileNames = importFiles.keySet().stream().map(Text::of).toList();
+
+		fileSelectorPlaceholder.child(dropdownButton(dropdownMaker(fileSelectorPlaceholder, fileNames), Text.of("Select a file...")));
+
+		VerticalFlowLayout sourceSelectorPlaceholder = dataTab.childById(VerticalFlowLayout.class, "sourceSelectorPlaceholder");
+		sourceSelectorPlaceholder.child(dropdownButton(dropdownMaker(sourceSelectorPlaceholder, List.of(Text.of("File"), Text.of("PluralKit"))), Text.of("File")));
 
 		// Header
 		VerticalFlowLayout panel = root.childById(VerticalFlowLayout.class, "panel");
@@ -314,5 +355,20 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 			root.removeChild(loadingOverlay);
 			loadingOverlay = null;
 		}
+	}
+
+	DropdownComponent dropdownMaker(FlowLayout placeholder, List<Text> entries)
+	{
+		DropdownComponent dropdown = Components.dropdown(Sizing.content());
+
+		for (Text entry : entries)
+		{
+			dropdown.button(entry, dropdownComponent -> {
+				root.removeChild(dropdown);
+				placeholder.clearChildren();
+				placeholder.child(dropdownButton(dropdown, entry));
+			});
+		}
+		return dropdown;
 	}
 }
