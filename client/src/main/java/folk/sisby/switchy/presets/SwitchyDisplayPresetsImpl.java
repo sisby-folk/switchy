@@ -10,7 +10,6 @@ import folk.sisby.switchy.client.api.module.SwitchyDisplayModuleRegistry;
 import folk.sisby.switchy.util.PresetConverter;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.util.Identifier;
 import org.quiltmc.loader.api.minecraft.ClientOnly;
 
@@ -41,7 +40,7 @@ public class SwitchyDisplayPresetsImpl extends SwitchyPresetsDataImpl<SwitchyDis
 		// Don't Log. Don't check for existence. `modules` is expected to be desync'd from the DisplayModules.
 		list.forEach((e) -> {
 			Identifier id;
-			if (e instanceof NbtString s && (id = Identifier.tryParse(s.asString())) != null) {
+			if ((id = Identifier.tryParse(e.asString())) != null) {
 				getModules().put(id, enabled);
 			}
 		});

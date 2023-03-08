@@ -57,6 +57,10 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 	public void fillFromNbt(NbtCompound nbt) {
 		toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE), true, !forPlayer);
 		toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_DISABLED, NbtElement.STRING_TYPE), false, !forPlayer);
+		if (!forPlayer) { // Disable non-enabled modules by default for non-player presets.
+			List<Identifier> enabledModules = nbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).toList();
+			modules.forEach((id, enabled) -> modules.put(id, enabledModules.contains(id)));
+		}
 
 		NbtCompound presetsCompound = nbt.getCompound(KEY_PRESETS);
 		for (String key : presetsCompound.getKeys()) {
@@ -117,7 +121,7 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 	void toggleModulesFromNbt(NbtList list, Boolean enabled, Boolean silent) {
 		list.forEach((e) -> {
 			Identifier id;
-			if (e instanceof NbtString s && (id = Identifier.tryParse(s.asString())) != null && modules.containsKey(id)) {
+			if ((id = Identifier.tryParse(e.asString())) != null && modules.containsKey(id)) {
 				modules.put(id, enabled);
 			} else if (!silent) {
 				logger.warn("[Switchy] Unable to toggle a module - Was a module unloaded?");
