@@ -1,6 +1,8 @@
 package folk.sisby.switchy.client.screen;
 
 import com.mojang.brigadier.StringReader;
+import folk.sisby.switchy.api.module.SwitchyModuleEditable;
+import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.presets.SwitchyDisplayPresets;
 import folk.sisby.switchy.client.SwitchyClient;
 import folk.sisby.switchy.client.api.SwitchyClientApi;
@@ -12,9 +14,12 @@ import io.wispforest.owo.ui.core.Positioning;
 import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owo.ui.core.VerticalAlignment;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import org.apache.commons.compress.utils.FileNameUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.Nullable;
@@ -23,11 +28,18 @@ import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_REQUEST_DISPLAY_PRESETS;
+import static folk.sisby.switchy.api.presets.SwitchyPresetsData.KEY_PRESET_LIST;
+import static folk.sisby.switchy.api.presets.SwitchyPresetsData.KEY_PRESET_MODULE_ENABLED;
+import static folk.sisby.switchy.util.Feedback.*;
 
 
 public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implements SwitchyDisplayScreen {
@@ -37,6 +49,10 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 	private HorizontalFlowLayout modulesTab;
 	private VerticalFlowLayout dataTab;
 	private VerticalFlowLayout loadingOverlay;
+	private List<Identifier> includedModules = new ArrayList<>();
+	private List<Identifier> availableModules = new ArrayList<>();
+	private NbtCompound selectedFileNbt;
+	private boolean isImporting;
 
 	public PresetManagementScreen() {
 		super(FlowLayout.class, DataSource.asset(new Identifier("switchy", "preset_management_model")));
@@ -68,35 +84,25 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		// Modules Tab
 		modulesTab = model.expandTemplate(HorizontalFlowLayout.class, "modules-tab", Map.of());
 
-
-
 		// Data Tab
 		dataTab = model.expandTemplate(VerticalFlowLayout.class, "data-tab", Map.of());
+		ButtonComponent importToggle = dataTab.childById(ButtonComponent.class, "importToggleButton");
+		ButtonComponent exportToggle = dataTab.childById(ButtonComponent.class, "exportToggleButton");
+		importToggle.onPress(b -> {
+			isImporting = true;
+			importToggle.active(false);
+			exportToggle.active(true);
+		});
+		exportToggle.onPress(b -> {
+			isImporting = false;
+			exportToggle.active(false);
+			importToggle.active(true);
+		});
 
-		Map<String, NbtCompound> importFiles = new HashMap<>();
-		File[] fileArray = new File(SwitchyClient.EXPORT_PATH).listFiles((dir, name) -> FileNameUtils.getExtension(name).equalsIgnoreCase("dat"));
-		if (fileArray != null) {
-			for (File file : fileArray) {
-				try {
-					NbtCompound nbt = NbtIo.readCompressed(file);
-					nbt.putString("filename", FilenameUtils.getBaseName(file.getName()));
-
-					String name = file.getName();
-					String baseName = FileNameUtils.getBaseName(name);
-					importFiles.put(baseName, nbt);
-				} catch (IOException ignored) {
-				}
-			}
-		}
-
-
-		VerticalFlowLayout fileSelectorPlaceholder = dataTab.childById(VerticalFlowLayout.class, "fileSelectorPlaceholder");
-		List<Text> fileNames = importFiles.keySet().stream().map(Text::of).toList();
-
-		fileSelectorPlaceholder.child(dropdownButton(dropdownMaker(fileSelectorPlaceholder, fileNames), Text.of("Select a file...")));
 
 		VerticalFlowLayout sourceSelectorPlaceholder = dataTab.childById(VerticalFlowLayout.class, "sourceSelectorPlaceholder");
-		sourceSelectorPlaceholder.child(dropdownButton(dropdownMaker(sourceSelectorPlaceholder, List.of(Text.of("File"), Text.of("PluralKit"))), Text.of("File")));
+		sourceSelectorPlaceholder.child(dropdownButton(dropdownMaker(sourceSelectorPlaceholder, List.of(Text.of("File")), text -> {
+		}), Text.of("File")));
 
 		// Header
 		VerticalFlowLayout panel = root.childById(VerticalFlowLayout.class, "panel");
@@ -160,10 +166,11 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 						},
 						cancel -> {
 						},
-						List.of(Text.translatable("commands.switchy_client.delete.confirm", name),Text.translatable("commands.switchy.delete.warn"), Text.translatable("commands.switchy.list.modules", displayPresets.getEnabledModuleText()))
+						List.of(Text.translatable("commands.switchy_client.delete.confirm", name), Text.translatable("commands.switchy.delete.warn"), Text.translatable("commands.switchy.list.modules", displayPresets.getEnabledModuleText()))
 				);
 			};
-			ButtonComponent deleteButton = Components.button(Text.literal("Delete"), (displayPresets.getCurrentPresetName().equals(name)) ? b -> {} : deleteAction);
+			ButtonComponent deleteButton = Components.button(Text.literal("Delete"), (displayPresets.getCurrentPresetName().equals(name)) ? b -> {
+			} : deleteAction);
 			deleteButton.horizontalSizing(Sizing.fill(22));
 			deleteButton.active(!displayPresets.getCurrentPresetName().equals(name));
 			presetFlow.child(presetName);
@@ -175,6 +182,61 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		});
 	}
 
+
+	void refreshDataModulesFlow(VerticalFlowLayout availableModulesFlow, VerticalFlowLayout includedModulesFlow, List<Identifier> availableModules, List<Identifier> includedModules, SwitchyDisplayPresets displayPresets) {
+		availableModulesFlow.clearChildren();
+		includedModulesFlow.clearChildren();
+		int labelSize = 100;
+		availableModulesFlow.child(getModuleFlow(
+				new Identifier("placeholder", "placeholder"),
+				Text.literal(""),
+				(b, i) -> {
+				},
+				Text.literal("Add"),
+				Text.literal(""),
+				labelSize
+		).verticalSizing(Sizing.fixed(0)));
+		includedModulesFlow.child(getModuleFlow(
+				new Identifier("placeholder", "placeholder"),
+				Text.literal(""),
+				(b, i) -> {
+				},
+				Text.literal("Remove"),
+				Text.literal(""),
+				labelSize
+		).verticalSizing(Sizing.fixed(0)));
+
+		// Available Modules
+		availableModules.forEach(module -> {
+			availableModulesFlow.child(getModuleFlow(module,
+					displayPresets.getModuleInfo().get(module).description(),
+					(b, id) -> {
+						includedModules.add(module);
+						availableModules.remove(module);
+						refreshDataModulesFlow(availableModulesFlow, includedModulesFlow, availableModules, includedModules, displayPresets);
+					},
+					Text.literal("Add"),
+					displayPresets.getModuleInfo().get(module).descriptionWhenEnabled(),
+					labelSize
+			));
+		});
+		// Included Modules
+		includedModules.forEach(module -> {
+			includedModulesFlow.child(getModuleFlow(
+					module,
+					displayPresets.getModuleInfo().get(module).description(),
+					(b, id) -> {
+						availableModules.add(module);
+						includedModules.remove(module);
+						refreshDataModulesFlow(availableModulesFlow, includedModulesFlow, availableModules, includedModules, displayPresets);
+					},
+					Text.literal("Remove"),
+					displayPresets.getModuleInfo().get(module).descriptionWhenEnabled(),
+					labelSize
+			));
+		});
+	}
+
 	private void refreshModulesFlow(VerticalFlowLayout disabledModulesFlow, VerticalFlowLayout enabledModulesFlow, SwitchyDisplayPresets displayPresets) {
 		disabledModulesFlow.clearChildren();
 		enabledModulesFlow.clearChildren();
@@ -182,7 +244,8 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		disabledModulesFlow.child(getModuleFlow(
 				new Identifier("placeholder", "placeholder"),
 				Text.literal(""),
-				(b,i) -> {},
+				(b, i) -> {
+				},
 				Text.literal("Enable"),
 				Text.literal(""),
 				labelSize
@@ -190,7 +253,8 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		enabledModulesFlow.child(getModuleFlow(
 				new Identifier("placeholder", "placeholder"),
 				Text.literal(""),
-				(b,i) -> {},
+				(b, i) -> {
+				},
 				Text.literal("Disable"),
 				Text.literal(""),
 				labelSize
@@ -209,7 +273,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 					Text.literal("Enable"),
 					displayPresets.getModuleInfo().get(module).descriptionWhenEnabled(),
 					labelSize
-					));
+			));
 		});
 		// Enabled Modules
 		displayPresets.getEnabledModules().forEach(module -> {
@@ -229,7 +293,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 								},
 								cancel -> {
 								},
-								List.of(Text.translatable("commands.switchy_client.disable.confirm", id.toString()),Text.translatable("commands.switchy.module.disable.warn", displayPresets.getModuleInfo().get(id).deletionWarning()))
+								List.of(Text.translatable("commands.switchy_client.disable.confirm", id.toString()), Text.translatable("commands.switchy.module.disable.warn", displayPresets.getModuleInfo().get(id).deletionWarning()))
 						);
 					},
 					Text.literal("Disable"),
@@ -246,23 +310,19 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		this.setInitialFocus(nameEntry);
 		renamePresetFlow.child(nameEntry);
 		ButtonComponent confirmButton = Components.button(Text.literal("Confirm"), (presetName != null) ? b -> {
-			if (!presetName.equals(nameEntry.getText()))
-			{
-				if (displayPresets.getPresetNames().stream().noneMatch(s -> s.equalsIgnoreCase(nameEntry.getText())))
-				{
+			if (!presetName.equals(nameEntry.getText())) {
+				if (displayPresets.getPresetNames().stream().noneMatch(s -> s.equalsIgnoreCase(nameEntry.getText()))) {
 					displayPresets.renamePreset(presetName, nameEntry.getText());
 					refreshPresetFlow(presetsFlow, displayPresets);
 					lockScreen();
 					SwitchyClientApi.renamePreset(presetName, nameEntry.getText());
 				}
-			}
-			else {
+			} else {
 				refreshPresetFlow(presetsFlow, displayPresets);
 			}
 
 		} : b -> {
-			if (displayPresets.getPresetNames().stream().noneMatch(s -> s.equalsIgnoreCase(nameEntry.getText())))
-			{
+			if (displayPresets.getPresetNames().stream().noneMatch(s -> s.equalsIgnoreCase(nameEntry.getText()))) {
 				displayPresets.newPreset(nameEntry.getText());
 				refreshPresetFlow(presetsFlow, displayPresets);
 				lockScreen();
@@ -306,6 +366,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		root.child(dialog);
 		return dialog;
 	}
+
 	HorizontalFlowLayout getModuleFlow(
 			Identifier id,
 			@Nullable Text labelTooltip,
@@ -313,8 +374,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 			Text buttonText,
 			@Nullable Text buttonTooltip,
 			int labelSize
-			)
-	{
+	) {
 		HorizontalFlowLayout moduleFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 		LabelComponent moduleName = Components.label(Text.literal(id.toString()));
 		moduleName.tooltip(labelTooltip);
@@ -331,10 +391,8 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		return moduleFlow;
 	}
 
-	void lockScreen()
-	{
-		if (loadingOverlay == null)
-		{
+	void lockScreen() {
+		if (loadingOverlay == null) {
 			loadingOverlay = model.expandTemplate(VerticalFlowLayout.class, "loading-overlay", Map.of());
 			root.child(loadingOverlay);
 		}
@@ -342,31 +400,95 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 
 	@Override
 	public void updatePresets(SwitchyDisplayPresets displayPresets) {
+		// Presets Tab
 		VerticalFlowLayout presetsFlow = presetsTab.childById(VerticalFlowLayout.class, "presetsFlow");
 		refreshPresetFlow(presetsFlow, displayPresets);
+
+		//Modules Tab
 		VerticalFlowLayout disabledModulesFlow = modulesTab.childById(VerticalFlowLayout.class, "leftModulesFlow");
 		VerticalFlowLayout enabledModulesFlow = modulesTab.childById(VerticalFlowLayout.class, "rightModulesFlow");
 		refreshModulesFlow(disabledModulesFlow, enabledModulesFlow, displayPresets);
+
+		//Data Tab
+		VerticalFlowLayout availableModulesFlow = dataTab.childById(VerticalFlowLayout.class, "leftModulesFlow");
+		VerticalFlowLayout includedModulesFlow = dataTab.childById(VerticalFlowLayout.class, "rightModulesFlow");
+		ButtonComponent importButton = dataTab.childById(ButtonComponent.class, "importButton");
+		importButton.onPress(b -> {
+			openDialog(
+					"Confirm",
+					"Cancel",
+					200,
+					confirmButton -> {
+						lockScreen();
+						SwitchyClientApi.importPresets(selectedFileNbt, availableModules, includedModules);
+					},
+					cancelButton -> {
+					},
+					List.of(
+							Text.translatable("commands.switchy.import.warn.info", literal(String.valueOf(selectedFileNbt.getCompound(KEY_PRESET_LIST).getKeys().size())), literal(String.valueOf(includedModules.size()))),
+							Text.translatable("commands.switchy.list.presets", getHighlightedListText(selectedFileNbt.getCompound(KEY_PRESET_LIST).getKeys().stream().sorted().toList(), List.of(new Pair<>(displayPresets.getPresetNames()::contains, Formatting.DARK_RED)))),
+							Text.translatable("commands.switchy.import.warn.collision"),
+							Text.translatable("commands.switchy.list.modules", getIdListText(includedModules))
+					)
+			);
+		});
+
 		presetsTab.childById(ButtonComponent.class, "newPreset").onPress(buttonComponent -> {
 			presetsFlow.child(getRenameLayout(presetsFlow, null, displayPresets));
 		});
-		if (loadingOverlay != null)
-		{
+		if (loadingOverlay != null) {
 			root.removeChild(loadingOverlay);
 			loadingOverlay = null;
 		}
+
+		// Data tab
+		Map<String, NbtCompound> importFiles = new HashMap<>();
+		File[] fileArray = new File(SwitchyClient.EXPORT_PATH).listFiles((dir, name) -> FileNameUtils.getExtension(name).equalsIgnoreCase("dat"));
+		if (fileArray != null) {
+			for (File file : fileArray) {
+				try {
+					NbtCompound nbt = NbtIo.readCompressed(file);
+					nbt.putString("filename", FilenameUtils.getBaseName(file.getName()));
+
+					String name = file.getName();
+					String baseName = FileNameUtils.getBaseName(name);
+					importFiles.put(baseName, nbt);
+				} catch (IOException ignored) {
+				}
+			}
+		}
+
+		VerticalFlowLayout fileSelectorPlaceholder = dataTab.childById(VerticalFlowLayout.class, "fileSelectorPlaceholder");
+		List<Text> fileNames = importFiles.keySet().stream().map(Text::of).toList();
+		fileSelectorPlaceholder.clearChildren();
+		fileSelectorPlaceholder.child(dropdownButton(dropdownMaker(fileSelectorPlaceholder, fileNames, text -> {
+			selectedFileNbt = importFiles.get(text.getString());
+			includedModules = selectedFileNbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).filter(id -> {
+				SwitchyModuleInfo moduleInfo = displayPresets.getModuleInfo().get(id);
+				if (moduleInfo == null) return false;
+				return moduleInfo.editable() == SwitchyModuleEditable.ALLOWED || moduleInfo.editable() == SwitchyModuleEditable.ALWAYS_ALLOWED;
+			}).collect(Collectors.toList());
+			availableModules = selectedFileNbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).filter(id -> {
+				SwitchyModuleInfo moduleInfo = displayPresets.getModuleInfo().get(id);
+				if (moduleInfo == null) return false;
+				return moduleInfo.editable() == SwitchyModuleEditable.OPERATOR;
+			}).collect(Collectors.toList());
+
+			refreshDataModulesFlow(availableModulesFlow, includedModulesFlow, availableModules, includedModules, displayPresets);
+		}), Text.of("Select a file...")));
+
+		refreshDataModulesFlow(availableModulesFlow, includedModulesFlow, availableModules, includedModules, displayPresets);
 	}
 
-	DropdownComponent dropdownMaker(FlowLayout placeholder, List<Text> entries)
-	{
+	DropdownComponent dropdownMaker(FlowLayout placeholder, List<Text> entries, Consumer<Text> onSelected) {
 		DropdownComponent dropdown = Components.dropdown(Sizing.content());
 
-		for (Text entry : entries)
-		{
+		for (Text entry : entries) {
 			dropdown.button(entry, dropdownComponent -> {
 				root.removeChild(dropdown);
 				placeholder.clearChildren();
 				placeholder.child(dropdownButton(dropdown, entry));
+				onSelected.accept(entry);
 			});
 		}
 		return dropdown;
