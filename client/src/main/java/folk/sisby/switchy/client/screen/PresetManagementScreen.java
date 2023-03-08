@@ -37,8 +37,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_REQUEST_DISPLAY_PRESETS;
-import static folk.sisby.switchy.api.presets.SwitchyPresetsData.KEY_PRESET_LIST;
-import static folk.sisby.switchy.api.presets.SwitchyPresetsData.KEY_PRESET_MODULE_ENABLED;
+import static folk.sisby.switchy.api.presets.SwitchyPresetsData.*;
 import static folk.sisby.switchy.util.Feedback.*;
 
 
@@ -425,8 +424,8 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 					cancelButton -> {
 					},
 					List.of(
-							Text.translatable("commands.switchy.import.warn.info", literal(String.valueOf(selectedFileNbt.getCompound(KEY_PRESET_LIST).getKeys().size())), literal(String.valueOf(includedModules.size()))),
-							Text.translatable("commands.switchy.list.presets", getHighlightedListText(selectedFileNbt.getCompound(KEY_PRESET_LIST).getKeys().stream().sorted().toList(), List.of(new Pair<>(displayPresets.getPresetNames()::contains, Formatting.DARK_RED)))),
+							Text.translatable("commands.switchy.import.warn.info", literal(String.valueOf(selectedFileNbt.getCompound(KEY_PRESETS).getKeys().size())), literal(String.valueOf(includedModules.size()))),
+							Text.translatable("commands.switchy.list.presets", getHighlightedListText(selectedFileNbt.getCompound(KEY_PRESETS).getKeys().stream().sorted().toList(), List.of(new Pair<>(displayPresets.getPresetNames()::contains, Formatting.DARK_RED)))),
 							Text.translatable("commands.switchy.import.warn.collision"),
 							Text.translatable("commands.switchy.list.modules", getIdListText(includedModules))
 					)
