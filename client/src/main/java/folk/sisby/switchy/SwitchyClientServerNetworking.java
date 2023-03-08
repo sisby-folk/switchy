@@ -179,6 +179,7 @@ public class SwitchyClientServerNetworking {
 		}
 		presetNbt.putString(KEY_IMPORT_COMMAND, "INSTANT IMPORT");
 		importPresets(player, presetNbt);
+		sendDisplayPresets(player);
 	}
 
 	private static void importPresets(ServerPlayerEntity player, @Nullable NbtCompound presetNbt) {
