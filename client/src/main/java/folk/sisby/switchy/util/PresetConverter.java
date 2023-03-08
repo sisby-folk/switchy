@@ -40,9 +40,9 @@ public class PresetConverter {
 		outNbt.put(SwitchyPresetsData.KEY_PRESET_MODULE_ENABLED, enabledList);
 		outNbt.put(SwitchyPresetsData.KEY_PRESET_MODULE_DISABLED, disabledList);
 
-		NbtCompound listNbt = new NbtCompound();
-		presets.getPresets().forEach((name, preset) -> listNbt.put(name, presetToNbt(preset)));
-		outNbt.put(SwitchyPresetsData.KEY_PRESET_LIST, listNbt);
+		NbtCompound presetsCompound = new NbtCompound();
+		presets.getPresets().forEach((name, preset) -> presetsCompound.put(name, presetToNbt(preset)));
+		outNbt.put(SwitchyPresetsData.KEY_PRESETS, presetsCompound);
 
 		outNbt.putString(SwitchyPresetsData.KEY_PRESET_CURRENT, presets.getCurrentPresetName());
 

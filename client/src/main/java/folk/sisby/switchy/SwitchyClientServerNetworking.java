@@ -218,7 +218,7 @@ public class SwitchyClientServerNetworking {
 		}
 
 		importedPresets.getModules().forEach((id, enabled) -> {
-			if (enabled && (!presets.containsModule(id) || !presets.isModuleEnabled(id) || excludeModules.contains(id) || getEditable(id) == SwitchyModuleEditable.NEVER || (getEditable(id) == SwitchyModuleEditable.OPERATOR && !includeModules.contains(id)))) {
+			if (enabled && (!presets.isModuleEnabled(id) || excludeModules.contains(id) || getEditable(id) == SwitchyModuleEditable.NEVER || (getEditable(id) == SwitchyModuleEditable.OPERATOR && !includeModules.contains(id)))) {
 				importedPresets.disableModule(id);
 			}
 		});

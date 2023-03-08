@@ -69,13 +69,25 @@ public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, Sw
 
 	@Override
 	public void importFromOther(ServerPlayerEntity player, Map<String, SwitchyPreset> other) {
-		// Replace enabled modules for colliding current preset
-		if (other.containsKey(getCurrentPresetName())) {
-			other.get(getCurrentPresetName()).getModules().forEach((id, module) ->
-					mutateModule(player, getCurrentPresetName(), module, (duckedModule) -> duckedModule.fillFromNbt(duckedModule.toNbt()))
-			);
-		}
-		importFromOther(other);
+		other.forEach((name, otherPreset) -> {
+			if (getPresets().containsKey(name)) {
+				mutatePresetOfModules(player, name, (id, otherModule) -> {
+					if (otherPreset.containsModule(id)) getPreset(name).getModule(id).fillFromNbt(otherModule.toNbt());
+				});
+			} else {
+				getEnabledModules().forEach((id) -> {
+					if (!otherPreset.containsModule(id)) { // Add missing modules
+						otherPreset.putModule(id, SwitchyModuleRegistry.supplyModule(id));
+					}
+				});
+				otherPreset.getModules().forEach((id, module) -> { // Remove disabled/unregistered modules
+					if (!containsModule(id) || !isModuleEnabled(id)) {
+						otherPreset.removeModule(id);
+					}
+				});
+				addPreset(otherPreset);
+			}
+		});
 	}
 
 	@Override

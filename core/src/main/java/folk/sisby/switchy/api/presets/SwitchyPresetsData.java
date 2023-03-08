@@ -35,17 +35,9 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 */
 	String KEY_PRESET_MODULE_DISABLED = "disabled";
 	/**
-	 * NBT key for the list of presets.
+	 * NBT key for the compound of presets.
 	 */
-	String KEY_PRESET_LIST = "list";
-
-	/**
-	 * Imports a set of presets, merging by replacing modules where preset names collide.
-	 * Only registered, enabled modules will be imported.
-	 *
-	 * @param other a map of presets to import into this object.
-	 */
-	void importFromOther(Map<String, Preset> other);
+	String KEY_PRESETS = "list";
 
 	/**
 	 * Adds a preset to this object.

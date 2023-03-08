@@ -57,11 +57,15 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 	public void fillFromNbt(NbtCompound nbt) {
 		toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE), true, !forPlayer);
 		toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_DISABLED, NbtElement.STRING_TYPE), false, !forPlayer);
+		if (!forPlayer) { // Disable non-enabled modules by default for non-player presets.
+			List<Identifier> enabledModules = nbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).toList();
+			modules.forEach((id, enabled) -> modules.put(id, enabledModules.contains(id)));
+		}
 
-		NbtCompound listNbt = nbt.getCompound(KEY_PRESET_LIST);
-		for (String key : listNbt.getKeys()) {
+		NbtCompound presetsCompound = nbt.getCompound(KEY_PRESETS);
+		for (String key : presetsCompound.getKeys()) {
 			try {
-				newPreset(key).fillFromNbt(listNbt.getCompound(key));
+				newPreset(key).fillFromNbt(presetsCompound.getCompound(key));
 			} catch (IllegalStateException ignoredPresetExists) {
 				logger.warn("[Switchy] Player data contained duplicate preset '{}'. Data may have been lost.", key);
 			} catch (InvalidWordException ignored) {
@@ -98,11 +102,11 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 		outNbt.put(KEY_PRESET_MODULE_ENABLED, enabledList);
 		outNbt.put(KEY_PRESET_MODULE_DISABLED, disabledList);
 
-		NbtCompound listNbt = new NbtCompound();
+		NbtCompound presetsCompound = new NbtCompound();
 		for (Preset preset : presets.values()) {
-			listNbt.put(preset.getName(), preset.toNbt());
+			presetsCompound.put(preset.getName(), preset.toNbt());
 		}
-		outNbt.put(KEY_PRESET_LIST, listNbt);
+		outNbt.put(KEY_PRESETS, presetsCompound);
 
 		outNbt.putString(KEY_PRESET_CURRENT, getCurrentPresetName());
 		return outNbt;
@@ -117,44 +121,11 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 	void toggleModulesFromNbt(NbtList list, Boolean enabled, Boolean silent) {
 		list.forEach((e) -> {
 			Identifier id;
-			if (e instanceof NbtString s && (id = Identifier.tryParse(s.asString())) != null && modules.containsKey(id)) {
+			if ((id = Identifier.tryParse(e.asString())) != null && modules.containsKey(id)) {
 				modules.put(id, enabled);
 			} else if (!silent) {
 				logger.warn("[Switchy] Unable to toggle a module - Was a module unloaded?");
 				logger.warn("[Switchy] NBT Element: " + e.asString());
-			}
-		});
-	}
-
-	@Override
-	public void importFromOther(Map<String, Preset> other) {
-		// Don't process the current preset, it won't do anything
-		other.remove(getCurrentPresetName());
-
-		// Replace enabled modules for collisions
-		other.forEach((name, preset) -> {
-			if (presets.containsKey(name)) {
-				preset.getModules().forEach((id, module) -> {
-					presets.get(name).removeModule(id);
-					presets.get(name).putModule(id, module);
-				});
-			}
-		});
-
-		// Add non-colliding presets
-		other.forEach((name, preset) -> {
-			if (!presets.containsKey(name)) {
-				modules.forEach((id, enabled) -> {
-					if (enabled && !preset.containsModule(id)) { // Add missing modules
-						preset.putModule(id, moduleSupplier.apply(id));
-					}
-				});
-				preset.getModules().forEach((id, module) -> { // Remove non-enabled modules
-					if (!modules.getOrDefault(id, false)) {
-						preset.removeModule(id);
-					}
-				});
-				addPreset(preset);
 			}
 		});
 	}
