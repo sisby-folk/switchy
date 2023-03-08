@@ -7,7 +7,6 @@ import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -46,7 +45,7 @@ public class CardinalSerializerCompat implements SwitchyModule {
 	 * @return a module instance for the specified cardinal component.
 	 */
 	@SuppressWarnings("unused")
-	public static <T1 extends Component> CardinalSerializerCompat from(ComponentKey<T1> registryKey, BiConsumer<ComponentKey<T1>, PlayerEntity> preApplyClear, BiConsumer<ComponentKey<T1>, PlayerEntity> postApplySync) {
+	public static <T1 extends Component> CardinalSerializerCompat from(ComponentKey<T1> registryKey, BiConsumer<ComponentKey<T1>, ServerPlayerEntity> preApplyClear, BiConsumer<ComponentKey<T1>, ServerPlayerEntity> postApplySync) {
 		return new CardinalSerializerCompat(Map.of(registryKey.getId(), new ComponentConfig<>(registryKey, preApplyClear, postApplySync)));
 	}
 
@@ -110,13 +109,13 @@ public class CardinalSerializerCompat implements SwitchyModule {
 	}
 
 	private record ComponentConfig<T1 extends Component>(ComponentKey<T1> registryKey,
-														 BiConsumer<ComponentKey<T1>, PlayerEntity> preApplyClear,
-														 BiConsumer<ComponentKey<T1>, PlayerEntity> postApplySync) {
-		void invokePreApplyClear(PlayerEntity player) {
+														 BiConsumer<ComponentKey<T1>, ServerPlayerEntity> preApplyClear,
+														 BiConsumer<ComponentKey<T1>, ServerPlayerEntity> postApplySync) {
+		void invokePreApplyClear(ServerPlayerEntity player) {
 			preApplyClear.accept(registryKey, player);
 		}
 
-		void invokePostApplySync(PlayerEntity player) {
+		void invokePostApplySync(ServerPlayerEntity player) {
 			postApplySync.accept(registryKey, player);
 		}
 	}
