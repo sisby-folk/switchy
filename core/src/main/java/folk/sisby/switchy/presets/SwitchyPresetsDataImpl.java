@@ -58,10 +58,10 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 		toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE), true, !forPlayer);
 		toggleModulesFromNbt(nbt.getList(KEY_PRESET_MODULE_DISABLED, NbtElement.STRING_TYPE), false, !forPlayer);
 
-		NbtCompound listNbt = nbt.getCompound(KEY_PRESET_LIST);
-		for (String key : listNbt.getKeys()) {
+		NbtCompound presetsCompound = nbt.getCompound(KEY_PRESETS);
+		for (String key : presetsCompound.getKeys()) {
 			try {
-				newPreset(key).fillFromNbt(listNbt.getCompound(key));
+				newPreset(key).fillFromNbt(presetsCompound.getCompound(key));
 			} catch (IllegalStateException ignoredPresetExists) {
 				logger.warn("[Switchy] Player data contained duplicate preset '{}'. Data may have been lost.", key);
 			} catch (InvalidWordException ignored) {
@@ -98,11 +98,11 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 		outNbt.put(KEY_PRESET_MODULE_ENABLED, enabledList);
 		outNbt.put(KEY_PRESET_MODULE_DISABLED, disabledList);
 
-		NbtCompound listNbt = new NbtCompound();
+		NbtCompound presetsCompound = new NbtCompound();
 		for (Preset preset : presets.values()) {
-			listNbt.put(preset.getName(), preset.toNbt());
+			presetsCompound.put(preset.getName(), preset.toNbt());
 		}
-		outNbt.put(KEY_PRESET_LIST, listNbt);
+		outNbt.put(KEY_PRESETS, presetsCompound);
 
 		outNbt.putString(KEY_PRESET_CURRENT, getCurrentPresetName());
 		return outNbt;

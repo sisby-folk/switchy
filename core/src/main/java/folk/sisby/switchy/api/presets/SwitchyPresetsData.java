@@ -35,9 +35,9 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 */
 	String KEY_PRESET_MODULE_DISABLED = "disabled";
 	/**
-	 * NBT key for the list of presets.
+	 * NBT key for the compound of presets.
 	 */
-	String KEY_PRESET_LIST = "list";
+	String KEY_PRESETS = "list";
 
 	/**
 	 * Adds a preset to this object.

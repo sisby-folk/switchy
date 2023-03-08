@@ -113,7 +113,7 @@ public class SwitchyClientServerNetworking {
 		ServerPlayNetworking.registerGlobalReceiver(C2S_REQUEST_DISPLAY_PRESETS, (server, player, handler, buf, sender) -> sendDisplayPresets(player));
 		// Actions
 		ServerPlayNetworking.registerGlobalReceiver(C2S_IMPORT_CONFIRM, (server, player, handler, buf, sender) -> importPresets(player, buf.readNbt()));
-		ServerPlayNetworking.registerGlobalReceiver(C2S_IMPORT_CONFIRM, (server, player, handler, buf, sender) -> instantImportPresets(player, buf.readNbt()));
+		ServerPlayNetworking.registerGlobalReceiver(C2S_IMPORT, (server, player, handler, buf, sender) -> instantImportPresets(player, buf.readNbt()));
 		ServerPlayNetworking.registerGlobalReceiver(C2S_SWITCH, (server, player, handler, buf, sender) -> {
 			SwitchyCommands.switchPreset(player, ((SwitchyPlayer) player).switchy$getPresets(), buf.readString());
 			sendDisplayPresets(player);
