@@ -20,7 +20,7 @@ public class FeedbackClient {
 	/**
 	 * Sends feedback to the player.
 	 *
-	 * @param player the player to send the message to.
+	 * @param player the player to send the messages to.
 	 * @param text   the text to send.
 	 *               Sends the client a Switchy
 	 */
@@ -31,7 +31,7 @@ public class FeedbackClient {
 	/**
 	 * Sends feedback to the player with a suggested command, using the {@link Feedback#FORMAT_INVALID} style.
 	 *
-	 * @param player      the player to send the message to.
+	 * @param player      the player to send the messages to.
 	 * @param keyFail     a translation key explaining why the user action failed.
 	 * @param keyCommand  a translation key with a suggested command.
 	 * @param commandArgs the literal arguments to pass to the command text.
@@ -44,7 +44,7 @@ public class FeedbackClient {
 	/**
 	 * Sends feedback to the player using the {@link Feedback#FORMAT_INVALID} style.
 	 *
-	 * @param player the player to send the message to.
+	 * @param player the player to send the messages to.
 	 * @param key    a translation key.
 	 * @param args   the literal arguments to pass to the translatable text.
 	 *               Sends feedback to the player using the {@link Feedback#FORMAT_INVALID} style
@@ -56,7 +56,7 @@ public class FeedbackClient {
 	/**
 	 * Sends feedback to the player using the {@link Feedback#FORMAT_SUCCESS} style.
 	 *
-	 * @param player the player to send the message to.
+	 * @param player the player to send the messages to.
 	 * @param key    a translation key.
 	 * @param args   the literal arguments to pass to the translatable text.
 	 *               Sends feedback to the player using the {@link Feedback#FORMAT_SUCCESS} style
@@ -68,7 +68,7 @@ public class FeedbackClient {
 	/**
 	 * Sends feedback to the player using the {@link Feedback#FORMAT_WARN} style.
 	 *
-	 * @param player the player to send the message to.
+	 * @param player the player to send the messages to.
 	 * @param key    a translation key.
 	 * @param args   the literal arguments to pass to the translatable text.
 	 *               Sends feedback to the player using the {@link Feedback#FORMAT_WARN} style

@@ -3,11 +3,11 @@ package folk.sisby.switchy.presets;
 import folk.sisby.switchy.api.exception.ModuleNotFoundException;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
-import folk.sisby.switchy.api.module.presets.SwitchyDisplayPreset;
-import folk.sisby.switchy.api.module.presets.SwitchyDisplayPresets;
+import folk.sisby.switchy.api.module.presets.SwitchyClientPreset;
+import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
 import folk.sisby.switchy.client.SwitchyClient;
-import folk.sisby.switchy.client.api.module.SwitchyDisplayModule;
-import folk.sisby.switchy.client.api.module.SwitchyDisplayModuleRegistry;
+import folk.sisby.switchy.client.api.module.SwitchyClientModule;
+import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
 import folk.sisby.switchy.util.PresetConverter;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -19,30 +19,30 @@ import java.util.Map;
 
 /**
  * @author Sisby folk
- * @see SwitchyDisplayPresets
+ * @see SwitchyClientPresets
  * @since 1.9.1
  */
 @ClientOnly
-public class SwitchyDisplayPresetsImpl extends SwitchyPresetsDataImpl<SwitchyDisplayModule, SwitchyDisplayPreset> implements SwitchyDisplayPresets {
+public class SwitchyClientPresetsImpl extends SwitchyPresetsDataImpl<SwitchyClientModule, SwitchyClientPreset> implements SwitchyClientPresets {
 	final Map<Identifier, SwitchyModuleInfo> moduleInfo;
 
 	int permissionLevel;
 
 	/**
-	 * Returns an empty display presets object.
+	 * Returns an empty client presets object.
 	 *
 	 * @param moduleInfo a map of module info by module ID.
 	 * @param permissionLevel the permission level for the player.
 	 */
-	public SwitchyDisplayPresetsImpl(Map<Identifier, SwitchyModuleInfo> moduleInfo, int permissionLevel) {
-		super(new HashMap<>(), SwitchyDisplayPresetImpl::new, SwitchyDisplayModuleRegistry::supplyModule,true, SwitchyClient.LOGGER);
+	public SwitchyClientPresetsImpl(Map<Identifier, SwitchyModuleInfo> moduleInfo, int permissionLevel) {
+		super(new HashMap<>(), SwitchyClientPresetImpl::new, SwitchyClientModuleRegistry::supplyModule,true, SwitchyClient.LOGGER);
 		this.moduleInfo = moduleInfo;
 		this.permissionLevel = permissionLevel;
 	}
 
 	@Override
 	void toggleModulesFromNbt(NbtList list, Boolean enabled, Boolean silent) {
-		// Don't Log. Don't check for existence. `modules` is expected to be desync'd from the DisplayModules.
+		// Don't Log. Don't check for existence. `modules` is expected to be desync'd from the actual modules..
 		list.forEach((e) -> {
 			Identifier id;
 			if ((id = Identifier.tryParse(e.asString())) != null) {

@@ -1,5 +1,3 @@
 dependencies {
 	implementation(project(path: ':core', configuration: 'namedElements'))
-
-	modImplementation libs.bundles.client
 }

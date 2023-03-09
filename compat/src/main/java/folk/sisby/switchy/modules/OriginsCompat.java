@@ -27,7 +27,7 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  * @see SwitchyModule
  * @since 1.0.0
  */
-public class OriginsCompat implements SwitchyModule, SwitchyModuleDisplayable {
+public class OriginsCompat implements SwitchyModule, SwitchyModuleClientable {
 	/**
 	 * Identifier for this module.
 	 */
@@ -110,7 +110,7 @@ public class OriginsCompat implements SwitchyModule, SwitchyModuleDisplayable {
 	}
 
 	@Override
-	public NbtCompound toDisplayNbt() {
+	public NbtCompound toClientNbt() {
 		return toNbt();
 	}
 

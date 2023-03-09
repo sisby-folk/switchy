@@ -1,7 +1,9 @@
-package folk.sisby.switchy.client;
+package folk.sisby.switchy.ui;
 
 import com.mojang.blaze3d.platform.InputUtil;
-import folk.sisby.switchy.client.screen.SwitchScreen;
+import folk.sisby.switchy.SwitchyClientServerNetworking;
+import folk.sisby.switchy.client.api.SwitchyClientEvents;
+import folk.sisby.switchy.ui.screen.SwitchScreen;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBind;
 import org.lwjgl.glfw.GLFW;
@@ -9,17 +11,15 @@ import org.quiltmc.qsl.lifecycle.api.client.event.ClientTickEvents;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
-import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_REQUEST_DISPLAY_PRESETS;
-
 /**
- * Registration for client keybindings.
+ * Registration for UI keybindings.
  *
  * @author Sisby folk
  * @since 1.9.0
  */
-public class SwitchyKeybindings {
+public class SwitchyKeybindings implements SwitchyClientEvents.Init {
 	/**
-	 * registers all keybindings for Switchy Client.
+	 * registers all keybindings for Switchy UI.
 	 */
 	public static void initializeKeybindings() {
 		KeyBind switchKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBind(
@@ -30,11 +30,16 @@ public class SwitchyKeybindings {
 		));
 		ClientTickEvents.END.register(client -> {
 			while (switchKeyBinding.wasPressed()) {
-				if (client.player != null && ClientPlayNetworking.canSend(C2S_REQUEST_DISPLAY_PRESETS)) {
+				if (client.player != null && ClientPlayNetworking.canSend(SwitchyClientServerNetworking.C2S_REQUEST_CLIENT_PRESETS)) {
 					client.execute(() -> client.setScreen(new SwitchScreen()));
-					ClientPlayNetworking.send(C2S_REQUEST_DISPLAY_PRESETS, PacketByteBufs.empty());
+					ClientPlayNetworking.send(SwitchyClientServerNetworking.C2S_REQUEST_CLIENT_PRESETS, PacketByteBufs.empty());
 				}
 			}
 		});
+	}
+
+	@Override
+	public void onInitialize() {
+		initializeKeybindings();
 	}
 }

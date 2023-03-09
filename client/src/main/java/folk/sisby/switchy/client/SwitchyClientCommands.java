@@ -7,6 +7,8 @@ import folk.sisby.switchy.client.api.SwitchyClientEvents;
 import folk.sisby.switchy.client.argument.IdentifiersArgumentType;
 import folk.sisby.switchy.client.argument.IdentifiersFromNbtArgArgumentType;
 import folk.sisby.switchy.client.argument.NbtFileArgumentType;
+import folk.sisby.switchy.client.util.SwitchyFiles;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.command.CommandBuildContext;
 import net.minecraft.nbt.NbtCompound;
@@ -39,12 +41,12 @@ public class SwitchyClientCommands implements ClientCommandRegistrationCallback 
 	public static String HISTORY = "";
 
 	private static void importPresets(String command, ClientPlayerEntity player, NbtCompound presetsNbt, List<Identifier> excludeModules, List<Identifier> includeModules) {
-		SwitchyClientApi.importPresets(presetsNbt, excludeModules, includeModules, command);
+		SwitchyClientApi.importPresets(presetsNbt, excludeModules, includeModules, command, (feedback, clientPresets) -> {}); // TODO: Do feedback on client.
 		tellSuccess(player, "commands.switchy_client.import.success");
 	}
 
 	private static void exportPresets(String command, ClientPlayerEntity player, List<Identifier> excludeModules) {
-		SwitchyClientApi.exportPresets(excludeModules);
+		SwitchyClientApi.exportPresets(excludeModules, (feedback, presetsNbt) -> SwitchyFiles.exportPresetsToFile(MinecraftClient.getInstance(), presetsNbt));
 		tellSuccess(player, "commands.switchy_client.export.sent");
 	}
 

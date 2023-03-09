@@ -6,9 +6,10 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.yggdrasil.response.MinecraftTexturesPayload;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.util.UUIDTypeAdapter;
-import folk.sisby.switchy.client.api.SwitchySwitchScreenPosition;
-import folk.sisby.switchy.client.api.module.SwitchyDisplayModule;
-import folk.sisby.switchy.client.api.module.SwitchyDisplayModuleRegistry;
+import folk.sisby.switchy.client.api.module.SwitchyClientModule;
+import folk.sisby.switchy.ui.api.SwitchySwitchScreenPosition;
+import folk.sisby.switchy.ui.api.module.SwitchyDisplayModule;
+import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
 import folk.sisby.switchy.modules.FabricTailorCompatData;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.component.EntityComponent;
@@ -31,9 +32,9 @@ import java.util.UUID;
  * @since 2.0.0
  */
 @ClientOnly
-public class FabricTailorCompatDisplay extends FabricTailorCompatData implements SwitchyDisplayModule {
+public class FabricTailorCompatDisplay extends FabricTailorCompatData implements SwitchyClientModule,  SwitchyDisplayModule {
 	static {
-		SwitchyDisplayModuleRegistry.registerModule(ID, FabricTailorCompatDisplay::new);
+		SwitchyClientModuleRegistry.registerModule(ID, FabricTailorCompatDisplay::new);
 	}
 
 	/**

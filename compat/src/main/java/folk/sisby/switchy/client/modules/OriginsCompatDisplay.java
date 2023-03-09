@@ -1,9 +1,10 @@
 package folk.sisby.switchy.client.modules;
 
 import com.mojang.datafixers.util.Pair;
-import folk.sisby.switchy.client.api.SwitchySwitchScreenPosition;
-import folk.sisby.switchy.client.api.module.SwitchyDisplayModule;
-import folk.sisby.switchy.client.api.module.SwitchyDisplayModuleRegistry;
+import folk.sisby.switchy.client.api.module.SwitchyClientModule;
+import folk.sisby.switchy.ui.api.SwitchySwitchScreenPosition;
+import folk.sisby.switchy.ui.api.module.SwitchyDisplayModule;
+import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.HorizontalFlowLayout;
@@ -34,7 +35,7 @@ import static io.github.apace100.origins.registry.ModItems.ORB_OF_ORIGIN;
  * @since 2.0.0
  */
 @ClientOnly
-public class OriginsCompatDisplay implements SwitchyDisplayModule {
+public class OriginsCompatDisplay implements SwitchyClientModule,  SwitchyDisplayModule {
 	/**
 	 * Identifier for this module.
 	 * Must match {@link folk.sisby.switchy.modules.OriginsCompat}.
@@ -43,22 +44,22 @@ public class OriginsCompatDisplay implements SwitchyDisplayModule {
 
 	/**
 	 * The NBT key where the list of origins is stored.
-	 * Must match {@link folk.sisby.switchy.modules.OriginsCompat#toDisplayNbt()}.
+	 * Must match {@link folk.sisby.switchy.modules.OriginsCompat#toClientNbt()}.
 	 */
 	public static final String KEY_ORIGINS_LIST = "OriginLayers";
 	/**
 	 * The NBT key where the layer is stored in each list item.
-	 * Must match {@link folk.sisby.switchy.modules.OriginsCompat#toDisplayNbt()}.
+	 * Must match {@link folk.sisby.switchy.modules.OriginsCompat#toClientNbt()}.
 	 */
 	public static final String KEY_LAYER = "Layer";
 	/**
 	 * The NBT key where the origin ID is stored in each list item.
-	 * Must match {@link folk.sisby.switchy.modules.OriginsCompat#toDisplayNbt()}.
+	 * Must match {@link folk.sisby.switchy.modules.OriginsCompat#toClientNbt()}.
 	 */
 	public static final String KEY_ORIGIN = "Origin";
 
 	static {
-		SwitchyDisplayModuleRegistry.registerModule(ID, OriginsCompatDisplay::new);
+		SwitchyClientModuleRegistry.registerModule(ID, OriginsCompatDisplay::new);
 	}
 
 	/**

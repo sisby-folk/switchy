@@ -41,6 +41,14 @@
 				"versions": "${switchy}"
 			},
 			{
+				"id": "switchy-client",
+				"versions": "${switchy}"
+			},
+			{
+				"id": "switchy-ui",
+				"versions": "${switchy}"
+			},
+			{
 				"id": "drogtor",
 				"versions": ">=${drogtor}",
 				"optional": true

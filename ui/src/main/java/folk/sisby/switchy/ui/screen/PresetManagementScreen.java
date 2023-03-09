@@ -1,15 +1,20 @@
-package folk.sisby.switchy.client.screen;
+package folk.sisby.switchy.ui.screen;
 
 import com.mojang.brigadier.StringReader;
+import folk.sisby.switchy.SwitchyClientServerNetworking;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
-import folk.sisby.switchy.api.module.presets.SwitchyDisplayPresets;
+import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
+import folk.sisby.switchy.api.presets.SwitchyPresetsData;
 import folk.sisby.switchy.client.SwitchyClient;
 import folk.sisby.switchy.client.api.SwitchyClientApi;
+import folk.sisby.switchy.client.util.SwitchyFiles;
+import folk.sisby.switchy.util.Feedback;
 import io.wispforest.owo.ui.base.BaseUIModelScreen;
 import io.wispforest.owo.ui.component.*;
 import io.wispforest.owo.ui.container.*;
 import io.wispforest.owo.ui.core.*;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
@@ -33,11 +38,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_REQUEST_DISPLAY_PRESETS;
-import static folk.sisby.switchy.api.presets.SwitchyPresetsData.KEY_PRESETS;
-import static folk.sisby.switchy.api.presets.SwitchyPresetsData.KEY_PRESET_MODULE_ENABLED;
-import static folk.sisby.switchy.util.Feedback.*;
-
 
 public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implements SwitchyDisplayScreen {
 
@@ -51,7 +51,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 	private NbtCompound selectedFileNbt;
 	private boolean isImporting = true;
 
-	private SwitchyDisplayPresets presets;
+	private SwitchyClientPresets presets;
 
 	public PresetManagementScreen() {
 		super(FlowLayout.class, DataSource.asset(new Identifier("switchy", "preset_management_model")));
@@ -79,14 +79,17 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		importButton.onPress(b -> {
 			openDialog("Confirm", "Cancel", 200, confirmButton -> {
 				lockScreen();
-				SwitchyClientApi.importPresets(selectedFileNbt, availableModules, includedModules);
+				SwitchyClientApi.importPresets(selectedFileNbt, availableModules, includedModules, SwitchyDisplayScreen::updatePresetScreens);
 			}, cancelButton -> {
-			}, List.of(Text.translatable("commands.switchy.import.warn.info", literal(String.valueOf(selectedFileNbt.getCompound(KEY_PRESETS).getKeys().size())), literal(String.valueOf(includedModules.size()))), Text.translatable("commands.switchy.list.presets", getHighlightedListText(selectedFileNbt.getCompound(KEY_PRESETS).getKeys().stream().sorted().toList(), List.of(new Pair<>(presets.getPresetNames()::contains, Formatting.DARK_RED)))), Text.translatable("commands.switchy.import.warn.collision"), Text.translatable("commands.switchy.list.modules", getIdListText(includedModules))));
+			}, List.of(Text.translatable("commands.switchy.import.warn.info", Feedback.literal(String.valueOf(selectedFileNbt.getCompound(SwitchyPresetsData.KEY_PRESETS).getKeys().size())), Feedback.literal(String.valueOf(includedModules.size()))), Text.translatable("commands.switchy.list.presets", Feedback.getHighlightedListText(selectedFileNbt.getCompound(SwitchyPresetsData.KEY_PRESETS).getKeys().stream().sorted().toList(), List.of(new Pair<>(presets.getPresetNames()::contains, Formatting.DARK_RED)))), Text.translatable("commands.switchy.import.warn.collision"), Text.translatable("commands.switchy.list.modules", Feedback.getIdListText(includedModules))));
 		});
 		exportButton.onPress(b -> {
 			openDialog("Confirm", "Cancel", 200, confirmButton -> {
 				lockScreen();
-				SwitchyClientApi.exportPresets(availableModules);
+				SwitchyClientApi.exportPresets(availableModules, (feedback, nbt) -> {
+					SwitchyFiles.exportPresetsToFile(MinecraftClient.getInstance(), nbt);
+					SwitchyDisplayScreen.updatePresetScreens(feedback, presets);
+				});
 			}, cancelButton -> {
 			}, List.of(Text.translatable("commands.switchy_client.export.confirm", String.valueOf(includedModules.size()))));
 		});
@@ -121,7 +124,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		ButtonComponent dataTabButton = root.childById(ButtonComponent.class, "dataTabButton");
 		backButton.onPress(buttonComponent -> {
 			client.setScreen(new SwitchScreen());
-			ClientPlayNetworking.send(C2S_REQUEST_DISPLAY_PRESETS, PacketByteBufs.empty());
+			ClientPlayNetworking.send(SwitchyClientServerNetworking.C2S_REQUEST_CLIENT_PRESETS, PacketByteBufs.empty());
 		});
 		presetsTabButton.onPress(buttonComponent -> {
 			panel.clearChildren();
@@ -152,7 +155,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 	}
 
 	@Override
-	public void updatePresets(SwitchyDisplayPresets displayPresets) {
+	public void updatePresets(SwitchyClientPresets displayPresets) {
 		presets = displayPresets;
 		refreshPresets();
 	}
@@ -200,7 +203,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 					presets.renamePreset(presetName, nameEntry.getText());
 					refreshPresetFlow(presetsFlow);
 					lockScreen();
-					SwitchyClientApi.renamePreset(presetName, nameEntry.getText());
+					SwitchyClientApi.renamePreset(presetName, nameEntry.getText(), SwitchyDisplayScreen::updatePresetScreens);
 				}
 			} else {
 				refreshPresetFlow(presetsFlow);
@@ -211,7 +214,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 				presets.newPreset(nameEntry.getText());
 				refreshPresetFlow(presetsFlow);
 				lockScreen();
-				SwitchyClientApi.newPreset(nameEntry.getText());
+				SwitchyClientApi.newPreset(nameEntry.getText(), SwitchyDisplayScreen::updatePresetScreens);
 			}
 
 		});
@@ -319,7 +322,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 					presets.deletePreset(name);
 					refreshPresetFlow(presetsFlow);
 					lockScreen();
-					SwitchyClientApi.deletePreset(name);
+					SwitchyClientApi.deletePreset(name, SwitchyDisplayScreen::updatePresetScreens);
 				}, cancel -> {
 				}, List.of(Text.translatable("commands.switchy_client.delete.confirm", name), Text.translatable("commands.switchy.delete.warn"), Text.translatable("commands.switchy.list.modules", presets.getEnabledModuleText())));
 			};
@@ -350,7 +353,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 				presets.enableModule(id);
 				refreshModulesFlow(disabledModulesFlow, enabledModulesFlow);
 				lockScreen();
-				SwitchyClientApi.enableModule(id);
+				SwitchyClientApi.enableModule(id, SwitchyDisplayScreen::updatePresetScreens);
 			}, true, Text.literal("Enable"), presets.getModuleInfo().get(module).descriptionWhenEnabled(), labelSize));
 		});
 		// Enabled Modules
@@ -360,7 +363,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 					presets.disableModule(id);
 					refreshModulesFlow(disabledModulesFlow, enabledModulesFlow);
 					lockScreen();
-					SwitchyClientApi.disableModule(id);
+					SwitchyClientApi.disableModule(id, SwitchyDisplayScreen::updatePresetScreens);
 				}, cancel -> {
 				}, List.of(Text.translatable("commands.switchy_client.disable.confirm", id.toString()), Text.translatable("commands.switchy.module.disable.warn", presets.getModuleInfo().get(id).deletionWarning())));
 			}, true, Text.literal("Disable"), presets.getModuleInfo().get(module).descriptionWhenDisabled(), labelSize));
@@ -399,12 +402,12 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 
 		DropdownComponent dropdown = getDropdown(fileSelectorPlaceholder, fileNames, isImporting ? text -> {
 			selectedFileNbt = importFiles.get(text.getString());
-			includedModules = selectedFileNbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).filter(id -> {
+			includedModules = selectedFileNbt.getList(SwitchyPresetsData.KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).filter(id -> {
 				SwitchyModuleInfo moduleInfo = presets.getModuleInfo().get(id);
 				if (moduleInfo == null) return false;
 				return moduleInfo.editable() == SwitchyModuleEditable.ALLOWED || moduleInfo.editable() == SwitchyModuleEditable.ALWAYS_ALLOWED;
 			}).collect(Collectors.toList());
-			availableModules = selectedFileNbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).filter(id -> {
+			availableModules = selectedFileNbt.getList(SwitchyPresetsData.KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).filter(id -> {
 				SwitchyModuleInfo moduleInfo = presets.getModuleInfo().get(id);
 				if (moduleInfo == null) return true;
 				return moduleInfo.editable() == SwitchyModuleEditable.OPERATOR || moduleInfo.editable() == SwitchyModuleEditable.NEVER;

@@ -16,7 +16,7 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  * @see FabricTailorCompatData
  * @since 1.0.0
  */
-public class FabricTailorCompat extends FabricTailorCompatData implements SwitchyModule, SwitchyModuleDisplayable {
+public class FabricTailorCompat extends FabricTailorCompatData implements SwitchyModule, SwitchyModuleClientable {
 	static {
 		SwitchyModuleRegistry.registerModule(ID, FabricTailorCompat::new, new SwitchyModuleInfo(
 						true,
@@ -51,7 +51,7 @@ public class FabricTailorCompat extends FabricTailorCompatData implements Switch
 	}
 
 	@Override
-	public NbtCompound toDisplayNbt() {
+	public NbtCompound toClientNbt() {
 		return toNbt();
 	}
 }

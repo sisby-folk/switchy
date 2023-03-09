@@ -1,10 +1,11 @@
 package folk.sisby.switchy.client.modules;
 
 import com.mojang.datafixers.util.Pair;
-import folk.sisby.switchy.client.api.SwitchySwitchScreenPosition;
-import folk.sisby.switchy.client.api.module.SwitchyDisplayModule;
-import folk.sisby.switchy.client.api.module.SwitchyDisplayModuleRegistry;
+import folk.sisby.switchy.client.api.module.SwitchyClientModule;
+import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
 import folk.sisby.switchy.modules.DrogtorCompatData;
+import folk.sisby.switchy.ui.api.SwitchySwitchScreenPosition;
+import folk.sisby.switchy.ui.api.module.SwitchyDisplayModule;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.core.Component;
 import net.minecraft.text.Text;
@@ -19,9 +20,9 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
  * @since 2.0.0
  */
 @ClientOnly
-public class DrogtorCompatDisplay extends DrogtorCompatData implements SwitchyDisplayModule {
+public class DrogtorCompatDisplay extends DrogtorCompatData implements SwitchyClientModule, SwitchyDisplayModule {
 	static {
-		SwitchyDisplayModuleRegistry.registerModule(DrogtorCompatDisplay.ID, DrogtorCompatDisplay::new);
+		SwitchyClientModuleRegistry.registerModule(DrogtorCompatDisplay.ID, DrogtorCompatDisplay::new);
 	}
 
 	/**

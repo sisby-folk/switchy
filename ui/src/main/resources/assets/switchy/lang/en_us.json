@@ -1,0 +1,26 @@
+{
+  "lib39:enable_enhanced_lang": true,
+  "screen": {
+    "switchy_ui": {
+      "export": {
+        "confirm" : "Export {} modules?"
+      },
+      "delete": {
+        "confirm": "You are about to delete preset '{}'"
+      },
+      "disable": {
+        "confirm": "You are about to disable module {}"
+      }
+    }
+  },
+  "key": {
+    "switchy": {
+      "switch": "Open Quick-Switcher"
+    }
+  },
+  "category": {
+    "switchy": {
+      "switchy": "Switchy"
+    }
+  }
+}

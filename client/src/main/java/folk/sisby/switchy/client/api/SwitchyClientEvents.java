@@ -2,7 +2,7 @@ package folk.sisby.switchy.client.api;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import folk.sisby.switchy.api.events.SwitchySwitchEvent;
-import folk.sisby.switchy.client.api.module.SwitchyDisplayModule;
+import folk.sisby.switchy.client.api.module.SwitchyClientModule;
 import net.minecraft.text.Text;
 import org.quiltmc.loader.api.minecraft.ClientOnly;
 import org.quiltmc.qsl.base.api.event.Event;
@@ -60,7 +60,7 @@ public class SwitchyClientEvents {
 
 	/**
 	 * Occurs when Switchy Client initializes.
-	 * Use this to register your {@link SwitchyDisplayModule}s.
+	 * Use this to register your {@link SwitchyClientModule}s.
 	 *
 	 * @see folk.sisby.switchy.client.SwitchyClient
 	 */

@@ -1,11 +1,13 @@
-package folk.sisby.switchy.client.screen;
+package folk.sisby.switchy.ui.screen;
 
 import com.mojang.datafixers.util.Pair;
-import folk.sisby.switchy.api.module.presets.SwitchyDisplayPreset;
-import folk.sisby.switchy.api.module.presets.SwitchyDisplayPresets;
+import folk.sisby.switchy.SwitchyClientServerNetworking;
+import folk.sisby.switchy.api.module.presets.SwitchyClientPreset;
+import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
 import folk.sisby.switchy.client.api.SwitchyClientApi;
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
-import folk.sisby.switchy.client.api.SwitchySwitchScreenPosition;
+import folk.sisby.switchy.ui.api.SwitchySwitchScreenPosition;
+import folk.sisby.switchy.ui.api.module.SwitchyDisplayModule;
 import io.wispforest.owo.ui.base.BaseOwoScreen;
 import io.wispforest.owo.ui.component.ButtonComponent;
 import io.wispforest.owo.ui.component.Components;
@@ -15,6 +17,7 @@ import io.wispforest.owo.ui.core.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
@@ -23,17 +26,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_REQUEST_DISPLAY_PRESETS;
-
 /**
- * The quick-switcher screen, populated by a {@link SwitchyDisplayPresets} object.
+ * The quick-switcher screen, populated by a {@link SwitchyClientPresets} object.
  * Allows the client to preview presets, and switch to a desired one.
  *
  * @author Sisby folk
  * @since 1.9.0
  */
 public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDisplayScreen {
-	private static final List<Function<SwitchyDisplayPreset, Pair<Component, SwitchySwitchScreenPosition>>> basicComponents = new ArrayList<>();
+	private static final List<Function<SwitchyClientPreset, Pair<Component, SwitchySwitchScreenPosition>>> basicComponents = new ArrayList<>();
 
 	static {
 		// Close on switch
@@ -62,11 +63,11 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDi
 
 	/**
 	 * Registers a component to display alongside every preset (e.g. the preset name) for addons.
-	 * Modules should instead use {@link folk.sisby.switchy.client.api.module.SwitchyDisplayModule}.
+	 * Modules should instead use {@link SwitchyDisplayModule}.
 	 *
 	 * @param componentFunction a function that can generate a positioned component to display with every preset.
 	 */
-	public static void registerBasicPresetComponent(Function<SwitchyDisplayPreset, Pair<Component, SwitchySwitchScreenPosition>> componentFunction) {
+	public static void registerBasicPresetComponent(Function<SwitchyClientPreset, Pair<Component, SwitchySwitchScreenPosition>> componentFunction) {
 		basicComponents.add(componentFunction);
 	}
 
@@ -101,7 +102,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDi
 
 		ButtonComponent manageButton = Components.button(Text.literal("Manage"), b -> {
 			client.setScreen(new PresetManagementScreen());
-			ClientPlayNetworking.send(C2S_REQUEST_DISPLAY_PRESETS, PacketByteBufs.empty());
+			ClientPlayNetworking.send(SwitchyClientServerNetworking.C2S_REQUEST_CLIENT_PRESETS, PacketByteBufs.empty());
 		});
 
 		labelManageFlow.child(screenLabel);
@@ -113,14 +114,22 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDi
 	}
 
 	@Override
-	public void updatePresets(SwitchyDisplayPresets displayPresets) {
+	public void updatePresets(SwitchyClientPresets displayPresets) {
 		presetsFlow.clearChildren();
 
 		// Process Preset Flows
 		Component currentPresetComponent = null;
-		for (SwitchyDisplayPreset preset : displayPresets.getPresets().values()) {
+		for (SwitchyClientPreset preset : displayPresets.getPresets().values()) {
 			List<Pair<Component, SwitchySwitchScreenPosition>> componentList = new ArrayList<>(basicComponents.stream().map(fun -> fun.apply(preset)).toList());
-			componentList.addAll(preset.getDisplayComponents().values());
+
+			preset.getModules().forEach((id, module) -> {
+				if (module instanceof SwitchyDisplayModule dm) {
+					@Nullable Pair<Component, SwitchySwitchScreenPosition> component = dm.getDisplayComponent();
+					if (component != null) {
+						componentList.add(component);
+					}
+				}
+			});
 
 			// Main Horizontal Flow Panel
 			HorizontalFlowLayout horizontalFlow = Containers.horizontalFlow(Sizing.fixed(400), Sizing.content());
@@ -136,7 +145,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDi
 				horizontalFlow.mouseEnter().subscribe(() -> horizontalFlow.surface(Surface.DARK_PANEL.and(Surface.outline(Color.WHITE.argb()))));
 				horizontalFlow.mouseLeave().subscribe(() -> horizontalFlow.surface(Surface.DARK_PANEL));
 				horizontalFlow.mouseDown().subscribe((x, y, button) -> {
-					SwitchyClientApi.switchCurrentPreset(preset.getName());
+					SwitchyClientApi.switchCurrentPreset(preset.getName(), SwitchyDisplayScreen::updatePresetScreens);
 					return true;
 				});
 			}

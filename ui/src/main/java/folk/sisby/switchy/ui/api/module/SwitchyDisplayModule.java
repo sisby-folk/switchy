@@ -1,15 +1,16 @@
-package folk.sisby.switchy.client.api.module;
+package folk.sisby.switchy.ui.api.module;
 
 import com.mojang.datafixers.util.Pair;
 import folk.sisby.switchy.api.SwitchySerializable;
-import folk.sisby.switchy.client.api.SwitchySwitchScreenPosition;
+import folk.sisby.switchy.api.module.SwitchyModuleClientable;
+import folk.sisby.switchy.ui.api.SwitchySwitchScreenPosition;
 import io.wispforest.owo.ui.core.Component;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 /**
  * Holds a client-appropriate representation of the contents of a Switchy Module.
- * The represented module must implement {@link folk.sisby.switchy.api.module.SwitchyModuleDisplayable}.
+ * The represented module must implement {@link SwitchyModuleClientable}.
  *
  * @author Sisby folk
  * @see SwitchySerializable

@@ -51,12 +51,14 @@ dependencyResolutionManagement {
 			bundle('runtime.include', ['serverTranslationsApi', 'lib39Core', 'lib39Dessicant'])
 
 			// // Client // //
+
+			// // UI // //
 			version('owo', "0.9.3+${mc_major}")
 
 			library('owo', 'io.wispforest', 'owo-lib').versionRef('owo')
 
-			bundle('client', ['qfapi', 'owo'])
-			bundle('client.include', ['owo'])
+			bundle('ui', ['qfapi', 'owo'])
+			bundle('ui.include', ['owo'])
 
 			// // Cardinal // //
 			version('cardinal', "5.1.0")
@@ -134,4 +136,4 @@ dependencyResolutionManagement {
 	}
 }
 
-include('core', 'client', 'cardinal', 'compat')
+include('core', 'client', 'ui', 'cardinal', 'compat')

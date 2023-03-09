@@ -10,30 +10,30 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /**
- * Provides access to module registration for client display addons.
+ * Provides access to module registration for client addons.
  * Effectively Static.
  *
  * @author Sisby folk
- * @see SwitchyDisplayModule
+ * @see SwitchyClientModule
  * @since 2.0.0
  */
 @ClientOnly
-public class SwitchyDisplayModuleRegistry {
-	private static final Map<Identifier, Supplier<SwitchyDisplayModule>> SUPPLIERS = new HashMap<>();
+public class SwitchyClientModuleRegistry {
+	private static final Map<Identifier, Supplier<SwitchyClientModule>> SUPPLIERS = new HashMap<>();
 
 	/**
-	 * Allows addons to register {@link SwitchyDisplayModule} implementations to be used by Switchy Client.
+	 * Allows addons to register {@link SwitchyClientModule} implementations to be used by Switchy Client.
 	 *
 	 * @param id                A unique identifier to associate with the module being registered.
 	 * @param moduleConstructor Usually {@code ModuleName::new} - this will be called on player join.
 	 * @throws IllegalArgumentException when {@code id} is already associated with a registered module.
 	 */
-	public static void registerModule(Identifier id, Supplier<SwitchyDisplayModule> moduleConstructor) throws IllegalStateException {
+	public static void registerModule(Identifier id, Supplier<SwitchyClientModule> moduleConstructor) throws IllegalStateException {
 		if (SUPPLIERS.containsKey(id)) {
 			throw new IllegalArgumentException("Specified id is already registered");
 		}
 		SUPPLIERS.put(id, moduleConstructor);
-		Switchy.LOGGER.info("[Switchy Client] Registered display module " + id);
+		Switchy.LOGGER.info("[Switchy Client] Registered client module " + id);
 	}
 
 	/**
@@ -41,9 +41,9 @@ public class SwitchyDisplayModuleRegistry {
 	 *
 	 * @param id a module identifier.
 	 * @return an instance of the module.
-	 * @see SwitchyDisplayModule
+	 * @see SwitchyClientModule
 	 */
-	public static @Nullable SwitchyDisplayModule supplyModule(Identifier id) {
+	public static @Nullable SwitchyClientModule supplyModule(Identifier id) {
 		return SUPPLIERS.containsKey(id) ? SUPPLIERS.get(id).get() : null;
 	}
 }

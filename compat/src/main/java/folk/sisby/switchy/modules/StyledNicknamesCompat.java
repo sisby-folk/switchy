@@ -21,7 +21,7 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  * @see SwitchyModule
  * @since 1.7.2
  */
-public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleDisplayable {
+public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleClientable {
 	/**
 	 * Identifier for this module.
 	 */
@@ -80,7 +80,7 @@ public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleDispla
 	}
 
 	@Override
-	public NbtCompound toDisplayNbt() {
+	public NbtCompound toClientNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		if (styled_nickname != null)
 			outNbt.putString(KEY_NICKNAME, Text.Serializer.toJsonTree(TextParserUtils.formatText(styled_nickname)).getAsString());

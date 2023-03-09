@@ -1,4 +1,4 @@
-package folk.sisby.switchy.client.api;
+package folk.sisby.switchy.ui.api;
 
 import org.quiltmc.loader.api.minecraft.ClientOnly;
 
@@ -7,7 +7,7 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
  * Used in the quick-switcher screen.
  *
  * @author Sisby folk
- * @see folk.sisby.switchy.client.screen.SwitchScreen
+ * @see folk.sisby.switchy.ui.screen.SwitchScreen
  * @since 1.9.0
  */
 @ClientOnly

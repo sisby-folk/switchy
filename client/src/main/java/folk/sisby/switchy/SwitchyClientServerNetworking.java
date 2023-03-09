@@ -4,13 +4,17 @@ import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.api.SwitchyPlayer;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.presets.SwitchyPresets;
+import folk.sisby.switchy.client.api.SwitchyFeedbackStatus;
+import folk.sisby.switchy.client.api.SwitchyRequestFeedback;
 import folk.sisby.switchy.presets.SwitchyPresetsImpl;
 import folk.sisby.switchy.util.PresetConverter;
+import folk.sisby.switchy.util.SwitchyCommand;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import org.jetbrains.annotations.Nullable;
@@ -36,9 +40,9 @@ public class SwitchyClientServerNetworking {
 	 */
 	public static final Identifier C2S_REQUEST_PRESETS = new Identifier(Switchy.ID, "c2s_presets");
 	/**
-	 * Request displayable serialized presets for previewing.
+	 * Request client-compatible serialized presets for client addon use.
 	 */
-	public static final Identifier C2S_REQUEST_DISPLAY_PRESETS = new Identifier(Switchy.ID, "c2s_display_presets");
+	public static final Identifier C2S_REQUEST_CLIENT_PRESETS = new Identifier(Switchy.ID, "c2s_client_presets");
 
 	// Actions
 	/**
@@ -81,9 +85,9 @@ public class SwitchyClientServerNetworking {
 	 */
 	public static final Identifier S2C_PRESETS = new Identifier(Switchy.ID, "s2c_presets");
 	/**
-	 * Displayable serialized presets for previewing.
+	 * Client-compatible serialized presets for previewing.
 	 */
-	public static final Identifier S2C_DISPLAY_PRESETS = new Identifier(Switchy.ID, "s2c_display_presets");
+	public static final Identifier S2C_CLIENT_PRESETS = new Identifier(Switchy.ID, "s2c_client_presets");
 
 	// Events
 	/**
@@ -110,39 +114,25 @@ public class SwitchyClientServerNetworking {
 	 */
 	public static void InitializeReceivers() {
 		// Data Requests
-		ServerPlayNetworking.registerGlobalReceiver(C2S_REQUEST_PRESETS, (server, player, handler, buf, sender) -> sendPresets(player, buf.readNbt()));
-		ServerPlayNetworking.registerGlobalReceiver(C2S_REQUEST_DISPLAY_PRESETS, (server, player, handler, buf, sender) -> sendDisplayPresets(player));
+		ServerPlayNetworking.registerGlobalReceiver(C2S_REQUEST_PRESETS, (server, player, handler, buf, sender) -> sendPresetsWithFeedback(player, buf));
+		ServerPlayNetworking.registerGlobalReceiver(C2S_REQUEST_CLIENT_PRESETS, (server, player, handler, buf, sender) -> withFeedback(player, buf, (p, ps) -> {}));
 		// Actions
-		ServerPlayNetworking.registerGlobalReceiver(C2S_IMPORT_CONFIRM, (server, player, handler, buf, sender) -> importPresets(player, buf.readNbt()));
-		ServerPlayNetworking.registerGlobalReceiver(C2S_IMPORT, (server, player, handler, buf, sender) -> instantImportPresets(player, buf.readNbt()));
-		ServerPlayNetworking.registerGlobalReceiver(C2S_SWITCH, (server, player, handler, buf, sender) -> {
-			SwitchyCommands.switchPreset(player, ((SwitchyPlayer) player).switchy$getPresets(), buf.readString());
-			sendDisplayPresets(player);
-		});
-		ServerPlayNetworking.registerGlobalReceiver(C2S_PRESETS_NEW, (server, player, handler, buf, sender) -> {
-			SwitchyCommands.newPreset(player, ((SwitchyPlayer) player).switchy$getPresets(), buf.readString());
-			sendDisplayPresets(player);
-		});
-		ServerPlayNetworking.registerGlobalReceiver(C2S_PRESETS_DELETE, (server, player, handler, buf, sender) -> {
+		ServerPlayNetworking.registerGlobalReceiver(C2S_IMPORT_CONFIRM, (server, player, handler, buf, sender) -> withFeedback(player, buf, (p, ps) -> importPresets(p, buf.readNbt())));
+		ServerPlayNetworking.registerGlobalReceiver(C2S_IMPORT, (server, player, handler, buf, sender) -> withFeedback(player, buf, (p, ps) -> instantImportPresets(player, buf.readNbt())));
+		ServerPlayNetworking.registerGlobalReceiver(C2S_SWITCH, (server, player, handler, buf, sender) -> withFeedback(player, buf, (p, ps) -> SwitchyCommands.switchPreset(p, ps, buf.readString())));
+		ServerPlayNetworking.registerGlobalReceiver(C2S_PRESETS_NEW, (server, player, handler, buf, sender) -> withFeedback(player, buf, (p, ps) -> SwitchyCommands.newPreset(p, ps, buf.readString())));
+		ServerPlayNetworking.registerGlobalReceiver(C2S_PRESETS_DELETE, (server, player, handler, buf, sender) -> withFeedback(player, buf, (p, ps) -> {
 			String name = buf.readString();
 			SwitchyCommands.HISTORY.put(player.getUuid(), command("switchy delete " + name));
 			SwitchyCommands.deletePreset(player, ((SwitchyPlayer) player).switchy$getPresets(), name);
-			sendDisplayPresets(player);
-		});
-		ServerPlayNetworking.registerGlobalReceiver(C2S_PRESETS_RENAME, (server, player, handler, buf, sender) -> {
-			SwitchyCommands.renamePreset(player, ((SwitchyPlayer) player).switchy$getPresets(), buf.readString(), buf.readString());
-			sendDisplayPresets(player);
-		});
-		ServerPlayNetworking.registerGlobalReceiver(C2S_PRESETS_MODULE_DISABLE, (server, player, handler, buf, sender) -> {
+		}));
+		ServerPlayNetworking.registerGlobalReceiver(C2S_PRESETS_RENAME, (server, player, handler, buf, sender) -> withFeedback(player, buf, (p, ps) -> SwitchyCommands.renamePreset(p, ps, buf.readString(), buf.readString())));
+		ServerPlayNetworking.registerGlobalReceiver(C2S_PRESETS_MODULE_DISABLE, (server, player, handler, buf, sender) -> withFeedback(player, buf, (p, ps) -> {
 			String id = buf.readString();
 			SwitchyCommands.HISTORY.put(player.getUuid(), command("switchy module disable " + id));
 			SwitchyCommands.disableModule(player, ((SwitchyPlayer) player).switchy$getPresets(), Identifier.tryParse(id));
-			sendDisplayPresets(player);
-		});
-		ServerPlayNetworking.registerGlobalReceiver(C2S_PRESETS_MODULE_ENABLE, (server, player, handler, buf, sender) -> {
-			SwitchyCommands.enableModule(player, ((SwitchyPlayer) player).switchy$getPresets(), Identifier.tryParse(buf.readString()));
-			sendDisplayPresets(player);
-		});
+		}));
+		ServerPlayNetworking.registerGlobalReceiver(C2S_PRESETS_MODULE_ENABLE, (server, player, handler, buf, sender) -> withFeedback(player, buf, (p, ps) -> SwitchyCommands.enableModule(player, ((SwitchyPlayer) player).switchy$getPresets(), Identifier.tryParse(buf.readString()))));
 	}
 
 	/**
@@ -152,21 +142,41 @@ public class SwitchyClientServerNetworking {
 		SwitchyEvents.SWITCH.register((player, event) -> ServerPlayNetworking.send(player, S2C_EVENT_SWITCH, PacketByteBufs.create().writeNbt(event.toNbt())));
 	}
 
-	private static void sendDisplayPresets(ServerPlayerEntity player) {
-		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
-		presets.saveCurrentPreset(player);
-		PacketByteBuf displayPresetsBuf = PacketByteBufs.create().writeNbt(PresetConverter.presetsToNbt(player, presets));
-		ServerPlayNetworking.send(player, S2C_DISPLAY_PRESETS, displayPresetsBuf);
+	private static void withFeedback(ServerPlayerEntity player, PacketByteBuf buf, SwitchyCommand.SwitchyServerCommandExecutor executor) {
+		int listener = -1;
+		try {
+			listener = buf.readInt();
+			executor.execute(player, ((SwitchyPlayer) player).switchy$getPresets());
+			sendClientPresets(player, listener, new SwitchyRequestFeedback(SwitchyFeedbackStatus.SUCCESS, List.of(Text.literal("EXAMPLE MESSAGE"))));
+		} catch (Exception ex) {
+			sendClientPresets(player, listener, new SwitchyRequestFeedback(SwitchyFeedbackStatus.FAILURE, List.of(Text.literal(ex.getMessage()))));
+		}
 	}
 
-	private static void sendPresets(ServerPlayerEntity player, @Nullable NbtCompound nbt) {
+	private static void sendClientPresets(ServerPlayerEntity player, int listener, SwitchyRequestFeedback feedback) {
 		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
+		presets.saveCurrentPreset(player);
+		PacketByteBuf buf = PacketByteBufs.create();
+		buf.writeInt(listener);
+		buf.writeNbt(feedback.toNbt());
+		buf.writeNbt(PresetConverter.presetsToNbt(player, presets));
+		ServerPlayNetworking.send(player, S2C_CLIENT_PRESETS, buf);
+	}
+
+	private static void sendPresetsWithFeedback(ServerPlayerEntity player, PacketByteBuf buf) {
+		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
+		int listener = -1;
+		PacketByteBuf outBuf = PacketByteBufs.create();
 		try {
+			listener = buf.readInt();
+			outBuf.writeInt(listener);
 			presets.saveCurrentPreset(player);
+			NbtCompound nbt = buf.readNbt();
 			if (nbt != null) {
 				NbtList excludes = nbt.getList(KEY_IMPORT_EXCLUDE, NbtElement.STRING_TYPE);
 				if (excludes.isEmpty()) {
-					ServerPlayNetworking.send(player, S2C_PRESETS, PacketByteBufs.create().writeNbt(presets.toNbt()));
+					outBuf.writeNbt(new SwitchyRequestFeedback(SwitchyFeedbackStatus.SUCCESS, List.of(Text.literal("Exported"))).toNbt()); // TODO: Real text.
+					ServerPlayNetworking.send(player, S2C_PRESETS, outBuf.writeNbt(presets.toNbt()));
 				} else {
 					SwitchyPresets exportPresets = new SwitchyPresetsImpl(false);
 					exportPresets.fillFromNbt(presets.toNbt());
@@ -175,12 +185,16 @@ public class SwitchyClientServerNetworking {
 						if (id != null && exportPresets.containsModule(id) && exportPresets.isModuleEnabled(id))
 							exportPresets.disableModule(id);
 					});
-					ServerPlayNetworking.send(player, S2C_PRESETS, PacketByteBufs.create().writeNbt(exportPresets.toNbt()));
+					outBuf.writeNbt(new SwitchyRequestFeedback(SwitchyFeedbackStatus.SUCCESS, List.of(Text.literal("Exported"))).toNbt()); // TODO: Real text.
+					ServerPlayNetworking.send(player, S2C_PRESETS, outBuf.writeNbt(exportPresets.toNbt()));
 				}
 			}
 		} catch (Exception ex) {
 			LOGGER.error("Saving to file failed!", ex);
+			if (listener == -1) outBuf.writeInt(listener);
+			outBuf.writeNbt(new SwitchyRequestFeedback(SwitchyFeedbackStatus.FAILURE, List.of(Text.literal("Didn't Export"))).toNbt()); // TODO: Real text.
 			sendMessage(player, translatableWithArgs("commands.switchy_client.export.fail", FORMAT_INVALID));
+			ServerPlayNetworking.send(player, S2C_PRESETS, outBuf.writeNbt(new NbtCompound()));
 		}
 	}
 
@@ -192,7 +206,6 @@ public class SwitchyClientServerNetworking {
 		}
 		presetNbt.putString(KEY_IMPORT_COMMAND, "INSTANT IMPORT");
 		importPresets(player, presetNbt);
-		sendDisplayPresets(player);
 	}
 
 	private static void importPresets(ServerPlayerEntity player, @Nullable NbtCompound presetNbt) {

@@ -19,7 +19,7 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  * @see DrogtorCompatData
  * @since 1.0.0
  */
-public class DrogtorCompat extends DrogtorCompatData implements SwitchyModule, SwitchyModuleDisplayable {
+public class DrogtorCompat extends DrogtorCompatData implements SwitchyModule, SwitchyModuleClientable {
 	static {
 		SwitchyModuleRegistry.registerModule(ID, DrogtorCompat::new, new SwitchyModuleInfo(
 				true,
@@ -59,7 +59,7 @@ public class DrogtorCompat extends DrogtorCompatData implements SwitchyModule, S
 	}
 
 	@Override
-	public NbtCompound toDisplayNbt() {
+	public NbtCompound toClientNbt() {
 		return toNbt();
 	}
 }

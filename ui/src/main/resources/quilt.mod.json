@@ -1,0 +1,61 @@
+{
+	"schema_version": 1,
+	"quilt_loader": {
+		"group": "folk.sisby",
+		"id": "switchy-ui",
+		"version": "${switchy}",
+		"metadata": {
+			"name": "Switchy UI",
+			"description": "The client addon for switchy, providing client-side API and conveniences.",
+			"contributors": {
+				"Sisby folk": "Co-Authors",
+				"Garden System": "Contributor/s"
+			},
+			"contact": {
+				"homepage": "https://modrinth.com/mod/switchy",
+				"issues": "https://github.com/sisby-folk/switchy/issues",
+				"sources": "https://github.com/sisby-folk/switchy"
+			},
+			"icon": "assets/switchy/icon.png"
+		},
+		"intermediate_mappings": "net.fabricmc:intermediary",
+		"entrypoints": {
+			"events": [
+				"folk.sisby.switchy.SwitchyClientServer"
+			],
+			"client_events": [
+				"folk.sisby.switchy.client.SwitchyClientCommands"
+			],
+			"client_init": "folk.sisby.switchy.client.SwitchyClient"
+		},
+		"depends": [
+			{
+				"id": "minecraft",
+				"versions": "${mc}"
+			},
+			{
+				"id": "quilt_loader",
+				"versions": ">=${ql}"
+			},
+			{
+				"id": "quilted_fabric_api",
+				"versions": ">=${qfapi}"
+			},
+			{
+				"id": "switchy-core",
+				"versions": "${switchy}"
+			},
+			{
+				"id": "switchy-client",
+				"versions": "${switchy}"
+			},
+			{
+				"id": "owo-lib",
+				"versions": "${owo}"
+			}
+		]
+	},
+	"modmenu": {
+		"parent": "switchy"
+	}
+}

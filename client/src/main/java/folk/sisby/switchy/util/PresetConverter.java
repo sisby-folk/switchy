@@ -1,7 +1,9 @@
 package folk.sisby.switchy.util;
 
-import folk.sisby.switchy.api.module.SwitchyModuleDisplayable;
+import folk.sisby.switchy.api.module.SwitchyModuleClientable;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
+import folk.sisby.switchy.api.module.presets.SwitchyClientPreset;
+import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
 import folk.sisby.switchy.api.presets.SwitchyPreset;
 import folk.sisby.switchy.api.presets.SwitchyPresets;
 import folk.sisby.switchy.api.presets.SwitchyPresetsData;
@@ -11,7 +13,7 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
- * Used to convert SwitchyPresets objects into NBT data usable by SwitchyDisplayPresets.
+ * Used to convert SwitchyPresets objects into NBT data usable by SwitchyClientPresets.
  *
  * @author Sisby folk
  * @since 2.0.0
@@ -30,7 +32,7 @@ public class PresetConverter {
 	/**
 	 * @param player the relevant player.
 	 * @param presets an arbitrary presets object.
-	 * @return its serialized displayable representation to be used in {@link folk.sisby.switchy.api.module.presets.SwitchyDisplayPresets#fillFromNbt(NbtCompound)}.
+	 * @return its serialized client-compatible representation to be used in {@link SwitchyClientPresets#fillFromNbt(NbtCompound)}.
 	 */
 	public static NbtCompound presetsToNbt(ServerPlayerEntity player, SwitchyPresets presets) {
 		NbtCompound outNbt = new NbtCompound();
@@ -60,13 +62,13 @@ public class PresetConverter {
 
 	/**
 	 * @param preset an arbitrary preset object.
-	 * @return its serialized displayable representation to be used in {@link folk.sisby.switchy.api.module.presets.SwitchyDisplayPreset#fillFromNbt(NbtCompound)}.
+	 * @return its serialized client-compatible representation to be used in {@link SwitchyClientPreset#fillFromNbt(NbtCompound)}.
 	 */
 	public static NbtCompound presetToNbt(SwitchyPreset preset) {
 		NbtCompound outNbt = new NbtCompound();
 		preset.getModules().forEach((id, module) -> {
-			if (module instanceof SwitchyModuleDisplayable displayableModule) {
-				outNbt.put(id.toString(), displayableModule.toDisplayNbt());
+			if (module instanceof SwitchyModuleClientable clientableModule) {
+				outNbt.put(id.toString(), clientableModule.toClientNbt());
 			}
 		});
 		return outNbt;
