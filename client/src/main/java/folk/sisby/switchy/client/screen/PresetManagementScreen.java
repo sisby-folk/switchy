@@ -111,8 +111,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 
 
 		VerticalFlowLayout sourceSelectorPlaceholder = dataTab.childById(VerticalFlowLayout.class, "sourceSelectorPlaceholder");
-		sourceSelectorPlaceholder.child(getDropdownButton(getDropdown(sourceSelectorPlaceholder, List.of(Text.of("File")), text -> {
-		}), Text.of("File")));
+		sourceSelectorPlaceholder.child(getDropdownButton(getDropdown(sourceSelectorPlaceholder, List.of(Text.of("File")), text -> updateDataMethod()), Text.of("File")));
 
 		// Header
 		VerticalFlowLayout panel = root.childById(VerticalFlowLayout.class, "panel");
@@ -392,7 +391,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 				importFiles.keySet().stream().map(Text::of).forEach(fileNames::add);
 			}
 		} else {
-			fileNames.add(Text.of("new file"));
+			fileNames.add(Text.of("New file..."));
 		}
 
 		includedModules = isImporting ? new ArrayList<>() : new ArrayList<>(presets.getEnabledModules());
