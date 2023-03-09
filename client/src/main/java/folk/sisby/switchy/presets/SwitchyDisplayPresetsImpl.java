@@ -31,6 +31,7 @@ public class SwitchyDisplayPresetsImpl extends SwitchyPresetsDataImpl<SwitchyDis
 	 * Returns an empty display presets object.
 	 *
 	 * @param moduleInfo a map of module info by module ID.
+	 * @param permissionLevel the permission level for the player.
 	 */
 	public SwitchyDisplayPresetsImpl(Map<Identifier, SwitchyModuleInfo> moduleInfo, int permissionLevel) {
 		super(new HashMap<>(), SwitchyDisplayPresetImpl::new, SwitchyDisplayModuleRegistry::supplyModule,true, SwitchyClient.LOGGER);

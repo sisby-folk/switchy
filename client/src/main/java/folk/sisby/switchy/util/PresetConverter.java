@@ -21,6 +21,9 @@ public class PresetConverter {
 	 * The NBT key where module info should be stored.
 	 */
 	public static final String KEY_MODULE_INFO = "moduleInfo";
+	/**
+	 * The NBT key where permission level should be stored.
+	 */
 	public static final String KEY_PERMISSION_LEVEL = "permissionLevel";
 	// Figure out how to add this to a file or something. Mixin feels wrong but maybe.
 
