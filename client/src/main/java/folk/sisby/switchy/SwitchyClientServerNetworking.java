@@ -8,6 +8,7 @@ import folk.sisby.switchy.presets.SwitchyPresetsImpl;
 import folk.sisby.switchy.util.PresetConverter;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -109,7 +110,7 @@ public class SwitchyClientServerNetworking {
 	 */
 	public static void InitializeReceivers() {
 		// Data Requests
-		ServerPlayNetworking.registerGlobalReceiver(C2S_REQUEST_PRESETS, (server, player, handler, buf, sender) -> sendPresets(player));
+		ServerPlayNetworking.registerGlobalReceiver(C2S_REQUEST_PRESETS, (server, player, handler, buf, sender) -> sendPresets(player, buf.readNbt()));
 		ServerPlayNetworking.registerGlobalReceiver(C2S_REQUEST_DISPLAY_PRESETS, (server, player, handler, buf, sender) -> sendDisplayPresets(player));
 		// Actions
 		ServerPlayNetworking.registerGlobalReceiver(C2S_IMPORT_CONFIRM, (server, player, handler, buf, sender) -> importPresets(player, buf.readNbt()));
@@ -158,15 +159,27 @@ public class SwitchyClientServerNetworking {
 		ServerPlayNetworking.send(player, S2C_DISPLAY_PRESETS, displayPresetsBuf);
 	}
 
-	private static void sendPresets(ServerPlayerEntity player) {
+	private static void sendPresets(ServerPlayerEntity player, @Nullable NbtCompound nbt) {
 		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 		try {
 			presets.saveCurrentPreset(player);
-			PacketByteBuf presetsBuf = PacketByteBufs.create().writeNbt(presets.toNbt());
-			ServerPlayNetworking.send(player, S2C_PRESETS, presetsBuf);
+			if (nbt != null) {
+				NbtList excludes = nbt.getList(KEY_IMPORT_EXCLUDE, NbtElement.STRING_TYPE);
+				if (excludes.isEmpty()) {
+					ServerPlayNetworking.send(player, S2C_PRESETS, PacketByteBufs.create().writeNbt(presets.toNbt()));
+				} else {
+					SwitchyPresets exportPresets = new SwitchyPresetsImpl(false);
+					exportPresets.fillFromNbt(presets.toNbt());
+					excludes.forEach(e -> {
+						Identifier id = Identifier.tryParse(e.asString());
+						if (id != null && exportPresets.containsModule(id) && exportPresets.isModuleEnabled(id))
+							exportPresets.disableModule(id);
+					});
+					ServerPlayNetworking.send(player, S2C_PRESETS, PacketByteBufs.create().writeNbt(exportPresets.toNbt()));
+				}
+			}
 		} catch (Exception ex) {
-			LOGGER.error(ex.toString());
-			LOGGER.error(ex.getMessage());
+			LOGGER.error("Saving to file failed!", ex);
 			sendMessage(player, translatableWithArgs("commands.switchy_client.export.fail", FORMAT_INVALID));
 		}
 	}
