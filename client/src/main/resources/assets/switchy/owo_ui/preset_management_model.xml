@@ -1,0 +1,234 @@
+<owo-ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/wisp-forest/owo-lib/1.19/owo-ui.xsd">
+    <components>
+        <flow-layout direction="vertical">
+            <children>
+                <label>
+                    <text>Switchy Preset Management</text>
+                    <margins>
+                        <bottom>2</bottom>
+                    </margins>
+                </label>
+                <flow-layout direction="horizontal">
+                    <children>
+                        <button id="backButton">
+                            <text>Back</text>
+                            <margins>
+                                <right>40</right>
+                            </margins>
+                        </button>
+                        <button id="presetsTabButton">
+                            <text>Presets</text>
+                        </button>
+                        <button id="modulesTabButton">
+                            <text>Modules</text>
+                        </button>
+                        <button id="dataTabButton">
+                            <text>Data</text>
+                        </button>
+                    </children>
+                    <vertical-alignment>bottom</vertical-alignment>
+                </flow-layout>
+                <flow-layout id="panel" direction="vertical">
+                    <children>
+
+                    </children>
+                    <horizontal-alignment>center</horizontal-alignment>
+                    <vertical-alignment>center</vertical-alignment>
+                    <padding>
+                        <all>6</all>
+                    </padding>
+                    <sizing>
+                        <vertical method="fixed">200</vertical>
+                    </sizing>
+                    <surface>
+                        <panel dark="true"/>
+                    </surface>
+                </flow-layout>
+            </children>
+            <vertical-alignment>center</vertical-alignment>
+            <horizontal-alignment>center</horizontal-alignment>
+            <surface>
+                <vanilla-translucent/>
+            </surface>
+        </flow-layout>
+    </components>
+    <templates>
+        <presets-tab>
+            <scroll id="{{id}}" direction="vertical">
+                <flow-layout id="innerScrollPane" direction="vertical">
+                    <children>
+                        <flow-layout id="presetsFlow" direction="vertical">
+                        </flow-layout>
+                        <button id="newPreset">
+                            <text>New Preset</text>
+                        </button>
+                    </children>
+                    <sizing>
+                        <horizontal method="fixed">200</horizontal>
+                    </sizing>
+                </flow-layout>
+                <sizing>
+                    <vertical method="fixed">180</vertical>
+                </sizing>
+                <padding>
+                    <horizontal>4</horizontal>
+                </padding>
+            </scroll>
+        </presets-tab>
+        <module-selector>
+            <flow-layout direction="horizontal">
+                <children>
+                    <flow-layout direction="vertical">
+                        <children>
+                            <label>
+                                <text>{{leftText}}</text>
+                            </label>
+                            <scroll direction="vertical">
+                                <flow-layout id="leftModulesFlow" direction="vertical"/>
+                                <sizing>
+                                    <vertical method="fixed">{{vSize}}</vertical>
+                                </sizing>
+                            </scroll>
+                        </children>
+                        <horizontal-alignment>center</horizontal-alignment>
+                    </flow-layout>
+                    <flow-layout direction="vertical">
+                        <children>
+                            <label>
+                                <text>{{rightText}}</text>
+                            </label>
+                            <scroll direction="vertical">
+                                <flow-layout id="rightModulesFlow" direction="vertical"/>
+                                <sizing>
+                                    <vertical method="fixed">{{vSize}}</vertical>
+                                </sizing>
+                            </scroll>
+                        </children>
+                        <horizontal-alignment>center</horizontal-alignment>
+                    </flow-layout>
+                </children>
+            </flow-layout>
+        </module-selector>
+        <modules-tab>
+            <template name="module-selector">
+                <leftText>Disabled Modules</leftText>
+                <rightText>Enabled Modules</rightText>
+                <vSize>180</vSize>
+            </template>
+        </modules-tab>
+        <data-tab>
+            <flow-layout direction="vertical">
+                <children>
+                    <flow-layout direction="horizontal">
+                        <children>
+                            <button id="importToggleButton">
+                                <text>Import</text>
+                            </button>
+                            <button id="exportToggleButton">
+                                <text>Export</text>
+                            </button>
+                        </children>
+                        <margins><vertical>2</vertical></margins>
+                    </flow-layout>
+                    <flow-layout direction="horizontal">
+                        <children>
+                            <label>
+                                <text>Method</text>
+                            </label>
+                            <flow-layout direction="vertical" id="sourceSelectorPlaceholder"/>
+                        </children>
+                        <margins><vertical>2</vertical></margins>
+                    </flow-layout>
+                    <flow-layout direction="horizontal">
+                        <children>
+                            <label>
+                                <text>File</text>
+                            </label>
+                            <flow-layout direction="vertical" id="fileSelectorPlaceholder"/>
+                        </children>
+                        <margins><vertical>2</vertical></margins>
+                    </flow-layout>
+                    <template name="module-selector">
+                        <leftText>Available</leftText>
+                        <rightText>Included</rightText>
+                        <vSize>100</vSize>
+                    </template>
+                    <flow-layout id="actionButtons" direction="horizontal">
+                        <children>
+                            <button id="importButton">
+                                <text>Import</text>
+                            </button>
+                            <button id="exportButton">
+                                <text>Export</text>
+                            </button>
+                        </children>
+                    </flow-layout>
+                </children>
+                <margins><all>4</all></margins>
+            </flow-layout>
+        </data-tab>
+        <dialog-box>
+            <flow-layout direction="vertical">
+                <children>
+                    <flow-layout direction="vertical">
+                        <children>
+                            <flow-layout id="messageFlow" direction="vertical"/>
+                            <flow-layout direction="horizontal">
+                                <children>
+                                    <button id="leftButton">
+                                        <text>{{leftText}}</text>
+                                    </button>
+                                    <button id="rightButton">
+                                        <text>{{rightText}}</text>
+                                        <margins>
+                                            <left>4</left>
+                                        </margins>
+                                    </button>
+                                </children>
+                                <margins>
+                                    <top>4</top>
+                                </margins>
+                            </flow-layout>
+                        </children>
+                        <padding>
+                            <all>10</all>
+                        </padding>
+                        <surface>
+                            <panel dark="true"/>
+                        </surface>
+                        <sizing>
+                            <horizontal method="fixed">{{hSize}}</horizontal>
+                        </sizing>
+                    </flow-layout>
+                </children>
+                <sizing>
+                    <horizontal method="fill">100</horizontal>
+                    <vertical method="fill">100</vertical>
+                </sizing>
+                <positioning type="absolute">0,0</positioning>
+                <vertical-alignment>center</vertical-alignment>
+                <horizontal-alignment>center</horizontal-alignment>
+                <surface>
+                    <vanilla-translucent/>
+                </surface>
+            </flow-layout>
+        </dialog-box>
+        <loading-overlay>
+            <flow-layout direction="vertical">
+                <children>
+                    <label>
+                        <text>Loading...</text>
+                    </label>
+                </children>
+                <sizing>
+                    <horizontal method="fill">100</horizontal>
+                    <vertical method="fill">100</vertical>
+                </sizing>
+                <positioning type="absolute">0,0</positioning>
+                <vertical-alignment>bottom</vertical-alignment>
+                <horizontal-alignment>left</horizontal-alignment>
+            </flow-layout>
+        </loading-overlay>
+    </templates>
+</owo-ui>

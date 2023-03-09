@@ -7,6 +7,7 @@ import folk.sisby.switchy.client.api.SwitchyClientApi;
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
 import folk.sisby.switchy.client.api.SwitchySwitchScreenPosition;
 import io.wispforest.owo.ui.base.BaseOwoScreen;
+import io.wispforest.owo.ui.component.ButtonComponent;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.component.LabelComponent;
 import io.wispforest.owo.ui.container.*;
@@ -14,11 +15,15 @@ import io.wispforest.owo.ui.core.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
+import org.quiltmc.qsl.networking.api.PacketByteBufs;
+import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+
+import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_REQUEST_DISPLAY_PRESETS;
 
 /**
  * The quick-switcher screen, populated by a {@link SwitchyDisplayPresets} object.
@@ -27,7 +32,7 @@ import java.util.function.Function;
  * @author Sisby folk
  * @since 1.9.0
  */
-public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
+public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDisplayScreen {
 	private static final List<Function<SwitchyDisplayPreset, Pair<Component, SwitchySwitchScreenPosition>>> basicComponents = new ArrayList<>();
 
 	static {
@@ -44,15 +49,16 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 		registerBasicPresetComponent(displayPreset -> Pair.of(Components.label(Text.literal(displayPreset.getName())), SwitchySwitchScreenPosition.SIDE_LEFT));
 	}
 
-	final SwitchyDisplayPresets displayPresets;
-
 	/**
-	 * @param displayPresets a display presets object to preview and switch with.
+	 * Constructs an instance of the screen.
 	 */
-	public SwitchScreen(SwitchyDisplayPresets displayPresets) {
+	public SwitchScreen() {
 		super();
-		this.displayPresets = displayPresets;
 	}
+
+	private ScrollContainer<VerticalFlowLayout> presetsScroll;
+	private VerticalFlowLayout presetsFlow;
+
 
 	/**
 	 * Registers a component to display alongside every preset (e.g. the preset name) for addons.
@@ -76,20 +82,39 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 		rootComponent.verticalAlignment(VerticalAlignment.CENTER);
 		rootComponent.gap(2);
 
-		VerticalFlowLayout presetsLayout = Containers.verticalFlow(Sizing.content(), Sizing.content());
-		presetsLayout.padding(Insets.of(6));
-		presetsLayout.verticalAlignment(VerticalAlignment.CENTER);
-		presetsLayout.horizontalAlignment(HorizontalAlignment.CENTER);
-		presetsLayout.gap(4);
+		presetsFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
+		presetsFlow.padding(Insets.of(6));
+		presetsFlow.verticalAlignment(VerticalAlignment.CENTER);
+		presetsFlow.horizontalAlignment(HorizontalAlignment.CENTER);
+		presetsFlow.gap(4);
 
-		ScrollContainer<VerticalFlowLayout> presetsScroll = Containers.verticalScroll(Sizing.content(), Sizing.fill(80), presetsLayout);
+		presetsScroll = Containers.verticalScroll(Sizing.content(), Sizing.fill(80), presetsFlow);
 		presetsScroll.surface(Surface.DARK_PANEL);
 		presetsScroll.padding(Insets.of(4));
 
+		HorizontalFlowLayout labelManageFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
+		labelManageFlow.verticalAlignment(VerticalAlignment.CENTER);
+		labelManageFlow.gap(10);
+
 		LabelComponent screenLabel = Components.label(Text.literal("Switchy Presets"));
 
-		rootComponent.child(screenLabel);
+
+		ButtonComponent manageButton = Components.button(Text.literal("Manage"), b -> {
+			client.setScreen(new PresetManagementScreen());
+			ClientPlayNetworking.send(C2S_REQUEST_DISPLAY_PRESETS, PacketByteBufs.empty());
+		});
+
+		labelManageFlow.child(screenLabel);
+		labelManageFlow.child(manageButton);
+
+		rootComponent.child(labelManageFlow);
 		rootComponent.child(presetsScroll);
+
+	}
+
+	@Override
+	public void updatePresets(SwitchyDisplayPresets displayPresets) {
+		presetsFlow.clearChildren();
 
 		// Process Preset Flows
 		Component currentPresetComponent = null;
@@ -149,9 +174,10 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> {
 			List<Component> sideRightComponents = componentList.stream().filter(p -> p.getSecond() == SwitchySwitchScreenPosition.SIDE_RIGHT).map(Pair::getFirst).filter(Objects::nonNull).toList();
 			if (!sideRightComponents.isEmpty()) horizontalFlow.children(sideRightComponents);
 
-			presetsLayout.child(horizontalFlow);
+			presetsFlow.child(horizontalFlow);
 		}
 
 		if (currentPresetComponent != null) presetsScroll.scrollTo(currentPresetComponent);
+
 	}
 }
