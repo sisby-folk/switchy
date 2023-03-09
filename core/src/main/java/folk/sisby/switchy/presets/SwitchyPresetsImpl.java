@@ -71,8 +71,8 @@ public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, Sw
 	public void importFromOther(ServerPlayerEntity player, Map<String, SwitchyPreset> other) {
 		other.forEach((name, otherPreset) -> {
 			if (getPresets().containsKey(name)) {
-				mutatePresetOfModules(player, name, (id, otherModule) -> {
-					if (otherPreset.containsModule(id)) getPreset(name).getModule(id).fillFromNbt(otherModule.toNbt());
+				mutatePresetOfModules(player, name, (id, module) -> {
+					if (otherPreset.containsModule(id)) module.fillFromNbt(otherPreset.getModule(id).toNbt());
 				});
 			} else {
 				getEnabledModules().forEach((id) -> {
