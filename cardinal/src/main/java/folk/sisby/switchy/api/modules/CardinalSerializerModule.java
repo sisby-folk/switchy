@@ -24,13 +24,13 @@ import java.util.function.BiConsumer;
  * @see SwitchyModule
  * @since 1.8.0
  */
-public class CardinalSerializerCompat implements SwitchyModule {
+public class CardinalSerializerModule implements SwitchyModule {
 	// Generic Fields
 	private final Map<Identifier, ComponentConfig<? extends Component>> componentConfigs;
 	// Module Data
 	private NbtCompound moduleNbt = new NbtCompound();
 
-	private CardinalSerializerCompat(Map<Identifier, ComponentConfig<? extends Component>> componentConfigs) {
+	private CardinalSerializerModule(Map<Identifier, ComponentConfig<? extends Component>> componentConfigs) {
 		this.componentConfigs = componentConfigs;
 	}
 
@@ -45,8 +45,8 @@ public class CardinalSerializerCompat implements SwitchyModule {
 	 * @return a module instance for the specified cardinal component.
 	 */
 	@SuppressWarnings("unused")
-	public static <T1 extends Component> CardinalSerializerCompat from(ComponentKey<T1> registryKey, BiConsumer<ComponentKey<T1>, ServerPlayerEntity> preApplyClear, BiConsumer<ComponentKey<T1>, ServerPlayerEntity> postApplySync) {
-		return new CardinalSerializerCompat(Map.of(registryKey.getId(), new ComponentConfig<>(registryKey, preApplyClear, postApplySync)));
+	public static <T1 extends Component> CardinalSerializerModule from(ComponentKey<T1> registryKey, BiConsumer<ComponentKey<T1>, ServerPlayerEntity> preApplyClear, BiConsumer<ComponentKey<T1>, ServerPlayerEntity> postApplySync) {
+		return new CardinalSerializerModule(Map.of(registryKey.getId(), new ComponentConfig<>(registryKey, preApplyClear, postApplySync)));
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class CardinalSerializerCompat implements SwitchyModule {
 				}, (k, p) -> {
 				}));
 			}
-			return new CardinalSerializerCompat(map);
+			return new CardinalSerializerModule(map);
 		}, moduleInfo.withUniqueIds(componentKeyIds));
 	}
 

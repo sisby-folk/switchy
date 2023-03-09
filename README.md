@@ -33,6 +33,7 @@ More functionality can be added with these Addons:
 - [Switchy Teleport](https://modrinth.com/mod/switchy-teleport) - separate player position and spawn points (all disabled by default)
 - [SwitchyKit](https://modrinth.com/mod/switchykit) - import presets with nicknames (as above) with colours, pronouns and system tags - directly from Pluralkit or Tupperbox.
 - [Switchy Resource Packs](https://modrinth.com/mod/switchy-resource-packs) - separate enabled resource packs per preset.
+- [Switchy Proxy](https://modrinth.com/mod/switchy-proxy) - single-message nickname switching with custom patterns using either nickname mod.
 
 These mods have Switchy support built-in:
  - [RPGStats](https://modrinth.com/mod/rpgstats) - All 6 stats can be kept per-preset
@@ -59,11 +60,13 @@ When a module is **Enabled**, it makes things "switch" (load and save) per-prese
 
 `/switchy module enable/disable [name]` will toggle this for your presets.
 
+`/switchy module help` will tell you about a preset, and what enabling it does.
+
 ### Import/Export
 
 These commands require switchy to also be installed on the client.
 
-`/switchy export` will export all of your presets and modules to a file.
+`/switchy_client export` will export all of your presets and modules to a file.
 
 You can then move to another server or singleplayer world.
 
@@ -117,36 +120,39 @@ maven { // Server Translations API
 ```
 
 `switchy-core` includes commands and the API. <br/>
-`switchy-client` enables import/export functionality and a client API. <br/>
-`switchy-cardinal` provides data-driven CCA switchy modules and an API <br/>
-`switchy-compat` provides the built-in modules for drogtor etc.
+`switchy-client` enables import/export commands and a client API. <br/>
+`switchy-ui` provides the client-side switch and manage screens, and module-displaying API. <br/>
+`switchy-cardinal` provides data-driven CCA switchy modules and an API. <br/>
+`switchy-compat` provides the built-in modules for drogtor etc. <br/>
+`switchy-compat-ui` adds ui support to compat. <br/>
 
 Adding new Modules allows more data to be switched per-preset. They only need to:
 - Load and Save their data using NBT.
 - Save their data from the player
 - Load their data to the player
 
-Just implement `PresetModule` and register it with `PresetModuleRegistry` - See [Switchy Inventories](https://github.com/sisby-folk/switchy-inventories) for an example.
+Just implement `SwitchyModule` and register it with `SwitchyModuleRegistry` using `SwitchyEvents.Init` - See [Switchy Inventories](https://github.com/sisby-folk/switchy-inventories) for an example.
 
-Switchy also provides an entrypoint, which you can use to [skip](https://github.com/sisby-folk/switchy-inventories/blob/1.18/src/main/java/folk/sisby/switchy_inventories/modules/InventoryModule.java) checking if switchy is loaded, an events API that can let your mod (client or server) know which preset is loaded and when, and a simple API for switching and getting the names of presets and modules.
+Switchy also includes am API for all its basic operations, as well as an events API for tracking switches and the current preset.
 
 ### Data-Driven CCA Modules
 
-If your mod uses the [Cardinal Components API](https://github.com/OnyxStudios/Cardinal-Components-API) to store its player/entity data, you can instead register a module using an instance of `CardinalSerializerCompat`.
+If your mod uses the [Cardinal Components API](https://github.com/OnyxStudios/Cardinal-Components-API) to store its player/entity data, you can instead register a module using an instance of `CardinalSerializerModule`.
 
 If your component performs all of its necessary sync logic within writeToNbt/readFromNbt (or has none) - you can instead use the static `register` method or even define the module in data.
 
-Any data matching `data/*/switchy_cca_modules/*.json` will be loaded [like so](https://github.com/sisby-folk/switchy/blob/1.19/src/main/resources/data/switchy/switchy_cca_modules/lanyard_compat.json):
+Any data matching `data/*/switchy_cca_modules/*.json` will be loaded [like so](https://github.com/sisby-folk/switchy/blob/1.19/compat/src/main/resources/data/switchy/switchy_cardinal/lanyard.json):
 
- - Top level key: Cardinal component ID
+- File namespace and name - module namespace and path.
    - `default`: boolean, module is enabled for players by default.
    - `editable`: See import configuration above.
-   - `ifModLoaded`: a mod ID to check before trying to register the module.
+   - `ifModsLoaded`: mod IDs to check before trying to register the module.
+   - `components`: the cardinal components to swap.
 
 ## Further Info
 
 This mod is primarily motivated by improving accessibility for [plural systems](https://morethanone.info).<br/>
-Check out the [Plural Respect Document](https://bit.ly/pluralrespect).
+Check out [Plural Respect](https://pluralrespect.github.io).
 
 ### Fabric?
 
