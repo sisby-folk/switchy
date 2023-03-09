@@ -129,14 +129,16 @@
                                 <text>Export</text>
                             </button>
                         </children>
+                        <margins><vertical>2</vertical></margins>
                     </flow-layout>
                     <flow-layout direction="horizontal">
                         <children>
                             <label>
-                                <text>Source</text>
+                                <text>Method</text>
                             </label>
                             <flow-layout direction="vertical" id="sourceSelectorPlaceholder"/>
                         </children>
+                        <margins><vertical>2</vertical></margins>
                     </flow-layout>
                     <flow-layout direction="horizontal">
                         <children>
@@ -145,6 +147,7 @@
                             </label>
                             <flow-layout direction="vertical" id="fileSelectorPlaceholder"/>
                         </children>
+                        <margins><vertical>2</vertical></margins>
                     </flow-layout>
                     <template name="module-selector">
                         <leftText>Available</leftText>
@@ -156,10 +159,13 @@
                             <button id="importButton">
                                 <text>Import</text>
                             </button>
+                            <button id="exportButton">
+                                <text>Export</text>
+                            </button>
                         </children>
-                        <horizontal-alignment>right</horizontal-alignment>
                     </flow-layout>
                 </children>
+                <margins><all>4</all></margins>
             </flow-layout>
         </data-tab>
         <dialog-box>
