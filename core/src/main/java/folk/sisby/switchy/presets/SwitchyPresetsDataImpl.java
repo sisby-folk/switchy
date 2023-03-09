@@ -164,10 +164,9 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 	public void renamePreset(String name, String newName) throws PresetNotFoundException, IllegalStateException {
 		if (!presets.containsKey(name)) throw new PresetNotFoundException();
 		if (presets.containsKey(newName)) throw new IllegalStateException("Specified preset name already exists");
-		Preset preset = presets.get(name);
+		Preset preset = presets.remove(name);
 		preset.setName(newName);
 		presets.put(newName, preset);
-		presets.remove(name);
 	}
 
 	@Override
