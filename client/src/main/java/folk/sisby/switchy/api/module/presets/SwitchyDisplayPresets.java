@@ -20,4 +20,10 @@ public interface SwitchyDisplayPresets extends SwitchyPresetsData<SwitchyDisplay
 	 * @return a map of module info by module ID.
 	 */
 	Map<Identifier, SwitchyModuleInfo> getModuleInfo();
+
+	/**
+	 * Get the known permission level.
+	 * @return the permission level of the client player.
+	 */
+	int getPermissionLevel();
 }

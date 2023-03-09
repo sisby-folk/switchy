@@ -25,14 +25,17 @@ import java.util.Map;
 public class SwitchyDisplayPresetsImpl extends SwitchyPresetsDataImpl<SwitchyDisplayModule, SwitchyDisplayPreset> implements SwitchyDisplayPresets {
 	final Map<Identifier, SwitchyModuleInfo> moduleInfo;
 
+	int permissionLevel;
+
 	/**
 	 * Returns an empty display presets object.
 	 *
 	 * @param moduleInfo a map of module info by module ID.
 	 */
-	public SwitchyDisplayPresetsImpl(Map<Identifier, SwitchyModuleInfo> moduleInfo) {
+	public SwitchyDisplayPresetsImpl(Map<Identifier, SwitchyModuleInfo> moduleInfo, int permissionLevel) {
 		super(new HashMap<>(), SwitchyDisplayPresetImpl::new, SwitchyDisplayModuleRegistry::supplyModule,true, SwitchyClient.LOGGER);
 		this.moduleInfo = moduleInfo;
+		this.permissionLevel = permissionLevel;
 	}
 
 	@Override
@@ -51,9 +54,14 @@ public class SwitchyDisplayPresetsImpl extends SwitchyPresetsDataImpl<SwitchyDis
 		return moduleInfo;
 	}
 
+	public int getPermissionLevel() {
+		return permissionLevel;
+	}
+
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
 		super.fillFromNbt(nbt);
 		moduleInfo.putAll(SwitchyModuleRegistry.infoFromNbt(nbt.getCompound(PresetConverter.KEY_MODULE_INFO)));
+		permissionLevel = nbt.getInt(PresetConverter.KEY_PERMISSION_LEVEL);
 	}
 }

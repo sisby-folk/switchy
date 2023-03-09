@@ -154,7 +154,7 @@ public class SwitchyClientServerNetworking {
 	private static void sendDisplayPresets(ServerPlayerEntity player) {
 		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 		presets.saveCurrentPreset(player);
-		PacketByteBuf displayPresetsBuf = PacketByteBufs.create().writeNbt(PresetConverter.presetsToNbt(presets));
+		PacketByteBuf displayPresetsBuf = PacketByteBufs.create().writeNbt(PresetConverter.presetsToNbt(player, presets));
 		ServerPlayNetworking.send(player, S2C_DISPLAY_PRESETS, displayPresetsBuf);
 	}
 
