@@ -7,7 +7,7 @@ import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
-import folk.sisby.switchy.api.modules.CardinalSerializerCompat;
+import folk.sisby.switchy.api.modules.CardinalSerializerModule;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.Text;
@@ -36,7 +36,7 @@ import java.util.stream.StreamSupport;
  * }
  *
  * @author Sisby folk
- * @see CardinalSerializerCompat
+ * @see CardinalSerializerModule
  * @since 1.8.0
  */
 public class CardinalModuleLoader extends JsonDataLoader implements IdentifiableResourceReloader {
@@ -92,7 +92,7 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 						if (moduleOptions.has(KEY_DESCRIPTION_ENABLED)) info.withDescriptionWhenEnabled(Text.literal(moduleOptions.get(KEY_DESCRIPTION_ENABLED).getAsString()));
 						if (moduleOptions.has(KEY_DESCRIPTION_DISABLED)) info.withDescriptionWhenDisabled(Text.literal(moduleOptions.get(KEY_DESCRIPTION_DISABLED).getAsString()));
 						if (moduleOptions.has(KEY_DESCRIPTION_DELETION_WARNING)) info.withDeletionWarning(Text.literal(moduleOptions.get(KEY_DESCRIPTION_DELETION_WARNING).getAsString()));
-						CardinalSerializerCompat.register(moduleId, componentIds, info);
+						CardinalSerializerModule.register(moduleId, componentIds, info);
 					} catch (IllegalStateException ignoredRegistrationEx) {
 						Switchy.LOGGER.warn("[Switchy] CCA module {} tried to register a component that already has a module!, skipping...", moduleId);
 					}

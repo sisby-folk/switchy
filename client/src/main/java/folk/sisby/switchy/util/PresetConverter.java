@@ -8,6 +8,7 @@ import folk.sisby.switchy.api.presets.SwitchyPresetsData;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
  * Used to convert SwitchyPresets objects into NBT data usable by SwitchyDisplayPresets.
@@ -20,13 +21,18 @@ public class PresetConverter {
 	 * The NBT key where module info should be stored.
 	 */
 	public static final String KEY_MODULE_INFO = "moduleInfo";
+	/**
+	 * The NBT key where permission level should be stored.
+	 */
+	public static final String KEY_PERMISSION_LEVEL = "permissionLevel";
 	// Figure out how to add this to a file or something. Mixin feels wrong but maybe.
 
 	/**
+	 * @param player the relevant player.
 	 * @param presets an arbitrary presets object.
 	 * @return its serialized displayable representation to be used in {@link folk.sisby.switchy.api.module.presets.SwitchyDisplayPresets#fillFromNbt(NbtCompound)}.
 	 */
-	public static NbtCompound presetsToNbt(SwitchyPresets presets) {
+	public static NbtCompound presetsToNbt(ServerPlayerEntity player, SwitchyPresets presets) {
 		NbtCompound outNbt = new NbtCompound();
 
 		NbtList enabledList = new NbtList();
@@ -47,6 +53,7 @@ public class PresetConverter {
 		outNbt.putString(SwitchyPresetsData.KEY_PRESET_CURRENT, presets.getCurrentPresetName());
 
 		outNbt.put(KEY_MODULE_INFO,SwitchyModuleRegistry.infoToNbt());
+		outNbt.putInt(KEY_PERMISSION_LEVEL, player.server.getPermissionLevel(player.getGameProfile()));
 
 		return outNbt;
 	}
