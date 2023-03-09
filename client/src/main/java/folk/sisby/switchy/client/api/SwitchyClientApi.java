@@ -9,10 +9,12 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
 import java.util.Collection;
+import java.util.List;
 
 import static folk.sisby.switchy.SwitchyClientServerNetworking.*;
 
@@ -121,17 +123,7 @@ public class SwitchyClientApi {
 		ClientPlayNetworking.send(C2S_PRESETS_MODULE_ENABLE, buf);
 	}
 
-	/**
-	 * Import the provided Presets NBT without confirmation.
-	 * @param presetsNbt the NBT of presets and modules to import.
-	 * @param excludeModules A collection of modules to not import from the NBT, even if they are allowed.
-	 * @param includeModules A collection of modules to always import from the NBT, even if they require operator.
-	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
-	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#importFromOther(ServerPlayerEntity, SwitchyPresets)
-	 */
-	public static void importPresets(NbtCompound presetsNbt, Collection<Identifier> excludeModules, Collection<Identifier> includeModules) throws UnsupportedOperationException {
-		if (!ClientPlayNetworking.canSend(C2S_IMPORT))
-			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
+	private static void writeModuleSpecifiers(NbtCompound presetsNbt, Collection<Identifier> excludeModules, Collection<Identifier> includeModules) {
 		if (!excludeModules.isEmpty()) {
 			NbtList excludeModulesNbt = new NbtList();
 			excludeModules.stream().map(Identifier::toString).map(NbtString::of).forEach(excludeModulesNbt::add);
@@ -142,16 +134,54 @@ public class SwitchyClientApi {
 			includeModules.stream().map(Identifier::toString).map(NbtString::of).forEach(includeModulesNbt::add);
 			presetsNbt.put(KEY_IMPORT_INCLUDE, includeModulesNbt);
 		}
+	}
+
+	private static void doImport(NbtCompound presetsNbt, Collection<Identifier> excludeModules, Collection<Identifier> includeModules, @Nullable String command) throws UnsupportedOperationException {
+		if (!ClientPlayNetworking.canSend(command != null ? C2S_IMPORT_CONFIRM : C2S_IMPORT))
+			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
+		writeModuleSpecifiers(presetsNbt, excludeModules, includeModules);
+		if (command != null) presetsNbt.putString(KEY_IMPORT_COMMAND, command);
 		PacketByteBuf buf = PacketByteBufs.create();
-		buf.writeNbt(presetsNbt);
-		ClientPlayNetworking.send(C2S_IMPORT, buf);
+		ClientPlayNetworking.send(command != null ? C2S_IMPORT_CONFIRM : C2S_IMPORT, buf.writeNbt(presetsNbt));
 	}
 
 	/**
+	 * Import the provided Presets NBT without confirmation.
+	 * @param presetsNbt the NBT of presets and modules to import.
+	 * @param excludeModules A collection of modules to not import from the NBT, even if they are allowed.
+	 * @param includeModules A collection of modules to always import from the NBT, even if they require operator.
+	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
+	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#importFromOther(ServerPlayerEntity, SwitchyPresets)
+	 */
+	public static void importPresets(NbtCompound presetsNbt, Collection<Identifier> excludeModules, Collection<Identifier> includeModules) throws UnsupportedOperationException {
+		doImport(presetsNbt, excludeModules, includeModules, null);
+	}
+
+	/**
+	 * Import the provided Presets NBT with chat-based confirmation.
+	 * Must run twice with the same confirmation command to complete.
+	 * @param presetsNbt the NBT of presets and modules to import.
+	 * @param excludeModules A collection of modules to not import from the NBT, even if they are allowed.
+	 * @param includeModules A collection of modules to always import from the NBT, even if they require operator.
+	 * @param confirmationCommand the command to prompt the player to re-enter to confirm.
+	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
+	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#importFromOther(ServerPlayerEntity, SwitchyPresets)
+	 */
+	public static void importPresets(NbtCompound presetsNbt, Collection<Identifier> excludeModules, Collection<Identifier> includeModules, String confirmationCommand) throws UnsupportedOperationException {
+		doImport(presetsNbt, excludeModules, includeModules, confirmationCommand);
+	}
+
+
+	/**
 	 * Export the player's presets to a file.
+	 * @param excludeModules A collection of modules to not export to the NBT, if they exist.
 	 * @see folk.sisby.switchy.client.SwitchyClientReceivers
 	 */
-	private static void exportPresets() {
-		ClientPlayNetworking.send(C2S_REQUEST_PRESETS, PacketByteBufs.empty());
+	public static void exportPresets(Collection<Identifier> excludeModules) throws UnsupportedOperationException {
+		if (!ClientPlayNetworking.canSend(C2S_REQUEST_PRESETS))
+			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
+		NbtCompound nbt = new NbtCompound();
+		writeModuleSpecifiers(nbt, excludeModules, List.of());
+		ClientPlayNetworking.send(C2S_REQUEST_PRESETS, PacketByteBufs.create().writeNbt(nbt));
 	}
 }

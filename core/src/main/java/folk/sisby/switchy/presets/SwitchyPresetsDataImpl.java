@@ -108,7 +108,9 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 		}
 		outNbt.put(KEY_PRESETS, presetsCompound);
 
-		outNbt.putString(KEY_PRESET_CURRENT, getCurrentPresetName());
+		if (getCurrentPreset() != null) { // non-player presets won't have one.
+			outNbt.putString(KEY_PRESET_CURRENT, getCurrentPresetName());
+		}
 		return outNbt;
 	}
 
