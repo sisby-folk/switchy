@@ -4,6 +4,7 @@ dependencies {
 
 	// Redo Client Deps (why)
 	modCompileOnly libs.bundles.client
+	modLocalRuntime libs.bundles.client
 
 	// Optional Compatible Mods
 	modCompileOnly libs.bundles.compat.compile
