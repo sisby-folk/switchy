@@ -30,10 +30,14 @@ def origVersion = project.version
 
 dependencies {
 	// Subprojects //
-	runtimeOnly(include(project(path: ':core', configuration: 'namedElements')))
-	runtimeOnly(include(project(path: ':client', configuration: 'namedElements')))
-	runtimeOnly(include(project(path: ':compat', configuration: 'namedElements')))
-	runtimeOnly(include(project(path: ':cardinal', configuration: 'namedElements')))
+	runtimeOnly project(path: ':core', configuration: 'namedElements')
+	include project(path: ':core', configuration: 'namedElements')
+	runtimeOnly project(path: ':client', configuration: 'namedElements')
+	include project(path: ':client', configuration: 'namedElements')
+	runtimeOnly project(path: ':cardinal', configuration: 'namedElements')
+	include project(path: ':cardinal', configuration: 'namedElements')
+	runtimeOnly project(path: ':compat', configuration: 'namedElements')
+	include project(path: ':compat', configuration: 'namedElements')
 
 	// Include runtime-only libraries //
 	include(libs.bundles.runtime.include)
@@ -41,9 +45,9 @@ dependencies {
 	// Include other libraries //
 	include(libs.bundles.client.include)
 
-	// Re-apply Local Runtime from Subprojects //
-	modLocalRuntime(libs.bundles.compat.runtime)
-	modLocalRuntime(libs.bundles.client.include)
+	// Re-apply Runtime from Subprojects //
+	modLocalRuntime libs.bundles.compat.runtime
+	modLocalRuntime libs.bundles.client
 }
 
 allprojects {
