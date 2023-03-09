@@ -1,5 +1,6 @@
 package folk.sisby.switchy.presets;
 
+import folk.sisby.switchy.api.exception.ModuleNotFoundException;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.api.module.presets.SwitchyDisplayPreset;
@@ -64,5 +65,17 @@ public class SwitchyDisplayPresetsImpl extends SwitchyPresetsDataImpl<SwitchyDis
 		super.fillFromNbt(nbt);
 		moduleInfo.putAll(SwitchyModuleRegistry.infoFromNbt(nbt.getCompound(PresetConverter.KEY_MODULE_INFO)));
 		permissionLevel = nbt.getInt(PresetConverter.KEY_PERMISSION_LEVEL);
+	}
+
+	@Override
+	public void enableModule(Identifier id) throws ModuleNotFoundException, IllegalStateException {
+		if (!containsModule(id)) throw new ModuleNotFoundException();
+		getModules().put(id, true);
+	}
+
+	@Override
+	public void disableModule(Identifier id) throws ModuleNotFoundException, IllegalStateException {
+		if (!containsModule(id)) throw new ModuleNotFoundException();
+		getModules().put(id, false);
 	}
 }
