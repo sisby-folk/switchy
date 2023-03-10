@@ -99,7 +99,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDi
 		labelManageFlow.verticalAlignment(VerticalAlignment.CENTER);
 		labelManageFlow.gap(10);
 
-		LabelComponent screenLabel = Components.label(Text.literal("Switchy Presets"));
+		LabelComponent screenLabel = Components.label(Text.literal("Switch Preset"));
 
 
 		ButtonComponent manageButton = Components.button(Text.literal("Manage"), b -> {

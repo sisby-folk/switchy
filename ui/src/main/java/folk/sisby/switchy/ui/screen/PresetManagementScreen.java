@@ -46,6 +46,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 	private List<Identifier> includedModules = new ArrayList<>();
 	private List<Identifier> availableModules = new ArrayList<>();
 	private NbtCompound selectedFileNbt;
+	private String focusedPresetName;
 	private boolean isImporting = true;
 
 	private SwitchyClientPresets presets;
@@ -185,9 +186,9 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		return dropdown;
 	}
 
-	private HorizontalFlowLayout getRenameLayout(VerticalFlowLayout presetsFlow, @Nullable String presetName) {
+	private HorizontalFlowLayout getRenameFlow(VerticalFlowLayout presetsFlow, @Nullable String presetName) {
 		HorizontalFlowLayout renamePresetFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
-		TextBoxComponent nameEntry = Components.textBox(Sizing.fill(54), (presetName != null) ? presetName : "newPreset");
+		TextBoxComponent nameEntry = Components.textBox(Sizing.fill(53), (presetName != null) ? presetName : "newPreset");
 		nameEntry.setTextPredicate(s -> s.chars().mapToObj(i -> (char) i).allMatch(StringReader::isAllowedInUnquotedString));
 		this.setInitialFocus(nameEntry);
 		renamePresetFlow.child(nameEntry);
@@ -195,17 +196,20 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 			if (!presetName.equals(nameEntry.getText())) {
 				if (presets.getPresetNames().stream().noneMatch(s -> s.equalsIgnoreCase(nameEntry.getText()))) {
 					presets.renamePreset(presetName, nameEntry.getText());
+					focusedPresetName = null;
 					refreshPresetFlow(presetsFlow);
 					lockScreen();
 					SwitchyClientApi.renamePreset(presetName, nameEntry.getText(), SwitchyDisplayScreen::updatePresetScreens);
 				}
 			} else {
+				focusedPresetName = null;
 				refreshPresetFlow(presetsFlow);
 			}
 
 		} : b -> {
 			if (presets.getPresetNames().stream().noneMatch(s -> s.equalsIgnoreCase(nameEntry.getText()))) {
 				presets.newPreset(nameEntry.getText());
+				focusedPresetName = null;
 				refreshPresetFlow(presetsFlow);
 				lockScreen();
 				SwitchyClientApi.newPreset(nameEntry.getText(), SwitchyDisplayScreen::updatePresetScreens);
@@ -213,13 +217,47 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 
 		});
 		confirmButton.horizontalSizing(Sizing.fill(22));
-		ButtonComponent cancelButton = Components.button(Text.literal("Cancel"), b -> refreshPresetFlow(presetsFlow));
+		confirmButton.margins(Insets.vertical(1));
+		ButtonComponent cancelButton = Components.button(Text.literal("Cancel"), b -> {
+			focusedPresetName = null;
+			refreshPresetFlow(presetsFlow);
+		});
 		cancelButton.horizontalSizing(Sizing.fill(22));
 		renamePresetFlow.child(confirmButton);
 		renamePresetFlow.child(cancelButton);
 		renamePresetFlow.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
 		renamePresetFlow.gap(2);
 		return renamePresetFlow;
+	}
+
+	private HorizontalFlowLayout getPresetFlow(VerticalFlowLayout presetsFlow, @Nullable String name) {
+		HorizontalFlowLayout presetFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
+		LabelComponent presetLabel = Components.label(Text.literal(name));
+		presetLabel.horizontalSizing(Sizing.fill(54));
+		ButtonComponent renameButton = Components.button(Text.literal("Rename"), b -> {
+			focusedPresetName = name;
+			refreshPresetFlow(presetsFlow);
+		});
+		renameButton.horizontalSizing(Sizing.fill(22));
+		Consumer<ButtonComponent> deleteAction = b -> openDialog("OK", "Cancel", 200, okButton -> {
+			presets.deletePreset(name);
+			refreshPresetFlow(presetsFlow);
+			lockScreen();
+			SwitchyClientApi.deletePreset(name, SwitchyDisplayScreen::updatePresetScreens);
+		}, cancel -> {
+		}, List.of(Text.translatable("commands.switchy_client.delete.confirm", name), Text.translatable("commands.switchy.delete.warn"), Text.translatable("commands.switchy.list.modules", presets.getEnabledModuleText())));
+		ButtonComponent deleteButton = Components.button(Text.literal("Delete"), deleteAction);
+		deleteButton.margins(Insets.vertical(1));
+		deleteButton.horizontalSizing(Sizing.fill(22));
+		deleteButton.active(!presets.getCurrentPresetName().equals(name));
+		presetFlow.child(presetLabel);
+		presetFlow.child(renameButton);
+		presetFlow.child(deleteButton);
+		presetFlow.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
+		presetFlow.gap(2);
+		presetFlow.padding(Insets.of(1));
+		presetFlow.surface(Surface.flat(0xFF1E1E1E));
+		return presetFlow;
 	}
 
 	HorizontalFlowLayout getModuleFlow(Identifier id, @Nullable Text labelTooltip, BiConsumer<ButtonComponent, Identifier> buttonAction, boolean enabled, Text buttonText, @Nullable Text buttonTooltip, int labelSize) {
@@ -235,6 +273,8 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		moduleFlow.child(enableButton);
 		moduleFlow.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
 		moduleFlow.gap(2);
+		moduleFlow.padding(Insets.of(1));
+		moduleFlow.surface(Surface.flat(0xFF1E1E1E));
 		return moduleFlow;
 	}
 
@@ -279,11 +319,16 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		// Presets Tab
 		VerticalFlowLayout presetsFlow = presetsTab.childById(VerticalFlowLayout.class, "presetsFlow");
 		refreshPresetFlow(presetsFlow);
-		presetsTab.childById(ButtonComponent.class, "newPreset").onPress(buttonComponent -> presetsFlow.child(getRenameLayout(presetsFlow, null)));
+		presetsTab.childById(ButtonComponent.class, "newPreset").onPress(buttonComponent -> {
+			focusedPresetName = "";
+			refreshPresetFlow(presetsFlow);
+		});
 
 		//Modules Tab
 		VerticalFlowLayout disabledModulesFlow = modulesTab.childById(VerticalFlowLayout.class, "leftModulesFlow");
 		VerticalFlowLayout enabledModulesFlow = modulesTab.childById(VerticalFlowLayout.class, "rightModulesFlow");
+		enabledModulesFlow.gap(2);
+		disabledModulesFlow.gap(2);
 		refreshModulesFlow(disabledModulesFlow, enabledModulesFlow);
 
 		//Data Tab
@@ -298,32 +343,8 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 
 	private void refreshPresetFlow(VerticalFlowLayout presetsFlow) {
 		presetsFlow.clearChildren();
-		presets.getPresets().forEach((name, preset) -> {
-			HorizontalFlowLayout presetFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
-			LabelComponent presetName = Components.label(Text.literal(name));
-			presetName.horizontalSizing(Sizing.fill(54));
-			ButtonComponent renameButton = Components.button(Text.literal("Rename"), b -> {
-				presetFlow.clearChildren();
-				presetFlow.child(getRenameLayout(presetsFlow, name));
-			});
-			renameButton.horizontalSizing(Sizing.fill(22));
-			Consumer<ButtonComponent> deleteAction = b -> openDialog("OK", "Cancel", 200, okButton -> {
-				presets.deletePreset(name);
-				refreshPresetFlow(presetsFlow);
-				lockScreen();
-				SwitchyClientApi.deletePreset(name, SwitchyDisplayScreen::updatePresetScreens);
-			}, cancel -> {
-			}, List.of(Text.translatable("commands.switchy_client.delete.confirm", name), Text.translatable("commands.switchy.delete.warn"), Text.translatable("commands.switchy.list.modules", presets.getEnabledModuleText())));
-			ButtonComponent deleteButton = Components.button(Text.literal("Delete"), deleteAction);
-			deleteButton.horizontalSizing(Sizing.fill(22));
-			deleteButton.active(!presets.getCurrentPresetName().equals(name));
-			presetFlow.child(presetName);
-			presetFlow.child(renameButton);
-			presetFlow.child(deleteButton);
-			presetFlow.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
-			presetFlow.gap(2);
-			presetsFlow.child(presetFlow);
-		});
+		presets.getPresets().forEach((name, preset) -> presetsFlow.child(name.equals(focusedPresetName) ? getRenameFlow(presetsFlow, name) : getPresetFlow(presetsFlow, name)));
+		if ("".equals(focusedPresetName)) presetsFlow.child(getRenameFlow(presetsFlow, null));
 	}
 
 	private void refreshModulesFlow(VerticalFlowLayout disabledModulesFlow, VerticalFlowLayout enabledModulesFlow) {
@@ -355,6 +376,8 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 	void updateDataMethod() {
 		VerticalFlowLayout availableModulesFlow = dataTab.childById(VerticalFlowLayout.class, "leftModulesFlow");
 		VerticalFlowLayout includedModulesFlow = dataTab.childById(VerticalFlowLayout.class, "rightModulesFlow");
+		availableModulesFlow.gap(2);
+		includedModulesFlow.gap(2);
 		List<Text> fileNames = new ArrayList<>();
 		Map<String, NbtCompound> importFiles = new HashMap<>();
 		VerticalFlowLayout fileSelectorPlaceholder = dataTab.childById(VerticalFlowLayout.class, "fileSelectorPlaceholder");

@@ -4,7 +4,7 @@
         <flow-layout direction="vertical">
             <children>
                 <label>
-                    <text>Switchy Preset Management</text>
+                    <text>Manage Switchy</text>
                     <margins>
                         <bottom>2</bottom>
                     </margins>
@@ -36,7 +36,7 @@
                     <horizontal-alignment>center</horizontal-alignment>
                     <vertical-alignment>center</vertical-alignment>
                     <padding>
-                        <all>6</all>
+                        <all>10</all>
                     </padding>
                     <sizing>
                         <vertical method="fixed">200</vertical>
@@ -67,13 +67,17 @@
                     <sizing>
                         <horizontal method="fixed">200</horizontal>
                     </sizing>
+                    <margins>
+                        <horizontal>4</horizontal>
+                    </margins>
                 </flow-layout>
                 <sizing>
                     <vertical method="fixed">180</vertical>
                 </sizing>
-                <padding>
-                    <horizontal>4</horizontal>
-                </padding>
+                <surface>
+                    <flat>#FF141414</flat>
+                    <outline>#FF202020</outline>
+                </surface>
             </scroll>
         </presets-tab>
         <module-selector>
@@ -85,7 +89,12 @@
                                 <text>{{leftText}}</text>
                             </label>
                             <scroll direction="vertical">
-                                <flow-layout id="leftModulesFlow" direction="vertical"/>
+                                <flow-layout id="leftModulesFlow" direction="vertical">
+                                </flow-layout>
+                                <surface>
+                                    <flat>#FF141414</flat>
+                                    <outline>#FF202020</outline>
+                                </surface>
                                 <sizing>
                                     <vertical method="fixed">{{vSize}}</vertical>
                                 </sizing>
@@ -99,10 +108,16 @@
                                 <text>{{rightText}}</text>
                             </label>
                             <scroll direction="vertical">
-                                <flow-layout id="rightModulesFlow" direction="vertical"/>
+                                <flow-layout id="rightModulesFlow" direction="vertical">
+                                </flow-layout>
+                                <surface>
+                                    <flat>#FF141414</flat>
+                                    <outline>#FF202020</outline>
+                                </surface>
                                 <sizing>
                                     <vertical method="fixed">{{vSize}}</vertical>
                                 </sizing>
+                                <margin><left>2</left></margin>
                             </scroll>
                         </children>
                         <horizontal-alignment>center</horizontal-alignment>
@@ -114,7 +129,7 @@
             <template name="module-selector">
                 <leftText>Disabled Modules</leftText>
                 <rightText>Enabled Modules</rightText>
-                <vSize>180</vSize>
+                <vSize>160</vSize>
             </template>
         </modules-tab>
         <data-tab>
@@ -138,6 +153,7 @@
                             </label>
                             <flow-layout direction="vertical" id="sourceSelectorPlaceholder"/>
                         </children>
+                        <vertical-alignment>center</vertical-alignment>
                         <margins><vertical>2</vertical></margins>
                     </flow-layout>
                     <flow-layout direction="horizontal">
@@ -147,12 +163,13 @@
                             </label>
                             <flow-layout direction="vertical" id="fileSelectorPlaceholder"/>
                         </children>
+                        <vertical-alignment>center</vertical-alignment>
                         <margins><vertical>2</vertical></margins>
                     </flow-layout>
                     <template name="module-selector">
                         <leftText>Available</leftText>
                         <rightText>Included</rightText>
-                        <vSize>100</vSize>
+                        <vSize>80</vSize>
                     </template>
                     <flow-layout id="actionButtons" direction="horizontal">
                         <children>
