@@ -262,8 +262,9 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 
 	HorizontalFlowLayout getModuleFlow(Identifier id, @Nullable Text labelTooltip, BiConsumer<ButtonComponent, Identifier> buttonAction, boolean enabled, Text buttonText, @Nullable Text buttonTooltip, int labelSize) {
 		HorizontalFlowLayout moduleFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
-		LabelComponent moduleName = Components.label(Text.literal(id.toString()));
-		if (labelTooltip != null) moduleName.tooltip(labelTooltip);
+		LabelComponent moduleName = Components.label(Text.literal(id.getPath()));
+		Text namespaceText = Text.literal(id.getNamespace()).setStyle(Feedback.FORMAT_INFO.getLeft());
+		moduleName.tooltip(labelTooltip != null ? List.of(namespaceText, labelTooltip) : List.of(namespaceText));
 		moduleName.horizontalSizing(Sizing.fixed(labelSize));
 		ButtonComponent enableButton = Components.button(buttonText, b -> buttonAction.accept(b, id));
 		if (buttonTooltip != null) enableButton.tooltip(buttonTooltip);
@@ -379,7 +380,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 			lockScreen();
 			SwitchyClientApi.disableModule(id, SwitchyDisplayScreen::updatePresetScreens);
 		}, cancel -> {
-		}, List.of(Text.translatable("commands.switchy_client.disable.confirm", id.toString()), Text.translatable("screen.switchy_ui.disable.warn", presets.getModuleInfo().get(id).deletionWarning()))), true, Text.literal("Disable"), presets.getModuleInfo().get(module).descriptionWhenDisabled(), labelSize)));
+		}, List.of(Text.translatable("commands.switchy_client.disable.confirm", id.getPath()), Text.translatable("screen.switchy_ui.disable.warn", presets.getModuleInfo().get(id).deletionWarning()))), true, Text.literal("Disable"), presets.getModuleInfo().get(module).descriptionWhenDisabled(), labelSize)));
 	}
 
 	void updateDataMethod() {

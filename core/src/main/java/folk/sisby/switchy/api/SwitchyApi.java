@@ -55,9 +55,9 @@ public class SwitchyApi {
 	 * @return The completion status of the action.
 	 */
 	public static SwitchyFeedbackStatus listPresets(SwitchyPresets presets, Consumer<Text> feedback) {
-		feedback.accept(translatableWithArgs("commands.switchy.list.presets", FORMAT_INFO, literal(presets.toString())));
-		feedback.accept(translatableWithArgs("commands.switchy.list.modules", FORMAT_INFO, presets.getEnabledModuleText()));
-		feedback.accept(translatableWithArgs("commands.switchy.list.current", FORMAT_INFO, literal(presets.getCurrentPreset().toString())));
+		feedback.accept(info("commands.switchy.list.presets", literal(presets.toString())));
+		feedback.accept(info("commands.switchy.list.modules", presets.getEnabledModuleText()));
+		feedback.accept(info("commands.switchy.list.current", literal(presets.getCurrentPreset().toString())));
 		return SwitchyFeedbackStatus.SUCCESS;
 	}
 
@@ -71,7 +71,7 @@ public class SwitchyApi {
 	 */
 	public static SwitchyFeedbackStatus displayModuleHelp(SwitchyPresets presets, Consumer<Text> feedback, Identifier id) {
 		try {
-			feedback.accept(translatableWithArgs("commands.switchy.module.help.description", FORMAT_INFO, literal(id.toString()), literal(presets.isModuleEnabled(id) ? "enabled" : "disabled"), SwitchyModuleRegistry.getDescription(id)));
+			feedback.accept(info("commands.switchy.module.help.description", literal(id.getPath()), literal(presets.isModuleEnabled(id) ? "enabled" : "disabled"), SwitchyModuleRegistry.getDescription(id)));
 			feedback.accept(translatableWithArgs("commands.switchy.module.help.enabled", presets.isModuleEnabled(id) ? FORMAT_SUCCESS : FORMAT_INFO, SwitchyModuleRegistry.getDescriptionWhenEnabled(id)));
 			feedback.accept(translatableWithArgs("commands.switchy.module.help.disabled", presets.isModuleEnabled(id) ? FORMAT_INFO : FORMAT_SUCCESS, SwitchyModuleRegistry.getDescriptionWhenDisabled(id)));
 			return SwitchyFeedbackStatus.SUCCESS;
@@ -211,7 +211,7 @@ public class SwitchyApi {
 			feedback.accept(invalid("commands.switchy.module.disable.fail.missing", literal(id.toString())));
 			return SwitchyFeedbackStatus.INVALID;
 		} catch (IllegalStateException ignoredModuleDisabled) {
-			feedback.accept(invalid("commands.switchy.module.disable.fail.disabled", literal(id.toString())));
+			feedback.accept(invalid("commands.switchy.module.disable.fail.disabled", literal(id.getPath())));
 			return SwitchyFeedbackStatus.INVALID;
 		}
 
@@ -221,7 +221,7 @@ public class SwitchyApi {
 			return SwitchyFeedbackStatus.CONFIRM;
 		} else {
 			presets.disableModule(player, id);
-			feedback.accept(success("commands.switchy.module.disable.success", literal(id.toString())));
+			feedback.accept(success("commands.switchy.module.disable.success", literal(id.getPath())));
 			return SwitchyFeedbackStatus.SUCCESS;
 		}
 	}
@@ -240,13 +240,13 @@ public class SwitchyApi {
 	public static SwitchyFeedbackStatus enableModule(ServerPlayerEntity player, SwitchyPresets presets, Consumer<Text> feedback, Identifier id) {
 		try {
 			presets.enableModule(player, id);
-			feedback.accept(success("commands.switchy.module.enable.success", literal(id.toString())));
+			feedback.accept(success("commands.switchy.module.enable.success", literal(id.getPath())));
 			return SwitchyFeedbackStatus.SUCCESS;
 		} catch (ModuleNotFoundException ignored) {
 			feedback.accept(invalid("commands.switchy.module.enable.fail.missing", literal(id.toString())));
 			return SwitchyFeedbackStatus.INVALID;
 		} catch (IllegalStateException ignoredModuleEnabled) {
-			feedback.accept(invalid("commands.switchy.module.enable.fail.enabled", literal(id.toString())));
+			feedback.accept(invalid("commands.switchy.module.enable.fail.enabled", literal(id.getPath())));
 			return SwitchyFeedbackStatus.INVALID;
 		}
 	}

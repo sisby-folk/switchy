@@ -146,6 +146,17 @@ public class Feedback {
 	}
 
 	/**
+	 * Gets formatted text using the {@link Feedback#FORMAT_INFO} style.
+	 *
+	 * @param key    a translation key.
+	 * @param args   the literal arguments to pass to the translatable text.
+	 * @return the resultant translatable text.
+	 */
+	public static MutableText info(String key, MutableText... args) {
+		return translatableWithArgs(key, FORMAT_INFO, args);
+	}
+
+	/**
 	 * Gets formatted text explaining a command using the {@link Feedback#FORMAT_HELP} style.
 	 *
 	 * @param keyHelp    a translation key explaining the command.
