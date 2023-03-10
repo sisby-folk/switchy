@@ -45,7 +45,15 @@
 				"versions": "${switchy}"
 			},
 			{
+				"id": "switchy-ui",
+				"versions": "${switchy}"
+			},
+			{
 				"id": "switchy-compat",
+				"versions": "${switchy}"
+			},
+			{
+				"id": "switchy-compat-ui",
 				"versions": "${switchy}"
 			},
 			{
