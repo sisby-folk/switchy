@@ -3,9 +3,11 @@ package folk.sisby.switchy.api.module;
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.exception.ModuleNotFoundException;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -211,12 +213,12 @@ public class SwitchyModuleRegistry {
 	 *
 	 * @return an NBT representation of the module info.
 	 */
-	public static NbtCompound infoToNbt() {
+	public static NbtCompound infoToNbt(@Nullable ServerPlayerEntity player) {
 		NbtCompound nbt = new NbtCompound();
 		INFO.forEach((id, info) -> {
-			SwitchyModuleInfo copy = SwitchyModuleInfo.fromNbt(info.toNbt());
+			SwitchyModuleInfo copy = SwitchyModuleInfo.fromNbt(info.toNbt(null));
 			copy.withEditable(getEditable(id));
-			nbt.put(id.toString(), copy.toNbt());
+			nbt.put(id.toString(), copy.toNbt(player));
 		});
 		return nbt;
 	}

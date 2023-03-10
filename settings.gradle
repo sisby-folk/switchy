@@ -29,25 +29,25 @@ dependencyResolutionManagement {
 			version('ql', "0.17.10")
 			version('qm', "${mc}+build.21")
 			version('qsl', "3.0.0-beta.29+${mc}")
+			version('qfapi', "4.0.0-beta.28+0.73.2-${mc}")
+			version('serverTranslationsApi', "1.4.18+${mc}")
 
 			library('mc', 'mojang', 'minecraft').versionRef('mc')
 			library('ql', 'org.quiltmc', 'quilt-loader').versionRef('ql')
 			library('qm', 'org.quiltmc', 'quilt-mappings').versionRef('qm')
 			library('qsl', 'org.quiltmc', 'qsl').versionRef('qsl')
-
-			bundle('base', ['ql', 'qsl'])
-
-			// // Runtime Libraries // //
-			version('qfapi', "4.0.0-beta.28+0.73.2-${mc}")
-			version('serverTranslationsApi', "1.4.18+${mc}")
-			version('lib39', "1.5.0-pre3+${mc}")
-
 			library('qfapi', 'org.quiltmc.quilted-fabric-api', 'quilted-fabric-api',).versionRef('qfapi')
 			library('serverTranslationsApi', 'fr.catcore', 'server-translations-api').versionRef('serverTranslationsApi')
+
+			bundle('base', ['ql', 'qsl', 'serverTranslationsApi'])
+
+			// // Runtime Libraries // //
+			version('lib39', "1.5.0-pre3+${mc}")
+
 			library('lib39Core', 'com.unascribed', 'lib39-core').versionRef('lib39')
 			library('lib39Dessicant', 'com.unascribed', 'lib39-dessicant').versionRef('lib39')
 
-			bundle('runtime', ['qfapi', 'serverTranslationsApi', 'lib39Core', 'lib39Dessicant'])
+			bundle('runtime', ['qfapi', 'lib39Core', 'lib39Dessicant'])
 			bundle('runtime.include', ['serverTranslationsApi', 'lib39Core', 'lib39Dessicant'])
 
 			// // Client // //

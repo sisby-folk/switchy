@@ -153,7 +153,7 @@ public class SwitchyClientServerNetworking {
 		}
 		PacketByteBuf outBuf = PacketByteBufs.create();
 		outBuf.writeInt(listener);
-		outBuf.writeNbt(new SwitchyFeedback(status, feedback).toNbt());
+		outBuf.writeNbt(new SwitchyFeedback(status, feedback).toNbt(player));
 		feedbackMethod.accept(player, presets, outBuf);
 	}
 

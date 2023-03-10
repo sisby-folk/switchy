@@ -89,7 +89,7 @@ Modules will be listed with one of four import settings:
 
 ## Developers
 
-Switchy can be added to your project using `modCompileOnly "folk.sisby:switchy-core:x.x.x"` and this repo:
+Switchy can be added to your project using `modCompileOnly "folk.sisby:switchy-core:x.x.x"` and these repos:
 
 ```
 maven { // Switchy
@@ -98,13 +98,6 @@ maven { // Switchy
         includeGroup 'folk.sisby'
     }
 }
-```
-
-If you want to test with switchy locally, add `modLocalRuntime`.<br/>
-if you're making an addon, just use `modImplementation`.<br/>
-In both cases, add these repos:
-
-```
 maven { // Lib39
     url 'https://repo.sleeping.town'
     content {
@@ -118,6 +111,9 @@ maven { // Server Translations API
     }
 }
 ```
+
+If you want to test with switchy locally, add `modLocalRuntime`.<br/>
+if you're making an addon, just use `modImplementation`.<br/>
 
 `switchy-core` includes commands and the API. <br/>
 `switchy-client` enables import/export commands and a client API. <br/>

@@ -2,14 +2,26 @@
   "lib39:enable_enhanced_lang": true,
   "screen": {
     "switchy_ui": {
+      "import": {
+        "warn": {
+          "info": "You are about to import {} presets with {} modules:",
+          "collision": "Red presets will have these modules overwritten:"
+        }
+      },
       "export": {
         "confirm" : "Export {} modules?"
       },
       "delete": {
+        "warn": "WARNING: Preset data from enabled modules will be deleted",
         "confirm": "You are about to delete preset '{}'"
       },
       "disable": {
-        "confirm": "You are about to disable module {}"
+        "confirm": "You are about to disable module {}",
+        "warn": "Warning: {}"
+      },
+      "list": {
+        "presets": "Presets: {}",
+        "modules": "Modules: {}"
       }
     }
   },

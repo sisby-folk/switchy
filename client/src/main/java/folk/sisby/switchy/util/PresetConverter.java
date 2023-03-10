@@ -54,7 +54,7 @@ public class PresetConverter {
 
 		outNbt.putString(SwitchyPresetsData.KEY_PRESET_CURRENT, presets.getCurrentPresetName());
 
-		outNbt.put(KEY_MODULE_INFO,SwitchyModuleRegistry.infoToNbt());
+		outNbt.put(KEY_MODULE_INFO,SwitchyModuleRegistry.infoToNbt(player));
 		outNbt.putInt(KEY_PERMISSION_LEVEL, player.server.getPermissionLevel(player.getGameProfile()));
 
 		return outNbt;
