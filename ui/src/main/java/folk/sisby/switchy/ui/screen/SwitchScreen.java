@@ -1,7 +1,6 @@
 package folk.sisby.switchy.ui.screen;
 
 import com.mojang.datafixers.util.Pair;
-import folk.sisby.switchy.SwitchyClientServerNetworking;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPreset;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
 import folk.sisby.switchy.client.api.SwitchyClientApi;
@@ -18,8 +17,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.quiltmc.qsl.networking.api.PacketByteBufs;
-import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +56,9 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDi
 
 	private ScrollContainer<VerticalFlowLayout> presetsScroll;
 	private VerticalFlowLayout presetsFlow;
+	private SwitchyClientPresets presets;
+	private FlowLayout root;
+	private VerticalFlowLayout loadingOverlay;
 
 
 	/**
@@ -78,10 +78,12 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDi
 
 	@Override
 	protected void build(FlowLayout rootComponent) {
-		rootComponent.surface(Surface.VANILLA_TRANSLUCENT);
-		rootComponent.horizontalAlignment(HorizontalAlignment.CENTER);
-		rootComponent.verticalAlignment(VerticalAlignment.CENTER);
-		rootComponent.gap(2);
+		root = rootComponent;
+
+		root.surface(Surface.VANILLA_TRANSLUCENT);
+		root.horizontalAlignment(HorizontalAlignment.CENTER);
+		root.verticalAlignment(VerticalAlignment.CENTER);
+		root.gap(2);
 
 		presetsFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
 		presetsFlow.padding(Insets.of(6));
@@ -101,25 +103,39 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDi
 
 
 		ButtonComponent manageButton = Components.button(Text.literal("Manage"), b -> {
-			client.setScreen(new PresetManagementScreen());
-			ClientPlayNetworking.send(SwitchyClientServerNetworking.C2S_REQUEST_CLIENT_PRESETS, PacketByteBufs.empty());
+			PresetManagementScreen managementScreen = new PresetManagementScreen();
+			client.setScreen(managementScreen);
+			managementScreen.updatePresets(presets);
 		});
 
 		labelManageFlow.child(screenLabel);
 		labelManageFlow.child(manageButton);
 
-		rootComponent.child(labelManageFlow);
-		rootComponent.child(presetsScroll);
+		root.child(labelManageFlow);
+		root.child(presetsScroll);
+		lockScreen();
+	}
 
+	void lockScreen() {
+		if (loadingOverlay == null) {
+			VerticalFlowLayout overlay = Containers.verticalFlow(Sizing.fill(100), Sizing.fill(100));
+			overlay.alignment(HorizontalAlignment.LEFT, VerticalAlignment.BOTTOM);
+			overlay.positioning(Positioning.absolute(0, 0));
+			overlay.child(Components.label(Text.of("Loading...")));
+			overlay.mouseDown().subscribe((x, y, b) -> true); // eat all input
+			loadingOverlay = overlay;
+			root.child(loadingOverlay);
+		}
 	}
 
 	@Override
-	public void updatePresets(SwitchyClientPresets displayPresets) {
+	public void updatePresets(SwitchyClientPresets clientPresets) {
+		presets = clientPresets;
 		presetsFlow.clearChildren();
 
 		// Process Preset Flows
 		Component currentPresetComponent = null;
-		for (SwitchyClientPreset preset : displayPresets.getPresets().values()) {
+		for (SwitchyClientPreset preset : presets.getPresets().values()) {
 			List<Pair<Component, SwitchySwitchScreenPosition>> componentList = new ArrayList<>(basicComponents.stream().map(fun -> fun.apply(preset)).toList());
 
 			preset.getModules().forEach((id, module) -> {
@@ -137,7 +153,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDi
 			horizontalFlow.gap(2);
 			horizontalFlow.verticalAlignment(VerticalAlignment.CENTER);
 			horizontalFlow.horizontalAlignment(HorizontalAlignment.CENTER);
-			if (preset.getName().equals(displayPresets.getCurrentPresetName())) {
+			if (preset.getName().equals(presets.getCurrentPresetName())) {
 				horizontalFlow.surface(Surface.DARK_PANEL.and(Surface.outline(Color.BLUE.argb())));
 				currentPresetComponent = horizontalFlow;
 			} else {
@@ -187,6 +203,10 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDi
 		}
 
 		if (currentPresetComponent != null) presetsScroll.scrollTo(currentPresetComponent);
-
+		// Clear locked state
+		if (loadingOverlay != null) {
+			root.removeChild(loadingOverlay);
+			loadingOverlay = null;
+		}
 	}
 }

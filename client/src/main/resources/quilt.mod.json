@@ -6,7 +6,7 @@
 		"version": "${switchy}",
 		"metadata": {
 			"name": "Switchy Client",
-			"description": "The client addon for switchy, providing client-side API and conveniences.",
+			"description": "A mixed-side addon for Switchy providing client-side API and commands.",
 			"contributors": {
 				"Sisby folk": "Co-Authors"
 			},
@@ -43,10 +43,6 @@
 			{
 				"id": "switchy-core",
 				"versions": "${switchy}"
-			},
-			{
-				"id": "owo-lib",
-				"versions": "${owo}"
 			}
 		]
 	},

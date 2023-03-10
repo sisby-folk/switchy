@@ -1,7 +1,6 @@
 package folk.sisby.switchy.ui.screen;
 
 import com.mojang.brigadier.StringReader;
-import folk.sisby.switchy.SwitchyClientServerNetworking;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
@@ -25,8 +24,6 @@ import net.minecraft.util.Pair;
 import org.apache.commons.compress.utils.FileNameUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.Nullable;
-import org.quiltmc.qsl.networking.api.PacketByteBufs;
-import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
 import java.io.File;
 import java.io.IOException;
@@ -123,8 +120,9 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		ButtonComponent modulesTabButton = root.childById(ButtonComponent.class, "modulesTabButton");
 		ButtonComponent dataTabButton = root.childById(ButtonComponent.class, "dataTabButton");
 		backButton.onPress(buttonComponent -> {
-			client.setScreen(new SwitchScreen());
-			ClientPlayNetworking.send(SwitchyClientServerNetworking.C2S_REQUEST_CLIENT_PRESETS, PacketByteBufs.empty());
+			SwitchScreen switchScreen = new SwitchScreen();
+			client.setScreen(switchScreen);
+			switchScreen.updatePresets(presets);
 		});
 		presetsTabButton.onPress(buttonComponent -> {
 			panel.clearChildren();
@@ -155,8 +153,8 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 	}
 
 	@Override
-	public void updatePresets(SwitchyClientPresets displayPresets) {
-		presets = displayPresets;
+	public void updatePresets(SwitchyClientPresets clientPresets) {
+		presets = clientPresets;
 		refreshPresets();
 	}
 
@@ -276,7 +274,9 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 
 	void lockScreen() {
 		if (loadingOverlay == null) {
-			loadingOverlay = model.expandTemplate(VerticalFlowLayout.class, "loading-overlay", Map.of());
+			VerticalFlowLayout overlay = model.expandTemplate(VerticalFlowLayout.class, "loading-overlay", Map.of());
+			overlay.mouseDown().subscribe((x, y, b) -> true); // eat all input
+			loadingOverlay = overlay;
 			root.child(loadingOverlay);
 		}
 	}

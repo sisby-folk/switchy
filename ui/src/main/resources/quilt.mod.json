@@ -6,7 +6,7 @@
 		"version": "${switchy}",
 		"metadata": {
 			"name": "Switchy UI",
-			"description": "The client addon for switchy, providing client-side API and conveniences.",
+			"description": "The client-side UI addon for Switchy Client providing alternatives to server commands.",
 			"contributors": {
 				"Sisby folk": "Co-Authors",
 				"Garden System": "Contributor/s"
@@ -20,13 +20,9 @@
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"events": [
-				"folk.sisby.switchy.SwitchyClientServer"
-			],
 			"client_events": [
-				"folk.sisby.switchy.client.SwitchyClientCommands"
-			],
-			"client_init": "folk.sisby.switchy.client.SwitchyClient"
+				"folk.sisby.switchy.ui.SwitchyKeybindings"
+			]
 		},
 		"depends": [
 			{
