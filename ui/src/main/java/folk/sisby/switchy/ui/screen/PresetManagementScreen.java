@@ -343,8 +343,17 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 
 	private void refreshPresetFlow(VerticalFlowLayout presetsFlow) {
 		presetsFlow.clearChildren();
-		presets.getPresets().forEach((name, preset) -> presetsFlow.child(name.equals(focusedPresetName) ? getRenameFlow(presetsFlow, name) : getPresetFlow(presetsFlow, name)));
-		if ("".equals(focusedPresetName)) presetsFlow.child(getRenameFlow(presetsFlow, null));
+		HorizontalFlowLayout focusedFlow = null;
+		for (String name : presets.getPresets().keySet()) {
+			HorizontalFlowLayout presetFlow = name.equals(focusedPresetName) ? getRenameFlow(presetsFlow, name) : getPresetFlow(presetsFlow, name);
+			if (name.equals(focusedPresetName)) focusedFlow = presetFlow;
+			presetsFlow.child(presetFlow);
+		}
+		if ("".equals(focusedPresetName)) {
+			focusedFlow = getRenameFlow(presetsFlow, null);
+			presetsFlow.child(focusedFlow);
+		}
+		if (focusedFlow != null) presetsTab.scrollTo(focusedFlow);
 	}
 
 	private void refreshModulesFlow(VerticalFlowLayout disabledModulesFlow, VerticalFlowLayout enabledModulesFlow) {

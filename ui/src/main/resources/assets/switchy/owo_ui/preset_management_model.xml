@@ -164,7 +164,10 @@
                             <flow-layout direction="vertical" id="fileSelectorPlaceholder"/>
                         </children>
                         <vertical-alignment>center</vertical-alignment>
-                        <margins><vertical>2</vertical></margins>
+                        <margins>
+                            <top>2</top>
+                            <bottom>6</bottom>
+                        </margins>
                     </flow-layout>
                     <template name="module-selector">
                         <leftText>Available</leftText>
@@ -180,6 +183,9 @@
                                 <text>Export</text>
                             </button>
                         </children>
+                        <margins>
+                            <top>6</top>
+                        </margins>
                     </flow-layout>
                 </children>
                 <margins><all>4</all></margins>
