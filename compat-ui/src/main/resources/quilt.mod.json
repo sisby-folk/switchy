@@ -2,11 +2,11 @@
 	"schema_version": 1,
 	"quilt_loader": {
 		"group": "folk.sisby",
-		"id": "switchy-compat",
+		"id": "switchy-compat-ui",
 		"version": "${switchy}",
 		"metadata": {
-			"name": "Switchy Compat",
-			"description": "Built-in switchy modules like drogtor, styled nicknames, fabric tailor, and origins.",
+			"name": "Switchy Compat UI",
+			"description": "UI compatibility for built-in switchy modules like drogtor, styled nicknames, fabric tailor, and origins.",
 			"contributors": {
 				"Sisby folk": "Co-Authors"
 			},
@@ -19,8 +19,7 @@
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"events": "folk.sisby.switchy.SwitchyCompat",
-			"figura_api": "folk.sisby.switchy.client.FiguraCompat"
+			"client_events": "folk.sisby.switchy.client.SwitchyCompatClient"
 		},
 		"depends": [
 			{
@@ -44,6 +43,10 @@
 				"versions": "${switchy}"
 			},
 			{
+				"id": "switchy-ui",
+				"versions": "${switchy}"
+			},
+			{
 				"id": "drogtor",
 				"versions": ">=${drogtor}",
 				"optional": true
@@ -62,20 +65,9 @@
 				"id": "origins",
 				"versions": ">=${origins}",
 				"optional": true
-			},
-			{
-				"id": "pehkui",
-				"versions": ">=${pehkui}",
-				"optional": true
-			},
-			{
-				"id": "fabrication",
-				"versions": ">=${fabrication}",
-				"optional": true
 			}
 		]
 	},
-	"mixin": "switchy-compat.mixins.json",
 	"modmenu": {
 		"parent": "switchy"
 	}

@@ -1,6 +1,12 @@
 dependencies {
 	implementation(project(path: ':core', configuration: 'namedElements'))
 	implementation(project(path: ':client', configuration: 'namedElements'))
+	implementation(project(path: ':compat', configuration: 'namedElements'))
+	implementation(project(path: ':ui', configuration: 'namedElements'))
+
+	// Redo UI Deps (why)
+	modCompileOnly libs.bundles.ui
+	modLocalRuntime libs.bundles.ui
 
 	// Optional Compatible Mods
 	modCompileOnly libs.bundles.compat.compile
