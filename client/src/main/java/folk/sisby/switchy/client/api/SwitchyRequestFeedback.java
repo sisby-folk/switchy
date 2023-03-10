@@ -4,12 +4,13 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-public record SwitchyRequestFeedback(SwitchyFeedbackStatus status, Collection<MutableText> messages) {
+public record SwitchyRequestFeedback(SwitchyFeedbackStatus status, Collection<Text> messages) {
 	private static final String KEY_STATUS = "status";
 	private static final String KEY_MESSAGES_LIST = "messages";
 
@@ -20,7 +21,9 @@ public record SwitchyRequestFeedback(SwitchyFeedbackStatus status, Collection<Mu
 	 * @return an object constructed from the NBT.
 	 */
 	public static SwitchyRequestFeedback fromNbt(NbtCompound nbt) {
-		return new SwitchyRequestFeedback(SwitchyFeedbackStatus.valueOf(nbt.getString(KEY_STATUS)), nbt.getList(KEY_MESSAGES_LIST, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Text.Serializer::fromJson).toList());
+		List<Text> msgs = new ArrayList<>();
+		nbt.getList(KEY_MESSAGES_LIST, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Text.Serializer::fromJson).forEach(msgs::add);
+		return new SwitchyRequestFeedback(SwitchyFeedbackStatus.valueOf(nbt.getString(KEY_STATUS)), msgs);
 	}
 
 	/**
