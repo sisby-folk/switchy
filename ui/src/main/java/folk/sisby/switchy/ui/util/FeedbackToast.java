@@ -1,7 +1,7 @@
 package folk.sisby.switchy.ui.util;
 
-import folk.sisby.switchy.client.api.SwitchyFeedbackStatus;
-import folk.sisby.switchy.client.api.SwitchyRequestFeedback;
+import folk.sisby.switchy.api.SwitchyFeedbackStatus;
+import folk.sisby.switchy.api.SwitchyFeedback;
 import io.wispforest.owo.ops.TextOps;
 import io.wispforest.owo.ui.util.Drawer;
 import net.minecraft.client.MinecraftClient;
@@ -26,10 +26,10 @@ public class FeedbackToast implements Toast {
 	private static final Map<SwitchyFeedbackStatus, Integer> colours = Map.of(
 			SwitchyFeedbackStatus.SUCCESS, 0xA700FF00,
 			SwitchyFeedbackStatus.INVALID, 0xA7AAAA00,
-			SwitchyFeedbackStatus.FAILURE, 0xA7FF0000
+			SwitchyFeedbackStatus.FAIL, 0xA7FF0000
 	);
 
-	public FeedbackToast(SwitchyRequestFeedback feedback, int duration) {
+	public FeedbackToast(SwitchyFeedback feedback, int duration) {
 		this.duration = duration;
 		status = feedback.status();
 		textRenderer = MinecraftClient.getInstance().textRenderer;
@@ -38,8 +38,10 @@ public class FeedbackToast implements Toast {
 		textLines = wrap(texts);
 	}
 
-	public static void report(SwitchyRequestFeedback feedback, int duration) {
-		MinecraftClient.getInstance().getToastManager().add(new FeedbackToast(feedback, duration));
+	public static void report(SwitchyFeedback feedback, int duration) {
+		if (feedback.status() == SwitchyFeedbackStatus.SUCCESS && !feedback.messages().isEmpty()) {
+			MinecraftClient.getInstance().getToastManager().add(new FeedbackToast(feedback, duration));
+		}
 	}
 
 	@Override
@@ -67,7 +69,7 @@ public class FeedbackToast implements Toast {
 		return width;
 	}
 
-	private List<Text> initText(SwitchyRequestFeedback feedback) {
+	private List<Text> initText(SwitchyFeedback feedback) {
 		List<Text> texts = new ArrayList<>();
 		texts.add(Text.literal("----Switchy----").formatted(Formatting.BOLD, Formatting.AQUA));
 

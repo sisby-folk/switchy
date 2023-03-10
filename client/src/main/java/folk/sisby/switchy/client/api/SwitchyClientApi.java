@@ -1,6 +1,7 @@
 package folk.sisby.switchy.client.api;
 
 import com.mojang.brigadier.StringReader;
+import folk.sisby.switchy.api.SwitchyFeedback;
 import folk.sisby.switchy.api.exception.InvalidWordException;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
 import folk.sisby.switchy.api.presets.SwitchyPresets;
@@ -35,12 +36,12 @@ public class SwitchyClientApi {
 	 * Map of listeners for API calls waiting for client preset returns.
 	 */
 	@ApiStatus.Internal
-	public static final Map<Integer, BiConsumer<SwitchyRequestFeedback, SwitchyClientPresets>> API_RESPONSE_LISTENERS = new HashMap<>();
-	public static final Map<Integer, BiConsumer<SwitchyRequestFeedback, NbtCompound>> API_EXPORT_LISTENERS = new HashMap<>();
+	public static final Map<Integer, BiConsumer<SwitchyFeedback, SwitchyClientPresets>> API_RESPONSE_LISTENERS = new HashMap<>();
+	public static final Map<Integer, BiConsumer<SwitchyFeedback, NbtCompound>> API_EXPORT_LISTENERS = new HashMap<>();
 	private static int nextId = 0;
 	private static int nextExportId = 0;
 
-	private static PacketByteBuf createSwitchyByteBuf(BiConsumer<SwitchyRequestFeedback, SwitchyClientPresets> listener) {
+	private static PacketByteBuf createSwitchyByteBuf(BiConsumer<SwitchyFeedback, SwitchyClientPresets> listener) {
 		int id = nextId++;
 		PacketByteBuf buf = PacketByteBufs.create();
 		buf.writeInt(id);
@@ -48,7 +49,7 @@ public class SwitchyClientApi {
 		return buf;
 	}
 
-	private static PacketByteBuf createSwitchyExportByteBuf(BiConsumer<SwitchyRequestFeedback, NbtCompound> listener) {
+	private static PacketByteBuf createSwitchyExportByteBuf(BiConsumer<SwitchyFeedback, NbtCompound> listener) {
 		int id = nextExportId++;
 		PacketByteBuf buf = PacketByteBufs.create();
 		buf.writeInt(id);
@@ -63,7 +64,7 @@ public class SwitchyClientApi {
 	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
 	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#switchCurrentPreset(net.minecraft.server.network.ServerPlayerEntity, String)
 	 */
-	public static void getClientPresets(BiConsumer<SwitchyRequestFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
+	public static void getClientPresets(BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
 		if (!ClientPlayNetworking.canSend(C2S_REQUEST_CLIENT_PRESETS))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
 		PacketByteBuf buf = createSwitchyByteBuf(responseCallback);
@@ -78,7 +79,7 @@ public class SwitchyClientApi {
 	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
 	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#switchCurrentPreset(net.minecraft.server.network.ServerPlayerEntity, String)
 	 */
-	public static void switchCurrentPreset(String name, BiConsumer<SwitchyRequestFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
+	public static void switchCurrentPreset(String name, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
 		if (!ClientPlayNetworking.canSend(C2S_SWITCH))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
 		PacketByteBuf buf = createSwitchyByteBuf(responseCallback);
@@ -95,7 +96,7 @@ public class SwitchyClientApi {
 	 * @throws InvalidWordException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)}).
 	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#newPreset(String)
 	 */
-	public static void newPreset(String name, BiConsumer<SwitchyRequestFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException, InvalidWordException {
+	public static void newPreset(String name, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException, InvalidWordException {
 		if (!ClientPlayNetworking.canSend(C2S_PRESETS_NEW))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
 		if (!name.chars().mapToObj(i -> (char) i).allMatch(StringReader::isAllowedInUnquotedString))
@@ -114,7 +115,7 @@ public class SwitchyClientApi {
 	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
 	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#deletePreset(String)
 	 */
-	public static void deletePreset(String name, BiConsumer<SwitchyRequestFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
+	public static void deletePreset(String name, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
 		if (!ClientPlayNetworking.canSend(C2S_PRESETS_DELETE))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
 		PacketByteBuf buf = createSwitchyByteBuf(responseCallback);
@@ -131,7 +132,7 @@ public class SwitchyClientApi {
 	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
 	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#renamePreset(String, String)
 	 */
-	public static void renamePreset(String name, String newName, BiConsumer<SwitchyRequestFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
+	public static void renamePreset(String name, String newName, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
 		if (!ClientPlayNetworking.canSend(C2S_PRESETS_RENAME))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
 		PacketByteBuf buf = createSwitchyByteBuf(responseCallback);
@@ -149,7 +150,7 @@ public class SwitchyClientApi {
 	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
 	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#disableModule(Identifier)
 	 */
-	public static void disableModule(Identifier id, BiConsumer<SwitchyRequestFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
+	public static void disableModule(Identifier id, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
 		if (!ClientPlayNetworking.canSend(C2S_PRESETS_MODULE_DISABLE))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
 		PacketByteBuf buf = createSwitchyByteBuf(responseCallback);
@@ -165,7 +166,7 @@ public class SwitchyClientApi {
 	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
 	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#enableModule(Identifier)
 	 */
-	public static void enableModule(Identifier id, BiConsumer<SwitchyRequestFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
+	public static void enableModule(Identifier id, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
 		if (!ClientPlayNetworking.canSend(C2S_PRESETS_MODULE_ENABLE))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
 		PacketByteBuf buf = createSwitchyByteBuf(responseCallback);
@@ -186,7 +187,7 @@ public class SwitchyClientApi {
 		}
 	}
 
-	private static void doImport(NbtCompound presetsNbt, Collection<Identifier> excludeModules, Collection<Identifier> includeModules, @Nullable String command, BiConsumer<SwitchyRequestFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
+	private static void doImport(NbtCompound presetsNbt, Collection<Identifier> excludeModules, Collection<Identifier> includeModules, @Nullable String command, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
 		if (!ClientPlayNetworking.canSend(command != null ? C2S_IMPORT_CONFIRM : C2S_IMPORT))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
 		writeModuleSpecifiers(presetsNbt, excludeModules, includeModules);
@@ -204,7 +205,7 @@ public class SwitchyClientApi {
 	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
 	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#importFromOther(ServerPlayerEntity, SwitchyPresets)
 	 */
-	public static void importPresets(NbtCompound presetsNbt, Collection<Identifier> excludeModules, Collection<Identifier> includeModules, BiConsumer<SwitchyRequestFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
+	public static void importPresets(NbtCompound presetsNbt, Collection<Identifier> excludeModules, Collection<Identifier> includeModules, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
 		doImport(presetsNbt, excludeModules, includeModules, null, responseCallback);
 	}
 
@@ -219,7 +220,7 @@ public class SwitchyClientApi {
 	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
 	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#importFromOther(ServerPlayerEntity, SwitchyPresets)
 	 */
-	public static void importPresets(NbtCompound presetsNbt, Collection<Identifier> excludeModules, Collection<Identifier> includeModules, String confirmationCommand, BiConsumer<SwitchyRequestFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
+	public static void importPresets(NbtCompound presetsNbt, Collection<Identifier> excludeModules, Collection<Identifier> includeModules, String confirmationCommand, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
 		doImport(presetsNbt, excludeModules, includeModules, confirmationCommand, responseCallback);
 	}
 
@@ -229,7 +230,7 @@ public class SwitchyClientApi {
 	 * @param responseCallback the callback for the response from the server.
 	 * @see folk.sisby.switchy.client.SwitchyClientReceivers
 	 */
-	public static void exportPresets(Collection<Identifier> excludeModules, BiConsumer<SwitchyRequestFeedback, NbtCompound> responseCallback) throws UnsupportedOperationException {
+	public static void exportPresets(Collection<Identifier> excludeModules, BiConsumer<SwitchyFeedback, NbtCompound> responseCallback) throws UnsupportedOperationException {
 		if (!ClientPlayNetworking.canSend(C2S_REQUEST_PRESETS))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
 		NbtCompound nbt = new NbtCompound();

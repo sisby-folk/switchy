@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import folk.sisby.switchy.api.SwitchyFeedbackStatus;
 import folk.sisby.switchy.api.SwitchyPlayer;
 import folk.sisby.switchy.api.presets.SwitchyPreset;
 import folk.sisby.switchy.api.presets.SwitchyPresetData;
@@ -17,6 +18,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +28,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static folk.sisby.switchy.Switchy.LOGGER;
-import static folk.sisby.switchy.util.Feedback.tellInvalid;
+import static folk.sisby.switchy.util.Feedback.invalid;
+import static folk.sisby.switchy.util.Feedback.sendMessage;
 
 /**
  * Utilities for registering and executing server commands.
@@ -141,10 +144,10 @@ public class SwitchyCommand {
 
 		SwitchyPresets presets = ((SwitchyPlayer) player).switchy$getPresets();
 		try {
-			executor.execute(player, presets);
+			executor.execute(player, presets, t -> sendMessage(player, t));
 			return 1;
 		} catch (Exception e) {
-			tellInvalid(player, "commands.switchy.fail");
+			invalid("commands.switchy.fail");
 			LOGGER.error("[Switchy] Error while executing command: {}", context.getInput(), e);
 			return 0;
 		}
@@ -157,7 +160,8 @@ public class SwitchyCommand {
 		/**
 		 * @param player  the relevant player.
 		 * @param presets the relevant player's presets.
+		 * @param feedback a consumer for text feedback.
 		 */
-		void execute(ServerPlayerEntity player, SwitchyPresets presets);
+		SwitchyFeedbackStatus execute(ServerPlayerEntity player, SwitchyPresets presets, Consumer<Text> feedback);
 	}
 }

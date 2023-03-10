@@ -73,23 +73,19 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		HorizontalFlowLayout actionFlow = dataTab.childById(HorizontalFlowLayout.class, "actionButtons");
 		ButtonComponent exportButton = dataTab.childById(ButtonComponent.class, "exportButton");
 		ButtonComponent importButton = dataTab.childById(ButtonComponent.class, "importButton");
-		importButton.onPress(b -> {
-			openDialog("Confirm", "Cancel", 200, confirmButton -> {
-				lockScreen();
-				SwitchyClientApi.importPresets(selectedFileNbt, availableModules, includedModules, SwitchyDisplayScreen::updatePresetScreens);
-			}, cancelButton -> {
-			}, List.of(Text.translatable("commands.switchy.import.warn.info", Feedback.literal(String.valueOf(selectedFileNbt.getCompound(SwitchyPresetsData.KEY_PRESETS).getKeys().size())), Feedback.literal(String.valueOf(includedModules.size()))), Text.translatable("commands.switchy.list.presets", Feedback.getHighlightedListText(selectedFileNbt.getCompound(SwitchyPresetsData.KEY_PRESETS).getKeys().stream().sorted().toList(), List.of(new Pair<>(presets.getPresetNames()::contains, Formatting.DARK_RED)))), Text.translatable("commands.switchy.import.warn.collision"), Text.translatable("commands.switchy.list.modules", Feedback.getIdListText(includedModules))));
-		});
-		exportButton.onPress(b -> {
-			openDialog("Confirm", "Cancel", 200, confirmButton -> {
-				lockScreen();
-				SwitchyClientApi.exportPresets(availableModules, (feedback, nbt) -> {
-					SwitchyFiles.exportPresetsToFile(MinecraftClient.getInstance(), nbt);
-					SwitchyDisplayScreen.updatePresetScreens(feedback, presets);
-				});
-			}, cancelButton -> {
-			}, List.of(Text.translatable("commands.switchy_client.export.confirm", String.valueOf(includedModules.size()))));
-		});
+		importButton.onPress(b -> openDialog("Confirm", "Cancel", 200, confirmButton -> {
+			lockScreen();
+			SwitchyClientApi.importPresets(selectedFileNbt, availableModules, includedModules, SwitchyDisplayScreen::updatePresetScreens);
+		}, cancelButton -> {
+		}, List.of(Text.translatable("commands.switchy.import.warn.info", Feedback.literal(String.valueOf(selectedFileNbt.getCompound(SwitchyPresetsData.KEY_PRESETS).getKeys().size())), Feedback.literal(String.valueOf(includedModules.size()))), Text.translatable("commands.switchy.list.presets", Feedback.getHighlightedListText(selectedFileNbt.getCompound(SwitchyPresetsData.KEY_PRESETS).getKeys().stream().sorted().toList(), List.of(new Pair<>(presets.getPresetNames()::contains, Formatting.DARK_RED)))), Text.translatable("commands.switchy.import.warn.collision"), Text.translatable("commands.switchy.list.modules", Feedback.getIdListText(includedModules)))));
+		exportButton.onPress(b -> openDialog("Confirm", "Cancel", 200, confirmButton -> {
+			lockScreen();
+			SwitchyClientApi.exportPresets(availableModules, (feedback, nbt) -> {
+				SwitchyFiles.exportPresetsToFile(MinecraftClient.getInstance(), nbt, feedback.messages()::add);
+				SwitchyDisplayScreen.updatePresetScreens(feedback, presets);
+			});
+		}, cancelButton -> {
+		}, List.of(Text.translatable("commands.switchy_client.export.confirm", String.valueOf(includedModules.size())))));
 		importToggle.onPress(b -> {
 			isImporting = true;
 			importToggle.active(false);
@@ -217,9 +213,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 
 		});
 		confirmButton.horizontalSizing(Sizing.fill(22));
-		ButtonComponent cancelButton = Components.button(Text.literal("Cancel"), b -> {
-			refreshPresetFlow(presetsFlow);
-		});
+		ButtonComponent cancelButton = Components.button(Text.literal("Cancel"), b -> refreshPresetFlow(presetsFlow));
 		cancelButton.horizontalSizing(Sizing.fill(22));
 		renamePresetFlow.child(confirmButton);
 		renamePresetFlow.child(cancelButton);
@@ -233,9 +227,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		LabelComponent moduleName = Components.label(Text.literal(id.toString()));
 		if (labelTooltip != null) moduleName.tooltip(labelTooltip);
 		moduleName.horizontalSizing(Sizing.fixed(labelSize));
-		ButtonComponent enableButton = Components.button(buttonText, b -> {
-			buttonAction.accept(b, id);
-		});
+		ButtonComponent enableButton = Components.button(buttonText, b -> buttonAction.accept(b, id));
 		if (buttonTooltip != null) enableButton.tooltip(buttonTooltip);
 		enableButton.active(enabled);
 		enableButton.horizontalSizing(Sizing.content());
@@ -287,9 +279,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		// Presets Tab
 		VerticalFlowLayout presetsFlow = presetsTab.childById(VerticalFlowLayout.class, "presetsFlow");
 		refreshPresetFlow(presetsFlow);
-		presetsTab.childById(ButtonComponent.class, "newPreset").onPress(buttonComponent -> {
-			presetsFlow.child(getRenameLayout(presetsFlow, null));
-		});
+		presetsTab.childById(ButtonComponent.class, "newPreset").onPress(buttonComponent -> presetsFlow.child(getRenameLayout(presetsFlow, null)));
 
 		//Modules Tab
 		VerticalFlowLayout disabledModulesFlow = modulesTab.childById(VerticalFlowLayout.class, "leftModulesFlow");
@@ -317,15 +307,13 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 				presetFlow.child(getRenameLayout(presetsFlow, name));
 			});
 			renameButton.horizontalSizing(Sizing.fill(22));
-			Consumer<ButtonComponent> deleteAction = b -> {
-				openDialog("OK", "Cancel", 200, okButton -> {
-					presets.deletePreset(name);
-					refreshPresetFlow(presetsFlow);
-					lockScreen();
-					SwitchyClientApi.deletePreset(name, SwitchyDisplayScreen::updatePresetScreens);
-				}, cancel -> {
-				}, List.of(Text.translatable("commands.switchy_client.delete.confirm", name), Text.translatable("commands.switchy.delete.warn"), Text.translatable("commands.switchy.list.modules", presets.getEnabledModuleText())));
-			};
+			Consumer<ButtonComponent> deleteAction = b -> openDialog("OK", "Cancel", 200, okButton -> {
+				presets.deletePreset(name);
+				refreshPresetFlow(presetsFlow);
+				lockScreen();
+				SwitchyClientApi.deletePreset(name, SwitchyDisplayScreen::updatePresetScreens);
+			}, cancel -> {
+			}, List.of(Text.translatable("commands.switchy_client.delete.confirm", name), Text.translatable("commands.switchy.delete.warn"), Text.translatable("commands.switchy.list.modules", presets.getEnabledModuleText())));
 			ButtonComponent deleteButton = Components.button(Text.literal("Delete"), deleteAction);
 			deleteButton.horizontalSizing(Sizing.fill(22));
 			deleteButton.active(!presets.getCurrentPresetName().equals(name));
@@ -348,26 +336,20 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		}, true, Text.literal("Disable"), Text.literal(""), labelSize).verticalSizing(Sizing.fixed(0)));
 
 		// Disabled Modules
-		presets.getDisabledModules().forEach(module -> {
-			disabledModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
-				presets.enableModule(id);
-				refreshModulesFlow(disabledModulesFlow, enabledModulesFlow);
-				lockScreen();
-				SwitchyClientApi.enableModule(id, SwitchyDisplayScreen::updatePresetScreens);
-			}, true, Text.literal("Enable"), presets.getModuleInfo().get(module).descriptionWhenEnabled(), labelSize));
-		});
+		presets.getDisabledModules().forEach(module -> disabledModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
+			presets.enableModule(id);
+			refreshModulesFlow(disabledModulesFlow, enabledModulesFlow);
+			lockScreen();
+			SwitchyClientApi.enableModule(id, SwitchyDisplayScreen::updatePresetScreens);
+		}, true, Text.literal("Enable"), presets.getModuleInfo().get(module).descriptionWhenEnabled(), labelSize)));
 		// Enabled Modules
-		presets.getEnabledModules().forEach(module -> {
-			enabledModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
-				openDialog("OK", "Cancel", 200, okButton -> {
-					presets.disableModule(id);
-					refreshModulesFlow(disabledModulesFlow, enabledModulesFlow);
-					lockScreen();
-					SwitchyClientApi.disableModule(id, SwitchyDisplayScreen::updatePresetScreens);
-				}, cancel -> {
-				}, List.of(Text.translatable("commands.switchy_client.disable.confirm", id.toString()), Text.translatable("commands.switchy.module.disable.warn", presets.getModuleInfo().get(id).deletionWarning())));
-			}, true, Text.literal("Disable"), presets.getModuleInfo().get(module).descriptionWhenDisabled(), labelSize));
-		});
+		presets.getEnabledModules().forEach(module -> enabledModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> openDialog("OK", "Cancel", 200, okButton -> {
+			presets.disableModule(id);
+			refreshModulesFlow(disabledModulesFlow, enabledModulesFlow);
+			lockScreen();
+			SwitchyClientApi.disableModule(id, SwitchyDisplayScreen::updatePresetScreens);
+		}, cancel -> {
+		}, List.of(Text.translatable("commands.switchy_client.disable.confirm", id.toString()), Text.translatable("commands.switchy.module.disable.warn", presets.getModuleInfo().get(id).deletionWarning()))), true, Text.literal("Disable"), presets.getModuleInfo().get(module).descriptionWhenDisabled(), labelSize)));
 	}
 
 	void updateDataMethod() {
@@ -439,57 +421,43 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 			List<Identifier> notInstalledModules = availableModules.stream().filter(m -> !presets.getModuleInfo().containsKey(m)).toList();
 			List<Identifier> includableModules = availableModules.stream().filter(m -> !noPermissionModules.contains(m) && !neverModules.contains(m) && !notInstalledModules.contains(m)).toList();
 
-			includableModules.forEach(module -> {
-				availableModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
-					includedModules.add(module);
-					availableModules.remove(module);
-					refreshDataModulesFlow(availableModulesFlow, includedModulesFlow, availableModules, includedModules);
-				}, true, Text.literal("Add"), Text.literal("Include in import"), labelSize));
-			});
-			noPermissionModules.forEach(module -> {
-				availableModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
-					includedModules.add(module);
-					availableModules.remove(module);
-					refreshDataModulesFlow(availableModulesFlow, includedModulesFlow, availableModules, includedModules);
-				}, false, Text.literal("Add"), Text.literal("Requires Operator permissions"), labelSize));
-			});
-			neverModules.forEach(module -> {
-				availableModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
-					includedModules.add(module);
-					availableModules.remove(module);
-					refreshDataModulesFlow(availableModulesFlow, includedModulesFlow, availableModules, includedModules);
-				}, false, Text.literal("Add"), Text.literal("This type of module cannot be imported"), labelSize));
-			});
-			notInstalledModules.forEach(module -> {
-				availableModulesFlow.child(getModuleFlow(module, null, (b, id) -> {
-					includedModules.add(module);
-					availableModules.remove(module);
-					refreshDataModulesFlow(availableModulesFlow, includedModulesFlow, availableModules, includedModules);
-				}, false, Text.literal("Add"), Text.literal("The server does not have this module installed"), labelSize));
-			});
+			includableModules.forEach(module -> availableModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
+				includedModules.add(module);
+				availableModules.remove(module);
+				refreshDataModulesFlow(availableModulesFlow, includedModulesFlow, availableModules, includedModules);
+			}, true, Text.literal("Add"), Text.literal("Include in import"), labelSize)));
+			noPermissionModules.forEach(module -> availableModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
+				includedModules.add(module);
+				availableModules.remove(module);
+				refreshDataModulesFlow(availableModulesFlow, includedModulesFlow, availableModules, includedModules);
+			}, false, Text.literal("Add"), Text.literal("Requires Operator permissions"), labelSize)));
+			neverModules.forEach(module -> availableModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
+				includedModules.add(module);
+				availableModules.remove(module);
+				refreshDataModulesFlow(availableModulesFlow, includedModulesFlow, availableModules, includedModules);
+			}, false, Text.literal("Add"), Text.literal("This type of module cannot be imported"), labelSize)));
+			notInstalledModules.forEach(module -> availableModulesFlow.child(getModuleFlow(module, null, (b, id) -> {
+				includedModules.add(module);
+				availableModules.remove(module);
+				refreshDataModulesFlow(availableModulesFlow, includedModulesFlow, availableModules, includedModules);
+			}, false, Text.literal("Add"), Text.literal("The server does not have this module installed"), labelSize)));
 			// Included Modules
-			includedModules.forEach(module -> {
-				includedModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
-					availableModules.add(module);
-					includedModules.remove(module);
-					refreshDataModulesFlow(availableModulesFlow, includedModulesFlow, availableModules, includedModules);
-				}, true, Text.literal("Remove"), Text.literal("Remove from import"), labelSize));
-			});
+			includedModules.forEach(module -> includedModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
+				availableModules.add(module);
+				includedModules.remove(module);
+				refreshDataModulesFlow(availableModulesFlow, includedModulesFlow, availableModules, includedModules);
+			}, true, Text.literal("Remove"), Text.literal("Remove from import"), labelSize)));
 		} else {
-			availableModules.forEach(module -> {
-				availableModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
-					includedModules.add(module);
-					availableModules.remove(module);
-					refreshDataModulesFlow(availableModulesFlow, includedModulesFlow, availableModules, includedModules);
-				}, true, Text.literal("Add"), Text.literal("Include in export"), labelSize));
-			});
-			includedModules.forEach(module -> {
-				includedModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
-					availableModules.add(module);
-					includedModules.remove(module);
-					refreshDataModulesFlow(availableModulesFlow, includedModulesFlow, availableModules, includedModules);
-				}, true, Text.literal("Remove"), Text.literal("Remove from export"), labelSize));
-			});
+			availableModules.forEach(module -> availableModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
+				includedModules.add(module);
+				availableModules.remove(module);
+				refreshDataModulesFlow(availableModulesFlow, includedModulesFlow, availableModules, includedModules);
+			}, true, Text.literal("Add"), Text.literal("Include in export"), labelSize)));
+			includedModules.forEach(module -> includedModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
+				availableModules.add(module);
+				includedModules.remove(module);
+				refreshDataModulesFlow(availableModulesFlow, includedModulesFlow, availableModules, includedModules);
+			}, true, Text.literal("Remove"), Text.literal("Remove from export"), labelSize)));
 		}
 
 	}

@@ -53,64 +53,6 @@ public class Feedback {
 	}
 
 	/**
-	 * Gets formatted text explaining a command using the {@link Feedback#FORMAT_HELP} style.
-	 *
-	 * @param keyHelp    a translation key explaining the command.
-	 * @param keyCommand a translation key with a command.
-	 * @param keyArgs    the translation key arguments to pass to the command text.
-	 * @return the resultant translatable text.
-	 */
-	public static MutableText helpText(String keyHelp, String keyCommand, String... keyArgs) {
-		return translatableWithArgs("commands.switchy.help.line", translatableWithArgs(keyCommand, FORMAT_COMMAND, translatable(keyArgs)), translatableWithArgs(keyHelp, FORMAT_HELP));
-	}
-
-	/**
-	 * Sends feedback to the player with a suggested command, using the {@link Feedback#FORMAT_INVALID} style.
-	 *
-	 * @param player      the player to send the message to.
-	 * @param keyFail     a translation key explaining why the user action failed.
-	 * @param keyCommand  a translation key with a suggested command.
-	 * @param commandArgs the literal arguments to pass to the command text.
-	 */
-	public static void tellInvalidTry(ServerPlayerEntity player, String keyFail, String keyCommand, MutableText... commandArgs) {
-		sendMessage(player, translatableWithArgs(keyFail, FORMAT_INVALID, translatableWithArgs(keyCommand, commandArgs)));
-	}
-
-	/**
-	 * Sends feedback to the player using the {@link Feedback#FORMAT_INVALID} style.
-	 *
-	 * @param player the player to send the message to.
-	 * @param key    a translation key.
-	 * @param args   the literal arguments to pass to the translatable text.
-	 */
-	public static void tellInvalid(ServerPlayerEntity player, String key, MutableText... args) {
-		sendMessage(player, translatableWithArgs(key, FORMAT_INVALID, args));
-	}
-
-
-	/**
-	 * Sends feedback to the player using the {@link Feedback#FORMAT_SUCCESS} style.
-	 *
-	 * @param player the player to send the message to.
-	 * @param key    a translation key.
-	 * @param args   the literal arguments to pass to the translatable text.
-	 */
-	public static void tellSuccess(ServerPlayerEntity player, String key, MutableText... args) {
-		sendMessage(player, translatableWithArgs(key, FORMAT_SUCCESS, args));
-	}
-
-	/**
-	 * Sends feedback to the player using the {@link Feedback#FORMAT_WARN} style.
-	 *
-	 * @param player the player to send the message to.
-	 * @param key    a translation key.
-	 * @param args   the literal arguments to pass to the translatable text.
-	 */
-	public static void tellWarn(ServerPlayerEntity player, String key, MutableText... args) {
-		sendMessage(player, translatableWithArgs(key, FORMAT_WARN, args));
-	}
-
-	/**
 	 * Creates translatable text from a key.
 	 *
 	 * @param key a translation key.
@@ -201,5 +143,63 @@ public class Feedback {
 	 */
 	public static String command(String string) {
 		return "" + string;
+	}
+
+	/**
+	 * Gets formatted text explaining a command using the {@link Feedback#FORMAT_HELP} style.
+	 *
+	 * @param keyHelp    a translation key explaining the command.
+	 * @param keyCommand a translation key with a command.
+	 * @param keyArgs    the translation key arguments to pass to the command text.
+	 * @return the resultant translatable text.
+	 */
+	public static MutableText helpText(String keyHelp, String keyCommand, String... keyArgs) {
+		return translatableWithArgs("commands.switchy.help.line", translatableWithArgs(keyCommand, FORMAT_COMMAND, translatable(keyArgs)), translatableWithArgs(keyHelp, FORMAT_HELP));
+	}
+
+	/**
+	 * Gets formatted text with a suggested command, using the {@link Feedback#FORMAT_INVALID} style.
+	 *
+	 * @param keyFail     a translation key explaining why the user action failed.
+	 * @param keyCommand  a translation key with a suggested command.
+	 * @param commandArgs the literal arguments to pass to the command text.
+	 * @return the resultant translatable text.
+	 */
+	public static MutableText invalidTry(String keyFail, String keyCommand, MutableText... commandArgs) {
+		return translatableWithArgs(keyFail, FORMAT_INVALID, translatableWithArgs(keyCommand, commandArgs));
+	}
+
+	/**
+	 * Gets formatted text using the {@link Feedback#FORMAT_INVALID} style.
+	 *
+	 * @param key    a translation key.
+	 * @param args   the literal arguments to pass to the translatable text.
+	 * @return the resultant translatable text.
+	 */
+	public static MutableText invalid(String key, MutableText... args) {
+		return translatableWithArgs(key, FORMAT_INVALID, args);
+	}
+
+
+	/**
+	 * Gets formatted text using the {@link Feedback#FORMAT_SUCCESS} style.
+	 *
+	 * @param key    a translation key.
+	 * @param args   the literal arguments to pass to the translatable text.
+	 * @return the resultant translatable text.
+	 */
+	public static MutableText success(String key, MutableText... args) {
+		return translatableWithArgs(key, FORMAT_SUCCESS, args);
+	}
+
+	/**
+	 * Gets formatted text using the {@link Feedback#FORMAT_WARN} style.
+	 *
+	 * @param key    a translation key.
+	 * @param args   the literal arguments to pass to the translatable text.
+	 * @return the resultant translatable text.
+	 */
+	public static MutableText warn(String key, MutableText... args) {
+		return translatableWithArgs(key, FORMAT_WARN, args);
 	}
 }

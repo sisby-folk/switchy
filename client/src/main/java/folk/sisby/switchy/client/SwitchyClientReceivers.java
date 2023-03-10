@@ -3,7 +3,7 @@ package folk.sisby.switchy.client;
 import folk.sisby.switchy.api.events.SwitchySwitchEvent;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
-import folk.sisby.switchy.client.api.SwitchyRequestFeedback;
+import folk.sisby.switchy.api.SwitchyFeedback;
 import folk.sisby.switchy.presets.SwitchyClientPresetsImpl;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -35,11 +35,11 @@ public class SwitchyClientReceivers {
 
 	private static void handleClientPresets(PacketByteBuf buf) {
 		int id = buf.readInt();
-		BiConsumer<SwitchyRequestFeedback, SwitchyClientPresets> listener = API_RESPONSE_LISTENERS.remove(id);
+		BiConsumer<SwitchyFeedback, SwitchyClientPresets> listener = API_RESPONSE_LISTENERS.remove(id);
 		if (listener != null) {
 			NbtCompound feedbackNbt = buf.readNbt();
 			if (feedbackNbt != null) {
-				SwitchyRequestFeedback feedback = SwitchyRequestFeedback.fromNbt(feedbackNbt);
+				SwitchyFeedback feedback = SwitchyFeedback.fromNbt(feedbackNbt);
 				NbtCompound presetsNbt = buf.readNbt();
 				if (presetsNbt != null) {
 					SwitchyClientPresets presets = new SwitchyClientPresetsImpl(new HashMap<>(), 0);
@@ -52,11 +52,11 @@ public class SwitchyClientReceivers {
 
 	private static void handleExportNbt(PacketByteBuf buf) {
 		int id = buf.readInt();
-		BiConsumer<SwitchyRequestFeedback, NbtCompound> listener = API_EXPORT_LISTENERS.remove(id);
+		BiConsumer<SwitchyFeedback, NbtCompound> listener = API_EXPORT_LISTENERS.remove(id);
 		if (listener != null) {
 			NbtCompound feedbackNbt = buf.readNbt();
 			if (feedbackNbt != null) {
-				SwitchyRequestFeedback feedback = SwitchyRequestFeedback.fromNbt(feedbackNbt);
+				SwitchyFeedback feedback = SwitchyFeedback.fromNbt(feedbackNbt);
 				NbtCompound presetsNbt = buf.readNbt();
 				if (presetsNbt != null) {
 					listener.accept(feedback, presetsNbt);

@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import static folk.sisby.switchy.Switchy.LOGGER;
+
 /**
  * @author Sisby folk
  * @see SwitchyPresets
@@ -104,7 +106,8 @@ public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, Sw
 		SwitchyPreset nextPreset = getPreset(name);
 
 		// Perform Switch
-		getCurrentPreset().updateFromPlayer(player, nextPreset.getName());
+		SwitchyPreset oldPreset = getCurrentPreset();
+		oldPreset.updateFromPlayer(player, nextPreset.getName());
 		nextPreset.applyToPlayer(player);
 
 		SwitchySwitchEvent switchEvent = new SwitchySwitchEvent(
@@ -112,6 +115,7 @@ public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, Sw
 		);
 		setCurrentPreset(nextPreset.getName());
 		SwitchyEvents.SWITCH.invoker().onSwitch(player, switchEvent);
+		LOGGER.info("[Switchy] Player switch: '" + oldPreset.getName() + "' -> '" + getCurrentPresetName() + "' [" + player.getGameProfile().getName() + "]");
 
 		return getCurrentPresetName();
 	}

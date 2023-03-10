@@ -1,4 +1,4 @@
-package folk.sisby.switchy.client.api;
+package folk.sisby.switchy.api;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public record SwitchyRequestFeedback(SwitchyFeedbackStatus status, Collection<Text> messages) {
+public record SwitchyFeedback(SwitchyFeedbackStatus status, Collection<Text> messages) {
 	private static final String KEY_STATUS = "status";
 	private static final String KEY_MESSAGES_LIST = "messages";
 
@@ -20,10 +20,10 @@ public record SwitchyRequestFeedback(SwitchyFeedbackStatus status, Collection<Te
 	 * @param nbt an NBT representation of the object.
 	 * @return an object constructed from the NBT.
 	 */
-	public static SwitchyRequestFeedback fromNbt(NbtCompound nbt) {
+	public static SwitchyFeedback fromNbt(NbtCompound nbt) {
 		List<Text> msgs = new ArrayList<>();
 		nbt.getList(KEY_MESSAGES_LIST, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Text.Serializer::fromJson).forEach(msgs::add);
-		return new SwitchyRequestFeedback(SwitchyFeedbackStatus.valueOf(nbt.getString(KEY_STATUS)), msgs);
+		return new SwitchyFeedback(SwitchyFeedbackStatus.valueOf(nbt.getString(KEY_STATUS)), msgs);
 	}
 
 	/**
