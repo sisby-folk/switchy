@@ -161,7 +161,7 @@ if you're making an addon, just use `modImplementation`.<br/>
 
 Switchy includes a rich API for both client and server addons for performing all of its basic functions.
 
-Try `SwitchyPresets` (via `SwitchyPlayer.getPresets()`), `SwitchyApi`, `SwitchyClientApi`, or for events check `SwitchyEvents` and `SwitchyClientEvents`.
+Try `SwitchyPresets` (via `SwitchyPlayer.getPresets()`) covers most mod functions, then `SwitchyApi` provides them with text feedback, `SwitchyClientApi` provides them on the client, and `SwitchyEvents` and `SwitchyClientEvents` offer hooks for addons, registering modules, and adding new commands.
 
 ### Modules
 
