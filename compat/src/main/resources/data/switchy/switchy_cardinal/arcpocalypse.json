@@ -1,5 +1,6 @@
 {
   "default": true,
+  "description": "A module that switches nekoarc state contents from Arathain's Arcpocalypse",
   "editable": "OPERATOR",
   "ifModsLoaded": [
     "arcpocalypse"
