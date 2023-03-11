@@ -1,7 +1,7 @@
 package folk.sisby.switchy.util;
 
-import folk.sisby.switchy.api.module.SwitchyModuleTransferable;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
+import folk.sisby.switchy.api.module.SwitchyModuleTransferable;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPreset;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
 import folk.sisby.switchy.api.presets.SwitchyPreset;
@@ -30,7 +30,7 @@ public class PresetConverter {
 	// Figure out how to add this to a file or something. Mixin feels wrong but maybe.
 
 	/**
-	 * @param player the relevant player.
+	 * @param player  the relevant player.
 	 * @param presets an arbitrary presets object.
 	 * @return its serialized client-compatible representation to be used in {@link SwitchyClientPresets#fillFromNbt(NbtCompound)}.
 	 */
@@ -54,7 +54,7 @@ public class PresetConverter {
 
 		outNbt.putString(SwitchyPresetsData.KEY_PRESET_CURRENT, presets.getCurrentPresetName());
 
-		outNbt.put(KEY_MODULE_INFO,SwitchyModuleRegistry.infoToNbt(player));
+		outNbt.put(KEY_MODULE_INFO, SwitchyModuleRegistry.infoToNbt(player));
 		outNbt.putInt(KEY_PERMISSION_LEVEL, player.server.getPermissionLevel(player.getGameProfile()));
 
 		return outNbt;

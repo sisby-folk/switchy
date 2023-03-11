@@ -5,7 +5,6 @@ Works in singleplayer and on server-side.</center>
 
 ---
 
-
 ## What is Switchy?
 
 Switchy lets you use commands make ***presets*** that are stored with your player data.
@@ -19,24 +18,35 @@ When you ***switch*** presets, that data is saved to the old preset, then loaded
 Most modules provide inter-compatibility with other mods - be sure to follow the links.
 
 You can hotswap these features out-of-the box by installing their relevant mods:
+
 - Player Nicknames/Pronouns with either of:
-  - [Drogtor The Nickinator](https://modrinth.com/mod/drogtor)
-  - [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) (Note: Switchy force-allows nickname self-assignment)
+    - [Drogtor The Nickinator](https://modrinth.com/mod/drogtor)
+    - [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) (Note: Switchy force-allows nickname
+      self-assignment)
 - Player Skin with [Fabric Tailor](https://modrinth.com/mod/fabrictailor)
-- Player Origin with [Origins](https://modrinth.com/mod/origins/versions) (includes all layers, e.g. [Statures](https://modrinth.com/mod/tinkerers-statures))
-  - [Contributed by [MerchantPug](https://github.com/MerchantPug)] Apoli power state - e.g. Origin power inventories, cooldowns
+- Player Origin with [Origins](https://modrinth.com/mod/origins/versions) (includes all layers,
+  e.g. [Statures](https://modrinth.com/mod/tinkerers-statures))
+    - [Contributed by [MerchantPug](https://github.com/MerchantPug)] Apoli power state - e.g. Origin power inventories,
+      cooldowns
 - Player height and size with [Pehkui](https://modrinth.com/mod/pehkui)
 - Detailed player profiles for conventions with [Lanyard](https://modrinth.com/mod/lanyard)
 
 More functionality can be added with these Addons:
-- [Switchy Inventories](https://modrinth.com/mod/switchy-inventories) - separate inventories, ender chests, and trinkets (all disabled by default)
-- [Switchy Teleport](https://modrinth.com/mod/switchy-teleport) - separate player position and spawn points (all disabled by default)
-- [SwitchyKit](https://modrinth.com/mod/switchykit) - import presets with nicknames (as above) with colours, pronouns and system tags - directly from Pluralkit or Tupperbox.
-- [Switchy Resource Packs](https://modrinth.com/mod/switchy-resource-packs) - separate enabled resource packs per preset.
-- [Switchy Proxy](https://modrinth.com/mod/switchy-proxy) - single-message nickname switching with custom patterns using either nickname mod.
+
+- [Switchy Inventories](https://modrinth.com/mod/switchy-inventories) - separate inventories, ender chests, and
+  trinkets (all disabled by default)
+- [Switchy Teleport](https://modrinth.com/mod/switchy-teleport) - separate player position and spawn points (all
+  disabled by default)
+- [SwitchyKit](https://modrinth.com/mod/switchykit) - import presets with nicknames (as above) with colours, pronouns
+  and system tags - directly from Pluralkit or Tupperbox.
+- [Switchy Resource Packs](https://modrinth.com/mod/switchy-resource-packs) - separate enabled resource packs per
+  preset.
+- [Switchy Proxy](https://modrinth.com/mod/switchy-proxy) - single-message nickname switching with custom patterns using
+  either nickname mod.
 
 These mods have Switchy support built-in:
- - [RPGStats](https://modrinth.com/mod/rpgstats) - All 6 stats can be kept per-preset
+
+- [RPGStats](https://modrinth.com/mod/rpgstats) - All 6 stats can be kept per-preset
 
 ## Showcase
 
@@ -72,11 +82,13 @@ You can then move to another server or singleplayer world.
 
 `/switchy_client import [filename]` will import all *allowed* modules (see below).
 
-`/switchy_client import [filename] [exclude] [operator]` will import all allowed modules, except modules in `[exclude]`, plus any modules in `[operator]` if you have OP level 2. You can use `~` to specify no modules.
+`/switchy_client import [filename] [exclude] [operator]` will import all allowed modules, except modules in `[exclude]`,
+plus any modules in `[operator]` if you have OP level 2. You can use `~` to specify no modules.
 
 ## Module Editing Permissions
 
-Switchy doesn't and will not support permissions on its basic commands, and has no way to enable or disable modules server-wide.
+Switchy doesn't and will not support permissions on its basic commands, and has no way to enable or disable modules
+server-wide.
 
 However, you can minorly configure which players can import module data in `/config/switchy/config.toml`
 
@@ -123,27 +135,33 @@ if you're making an addon, just use `modImplementation`.<br/>
 `switchy-compat-ui` adds ui support to compat. <br/>
 
 Adding new Modules allows more data to be switched per-preset. They only need to:
+
 - Load and Save their data using NBT.
 - Save their data from the player
 - Load their data to the player
 
-Just implement `SwitchyModule` and register it with `SwitchyModuleRegistry` using `SwitchyEvents.Init` - See [Switchy Inventories](https://github.com/sisby-folk/switchy-inventories) for an example.
+Just implement `SwitchyModule` and register it with `SwitchyModuleRegistry` using `SwitchyEvents.Init` -
+See [Switchy Inventories](https://github.com/sisby-folk/switchy-inventories) for an example.
 
-Switchy also includes am API for all its basic operations, as well as an events API for tracking switches and the current preset.
+Switchy also includes am API for all its basic operations, as well as an events API for tracking switches and the
+current preset.
 
 ### Data-Driven CCA Modules
 
-If your mod uses the [Cardinal Components API](https://github.com/OnyxStudios/Cardinal-Components-API) to store its player/entity data, you can instead register a module using an instance of `CardinalSerializerModule`.
+If your mod uses the [Cardinal Components API](https://github.com/OnyxStudios/Cardinal-Components-API) to store its
+player/entity data, you can instead register a module using an instance of `CardinalSerializerModule`.
 
-If your component performs all of its necessary sync logic within writeToNbt/readFromNbt (or has none) - you can instead use the static `register` method or even define the module in data.
+If your component performs all of its necessary sync logic within writeToNbt/readFromNbt (or has none) - you can instead
+use the static `register` method or even define the module in data.
 
-Any data matching `data/*/switchy_cca_modules/*.json` will be loaded [like so](https://github.com/sisby-folk/switchy/blob/1.19/compat/src/main/resources/data/switchy/switchy_cardinal/lanyard.json):
+Any data matching `data/*/switchy_cca_modules/*.json` will be
+loaded [like so](https://github.com/sisby-folk/switchy/blob/1.19/compat/src/main/resources/data/switchy/switchy_cardinal/lanyard.json):
 
 - File namespace and name - module namespace and path.
-   - `default`: boolean, module is enabled for players by default.
-   - `editable`: See import configuration above.
-   - `ifModsLoaded`: mod IDs to check before trying to register the module.
-   - `components`: the cardinal components to swap.
+    - `default`: boolean, module is enabled for players by default.
+    - `editable`: See import configuration above.
+    - `ifModsLoaded`: mod IDs to check before trying to register the module.
+    - `components`: the cardinal components to swap.
 
 ## Further Info
 
@@ -154,7 +172,8 @@ Check out [Plural Respect](https://pluralrespect.github.io).
 
 Switchy is inescapably a plural mod. It's motivated and maintained by a plural system.
 
-Unlike the Quilt development community, the fabric development community is not safe for plural systems. Try moving your modlist to Quilt/QSL!
+Unlike the Quilt development community, the fabric development community is not safe for plural systems. Try moving your
+modlist to Quilt/QSL!
 
 ### Afterword
 
@@ -164,9 +183,8 @@ All mods are built on the work of many others.
 
 We made this mod (up to v1.2.1) for Modfest: Singularity! However, we intend to maintain this mod into the future.
 
-This mod is included in [Tinkerer's Quilt](https://modrinth.com/modpack/tinkerers-quilt) - our modpack about ease of play and self-expression.
-
-
+This mod is included in [Tinkerer's Quilt](https://modrinth.com/modpack/tinkerers-quilt) - our modpack about ease of
+play and self-expression.
 
 We're open to suggestions for how to implement stuff better - if you see something wonky and have an idea - let us know.
 

@@ -81,9 +81,9 @@ public class SwitchyClientEvents {
 	@FunctionalInterface
 	public interface CommandInit extends EventAwareListener {
 		/**
-		 * @param rootArgument the literal {@code /switchy_client} argument to add to.
+		 * @param rootArgument     the literal {@code /switchy_client} argument to add to.
 		 * @param helpTextRegistry a registry to add lines to {@code /switchy_client help}.
-		 *                         Lines should be generated using {@link folk.sisby.switchy.util.Feedback#helpText(String, String, String...)}
+		 *                         Lines should be generated using {@link folk.sisby.switchy.util.Feedback#helpText(String, String, String...)}.
 		 */
 		void registerCommands(LiteralArgumentBuilder<QuiltClientCommandSource> rootArgument, Consumer<Text> helpTextRegistry);
 	}
@@ -97,9 +97,9 @@ public class SwitchyClientEvents {
 	@FunctionalInterface
 	public interface CommandInitImport extends EventAwareListener {
 		/**
-		 * @param importArgument the literal {@code /switchy_client import} argument to add to.
+		 * @param importArgument   the literal {@code /switchy_client import} argument to add to.
 		 * @param helpTextRegistry a registry to add lines to {@code /switchy_client help}.
-		 *                         Lines should be generated using {@link folk.sisby.switchy.util.Feedback#helpText(String, String, String...)}
+		 *                         Lines should be generated using {@link folk.sisby.switchy.util.Feedback#helpText(String, String, String...)}.
 		 */
 		void registerCommands(LiteralArgumentBuilder<QuiltClientCommandSource> importArgument, Consumer<Text> helpTextRegistry);
 	}

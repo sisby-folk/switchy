@@ -1,9 +1,9 @@
 package folk.sisby.switchy.client;
 
+import folk.sisby.switchy.api.SwitchyFeedback;
 import folk.sisby.switchy.api.events.SwitchySwitchEvent;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
-import folk.sisby.switchy.api.SwitchyFeedback;
 import folk.sisby.switchy.presets.SwitchyClientPresetsImpl;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -13,7 +13,8 @@ import java.util.HashMap;
 import java.util.function.BiConsumer;
 
 import static folk.sisby.switchy.SwitchyClientServerNetworking.*;
-import static folk.sisby.switchy.client.api.SwitchyClientApi.*;
+import static folk.sisby.switchy.client.api.SwitchyClientApi.API_EXPORT_LISTENERS;
+import static folk.sisby.switchy.client.api.SwitchyClientApi.API_RESPONSE_LISTENERS;
 import static folk.sisby.switchy.util.SwitchyCommand.consumeEventPacket;
 
 /**

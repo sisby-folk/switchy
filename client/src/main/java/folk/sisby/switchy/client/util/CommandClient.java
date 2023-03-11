@@ -1,11 +1,12 @@
 package folk.sisby.switchy.client.util;
 
 import com.mojang.brigadier.context.CommandContext;
+import folk.sisby.switchy.util.Feedback;
 import net.minecraft.client.network.ClientPlayerEntity;
 import org.quiltmc.qsl.command.api.client.QuiltClientCommandSource;
 
 import static folk.sisby.switchy.Switchy.LOGGER;
-import static folk.sisby.switchy.client.util.FeedbackClient.tellInvalid;
+import static folk.sisby.switchy.client.util.FeedbackClient.sendClientMessage;
 
 /**
  * Utilities for registering and executing client commands.
@@ -29,7 +30,7 @@ public class CommandClient {
 			executor.execute(context.getInput(), player);
 			return 1;
 		} catch (Exception e) {
-			tellInvalid(player, "commands.switchy_client.fail");
+			sendClientMessage(player, Feedback.invalid("commands.switchy_client.fail"));
 			LOGGER.error("[Switchy Client] Error while executing command: {}", context.getInput(), e);
 			return 0;
 		}

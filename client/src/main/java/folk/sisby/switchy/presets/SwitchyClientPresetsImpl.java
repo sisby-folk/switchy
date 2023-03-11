@@ -31,11 +31,11 @@ public class SwitchyClientPresetsImpl extends SwitchyPresetsDataImpl<SwitchyClie
 	/**
 	 * Returns an empty client presets object.
 	 *
-	 * @param moduleInfo a map of module info by module ID.
+	 * @param moduleInfo      a map of module info by module ID.
 	 * @param permissionLevel the permission level for the player.
 	 */
 	public SwitchyClientPresetsImpl(Map<Identifier, SwitchyModuleInfo> moduleInfo, int permissionLevel) {
-		super(new HashMap<>(), SwitchyClientPresetImpl::new, SwitchyClientModuleRegistry::supplyModule,true, SwitchyClient.LOGGER);
+		super(new HashMap<>(), SwitchyClientPresetImpl::new, SwitchyClientModuleRegistry::supplyModule, true, SwitchyClient.LOGGER);
 		this.moduleInfo = moduleInfo;
 		this.permissionLevel = permissionLevel;
 	}

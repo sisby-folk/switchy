@@ -26,7 +26,7 @@ public class SwitchyFiles {
 	/**
 	 * Gets a list of files in a folder that match the specified extension.
 	 *
-	 * @param folder the containing folder to search.
+	 * @param folder    the containing folder to search.
 	 * @param extension the case-insensitive file extension to accept.
 	 * @return a list of matching files.
 	 */
@@ -39,7 +39,7 @@ public class SwitchyFiles {
 	 * Writes an NBT Compound to a file.
 	 *
 	 * @param filename the name of the file in the export folder to write to, without extension.
-	 * @param nbt an arbitrary NBT compound.
+	 * @param nbt      an arbitrary NBT compound.
 	 * @param feedback a consumer for text feedback.
 	 * @return a reference to the written file.
 	 */
@@ -53,7 +53,7 @@ public class SwitchyFiles {
 				return exportFile;
 			} catch (IOException e) {
 				SwitchyClient.LOGGER.error("IO error when copying default configuration", e);
-				feedback.accept(invalid( "commands.switchy_client.export.fail"));
+				feedback.accept(invalid("commands.switchy_client.export.fail"));
 				return null;
 			}
 		}

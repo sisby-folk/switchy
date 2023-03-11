@@ -148,8 +148,8 @@ public class Feedback {
 	/**
 	 * Gets formatted text using the {@link Feedback#FORMAT_INFO} style.
 	 *
-	 * @param key    a translation key.
-	 * @param args   the literal arguments to pass to the translatable text.
+	 * @param key  a translation key.
+	 * @param args the literal arguments to pass to the translatable text.
 	 * @return the resultant translatable text.
 	 */
 	public static MutableText info(String key, MutableText... args) {
@@ -183,8 +183,8 @@ public class Feedback {
 	/**
 	 * Gets formatted text using the {@link Feedback#FORMAT_INVALID} style.
 	 *
-	 * @param key    a translation key.
-	 * @param args   the literal arguments to pass to the translatable text.
+	 * @param key  a translation key.
+	 * @param args the literal arguments to pass to the translatable text.
 	 * @return the resultant translatable text.
 	 */
 	public static MutableText invalid(String key, MutableText... args) {
@@ -195,8 +195,8 @@ public class Feedback {
 	/**
 	 * Gets formatted text using the {@link Feedback#FORMAT_SUCCESS} style.
 	 *
-	 * @param key    a translation key.
-	 * @param args   the literal arguments to pass to the translatable text.
+	 * @param key  a translation key.
+	 * @param args the literal arguments to pass to the translatable text.
 	 * @return the resultant translatable text.
 	 */
 	public static MutableText success(String key, MutableText... args) {
@@ -206,8 +206,8 @@ public class Feedback {
 	/**
 	 * Gets formatted text using the {@link Feedback#FORMAT_WARN} style.
 	 *
-	 * @param key    a translation key.
-	 * @param args   the literal arguments to pass to the translatable text.
+	 * @param key  a translation key.
+	 * @param args the literal arguments to pass to the translatable text.
 	 * @return the resultant translatable text.
 	 */
 	public static MutableText warn(String key, MutableText... args) {

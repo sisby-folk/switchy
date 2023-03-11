@@ -72,7 +72,8 @@ public class SwitchyPresetDataImpl<Module extends SwitchySerializable> implement
 	@SuppressWarnings("unchecked")
 	public <ModuleType extends Module> ModuleType getModule(Identifier id, Class<ModuleType> clazz) throws ModuleNotFoundException, ClassNotAssignableException {
 		Module module = getModule(id);
-		if (!clazz.isAssignableFrom(module.getClass())) throw new ClassNotAssignableException("Module '" + id.toString(), module, clazz);
+		if (!clazz.isAssignableFrom(module.getClass()))
+			throw new ClassNotAssignableException("Module '" + id.toString(), module, clazz);
 		return (ModuleType) module;
 	}
 

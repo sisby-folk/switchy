@@ -17,10 +17,10 @@ import java.util.List;
 /**
  * A feedback object representing the outcome of an action.
  *
+ * @param status   the completion status of the action.
+ * @param messages the feedback messages reported by the action.
  * @author Sisby folk
  * @since 2.0.0
- * @param status the completion status of the action.
- * @param messages the feedback messages reported by the action.
  */
 public record SwitchyFeedback(SwitchyFeedbackStatus status, Collection<Text> messages) {
 	private static final String KEY_STATUS = "status";

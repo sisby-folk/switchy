@@ -7,6 +7,7 @@ import folk.sisby.switchy.client.api.SwitchyClientEvents;
 import folk.sisby.switchy.client.argument.IdentifiersArgumentType;
 import folk.sisby.switchy.client.argument.IdentifiersFromNbtArgArgumentType;
 import folk.sisby.switchy.client.argument.NbtFileArgumentType;
+import folk.sisby.switchy.util.Feedback;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.command.CommandBuildContext;
 import net.minecraft.nbt.NbtCompound;
@@ -22,7 +23,6 @@ import java.util.List;
 import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_IMPORT_CONFIRM;
 import static folk.sisby.switchy.client.util.CommandClient.executeClient;
 import static folk.sisby.switchy.client.util.FeedbackClient.sendClientMessage;
-import static folk.sisby.switchy.client.util.FeedbackClient.tellSuccess;
 
 /**
  * Registration and logic for client commands.
@@ -37,33 +37,6 @@ public class SwitchyClientCommands implements ClientCommandRegistrationCallback 
 	 * If the command in here matches the one being executed, that's a confirmation.
 	 */
 	public static String HISTORY = "";
-
-	private static void importPresets(String command, ClientPlayerEntity player, NbtCompound presetsNbt, List<Identifier> excludeModules, List<Identifier> includeModules) {
-		SwitchyClientApi.importPresets(presetsNbt, excludeModules, includeModules, command, (feedback, clientPresets) -> feedback.messages().forEach(t -> sendClientMessage(player, t)));
-		tellSuccess(player, "commands.switchy_client.import.success");
-	}
-
-	private static void exportPresets(ClientPlayerEntity player, List<Identifier> excludeModules) {
-		SwitchyClientApi.exportPresetsToFile(excludeModules, null, (feedback, file) -> feedback.messages().forEach(t -> sendClientMessage(player, t)));
-		tellSuccess(player, "commands.switchy_client.export.sent");
-	}
-
-	@Override
-	public void registerCommands(CommandDispatcher<QuiltClientCommandSource> dispatcher, CommandBuildContext buildContext, CommandManager.RegistrationEnvironment environment) {
-		LiteralArgumentBuilder<QuiltClientCommandSource> rootArgument = ClientCommandManager.literal("switchy_client");
-		LiteralArgumentBuilder<QuiltClientCommandSource> importArgument = ClientCommandManager.literal("import");
-		rootArgument.requires(source -> ClientPlayNetworking.canSend(C2S_IMPORT_CONFIRM));
-
-		SwitchyClientEvents.COMMAND_INIT_IMPORT.invoker().registerCommands(importArgument, (t) -> {
-		});
-
-		rootArgument.then(importArgument);
-
-		SwitchyClientEvents.COMMAND_INIT.invoker().registerCommands(rootArgument, (t) -> {
-		});
-
-		dispatcher.register(rootArgument);
-	}
 
 	static {
 		SwitchyClientEvents.COMMAND_INIT_IMPORT.register(((importArgument, helpTextRegistry) -> importArgument.then(ClientCommandManager.argument("file", NbtFileArgumentType.create(SwitchyClientApi.getExportFolder()))
@@ -81,5 +54,32 @@ public class SwitchyClientCommands implements ClientCommandRegistrationCallback 
 						.executes(c -> executeClient(c, (command, player) -> exportPresets(player, c.getArgument("excludeModules", List.class))))
 				)
 		)));
+	}
+
+	private static void importPresets(String command, ClientPlayerEntity player, NbtCompound presetsNbt, List<Identifier> excludeModules, List<Identifier> includeModules) {
+		SwitchyClientApi.importPresets(presetsNbt, excludeModules, includeModules, command, (feedback, clientPresets) -> feedback.messages().forEach(t -> sendClientMessage(player, t)));
+		sendClientMessage(player, Feedback.success("commands.switchy_client.import.success"));
+	}
+
+	private static void exportPresets(ClientPlayerEntity player, List<Identifier> excludeModules) {
+		SwitchyClientApi.exportPresetsToFile(excludeModules, null, (feedback, file) -> feedback.messages().forEach(t -> sendClientMessage(player, t)));
+		sendClientMessage(player, Feedback.success("commands.switchy_client.export.sent"));
+	}
+
+	@Override
+	public void registerCommands(CommandDispatcher<QuiltClientCommandSource> dispatcher, CommandBuildContext buildContext, CommandManager.RegistrationEnvironment environment) {
+		LiteralArgumentBuilder<QuiltClientCommandSource> rootArgument = ClientCommandManager.literal("switchy_client");
+		LiteralArgumentBuilder<QuiltClientCommandSource> importArgument = ClientCommandManager.literal("import");
+		rootArgument.requires(source -> ClientPlayNetworking.canSend(C2S_IMPORT_CONFIRM));
+
+		SwitchyClientEvents.COMMAND_INIT_IMPORT.invoker().registerCommands(importArgument, (t) -> {
+		});
+
+		rootArgument.then(importArgument);
+
+		SwitchyClientEvents.COMMAND_INIT.invoker().registerCommands(rootArgument, (t) -> {
+		});
+
+		dispatcher.register(rootArgument);
 	}
 }

@@ -70,7 +70,7 @@ public class SwitchyCommand {
 	 * @return the resultant argument builder.
 	 */
 	public static RequiredArgumentBuilder<ServerCommandSource, String> presetArgument(boolean allowCurrent) {
-		return CommandManager.argument("preset", StringArgumentType.word()).suggests((c, b) ->SwitchyCommand.suggestPresets(c, b, allowCurrent));
+		return CommandManager.argument("preset", StringArgumentType.word()).suggests((c, b) -> SwitchyCommand.suggestPresets(c, b, allowCurrent));
 	}
 
 	/**
@@ -93,7 +93,7 @@ public class SwitchyCommand {
 	 * @return the resultant argument builder.
 	 */
 	public static RequiredArgumentBuilder<ServerCommandSource, Identifier> moduleArgument(Boolean enabled) {
-		return CommandManager.argument("module", IdentifierArgumentType.identifier()).suggests((c, b) ->SwitchyCommand.suggestModules(c, b, enabled));
+		return CommandManager.argument("module", IdentifierArgumentType.identifier()).suggests((c, b) -> SwitchyCommand.suggestModules(c, b, enabled));
 	}
 
 
@@ -158,8 +158,8 @@ public class SwitchyCommand {
 	 */
 	public interface SwitchyServerCommandExecutor {
 		/**
-		 * @param player  the relevant player.
-		 * @param presets the relevant player's presets.
+		 * @param player   the relevant player.
+		 * @param presets  the relevant player's presets.
 		 * @param feedback a consumer for text feedback.
 		 * @return The completion status of the action.
 		 */

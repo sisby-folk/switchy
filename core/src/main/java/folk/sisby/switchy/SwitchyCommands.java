@@ -40,25 +40,6 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 	 */
 	public static boolean IMPORT_ENABLED = false;
 
-	@Override
-	public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandBuildContext buildContext, CommandManager.RegistrationEnvironment environment) {
-		LiteralArgumentBuilder<ServerCommandSource> switchyImport = CommandManager.literal("import");
-		LiteralArgumentBuilder<ServerCommandSource> switchyRoot = CommandManager.literal("switchy");
-
-		SwitchyEvents.COMMAND_INIT_IMPORT.invoker().registerCommands(switchyImport, HELP_TEXT::put);
-		if (IMPORT_ENABLED) {
-			switchyRoot.then(switchyImport);
-		}
-
-		SwitchyEvents.COMMAND_INIT.invoker().registerCommands(switchyRoot, HELP_TEXT::put);
-		dispatcher.register(switchyRoot);
-
-		dispatcher.register(
-				CommandManager.literal("switch")
-						.then(SwitchyCommand.presetArgument(false)
-								.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.switchPreset(pl, pr, f, c.getArgument("preset", String.class))))));
-	}
-
 	static {
 		SwitchyEvents.COMMAND_INIT.register((switchyRoot, helpTextRegistry) -> {
 			switchyRoot.then(CommandManager.literal("help").executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.displayHelp(pl, f))));
@@ -99,5 +80,24 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 					helpText("commands.switchy.module.disable.help", "commands.switchy.module.disable.command", "commands.switchy.help.placeholder.module")
 			).forEach(t -> helpTextRegistry.accept(t, (p) -> true));
 		});
+	}
+
+	@Override
+	public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandBuildContext buildContext, CommandManager.RegistrationEnvironment environment) {
+		LiteralArgumentBuilder<ServerCommandSource> switchyImport = CommandManager.literal("import");
+		LiteralArgumentBuilder<ServerCommandSource> switchyRoot = CommandManager.literal("switchy");
+
+		SwitchyEvents.COMMAND_INIT_IMPORT.invoker().registerCommands(switchyImport, HELP_TEXT::put);
+		if (IMPORT_ENABLED) {
+			switchyRoot.then(switchyImport);
+		}
+
+		SwitchyEvents.COMMAND_INIT.invoker().registerCommands(switchyRoot, HELP_TEXT::put);
+		dispatcher.register(switchyRoot);
+
+		dispatcher.register(
+				CommandManager.literal("switch")
+						.then(SwitchyCommand.presetArgument(false)
+								.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.switchPreset(pl, pr, f, c.getArgument("preset", String.class))))));
 	}
 }

@@ -47,19 +47,18 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchySc
 		registerBasicPresetComponent(clientPreset -> Pair.of(Components.label(Text.literal(clientPreset.getName())), SwitchyUIPosition.SIDE_LEFT));
 	}
 
-	/**
-	 * Constructs an instance of the screen.
-	 */
-	public SwitchScreen() {
-		super();
-	}
-
 	private ScrollContainer<VerticalFlowLayout> presetsScroll;
 	private VerticalFlowLayout presetsFlow;
 	private SwitchyClientPresets presets;
 	private FlowLayout root;
 	private VerticalFlowLayout loadingOverlay;
 
+	/**
+	 * Constructs an instance of the screen.
+	 */
+	public SwitchScreen() {
+		super();
+	}
 
 	/**
 	 * Registers a component to display alongside every preset (e.g. the preset name) for addons.
@@ -104,7 +103,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchySc
 
 		ButtonComponent manageButton = Components.button(Text.literal("Manage"), b -> {
 			ManageScreen managementScreen = new ManageScreen();
-			client.setScreen(managementScreen);
+			if (client != null) client.setScreen(managementScreen);
 			managementScreen.updatePresets(presets);
 		});
 

@@ -28,8 +28,8 @@ import static folk.sisby.switchy.util.Feedback.*;
  * For programmatic integration with action outcomes, use {@link SwitchyPresets}.
  *
  * @author Sisby folk
- * @since 2.0.0
  * @see SwitchyPresets
+ * @since 2.0.0
  */
 public class SwitchyApi {
 	/**
@@ -48,7 +48,7 @@ public class SwitchyApi {
 	 */
 	public static SwitchyFeedbackStatus displayHelp(ServerPlayerEntity player, Consumer<Text> feedback) {
 		HELP_TEXT.forEach((t, p) -> {
-			if(p.test(player)) feedback.accept(t);
+			if (p.test(player)) feedback.accept(t);
 		});
 		return SwitchyFeedbackStatus.SUCCESS;
 	}
@@ -72,7 +72,7 @@ public class SwitchyApi {
 	 *
 	 * @param presets  the player's presets object.
 	 * @param feedback a consumer for text feedback.
-	 * @param id a module identifier.
+	 * @param id       a module identifier.
 	 * @return The completion status of the action.
 	 */
 	public static SwitchyFeedbackStatus displayModuleHelp(SwitchyPresets presets, Consumer<Text> feedback, Identifier id) {
@@ -206,7 +206,7 @@ public class SwitchyApi {
 	 * @param player   the relevant player.
 	 * @param presets  the player's presets object.
 	 * @param feedback a consumer for text feedback.
-	 * @param id       a module identifier
+	 * @param id       a module identifier.
 	 * @return The completion status of the action.
 	 * @see SwitchyPresets#disableModule(Identifier)
 	 */
@@ -239,7 +239,7 @@ public class SwitchyApi {
 	 * @param player   the relevant player.
 	 * @param presets  the player's presets object.
 	 * @param feedback a consumer for text feedback.
-	 * @param id       a module identifier
+	 * @param id       a module identifier.
 	 * @return The completion status of the action.
 	 * @see SwitchyPresets#enableModule(Identifier)
 	 */
@@ -261,7 +261,7 @@ public class SwitchyApi {
 	 * Imports presets, providing feedback for confirmation if this is the first time.
 	 *
 	 * @param player          The player to show confirmation and import presets to.
-	 * @param feedback        a consumer for text feedback
+	 * @param feedback        a consumer for text feedback.
 	 * @param importedPresets The presets to be imported.
 	 * @param modules         The modules to be imported.
 	 * @param command         The command to use for repeat-style confirmation.

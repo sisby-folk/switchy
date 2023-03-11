@@ -117,7 +117,9 @@
                                 <sizing>
                                     <vertical method="fixed">{{vSize}}</vertical>
                                 </sizing>
-                                <margin><left>2</left></margin>
+                                <margin>
+                                    <left>2</left>
+                                </margin>
                             </scroll>
                         </children>
                         <horizontal-alignment>center</horizontal-alignment>
@@ -144,7 +146,9 @@
                                 <text>Export</text>
                             </button>
                         </children>
-                        <margins><vertical>2</vertical></margins>
+                        <margins>
+                            <vertical>2</vertical>
+                        </margins>
                     </flow-layout>
                     <flow-layout direction="horizontal">
                         <children>
@@ -154,7 +158,9 @@
                             <flow-layout direction="vertical" id="sourceSelectorPlaceholder"/>
                         </children>
                         <vertical-alignment>center</vertical-alignment>
-                        <margins><vertical>2</vertical></margins>
+                        <margins>
+                            <vertical>2</vertical>
+                        </margins>
                     </flow-layout>
                     <flow-layout direction="horizontal">
                         <children>
@@ -188,7 +194,9 @@
                         </margins>
                     </flow-layout>
                 </children>
-                <margins><all>4</all></margins>
+                <margins>
+                    <all>4</all>
+                </margins>
             </flow-layout>
         </data-tab>
         <dialog-box>

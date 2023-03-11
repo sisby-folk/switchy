@@ -25,16 +25,16 @@ import java.util.Map;
  * @since 2.0.0
  */
 public class SwitchyFeedbackToast implements Toast {
-	private final SwitchyFeedbackStatus status;
-	private final List<OrderedText> textLines;
-	private final TextRenderer textRenderer;
-	private final int duration;
-	private final int width;
 	private static final Map<SwitchyFeedbackStatus, Integer> colours = Map.of(
 			SwitchyFeedbackStatus.SUCCESS, 0xA700FF00,
 			SwitchyFeedbackStatus.INVALID, 0xA7AAAA00,
 			SwitchyFeedbackStatus.FAIL, 0xA7FF0000
 	);
+	private final SwitchyFeedbackStatus status;
+	private final List<OrderedText> textLines;
+	private final TextRenderer textRenderer;
+	private final int duration;
+	private final int width;
 
 	private SwitchyFeedbackToast(SwitchyFeedback feedback, int duration) {
 		this.duration = duration;

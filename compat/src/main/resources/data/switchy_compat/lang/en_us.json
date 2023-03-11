@@ -1,7 +1,7 @@
 {
   "lib39:enable_enhanced_lang": true,
-  "switchy" : {
-    "compat" : {
+  "switchy": {
+    "compat": {
       "module": {
         "apoli": {
           "description": "A module that switches power data from Apace's Apoli.",

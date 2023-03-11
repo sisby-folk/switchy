@@ -127,10 +127,10 @@ public interface SwitchyPresets extends SwitchyPresetsData<SwitchyModule, Switch
 	 * @param id           a module identifier.
 	 * @param mutator      a consumer that will modify the module.
 	 * @param clazz        the class of the specified module.
-	 * @throws PresetNotFoundException when a preset with the specified name doesn't exist.
-	 * @throws ModuleNotFoundException when a module with the specified ID doesn't exist.
+	 * @throws PresetNotFoundException     when a preset with the specified name doesn't exist.
+	 * @throws ModuleNotFoundException     when a module with the specified ID doesn't exist.
 	 * @throws ClassNotAssignableException when the specified module is not of {@code <ModuleType>}.
-	 * @throws IllegalStateException   when the specified module is disabled.
+	 * @throws IllegalStateException       when the specified module is disabled.
 	 */
 	<ModuleType extends SwitchyModule> void mutateModule(ServerPlayerEntity player, String name, Identifier id, Consumer<ModuleType> mutator, Class<ModuleType> clazz) throws PresetNotFoundException, ModuleNotFoundException, ClassNotAssignableException, IllegalStateException;
 
@@ -142,9 +142,9 @@ public interface SwitchyPresets extends SwitchyPresetsData<SwitchyModule, Switch
 	 * @param id           a module identifier.
 	 * @param mutator      a consumer that will modify the specified preset's module.
 	 * @param clazz        the class of the specified module.
-	 * @throws ModuleNotFoundException when a module with the specified ID doesn't exist.
-	 * @throws ClassNotAssignableException	when the specified module is not of {@code <ModuleType>}.
-	 * @throws IllegalStateException   when the specified module is disabled.
+	 * @throws ModuleNotFoundException     when a module with the specified ID doesn't exist.
+	 * @throws ClassNotAssignableException when the specified module is not of {@code <ModuleType>}.
+	 * @throws IllegalStateException       when the specified module is disabled.
 	 */
 	<ModuleType extends SwitchyModule> void mutateAllOfModule(ServerPlayerEntity player, Identifier id, BiConsumer<String, ModuleType> mutator, Class<ModuleType> clazz) throws ModuleNotFoundException, ClassNotAssignableException, IllegalStateException;
 

@@ -59,7 +59,7 @@ public class CardinalSerializerModule implements SwitchyModule {
 	 * @throws IllegalStateException    when a {@code uniqueId} provided in {@link SwitchyModuleInfo} collides with one already registered.
 	 * @see SwitchyModuleRegistry
 	 */
-	public static void register(Identifier id, Set<Identifier> componentKeyIds, SwitchyModuleInfo moduleInfo) throws IllegalArgumentException, IllegalStateException  {
+	public static void register(Identifier id, Set<Identifier> componentKeyIds, SwitchyModuleInfo moduleInfo) throws IllegalArgumentException, IllegalStateException {
 		SwitchyModuleRegistry.registerModule(id, () -> {
 			Map<Identifier, ComponentConfig<?>> map = new HashMap<>();
 			for (Identifier identifier : componentKeyIds) {

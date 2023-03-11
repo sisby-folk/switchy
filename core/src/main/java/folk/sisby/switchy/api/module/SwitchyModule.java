@@ -20,14 +20,16 @@ public interface SwitchyModule extends SwitchySerializable, SwitchyApplicable<Se
 	 *
 	 * @param player the relevant player.
 	 */
-	default void onEnable(ServerPlayerEntity player) {}
+	default void onEnable(ServerPlayerEntity player) {
+	}
 
 	/**
 	 * Runs when a module is being deleted.
 	 * Useful for clearing references or recovering data (dropping inventories etc.).
 	 *
-	 * @param player the relevant player.
+	 * @param player      the relevant player.
 	 * @param fromDisable true if all instances of this module are being deleted at once.
 	 */
-	default void onDelete(ServerPlayerEntity player, boolean fromDisable) {}
+	default void onDelete(ServerPlayerEntity player, boolean fromDisable) {
+	}
 }

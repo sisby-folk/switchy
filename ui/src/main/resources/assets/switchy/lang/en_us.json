@@ -9,7 +9,7 @@
         }
       },
       "export": {
-        "confirm" : "Export {} modules?"
+        "confirm": "Export {} modules?"
       },
       "delete": {
         "warn": "WARNING: Preset data from enabled modules will be deleted",

@@ -60,6 +60,25 @@ public final class SwitchyModuleInfo {
 	}
 
 	/**
+	 * Deserialize the instance from NBT.
+	 *
+	 * @param nbt an NBT representation of the instance.
+	 * @return an instance constructed from the NBT.
+	 */
+	public static SwitchyModuleInfo fromNbt(NbtCompound nbt) {
+		return new SwitchyModuleInfo(
+				nbt.getBoolean(KEY_DEFAULT),
+				SwitchyModuleEditable.valueOf(nbt.getString(KEY_EDITABLE)),
+				MutableText.Serializer.fromJson(nbt.getString(KEY_DESCRIPTION))
+		)
+				.withDescriptionWhenEnabled(MutableText.Serializer.fromJson(nbt.getString(KEY_WHEN_ENABLED)))
+				.withDescriptionWhenDisabled(MutableText.Serializer.fromJson(nbt.getString(KEY_WHEN_DISABLED)))
+				.withApplyDependencies(nbt.getList(KEY_APPLY_DEPENDENCIES, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).collect(Collectors.toSet()))
+				.withUniqueIds(nbt.getList(KEY_UNIQUE_IDS, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).collect(Collectors.toSet()))
+				.withDeletionWarning(MutableText.Serializer.fromJson(nbt.getString(KEY_DELETION_WARNING)));
+	}
+
+	/**
 	 * Serialize the instance to NBT.
 	 *
 	 * @param player the client player being sent the NBT, if applicable.
@@ -80,25 +99,6 @@ public final class SwitchyModuleInfo {
 		nbtUniqueIds.addAll(uniqueIds.stream().map(Identifier::toString).map(NbtString::of).toList());
 		nbt.put(KEY_UNIQUE_IDS, nbtUniqueIds);
 		return nbt;
-	}
-
-	/**
-	 * Deserialize the instance from NBT.
-	 *
-	 * @param nbt an NBT representation of the instance.
-	 * @return an instance constructed from the NBT.
-	 */
-	public static SwitchyModuleInfo fromNbt(NbtCompound nbt) {
-		return new SwitchyModuleInfo(
-				nbt.getBoolean(KEY_DEFAULT),
-				SwitchyModuleEditable.valueOf(nbt.getString(KEY_EDITABLE)),
-				MutableText.Serializer.fromJson(nbt.getString(KEY_DESCRIPTION))
-		)
-				.withDescriptionWhenEnabled(MutableText.Serializer.fromJson(nbt.getString(KEY_WHEN_ENABLED)))
-				.withDescriptionWhenDisabled(MutableText.Serializer.fromJson(nbt.getString(KEY_WHEN_DISABLED)))
-				.withApplyDependencies(nbt.getList(KEY_APPLY_DEPENDENCIES, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).collect(Collectors.toSet()))
-				.withUniqueIds(nbt.getList(KEY_UNIQUE_IDS, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).collect(Collectors.toSet()))
-				.withDeletionWarning(MutableText.Serializer.fromJson(nbt.getString(KEY_DELETION_WARNING)));
 	}
 
 	/**

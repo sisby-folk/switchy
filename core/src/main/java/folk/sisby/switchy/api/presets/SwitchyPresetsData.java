@@ -52,8 +52,8 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 *
 	 * @param name the desired name for the new preset.
 	 * @return the newly created preset.
-	 * @throws InvalidWordException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)}).
-	 * @throws IllegalStateException    when a preset with the provided name already exists.
+	 * @throws InvalidWordException  when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)}).
+	 * @throws IllegalStateException when a preset with the provided name already exists.
 	 */
 	Preset newPreset(String name) throws InvalidWordException, IllegalStateException;
 
@@ -86,9 +86,9 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 *
 	 * @param name    the case-insensitive name of a preset.
 	 * @param newName the new name for the specified preset. a single word matching {@code azAZ09_-.+}.
-	 * @throws PresetNotFoundException  when a preset with the specified name doesn't exist.
-	 * @throws InvalidWordException when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)}).
-	 * @throws IllegalStateException    when a preset with the provided name already exists.
+	 * @throws PresetNotFoundException when a preset with the specified name doesn't exist.
+	 * @throws InvalidWordException    when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)}).
+	 * @throws IllegalStateException   when a preset with the provided name already exists.
 	 */
 	void renamePreset(String name, String newName) throws PresetNotFoundException, InvalidWordException, IllegalStateException;
 
@@ -206,10 +206,10 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 * @param id           a module identifier.
 	 * @param clazz        the class of the specified module.
 	 * @return the specified module stored in the specified preset.
-	 * @throws PresetNotFoundException  when a preset with the specified name doesn't exist.
-	 * @throws ModuleNotFoundException  when a module with the specified ID doesn't exist.
+	 * @throws PresetNotFoundException     when a preset with the specified name doesn't exist.
+	 * @throws ModuleNotFoundException     when a module with the specified ID doesn't exist.
 	 * @throws ClassNotAssignableException when the specified module is not of {@code <ModuleType>}.
-	 * @throws IllegalStateException    when the specified module is disabled.
+	 * @throws IllegalStateException       when the specified module is disabled.
 	 */
 	<ModuleType extends Module> ModuleType getModule(String name, Identifier id, Class<ModuleType> clazz) throws PresetNotFoundException, ModuleNotFoundException, ClassNotAssignableException, IllegalStateException;
 
@@ -230,9 +230,9 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 * @param id           a module identifier.
 	 * @param clazz        the class of the specified module.
 	 * @return a map of each preset to the specified module.
-	 * @throws ModuleNotFoundException  when a module with the specified ID doesn't exist.
+	 * @throws ModuleNotFoundException     when a module with the specified ID doesn't exist.
 	 * @throws ClassNotAssignableException when the specified module is not of {@code <ModuleType>}.
-	 * @throws IllegalStateException    when the specified module is disabled.
+	 * @throws IllegalStateException       when the specified module is disabled.
 	 */
 	<ModuleType extends Module> Map<String, ModuleType> getAllOfModule(Identifier id, Class<ModuleType> clazz) throws ModuleNotFoundException, ClassNotAssignableException, IllegalStateException;
 

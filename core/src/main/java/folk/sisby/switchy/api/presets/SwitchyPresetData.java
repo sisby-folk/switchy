@@ -29,8 +29,8 @@ public interface SwitchyPresetData<Module extends SwitchySerializable> extends S
 	 * Gets the specified module.
 	 *
 	 * @param id a module identifier.
-	 * @throws ModuleNotFoundException when a module with the specified ID doesn't exist.
 	 * @return the specified module stored in this preset.
+	 * @throws ModuleNotFoundException when a module with the specified ID doesn't exist.
 	 */
 	Module getModule(Identifier id);
 
@@ -40,9 +40,9 @@ public interface SwitchyPresetData<Module extends SwitchySerializable> extends S
 	 * @param <ModuleType> the class of module to return.
 	 * @param id           a module identifier.
 	 * @param clazz        the class of the specified module.
-	 * @throws ModuleNotFoundException when a module with the specified ID doesn't exist.
-	 * @throws ClassNotAssignableException	when the specified module is not of {@code <ModuleType>}.
 	 * @return the specified module stored in this preset.
+	 * @throws ModuleNotFoundException     when a module with the specified ID doesn't exist.
+	 * @throws ClassNotAssignableException when the specified module is not of {@code <ModuleType>}.
 	 */
 	<ModuleType extends Module> ModuleType getModule(Identifier id, Class<ModuleType> clazz) throws ModuleNotFoundException, ClassNotAssignableException;
 

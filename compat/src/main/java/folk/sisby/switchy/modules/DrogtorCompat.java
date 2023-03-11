@@ -22,13 +22,13 @@ import static folk.sisby.switchy.util.Feedback.translatable;
 public class DrogtorCompat extends DrogtorCompatData implements SwitchyModule, SwitchyModuleTransferable {
 	static {
 		SwitchyModuleRegistry.registerModule(ID, DrogtorCompat::new, new SwitchyModuleInfo(
-				true,
-				SwitchyModuleEditable.ALWAYS_ALLOWED,
-				translatable("switchy.compat.module.drogtor.description")
-		)
-				.withDescriptionWhenEnabled(translatable("switchy.compat.module.drogtor.enabled"))
-				.withDescriptionWhenDisabled(translatable("switchy.compat.module.drogtor.disabled"))
-				.withDeletionWarning(translatable("switchy.compat.module.drogtor.warning"))
+						true,
+						SwitchyModuleEditable.ALWAYS_ALLOWED,
+						translatable("switchy.compat.module.drogtor.description")
+				)
+						.withDescriptionWhenEnabled(translatable("switchy.compat.module.drogtor.enabled"))
+						.withDescriptionWhenDisabled(translatable("switchy.compat.module.drogtor.disabled"))
+						.withDeletionWarning(translatable("switchy.compat.module.drogtor.warning"))
 		);
 	}
 

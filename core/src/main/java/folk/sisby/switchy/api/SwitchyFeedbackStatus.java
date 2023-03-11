@@ -2,6 +2,7 @@ package folk.sisby.switchy.api;
 
 /**
  * Defines the output of an API action, for providing feedback to players.
+ *
  * @see SwitchyFeedback
  */
 public enum SwitchyFeedbackStatus {

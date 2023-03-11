@@ -118,7 +118,7 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 	 * @param list    serialized module list.
 	 * @param enabled whether to enable or disable modules from the list.
 	 * @param silent  whether to log missing or invalid modules.
-	 *                Toggles the enabled module map using an NBTList
+	 *                Toggles the enabled module map using an NBTList.
 	 */
 	void toggleModulesFromNbt(NbtList list, Boolean enabled, Boolean silent) {
 		list.forEach((e) -> {
@@ -263,7 +263,8 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 	@SuppressWarnings("unchecked")
 	public <ModuleType extends Module> ModuleType getModule(String name, Identifier id, Class<ModuleType> clazz) throws PresetNotFoundException, ModuleNotFoundException, ClassNotAssignableException, IllegalStateException {
 		Module module = getModule(name, id);
-		if (!clazz.isAssignableFrom(module.getClass())) throw new ClassNotAssignableException("Module '" + id.toString(), module, clazz);
+		if (!clazz.isAssignableFrom(module.getClass()))
+			throw new ClassNotAssignableException("Module '" + id.toString(), module, clazz);
 		return (ModuleType) module;
 	}
 

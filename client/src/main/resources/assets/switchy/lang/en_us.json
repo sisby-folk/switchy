@@ -7,7 +7,7 @@
         "sent": "Requested export from server",
         "success": "Presets saved to {}",
         "fail": "Saving to file failed! See log for details",
-        "confirm" : "Export {} modules?"
+        "confirm": "Export {} modules?"
       },
       "import": {
         "command": "/switchy_client import {}",

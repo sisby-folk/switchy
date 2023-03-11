@@ -89,9 +89,12 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 				if (!componentIds.isEmpty()) {
 					try {
 						SwitchyModuleInfo info = new SwitchyModuleInfo(moduleDefault, moduleEditable, Text.literal(moduleDescription));
-						if (moduleOptions.has(KEY_DESCRIPTION_ENABLED)) info.withDescriptionWhenEnabled(Text.literal(moduleOptions.get(KEY_DESCRIPTION_ENABLED).getAsString()));
-						if (moduleOptions.has(KEY_DESCRIPTION_DISABLED)) info.withDescriptionWhenDisabled(Text.literal(moduleOptions.get(KEY_DESCRIPTION_DISABLED).getAsString()));
-						if (moduleOptions.has(KEY_DESCRIPTION_DELETION_WARNING)) info.withDeletionWarning(Text.literal(moduleOptions.get(KEY_DESCRIPTION_DELETION_WARNING).getAsString()));
+						if (moduleOptions.has(KEY_DESCRIPTION_ENABLED))
+							info.withDescriptionWhenEnabled(Text.literal(moduleOptions.get(KEY_DESCRIPTION_ENABLED).getAsString()));
+						if (moduleOptions.has(KEY_DESCRIPTION_DISABLED))
+							info.withDescriptionWhenDisabled(Text.literal(moduleOptions.get(KEY_DESCRIPTION_DISABLED).getAsString()));
+						if (moduleOptions.has(KEY_DESCRIPTION_DELETION_WARNING))
+							info.withDeletionWarning(Text.literal(moduleOptions.get(KEY_DESCRIPTION_DELETION_WARNING).getAsString()));
 						CardinalSerializerModule.register(moduleId, componentIds, info);
 					} catch (IllegalStateException ignoredRegistrationEx) {
 						Switchy.LOGGER.warn("[Switchy] CCA module {} tried to register a component that already has a module!, skipping...", moduleId);

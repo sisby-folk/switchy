@@ -80,9 +80,9 @@ public final class SwitchyEvents {
 	@FunctionalInterface
 	public interface CommandInit extends EventAwareListener {
 		/**
-		 * @param switchyArgument the literal {@code /switchy} argument to add to.
+		 * @param switchyArgument  the literal {@code /switchy} argument to add to.
 		 * @param helpTextRegistry a registry to add lines to {@code /switchy help}.
-		 *                         Lines should be generated using {@link folk.sisby.switchy.util.Feedback#helpText(String, String, String...)}
+		 *                         Lines should be generated using {@link folk.sisby.switchy.util.Feedback#helpText(String, String, String...)}.
 		 */
 		void registerCommands(LiteralArgumentBuilder<ServerCommandSource> switchyArgument, BiConsumer<Text, Predicate<ServerPlayerEntity>> helpTextRegistry);
 	}
@@ -96,7 +96,7 @@ public final class SwitchyEvents {
 	@FunctionalInterface
 	public interface CommandInitImport extends EventAwareListener {
 		/**
-		 * @param importArgument the literal {@code /switchy import} argument to add to.
+		 * @param importArgument   the literal {@code /switchy import} argument to add to.
 		 * @param helpTextRegistry a registry to add lines to {@code /switchy help}.
 		 *                         Lines should be generated using {@link folk.sisby.switchy.util.Feedback#helpText(String, String, String...)}.
 		 *                         Predicate to determine whether commands should be shown.
