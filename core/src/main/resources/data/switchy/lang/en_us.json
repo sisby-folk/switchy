@@ -8,8 +8,7 @@
         "line": "{1} - {2}",
         "placeholder": {
           "module": "[name]",
-          "preset": "[name]",
-          "file": "[file]"
+          "preset": "[name]"
         }
       },
       "list": {

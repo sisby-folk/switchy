@@ -1,5 +1,6 @@
 package folk.sisby.switchy.api.module;
 
+import folk.sisby.switchy.api.SwitchySerializable;
 import folk.sisby.switchy.client.api.module.SwitchyClientModule;
 import net.minecraft.nbt.NbtCompound;
 
@@ -11,10 +12,12 @@ import net.minecraft.nbt.NbtCompound;
  * @see SwitchyClientModule
  * @since 2.0.0
  */
-public interface SwitchyModuleTransferable {
+public interface SwitchyModuleTransferable extends SwitchySerializable {
 	/**
 	 * @return an NBT compound legible to {@link SwitchyClientModule#fillFromNbt(NbtCompound)} on the client side.
 	 * Runs on the server, must convert data into a format usable for any client with the right {@link SwitchyClientModule}.
 	 */
-	NbtCompound toClientNbt();
+	default NbtCompound toClientNbt() {
+		return toNbt();
+	}
 }

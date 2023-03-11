@@ -1,7 +1,6 @@
 package folk.sisby.switchy.modules;
 
 import folk.sisby.switchy.api.module.*;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
 import org.samo_lego.fabrictailor.casts.TailoredPlayer;
@@ -48,10 +47,5 @@ public class FabricTailorModule extends FabricTailorModuleData implements Switch
 		if (skinValue != null && skinSignature != null) {
 			tailoredPlayer.setSkin(skinValue, skinSignature, true);
 		}
-	}
-
-	@Override
-	public NbtCompound toClientNbt() {
-		return toNbt();
 	}
 }

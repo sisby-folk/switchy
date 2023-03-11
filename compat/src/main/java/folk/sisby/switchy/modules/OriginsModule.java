@@ -110,11 +110,6 @@ public class OriginsModule implements SwitchyModule, SwitchyModuleTransferable {
 	}
 
 	@Override
-	public NbtCompound toClientNbt() {
-		return toNbt();
-	}
-
-	@Override
 	public void fillFromNbt(NbtCompound nbt) {
 		origins = new HashMap<>();
 		if (nbt.contains(KEY_ORIGINS_LIST, NbtElement.LIST_TYPE)) {

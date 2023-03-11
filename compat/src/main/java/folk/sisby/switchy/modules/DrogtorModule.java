@@ -3,7 +3,6 @@ package folk.sisby.switchy.modules;
 import com.unascribed.drogtor.DrogtorPlayer;
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.module.*;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,10 +55,5 @@ public class DrogtorModule extends DrogtorModuleData implements SwitchyModule, S
 			Switchy.LOGGER.info("[Switchy] Player Nickname Change: '" + oldName + "' -> '" + newName + "' [" + player.getGameProfile().getName() + "]");
 		drogtorPlayer.drogtor$setNameColor(nameColor);
 		drogtorPlayer.drogtor$setBio(bio);
-	}
-
-	@Override
-	public NbtCompound toClientNbt() {
-		return toNbt();
 	}
 }

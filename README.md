@@ -64,26 +64,50 @@ Remember, switching does nothing on its own! Make sure you install a mod from ab
 
 4. `/switchy set [name]` or `/switch [name]` will switch between existing presets
 
+### How do I change a preset nickname? or skin?
+
+Switch to the module you'd like to change things for, then just do it as normal! <br/>
+`/nick` for drogtor nicknames, `k` for fabric tailor skins, etc.<br/>
+When you switch away, they'll be saved - and when you switch back, they'll be restored.
+
 ### Customize your modules
 
 When a module is **Enabled**, it makes things "switch" (load and save) per-preset.
 
 `/switchy module enable/disable [name]` will toggle this for your presets.
 
-`/switchy module help` will tell you about a preset, and what enabling it does.
+`/switchy module help` will tell you about a module, and what enabling it does.
 
-### Import/Export
+### UI
 
-These commands require switchy to also be installed on the client.
+As of `2.0.0`, installing Switchy on the client as well as the server provides you with a UI, defaulted to semicolon (`;`).
+
+This provides a visual preview of all your presets, and the ability to click to switch between them.
+
+[Screenshot]
+
+It also provides the management screen, where you can perform all the functions specified above in a visual way.
+
+[Screenshot]
+
+[Screenshot]
+
+Additionally, you can import and export your presets to a file for use on other servers/worlds.
+
+[Screenshot]
+
+### Command-based Import/Export
+
+Instead of the UI, you can also use commands:
 
 `/switchy_client export` will export all of your presets and modules to a file.
 
-You can then move to another server or singleplayer world.
+`/switchy_client import [filename] [exclude] ` will import all *allowed* modules, except those in `[exclude]`
 
-`/switchy_client import [filename]` will import all *allowed* modules (see below).
+`/switchy_client import [filename] [exclude] [operator]` will import all *allowed* modules, except those in `[exclude]`,
+adding those in `[operator]` if you're a server operator.
 
-`/switchy_client import [filename] [exclude] [operator]` will import all allowed modules, except modules in `[exclude]`,
-plus any modules in `[operator]` if you have OP level 2. You can use `~` to specify no modules.
+You can use `~` to specify no modules.
 
 ## Module Editing Permissions
 
@@ -112,20 +136,19 @@ maven { // Switchy
 }
 maven { // Lib39
     url 'https://repo.sleeping.town'
-    content {
-        includeGroup 'com.unascribed'
-    }
 }
 maven { // Server Translations API
-    url 'https://maven.nucleoid.xyz/'
-    content {
-        includeGroup 'fr.catcore'
-    }
+    url "https://maven.nucleoid.xyz/"
+}
+maven { // owo-lib
+    url 'https://maven.wispforest.io'
 }
 ```
 
 If you want to test with switchy locally, add `modLocalRuntime`.<br/>
 if you're making an addon, just use `modImplementation`.<br/>
+
+### Subprojects
 
 `switchy-core` includes commands and the API. <br/>
 `switchy-client` enables import/export commands and a client API. <br/>
@@ -134,6 +157,14 @@ if you're making an addon, just use `modImplementation`.<br/>
 `switchy-compat` provides the built-in modules for drogtor etc. <br/>
 `switchy-compat-ui` adds ui support to compat. <br/>
 
+### API
+
+Switchy includes a rich API for both client and server addons for performing all of its basic functions.
+
+Try `SwitchyPresets` (via `SwitchyPlayer.getPresets()`), `SwitchyApi`, `SwitchyClientApi`, or for events check `SwitchyEvents` and `SwitchyClientEvents`.
+
+### Modules
+
 Adding new Modules allows more data to be switched per-preset. They only need to:
 
 - Load and Save their data using NBT.
@@ -141,12 +172,19 @@ Adding new Modules allows more data to be switched per-preset. They only need to
 - Load their data to the player
 
 Just implement `SwitchyModule` and register it with `SwitchyModuleRegistry` using `SwitchyEvents.Init` -
-See [Switchy Inventories](https://github.com/sisby-folk/switchy-inventories) for an example.
+See [Switchy Inventories](https://github.com/sisby-folk/switchy-inventories) for an example. (Remember to add the `events` entrypoint in your QMJ)
 
-Switchy also includes am API for all its basic operations, as well as an events API for tracking switches and the
-current preset.
+#### Client Integration
 
-### Data-Driven CCA Modules
+Modules can integrate with the client if they implement `SwitchyModuleTransferable` and have a matching `SwitchyClientModule` registered with `SwitchyClientModuleRegistry`.
+
+The `SwitchySerializeable` portion of the server module can be split out and reused for both sides if the held data is usable on the client as-is.
+
+Client modules don't do anything on their own, so implement `SwitchyUIModule` if you'd like to add previewing on the switch screen.
+
+See inventories or [compat-ui](https://github.com/sisby-folk/switchy/tree/1.19/compat-ui/src/main/java/folk/sisby/switchy/client/modules) for varying examples.
+
+#### Data-Driven CCA Modules
 
 If your mod uses the [Cardinal Components API](https://github.com/OnyxStudios/Cardinal-Components-API) to store its
 player/entity data, you can instead register a module using an instance of `CardinalSerializerModule`.
@@ -154,7 +192,7 @@ player/entity data, you can instead register a module using an instance of `Card
 If your component performs all of its necessary sync logic within writeToNbt/readFromNbt (or has none) - you can instead
 use the static `register` method or even define the module in data.
 
-Any data matching `data/*/switchy_cca_modules/*.json` will be
+Any data matching `data/*/switchy_cardinal/*.json` will be
 loaded [like so](https://github.com/sisby-folk/switchy/blob/1.19/compat/src/main/resources/data/switchy/switchy_cardinal/lanyard.json):
 
 - File namespace and name - module namespace and path.

@@ -79,23 +79,20 @@ allprojects {
 	repositories {
 		// Modrinth
 		maven {
-			url = "https://api.modrinth.com/maven"
+			url "https://api.modrinth.com/maven"
 			content {
 				includeGroup "maven.modrinth"
 			}
 		}
 
-		maven {
+		maven { // Lib39
 			url 'https://repo.sleeping.town'
-			content {
-				includeGroup 'com.unascribed'
-				includeGroup 'gay.lemmaeof'
-			}
 		}
-
-		// Nucleoid
-		maven {
-			url = uri("https://maven.nucleoid.xyz/")
+		maven { // Server Translations API
+			url "https://maven.nucleoid.xyz/"
+		}
+		maven { // owo-lib
+			url 'https://maven.wispforest.io'
 		}
 
 		// Fabric Tailor
@@ -103,10 +100,10 @@ allprojects {
 
 		// Origins
 		maven {
-			url = 'https://ladysnake.jfrog.io/artifactory/mods'
+			url 'https://ladysnake.jfrog.io/artifactory/mods'
 		}
 		maven {
-			url = 'https://maven.cafeteria.dev'
+			url 'https://maven.cafeteria.dev'
 			content {
 				includeGroup 'net.adriantodt.fabricmc'
 			}
@@ -123,10 +120,6 @@ allprojects {
 		}
 		maven { // ModMenu
 			url "https://maven.terraformersmc.com/"
-		}
-
-		maven { // owo-lib
-			url 'https://maven.wispforest.io'
 		}
 
 		// Jitpack

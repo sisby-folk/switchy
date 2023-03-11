@@ -1,7 +1,7 @@
 {
   "lib39:enable_enhanced_lang": true,
   "commands": {
-    "switchy": {
+    "switchy_client": {
       "export": {
         "command": "/switchy_client export",
         "help": "save presets to a file",
@@ -15,6 +15,9 @@
           "construct": "Failed to construct Presets from NBT",
           "permission": "You do not have permission to specify operator modules: {}"
         }
+      },
+      "placeholder": {
+        "file": "[file]"
       }
     }
   }
