@@ -24,7 +24,7 @@ You can hotswap these features out-of-the box by installing their relevant mods:
     - [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) (Note: Switchy force-allows nickname
       self-assignment)
 - Player Skin with [Fabric Tailor](https://modrinth.com/mod/fabrictailor)
-- Player Origin with [Origins](https://modrinth.com/mod/origins/versions) (includes all layers,
+- Player Origin with [Origins](https://modrinth.com/mod/origins) (includes all layers,
   e.g. [Statures](https://modrinth.com/mod/tinkerers-statures))
     - [Contributed by [MerchantPug](https://github.com/MerchantPug)] Apoli power state - e.g. Origin power inventories,
       cooldowns
@@ -187,10 +187,7 @@ See inventories or [compat-ui](https://github.com/sisby-folk/switchy/tree/1.19/c
 #### Data-Driven CCA Modules
 
 If your mod uses the [Cardinal Components API](https://github.com/OnyxStudios/Cardinal-Components-API) to store its
-player/entity data, you can instead register a module using an instance of `CardinalSerializerModule`.
-
-If your component performs all of its necessary sync logic within writeToNbt/readFromNbt (or has none) - you can instead
-use the static `register` method or even define the module in data.
+player/entity data, you can instead register a module using `CardinalSerializerModule.from()`, or `register()` if your component doesn't need extra sync logic besides `writeToNbt/readFromNbt` (or just use data).
 
 Any data matching `data/*/switchy_cardinal/*.json` will be
 loaded [like so](https://github.com/sisby-folk/switchy/blob/1.19/compat/src/main/resources/data/switchy/switchy_cardinal/lanyard.json):
