@@ -84,7 +84,7 @@ As of `2.0.0`, installing Switchy on the client as well as the server provides y
 
 This provides a visual preview of all your presets, and the ability to click to switch between them.
 
-[Screenshot]
+![image](https://user-images.githubusercontent.com/55819817/224468718-55137a82-8269-4ce6-9bb5-0c5ce8322a68.png)
 
 It also provides the management screen, where you can perform all the functions specified above in a visual way.
 
