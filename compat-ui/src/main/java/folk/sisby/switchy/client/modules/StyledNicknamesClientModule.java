@@ -3,6 +3,7 @@ package folk.sisby.switchy.client.modules;
 import com.mojang.datafixers.util.Pair;
 import folk.sisby.switchy.client.api.module.SwitchyClientModule;
 import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
+import folk.sisby.switchy.modules.StyledNicknamesModule;
 import folk.sisby.switchy.ui.api.SwitchyUIPosition;
 import folk.sisby.switchy.ui.api.module.SwitchyUIModule;
 import io.wispforest.owo.ui.component.Components;
@@ -18,24 +19,24 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
  *
  * @author Sisby folk
  * @see SwitchyUIModule
- * @see folk.sisby.switchy.modules.StyledNicknamesCompat
+ * @see StyledNicknamesModule
  * @since 2.0.0
  */
 @ClientOnly
-public class StyledNicknamesCompatUI implements SwitchyClientModule, SwitchyUIModule {
+public class StyledNicknamesClientModule implements SwitchyClientModule, SwitchyUIModule {
 	/**
 	 * Identifier for this module.
-	 * Must match {@link folk.sisby.switchy.modules.StyledNicknamesCompat}.
+	 * Must match {@link StyledNicknamesModule}.
 	 */
 	public static final Identifier ID = new Identifier("switchy", "styled_nicknames");
 	/**
 	 * The NBT key where the nickname (in serialized text format) is stored.
-	 * Must match {@link folk.sisby.switchy.modules.StyledNicknamesCompat#toClientNbt()}.
+	 * Must match {@link StyledNicknamesModule#toClientNbt()}.
 	 */
 	public static final String KEY_NICKNAME = "styled_nickname";
 
 	static {
-		SwitchyClientModuleRegistry.registerModule(ID, StyledNicknamesCompatUI::new);
+		SwitchyClientModuleRegistry.registerModule(ID, StyledNicknamesClientModule::new);
 	}
 
 	/**

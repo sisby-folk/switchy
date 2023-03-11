@@ -13,12 +13,12 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  *
  * @author Sisby folk
  * @see SwitchyModule
- * @see FabricTailorCompatData
+ * @see FabricTailorModuleData
  * @since 1.0.0
  */
-public class FabricTailorCompat extends FabricTailorCompatData implements SwitchyModule, SwitchyModuleTransferable {
+public class FabricTailorModule extends FabricTailorModuleData implements SwitchyModule, SwitchyModuleTransferable {
 	static {
-		SwitchyModuleRegistry.registerModule(ID, FabricTailorCompat::new, new SwitchyModuleInfo(
+		SwitchyModuleRegistry.registerModule(ID, FabricTailorModule::new, new SwitchyModuleInfo(
 						true,
 						SwitchyModuleEditable.ALWAYS_ALLOWED,
 						translatable("switchy.compat.module.fabrictailor.description")

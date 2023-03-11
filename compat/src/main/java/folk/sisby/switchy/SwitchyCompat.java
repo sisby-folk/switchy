@@ -20,12 +20,12 @@ public class SwitchyCompat implements SwitchyEvents.Init {
 
 	@Override
 	public void onInitialize() {
-		if (QuiltLoader.isModLoaded("drogtor")) DrogtorCompat.touch();
-		if (QuiltLoader.isModLoaded("styled-nicknames")) StyledNicknamesCompat.touch();
-		if (QuiltLoader.isModLoaded("fabrictailor")) FabricTailorCompat.touch();
-		if (QuiltLoader.isModLoaded("origins")) OriginsCompat.touch();
-		if (QuiltLoader.isModLoaded("apoli")) ApoliCompat.touch();
-		if (QuiltLoader.isModLoaded("pehkui")) PehkuiCompat.touch();
-		if (QuiltLoader.isModLoaded("fabrication")) FabricationArmorCompat.touch();
+		if (QuiltLoader.isModLoaded("drogtor")) DrogtorModule.touch();
+		if (QuiltLoader.isModLoaded("styled-nicknames")) StyledNicknamesModule.touch();
+		if (QuiltLoader.isModLoaded("fabrictailor")) FabricTailorModule.touch();
+		if (QuiltLoader.isModLoaded("origins")) OriginsModule.touch();
+		if (QuiltLoader.isModLoaded("apoli")) ApoliModule.touch();
+		if (QuiltLoader.isModLoaded("pehkui")) PehkuiModule.touch();
+		if (QuiltLoader.isModLoaded("fabrication")) FabricationArmorModule.touch();
 	}
 }

@@ -8,7 +8,8 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.util.UUIDTypeAdapter;
 import folk.sisby.switchy.client.api.module.SwitchyClientModule;
 import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
-import folk.sisby.switchy.modules.FabricTailorCompatData;
+import folk.sisby.switchy.modules.FabricTailorModuleData;
+import folk.sisby.switchy.modules.FabricTailorModule;
 import folk.sisby.switchy.ui.api.SwitchyUIPosition;
 import folk.sisby.switchy.ui.api.module.SwitchyUIModule;
 import io.wispforest.owo.ui.component.Components;
@@ -28,13 +29,13 @@ import java.util.UUID;
  *
  * @author Sisby folk
  * @see SwitchyUIModule
- * @see folk.sisby.switchy.modules.FabricTailorCompat
+ * @see FabricTailorModule
  * @since 2.0.0
  */
 @ClientOnly
-public class FabricTailorCompatUI extends FabricTailorCompatData implements SwitchyClientModule, SwitchyUIModule {
+public class FabricTailorClientModule extends FabricTailorModuleData implements SwitchyClientModule, SwitchyUIModule {
 	static {
-		SwitchyClientModuleRegistry.registerModule(ID, FabricTailorCompatUI::new);
+		SwitchyClientModuleRegistry.registerModule(ID, FabricTailorClientModule::new);
 	}
 
 	/**

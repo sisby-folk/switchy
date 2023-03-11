@@ -10,10 +10,10 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Sisby folk
  * @see SwitchySerializable
- * @see FabricTailorCompat
+ * @see FabricTailorModule
  * @since 1.0.0
  */
-public class FabricTailorCompatData implements SwitchySerializable {
+public class FabricTailorModuleData implements SwitchySerializable {
 	/**
 	 * Identifier for this module.
 	 */

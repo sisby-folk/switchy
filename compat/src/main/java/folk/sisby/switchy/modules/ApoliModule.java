@@ -31,7 +31,7 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  * @see SwitchyModule
  * @since 1.5.0
  */
-public class ApoliCompat implements SwitchyModule {
+public class ApoliModule implements SwitchyModule {
 	/**
 	 * Identifier for this module.
 	 */
@@ -43,7 +43,7 @@ public class ApoliCompat implements SwitchyModule {
 	public static final String KEY_POWER_DATA_LIST = "PowerData";
 
 	static {
-		SwitchyModuleRegistry.registerModule(ID, ApoliCompat::new, new SwitchyModuleInfo(
+		SwitchyModuleRegistry.registerModule(ID, ApoliModule::new, new SwitchyModuleInfo(
 				true,
 				SwitchyModuleEditable.OPERATOR,
 				translatable("switchy.compat.module.apoli.description")
@@ -51,7 +51,7 @@ public class ApoliCompat implements SwitchyModule {
 				.withDescriptionWhenEnabled(translatable("switchy.compat.module.apoli.enabled"))
 				.withDescriptionWhenDisabled(translatable("switchy.compat.module.apoli.disabled"))
 				.withDeletionWarning(translatable("switchy.compat.module.apoli.warning"))
-				.withApplyDependencies(Set.of(OriginsCompat.ID)));
+				.withApplyDependencies(Set.of(OriginsModule.ID)));
 	}
 
 	/**

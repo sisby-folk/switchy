@@ -3,7 +3,8 @@ package folk.sisby.switchy.client.modules;
 import com.mojang.datafixers.util.Pair;
 import folk.sisby.switchy.client.api.module.SwitchyClientModule;
 import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
-import folk.sisby.switchy.modules.DrogtorCompatData;
+import folk.sisby.switchy.modules.DrogtorModuleData;
+import folk.sisby.switchy.modules.DrogtorModule;
 import folk.sisby.switchy.ui.api.SwitchyUIPosition;
 import folk.sisby.switchy.ui.api.module.SwitchyUIModule;
 import io.wispforest.owo.ui.component.Components;
@@ -16,13 +17,13 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
  *
  * @author Sisby folk
  * @see SwitchyUIModule
- * @see folk.sisby.switchy.modules.DrogtorCompat
+ * @see DrogtorModule
  * @since 2.0.0
  */
 @ClientOnly
-public class DrogtorCompatUI extends DrogtorCompatData implements SwitchyClientModule, SwitchyUIModule {
+public class DrogtorClientModule extends DrogtorModuleData implements SwitchyClientModule, SwitchyUIModule {
 	static {
-		SwitchyClientModuleRegistry.registerModule(DrogtorCompatUI.ID, DrogtorCompatUI::new);
+		SwitchyClientModuleRegistry.registerModule(DrogtorClientModule.ID, DrogtorClientModule::new);
 	}
 
 	/**

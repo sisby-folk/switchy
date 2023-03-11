@@ -21,7 +21,7 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  * @see SwitchyModule
  * @since 1.7.2
  */
-public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleTransferable {
+public class StyledNicknamesModule implements SwitchyModule, SwitchyModuleTransferable {
 	/**
 	 * Identifier for this module.
 	 */
@@ -34,7 +34,7 @@ public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleTransf
 
 	// Runs on touch() - but only once.
 	static {
-		SwitchyModuleRegistry.registerModule(ID, StyledNicknamesCompat::new, new SwitchyModuleInfo(
+		SwitchyModuleRegistry.registerModule(ID, StyledNicknamesModule::new, new SwitchyModuleInfo(
 						true,
 						SwitchyModuleEditable.ALWAYS_ALLOWED,
 						translatable("switchy.compat.module.styled_nicknames.description")

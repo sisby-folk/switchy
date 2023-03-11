@@ -1,10 +1,10 @@
 package folk.sisby.switchy.client;
 
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
-import folk.sisby.switchy.client.modules.DrogtorCompatUI;
-import folk.sisby.switchy.client.modules.FabricTailorCompatUI;
-import folk.sisby.switchy.client.modules.OriginsCompatUI;
-import folk.sisby.switchy.client.modules.StyledNicknamesCompatUI;
+import folk.sisby.switchy.client.modules.DrogtorClientModule;
+import folk.sisby.switchy.client.modules.FabricTailorClientModule;
+import folk.sisby.switchy.client.modules.OriginsClientModule;
+import folk.sisby.switchy.client.modules.StyledNicknamesClientModule;
 import org.quiltmc.loader.api.QuiltLoader;
 
 /**
@@ -18,9 +18,9 @@ import org.quiltmc.loader.api.QuiltLoader;
 public class SwitchyCompatClient implements SwitchyClientEvents.Init {
 	@Override
 	public void onInitialize() {
-		DrogtorCompatUI.touch();
-		FabricTailorCompatUI.touch();
-		StyledNicknamesCompatUI.touch();
-		if (QuiltLoader.isModLoaded("origins")) OriginsCompatUI.touch();
+		DrogtorClientModule.touch();
+		FabricTailorClientModule.touch();
+		StyledNicknamesClientModule.touch();
+		if (QuiltLoader.isModLoaded("origins")) OriginsClientModule.touch();
 	}
 }

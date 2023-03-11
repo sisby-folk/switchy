@@ -25,7 +25,7 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  * @see SwitchyModule
  * @since 1.3.0
  */
-public class PehkuiCompat implements SwitchyModule {
+public class PehkuiModule implements SwitchyModule {
 	/**
 	 * Identifier for this module.
 	 */
@@ -37,7 +37,7 @@ public class PehkuiCompat implements SwitchyModule {
 	public static final Map<ScaleType, String> scaleKeys = new HashMap<>();
 
 	static {
-		SwitchyModuleRegistry.registerModule(ID, PehkuiCompat::new, new SwitchyModuleInfo(
+		SwitchyModuleRegistry.registerModule(ID, PehkuiModule::new, new SwitchyModuleInfo(
 						true,
 						SwitchyModuleEditable.OPERATOR,
 						translatable("switchy.compat.module.pehkui.description")
@@ -46,7 +46,7 @@ public class PehkuiCompat implements SwitchyModule {
 						.withDescriptionWhenDisabled(translatable("switchy.compat.module.pehkui.disabled"))
 						.withDeletionWarning(translatable("switchy.compat.module.pehkui.warning"))
 		);
-		List.of(ScaleTypes.HEIGHT, ScaleTypes.WIDTH, ScaleTypes.MODEL_HEIGHT, ScaleTypes.MODEL_WIDTH).forEach(PehkuiCompat::addScaleType);
+		List.of(ScaleTypes.HEIGHT, ScaleTypes.WIDTH, ScaleTypes.MODEL_HEIGHT, ScaleTypes.MODEL_WIDTH).forEach(PehkuiModule::addScaleType);
 	}
 
 	/**
@@ -54,7 +54,7 @@ public class PehkuiCompat implements SwitchyModule {
 	 */
 	public final Map<ScaleType, @Nullable Float> scaleValues = new HashMap<>();
 
-	PehkuiCompat() {
+	PehkuiModule() {
 		scaleKeys.forEach((type, key) -> scaleValues.put(type, null));
 	}
 

@@ -27,7 +27,7 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  * @see SwitchyModule
  * @since 1.0.0
  */
-public class OriginsCompat implements SwitchyModule, SwitchyModuleTransferable {
+public class OriginsModule implements SwitchyModule, SwitchyModuleTransferable {
 	/**
 	 * Identifier for this module.
 	 */
@@ -47,7 +47,7 @@ public class OriginsCompat implements SwitchyModule, SwitchyModuleTransferable {
 	public static final String KEY_ORIGIN = "Origin";
 
 	static {
-		SwitchyModuleRegistry.registerModule(ID, OriginsCompat::new, new SwitchyModuleInfo(
+		SwitchyModuleRegistry.registerModule(ID, OriginsModule::new, new SwitchyModuleInfo(
 						true,
 						SwitchyModuleEditable.ALLOWED,
 						translatable("switchy.compat.module.origins.description")

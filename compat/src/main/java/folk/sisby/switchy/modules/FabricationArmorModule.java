@@ -34,7 +34,7 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  * @see SwitchyModule
  * @since 1.4.0
  */
-public class FabricationArmorCompat implements SwitchyModule {
+public class FabricationArmorModule implements SwitchyModule {
 	/**
 	 * Identifier for this module.
 	 */
@@ -46,7 +46,7 @@ public class FabricationArmorCompat implements SwitchyModule {
 	public static final String KEY_SUPPRESSED_SLOTS = "suppressedSlots";
 
 	static {
-		SwitchyModuleRegistry.registerModule(ID, FabricationArmorCompat::new, new SwitchyModuleInfo(
+		SwitchyModuleRegistry.registerModule(ID, FabricationArmorModule::new, new SwitchyModuleInfo(
 						true,
 						SwitchyModuleEditable.ALLOWED,
 						translatable("switchy.compat.module.hidearmor.description")
@@ -54,7 +54,7 @@ public class FabricationArmorCompat implements SwitchyModule {
 						.withDescriptionWhenEnabled(translatable("switchy.compat.module.hidearmor.enabled"))
 						.withDescriptionWhenDisabled(translatable("switchy.compat.module.hidearmor.disabled"))
 						.withDeletionWarning(translatable("switchy.compat.module.hidearmor.warning"))
-						.withApplyDependencies(QuiltLoader.isModLoaded("fabrictailor") ? Set.of(FabricTailorCompat.ID) : Set.of())
+						.withApplyDependencies(QuiltLoader.isModLoaded("fabrictailor") ? Set.of(FabricTailorModule.ID) : Set.of())
 		);
 	}
 

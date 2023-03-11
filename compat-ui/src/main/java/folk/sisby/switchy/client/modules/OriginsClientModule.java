@@ -3,6 +3,7 @@ package folk.sisby.switchy.client.modules;
 import com.mojang.datafixers.util.Pair;
 import folk.sisby.switchy.client.api.module.SwitchyClientModule;
 import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
+import folk.sisby.switchy.modules.OriginsModule;
 import folk.sisby.switchy.ui.api.SwitchyUIPosition;
 import folk.sisby.switchy.ui.api.module.SwitchyUIModule;
 import io.wispforest.owo.ui.component.Components;
@@ -31,35 +32,35 @@ import static io.github.apace100.origins.registry.ModItems.ORB_OF_ORIGIN;
  *
  * @author Sisby folk
  * @see SwitchyUIModule
- * @see folk.sisby.switchy.modules.OriginsCompat
+ * @see OriginsModule
  * @since 2.0.0
  */
 @ClientOnly
-public class OriginsCompatUI implements SwitchyClientModule, SwitchyUIModule {
+public class OriginsClientModule implements SwitchyClientModule, SwitchyUIModule {
 	/**
 	 * Identifier for this module.
-	 * Must match {@link folk.sisby.switchy.modules.OriginsCompat}.
+	 * Must match {@link OriginsModule}.
 	 */
 	public static final Identifier ID = new Identifier("switchy", "origins");
 
 	/**
 	 * The NBT key where the list of origins is stored.
-	 * Must match {@link folk.sisby.switchy.modules.OriginsCompat#toClientNbt()}.
+	 * Must match {@link OriginsModule#toClientNbt()}.
 	 */
 	public static final String KEY_ORIGINS_LIST = "OriginLayers";
 	/**
 	 * The NBT key where the layer is stored in each list item.
-	 * Must match {@link folk.sisby.switchy.modules.OriginsCompat#toClientNbt()}.
+	 * Must match {@link OriginsModule#toClientNbt()}.
 	 */
 	public static final String KEY_LAYER = "Layer";
 	/**
 	 * The NBT key where the origin ID is stored in each list item.
-	 * Must match {@link folk.sisby.switchy.modules.OriginsCompat#toClientNbt()}.
+	 * Must match {@link OriginsModule#toClientNbt()}.
 	 */
 	public static final String KEY_ORIGIN = "Origin";
 
 	static {
-		SwitchyClientModuleRegistry.registerModule(ID, OriginsCompatUI::new);
+		SwitchyClientModuleRegistry.registerModule(ID, OriginsClientModule::new);
 	}
 
 	/**

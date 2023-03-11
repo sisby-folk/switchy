@@ -14,10 +14,10 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Sisby folk
  * @see SwitchySerializable
- * @see FabricTailorCompat
+ * @see FabricTailorModule
  * @since 1.0.0
  */
-public class DrogtorCompatData implements SwitchySerializable {
+public class DrogtorModuleData implements SwitchySerializable {
 	/**
 	 * Identifier for this module.
 	 */

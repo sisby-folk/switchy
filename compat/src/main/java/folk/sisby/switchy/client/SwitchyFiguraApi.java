@@ -18,7 +18,7 @@ import java.util.Objects;
  * @see SwitchyClientEvents
  * @since 2.0.0
  */
-public class FiguraCompat implements FiguraAPI {
+public class SwitchyFiguraApi implements FiguraAPI {
 	/**
 	 * Registers a lua listener for switch events.
 	 *
@@ -39,7 +39,7 @@ public class FiguraCompat implements FiguraAPI {
 
 	@Override
 	public FiguraAPI build(Avatar avatar) {
-		return new FiguraCompat();
+		return new SwitchyFiguraApi();
 	}
 
 	@Override

@@ -16,12 +16,12 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  *
  * @author Sisby folk
  * @see SwitchyModule
- * @see DrogtorCompatData
+ * @see DrogtorModuleData
  * @since 1.0.0
  */
-public class DrogtorCompat extends DrogtorCompatData implements SwitchyModule, SwitchyModuleTransferable {
+public class DrogtorModule extends DrogtorModuleData implements SwitchyModule, SwitchyModuleTransferable {
 	static {
-		SwitchyModuleRegistry.registerModule(ID, DrogtorCompat::new, new SwitchyModuleInfo(
+		SwitchyModuleRegistry.registerModule(ID, DrogtorModule::new, new SwitchyModuleInfo(
 						true,
 						SwitchyModuleEditable.ALWAYS_ALLOWED,
 						translatable("switchy.compat.module.drogtor.description")
