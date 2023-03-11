@@ -50,6 +50,10 @@ These mods have Switchy support built-in:
 
 ## Showcase
 
+<iframe width="896" height="504" src="https://www.youtube.com/embed/Ht9kx40UV5I" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+Older showcase that shows fully setting up presets using commands:
+
 <iframe width="896" height="504" src="https://www.youtube.com/embed/gkOGZUJOtR4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Quick Start Guide
