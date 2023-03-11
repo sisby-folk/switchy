@@ -20,6 +20,7 @@ import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -34,13 +35,16 @@ import static folk.sisby.switchy.SwitchyClientServerNetworking.*;
  * @author Sisby folk
  * @since 1.9.1
  */
-@SuppressWarnings("unused")
 public class SwitchyClientApi {
 	/**
 	 * Map of listeners for API calls waiting for client preset returns.
 	 */
 	@ApiStatus.Internal
 	public static final Map<Integer, BiConsumer<SwitchyFeedback, SwitchyClientPresets>> API_RESPONSE_LISTENERS = new HashMap<>();
+	/**
+	 * Map of listeners for API calls waiting for exported preset NBT returns.
+	 */
+	@ApiStatus.Internal
 	public static final Map<Integer, BiConsumer<SwitchyFeedback, NbtCompound>> API_EXPORT_LISTENERS = new HashMap<>();
 	private static int nextId = 0;
 	private static int nextExportId = 0;
@@ -61,14 +65,29 @@ public class SwitchyClientApi {
 		return buf;
 	}
 
+	/**
+	 * Gets whether the server has switchy installed.
+	 *
+	 * @return true if connected to a server with Switchy installed, false otherwise;
+	 */
 	public static boolean isSwitchyServer() {
 		return ClientPlayNetworking.canSend(C2S_REQUEST_CLIENT_PRESETS);
 	}
 
+	/**
+	 * Gets the export folder used by Switchy Client's import/export functionality.
+	 *
+	 * @return the export folder file.
+	 */
 	public static File getExportFolder() {
 		return new File(SwitchyClient.EXPORT_PATH);
 	}
 
+	/**
+	 * Gets the list of .dat files in the export folder.
+	 *
+	 * @return the .dat files currently in the export folder.
+	 */
 	public static List<File> getImportableFiles() {
 		return SwitchyFiles.filesWithExtension(getExportFolder(), "dat");
 	}
@@ -258,15 +277,17 @@ public class SwitchyClientApi {
 	/**
 	 * Export the player's presets to a file.
 	 * @param excludeModules A collection of modules to not export to the NBT, if they exist.
+	 * @param filename the name of the file in the export folder to write to, without extension.
+	 *                 If null, file is automatically named based on the current time and whether in singleplayer.
 	 * @param responseCallback the callback for the response from the server.
 	 * @see folk.sisby.switchy.client.SwitchyClientReceivers
 	 */
-	public static void exportPresetsToFile(Collection<Identifier> excludeModules, BiConsumer<SwitchyFeedback, File> responseCallback) throws UnsupportedOperationException {
+	public static void exportPresetsToFile(Collection<Identifier> excludeModules, @Nullable String filename, BiConsumer<SwitchyFeedback, File> responseCallback) throws UnsupportedOperationException {
 		if (!ClientPlayNetworking.canSend(C2S_REQUEST_PRESETS))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
 		NbtCompound nbt = new NbtCompound();
 		writeModuleSpecifiers(nbt, excludeModules, List.of());
-		PacketByteBuf buf = createSwitchyExportByteBuf((f, n) -> responseCallback.accept(f, SwitchyFiles.exportNbtToFile(MinecraftClient.getInstance(), n, f.messages()::add)));
+		PacketByteBuf buf = createSwitchyExportByteBuf((f, n) -> responseCallback.accept(f, SwitchyFiles.exportNbtToFile(filename != null ? filename : (MinecraftClient.getInstance().isInSingleplayer() ? "Singleplayer_" : "Multiplayer_") + new SimpleDateFormat("MMM-dd_HH-mm-ss").format(new java.util.Date()), n, f.messages()::add)));
 		ClientPlayNetworking.send(C2S_REQUEST_PRESETS, buf.writeNbt(nbt));
 	}
 }

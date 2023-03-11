@@ -67,8 +67,8 @@ public class PresetConverter {
 	public static NbtCompound presetToNbt(SwitchyPreset preset) {
 		NbtCompound outNbt = new NbtCompound();
 		preset.getModules().forEach((id, module) -> {
-			if (module instanceof SwitchyModuleTransferable clientableModule) {
-				outNbt.put(id.toString(), clientableModule.toClientNbt());
+			if (module instanceof SwitchyModuleTransferable transferableModule) {
+				outNbt.put(id.toString(), transferableModule.toClientNbt());
 			}
 		});
 		return outNbt;

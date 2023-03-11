@@ -16,7 +16,11 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
 @ClientOnly
 public interface SwitchyUIModule {
 	/**
+	 * Gets the UI component for previewing the module, and where to display it.
+	 *
+	 * @param presetName the name of the preset being previewed.
 	 * @return a renderable component, and the position on the preset preview it should be placed.
+	 * 			Null if no component should be added.
 	 */
 	@Nullable Pair<Component, SwitchyUIPosition> getPreviewComponent(String presetName);
 }

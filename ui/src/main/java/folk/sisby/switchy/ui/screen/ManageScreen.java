@@ -31,7 +31,13 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-
+/**
+ * A screen for managing the server-side presets object from the client.
+ * Intended as an alternative to core Switchy commands.
+ *
+ * @author Garden System
+ * @since 2.0.0
+ */
 public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements SwitchyScreen {
 
 	private FlowLayout root;
@@ -47,6 +53,9 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 
 	private SwitchyClientPresets presets;
 
+	/**
+	 * Constructs an instance of the screen.
+	 */
 	public ManageScreen() {
 		super(FlowLayout.class, DataSource.asset(new Identifier("switchy", "preset_management_model")));
 	}
@@ -77,7 +86,7 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 		}, List.of(Text.translatable("screen.switchy_ui.import.warn.info", Feedback.literal(String.valueOf(selectedFileNbt.getCompound(SwitchyPresetsData.KEY_PRESETS).getKeys().size())), Feedback.literal(String.valueOf(includedModules.size()))), Text.translatable("screen.switchy_ui.list.presets", Feedback.getHighlightedListText(selectedFileNbt.getCompound(SwitchyPresetsData.KEY_PRESETS).getKeys().stream().sorted().toList(), List.of(new Pair<>(presets.getPresetNames()::contains, Formatting.DARK_RED)))), Text.translatable("screen.switchy_ui.import.warn.collision"), Text.translatable("screen.switchy_ui.list.modules", Feedback.getIdListText(includedModules)))));
 		exportButton.onPress(b -> openDialog("Confirm", "Cancel", 200, confirmButton -> {
 			lockScreen();
-			SwitchyClientApi.exportPresetsToFile(availableModules, (feedback, file) -> SwitchyScreen.updatePresetScreens(feedback, presets));
+			SwitchyClientApi.exportPresetsToFile(availableModules, null, (feedback, file) -> SwitchyScreen.updatePresetScreens(feedback, presets));
 		}, cancelButton -> {
 		}, List.of(Text.translatable("commands.switchy_client.export.confirm", String.valueOf(includedModules.size())))));
 		importToggle.onPress(b -> {

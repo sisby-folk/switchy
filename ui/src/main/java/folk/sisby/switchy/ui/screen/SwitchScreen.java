@@ -44,7 +44,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchySc
 		});
 
 		// Add base components
-		registerBasicPresetComponent(displayPreset -> Pair.of(Components.label(Text.literal(displayPreset.getName())), SwitchyUIPosition.SIDE_LEFT));
+		registerBasicPresetComponent(clientPreset -> Pair.of(Components.label(Text.literal(clientPreset.getName())), SwitchyUIPosition.SIDE_LEFT));
 	}
 
 	/**

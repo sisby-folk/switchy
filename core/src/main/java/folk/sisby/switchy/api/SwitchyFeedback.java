@@ -14,6 +14,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * A feedback object representing the outcome of an action.
+ *
+ * @author Sisby folk
+ * @since 2.0.0
+ * @param status the completion status of the action.
+ * @param messages the feedback messages reported by the action.
+ */
 public record SwitchyFeedback(SwitchyFeedbackStatus status, Collection<Text> messages) {
 	private static final String KEY_STATUS = "status";
 	private static final String KEY_MESSAGES_LIST = "messages";
@@ -33,6 +41,7 @@ public record SwitchyFeedback(SwitchyFeedbackStatus status, Collection<Text> mes
 	/**
 	 * Serialize the object to NBT.
 	 *
+	 * @param player the client player being sent the NBT, if applicable.
 	 * @return an NBT representation of the object.
 	 */
 	public NbtCompound toNbt(@Nullable ServerPlayerEntity player) {

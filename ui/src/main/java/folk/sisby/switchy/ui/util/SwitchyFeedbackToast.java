@@ -1,7 +1,7 @@
 package folk.sisby.switchy.ui.util;
 
-import folk.sisby.switchy.api.SwitchyFeedbackStatus;
 import folk.sisby.switchy.api.SwitchyFeedback;
+import folk.sisby.switchy.api.SwitchyFeedbackStatus;
 import io.wispforest.owo.ops.TextOps;
 import io.wispforest.owo.ui.util.Drawer;
 import net.minecraft.client.MinecraftClient;
@@ -17,6 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A toast capable of displaying {@link SwitchyFeedback}.
+ * Borrows from {@code io.wispforest.owo.ui.util.UIErrorToast}.
+ *
+ * @author Sisby Folk
+ * @since 2.0.0
+ */
 public class SwitchyFeedbackToast implements Toast {
 	private final SwitchyFeedbackStatus status;
 	private final List<OrderedText> textLines;
@@ -29,7 +36,7 @@ public class SwitchyFeedbackToast implements Toast {
 			SwitchyFeedbackStatus.FAIL, 0xA7FF0000
 	);
 
-	public SwitchyFeedbackToast(SwitchyFeedback feedback, int duration) {
+	private SwitchyFeedbackToast(SwitchyFeedback feedback, int duration) {
 		this.duration = duration;
 		status = feedback.status();
 		textRenderer = MinecraftClient.getInstance().textRenderer;
@@ -38,6 +45,12 @@ public class SwitchyFeedbackToast implements Toast {
 		textLines = wrap(texts);
 	}
 
+	/**
+	 * Show a feedback toast with the given feedback and duration.
+	 *
+	 * @param feedback the feedback object to show.
+	 * @param duration the duration (in ms) to show the toast.
+	 */
 	public static void report(SwitchyFeedback feedback, int duration) {
 		if (feedback.status() == SwitchyFeedbackStatus.SUCCESS && !feedback.messages().isEmpty()) {
 			MinecraftClient.getInstance().getToastManager().add(new SwitchyFeedbackToast(feedback, duration));
@@ -88,7 +101,7 @@ public class SwitchyFeedbackToast implements Toast {
 		return Type.FEEDBACK_TYPE;
 	}
 
-	enum Type {
+	private enum Type {
 		FEEDBACK_TYPE
 	}
 }

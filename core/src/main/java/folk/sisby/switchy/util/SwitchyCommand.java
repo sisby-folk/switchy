@@ -161,6 +161,7 @@ public class SwitchyCommand {
 		 * @param player  the relevant player.
 		 * @param presets the relevant player's presets.
 		 * @param feedback a consumer for text feedback.
+		 * @return The completion status of the action.
 		 */
 		SwitchyFeedbackStatus execute(ServerPlayerEntity player, SwitchyPresets presets, Consumer<Text> feedback);
 	}

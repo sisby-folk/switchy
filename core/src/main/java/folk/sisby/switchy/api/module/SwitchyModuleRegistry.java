@@ -211,6 +211,7 @@ public class SwitchyModuleRegistry {
 	/**
 	 * Serialize the module info to NBT.
 	 *
+	 * @param player the client player being sent the NBT, if applicable.
 	 * @return an NBT representation of the module info.
 	 */
 	public static NbtCompound infoToNbt(@Nullable ServerPlayerEntity player) {

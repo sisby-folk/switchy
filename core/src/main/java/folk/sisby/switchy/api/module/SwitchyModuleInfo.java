@@ -62,6 +62,7 @@ public final class SwitchyModuleInfo {
 	/**
 	 * Serialize the instance to NBT.
 	 *
+	 * @param player the client player being sent the NBT, if applicable.
 	 * @return an NBT representation of the instance.
 	 */
 	public NbtCompound toNbt(@Nullable ServerPlayerEntity player) {

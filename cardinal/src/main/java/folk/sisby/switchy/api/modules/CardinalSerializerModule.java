@@ -44,7 +44,6 @@ public class CardinalSerializerModule implements SwitchyModule {
 	 * @param <T1>          the component type.
 	 * @return a module instance for the specified cardinal component.
 	 */
-	@SuppressWarnings("unused")
 	public static <T1 extends Component> CardinalSerializerModule from(ComponentKey<T1> registryKey, BiConsumer<ComponentKey<T1>, ServerPlayerEntity> preApplyClear, BiConsumer<ComponentKey<T1>, ServerPlayerEntity> postApplySync) {
 		return new CardinalSerializerModule(Map.of(registryKey.getId(), new ComponentConfig<>(registryKey, preApplyClear, postApplySync)));
 	}

@@ -11,6 +11,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,11 @@ import static folk.sisby.switchy.util.Feedback.*;
  * @see SwitchyPresets
  */
 public class SwitchyApi {
+	/**
+	 * Map for help text to display in {@code /switchy help}.
+	 * Addons should use {@link SwitchyEvents#COMMAND_INIT} to add to this.
+	 */
+	@ApiStatus.Internal
 	public static final Map<Text, Predicate<ServerPlayerEntity>> HELP_TEXT = new HashMap<>();
 
 	/**

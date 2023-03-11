@@ -44,7 +44,7 @@ public class SwitchyClientCommands implements ClientCommandRegistrationCallback 
 	}
 
 	private static void exportPresets(ClientPlayerEntity player, List<Identifier> excludeModules) {
-		SwitchyClientApi.exportPresetsToFile(excludeModules, (feedback, file) -> feedback.messages().forEach(t -> sendClientMessage(player, t)));
+		SwitchyClientApi.exportPresetsToFile(excludeModules, null, (feedback, file) -> feedback.messages().forEach(t -> sendClientMessage(player, t)));
 		tellSuccess(player, "commands.switchy_client.export.sent");
 	}
 
