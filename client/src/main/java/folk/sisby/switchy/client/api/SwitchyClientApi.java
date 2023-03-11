@@ -5,6 +5,9 @@ import folk.sisby.switchy.api.SwitchyFeedback;
 import folk.sisby.switchy.api.exception.InvalidWordException;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
 import folk.sisby.switchy.api.presets.SwitchyPresets;
+import folk.sisby.switchy.client.SwitchyClient;
+import folk.sisby.switchy.client.util.SwitchyFiles;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
@@ -16,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +59,18 @@ public class SwitchyClientApi {
 		buf.writeInt(id);
 		API_EXPORT_LISTENERS.put(id, listener);
 		return buf;
+	}
+
+	public static boolean isSwitchyServer() {
+		return ClientPlayNetworking.canSend(C2S_REQUEST_CLIENT_PRESETS);
+	}
+
+	public static File getExportFolder() {
+		return new File(SwitchyClient.EXPORT_PATH);
+	}
+
+	public static List<File> getImportableFiles() {
+		return SwitchyFiles.filesWithExtension(getExportFolder(), "dat");
 	}
 
 	/**
@@ -225,7 +241,7 @@ public class SwitchyClientApi {
 	}
 
 	/**
-	 * Export the player's presets to a file.
+	 * Export the player's presets to NBT.
 	 * @param excludeModules A collection of modules to not export to the NBT, if they exist.
 	 * @param responseCallback the callback for the response from the server.
 	 * @see folk.sisby.switchy.client.SwitchyClientReceivers
@@ -236,6 +252,21 @@ public class SwitchyClientApi {
 		NbtCompound nbt = new NbtCompound();
 		writeModuleSpecifiers(nbt, excludeModules, List.of());
 		PacketByteBuf buf = createSwitchyExportByteBuf(responseCallback);
+		ClientPlayNetworking.send(C2S_REQUEST_PRESETS, buf.writeNbt(nbt));
+	}
+
+	/**
+	 * Export the player's presets to a file.
+	 * @param excludeModules A collection of modules to not export to the NBT, if they exist.
+	 * @param responseCallback the callback for the response from the server.
+	 * @see folk.sisby.switchy.client.SwitchyClientReceivers
+	 */
+	public static void exportPresetsToFile(Collection<Identifier> excludeModules, BiConsumer<SwitchyFeedback, File> responseCallback) throws UnsupportedOperationException {
+		if (!ClientPlayNetworking.canSend(C2S_REQUEST_PRESETS))
+			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
+		NbtCompound nbt = new NbtCompound();
+		writeModuleSpecifiers(nbt, excludeModules, List.of());
+		PacketByteBuf buf = createSwitchyExportByteBuf((f, n) -> responseCallback.accept(f, SwitchyFiles.exportNbtToFile(MinecraftClient.getInstance(), n, f.messages()::add)));
 		ClientPlayNetworking.send(C2S_REQUEST_PRESETS, buf.writeNbt(nbt));
 	}
 }

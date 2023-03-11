@@ -5,8 +5,8 @@ import folk.sisby.switchy.api.module.presets.SwitchyClientPreset;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
 import folk.sisby.switchy.client.api.SwitchyClientApi;
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
-import folk.sisby.switchy.ui.api.SwitchySwitchScreenPosition;
-import folk.sisby.switchy.ui.api.module.SwitchyDisplayModule;
+import folk.sisby.switchy.ui.api.SwitchyUIPosition;
+import folk.sisby.switchy.ui.api.module.SwitchyUIModule;
 import io.wispforest.owo.ui.base.BaseOwoScreen;
 import io.wispforest.owo.ui.component.ButtonComponent;
 import io.wispforest.owo.ui.component.Components;
@@ -30,8 +30,8 @@ import java.util.function.Function;
  * @author Sisby folk
  * @since 1.9.0
  */
-public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDisplayScreen {
-	private static final List<Function<SwitchyClientPreset, Pair<Component, SwitchySwitchScreenPosition>>> basicComponents = new ArrayList<>();
+public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyScreen {
+	private static final List<Function<SwitchyClientPreset, Pair<Component, SwitchyUIPosition>>> basicComponents = new ArrayList<>();
 
 	static {
 		// Close on switch
@@ -44,7 +44,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDi
 		});
 
 		// Add base components
-		registerBasicPresetComponent(displayPreset -> Pair.of(Components.label(Text.literal(displayPreset.getName())), SwitchySwitchScreenPosition.SIDE_LEFT));
+		registerBasicPresetComponent(displayPreset -> Pair.of(Components.label(Text.literal(displayPreset.getName())), SwitchyUIPosition.SIDE_LEFT));
 	}
 
 	/**
@@ -63,11 +63,11 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDi
 
 	/**
 	 * Registers a component to display alongside every preset (e.g. the preset name) for addons.
-	 * Modules should instead use {@link SwitchyDisplayModule}.
+	 * Modules should instead use {@link SwitchyUIModule}.
 	 *
 	 * @param componentFunction a function that can generate a positioned component to display with every preset.
 	 */
-	public static void registerBasicPresetComponent(Function<SwitchyClientPreset, Pair<Component, SwitchySwitchScreenPosition>> componentFunction) {
+	public static void registerBasicPresetComponent(Function<SwitchyClientPreset, Pair<Component, SwitchyUIPosition>> componentFunction) {
 		basicComponents.add(componentFunction);
 	}
 
@@ -103,7 +103,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDi
 
 
 		ButtonComponent manageButton = Components.button(Text.literal("Manage"), b -> {
-			PresetManagementScreen managementScreen = new PresetManagementScreen();
+			ManageScreen managementScreen = new ManageScreen();
 			client.setScreen(managementScreen);
 			managementScreen.updatePresets(presets);
 		});
@@ -136,11 +136,11 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDi
 		// Process Preset Flows
 		Component currentPresetComponent = null;
 		for (SwitchyClientPreset preset : presets.getPresets().values()) {
-			List<Pair<Component, SwitchySwitchScreenPosition>> componentList = new ArrayList<>(basicComponents.stream().map(fun -> fun.apply(preset)).toList());
+			List<Pair<Component, SwitchyUIPosition>> componentList = new ArrayList<>(basicComponents.stream().map(fun -> fun.apply(preset)).toList());
 
 			preset.getModules().forEach((id, module) -> {
-				if (module instanceof SwitchyDisplayModule dm) {
-					@Nullable Pair<Component, SwitchySwitchScreenPosition> component = dm.getDisplayComponent();
+				if (module instanceof SwitchyUIModule dm) {
+					@Nullable Pair<Component, SwitchyUIPosition> component = dm.getPreviewComponent(preset.getName());
 					if (component != null) {
 						componentList.add(component);
 					}
@@ -161,13 +161,13 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDi
 				horizontalFlow.mouseEnter().subscribe(() -> horizontalFlow.surface(Surface.DARK_PANEL.and(Surface.outline(Color.WHITE.argb()))));
 				horizontalFlow.mouseLeave().subscribe(() -> horizontalFlow.surface(Surface.DARK_PANEL));
 				horizontalFlow.mouseDown().subscribe((x, y, button) -> {
-					SwitchyClientApi.switchCurrentPreset(preset.getName(), SwitchyDisplayScreen::updatePresetScreens);
+					SwitchyClientApi.switchCurrentPreset(preset.getName(), SwitchyScreen::updatePresetScreens);
 					return true;
 				});
 			}
 
 			// Left Side Elements
-			List<Component> sideLeftComponents = componentList.stream().filter(p -> p.getSecond() == SwitchySwitchScreenPosition.SIDE_LEFT).map(Pair::getFirst).filter(Objects::nonNull).toList();
+			List<Component> sideLeftComponents = componentList.stream().filter(p -> p.getSecond() == SwitchyUIPosition.SIDE_LEFT).map(Pair::getFirst).filter(Objects::nonNull).toList();
 			if (!sideLeftComponents.isEmpty()) horizontalFlow.children(sideLeftComponents);
 
 			// Main Elements
@@ -175,7 +175,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDi
 			leftRightFlow.margins(Insets.horizontal(6));
 			leftRightFlow.gap(4);
 
-			List<Component> leftComponents = componentList.stream().filter(p -> p.getSecond() == SwitchySwitchScreenPosition.LEFT).map(Pair::getFirst).filter(Objects::nonNull).toList();
+			List<Component> leftComponents = componentList.stream().filter(p -> p.getSecond() == SwitchyUIPosition.LEFT).map(Pair::getFirst).filter(Objects::nonNull).toList();
 			if (!leftComponents.isEmpty()) {
 				VerticalFlowLayout leftAlignedFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
 				leftAlignedFlow.horizontalAlignment(HorizontalAlignment.LEFT);
@@ -184,7 +184,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDi
 				leftRightFlow.child(leftAlignedFlow);
 			}
 
-			List<Component> rightComponents = componentList.stream().filter(p -> p.getSecond() == SwitchySwitchScreenPosition.RIGHT).map(Pair::getFirst).filter(Objects::nonNull).toList();
+			List<Component> rightComponents = componentList.stream().filter(p -> p.getSecond() == SwitchyUIPosition.RIGHT).map(Pair::getFirst).filter(Objects::nonNull).toList();
 			if (!rightComponents.isEmpty()) {
 				VerticalFlowLayout rightAlignedFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
 				rightAlignedFlow.horizontalAlignment(HorizontalAlignment.RIGHT);
@@ -196,7 +196,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyDi
 			if (!rightComponents.isEmpty() || !leftComponents.isEmpty()) horizontalFlow.child(leftRightFlow);
 
 			// Right Side Elements
-			List<Component> sideRightComponents = componentList.stream().filter(p -> p.getSecond() == SwitchySwitchScreenPosition.SIDE_RIGHT).map(Pair::getFirst).filter(Objects::nonNull).toList();
+			List<Component> sideRightComponents = componentList.stream().filter(p -> p.getSecond() == SwitchyUIPosition.SIDE_RIGHT).map(Pair::getFirst).filter(Objects::nonNull).toList();
 			if (!sideRightComponents.isEmpty()) horizontalFlow.children(sideRightComponents);
 
 			presetsFlow.child(horizontalFlow);

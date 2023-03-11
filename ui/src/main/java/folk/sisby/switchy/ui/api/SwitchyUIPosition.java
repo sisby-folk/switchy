@@ -11,7 +11,7 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
  * @since 1.9.0
  */
 @ClientOnly
-public enum SwitchySwitchScreenPosition {
+public enum SwitchyUIPosition {
 	/**
 	 * On the left side of the overall horizontal flow.
 	 */

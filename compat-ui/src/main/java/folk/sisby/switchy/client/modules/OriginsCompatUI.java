@@ -2,8 +2,8 @@ package folk.sisby.switchy.client.modules;
 
 import com.mojang.datafixers.util.Pair;
 import folk.sisby.switchy.client.api.module.SwitchyClientModule;
-import folk.sisby.switchy.ui.api.SwitchySwitchScreenPosition;
-import folk.sisby.switchy.ui.api.module.SwitchyDisplayModule;
+import folk.sisby.switchy.ui.api.SwitchyUIPosition;
+import folk.sisby.switchy.ui.api.module.SwitchyUIModule;
 import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.Containers;
@@ -30,12 +30,12 @@ import static io.github.apace100.origins.registry.ModItems.ORB_OF_ORIGIN;
  * The client-displayable variant of a module that switches layered Origins from Apace's Origins.
  *
  * @author Sisby folk
- * @see SwitchyDisplayModule
+ * @see SwitchyUIModule
  * @see folk.sisby.switchy.modules.OriginsCompat
  * @since 2.0.0
  */
 @ClientOnly
-public class OriginsCompatDisplay implements SwitchyClientModule,  SwitchyDisplayModule {
+public class OriginsCompatUI implements SwitchyClientModule, SwitchyUIModule {
 	/**
 	 * Identifier for this module.
 	 * Must match {@link folk.sisby.switchy.modules.OriginsCompat}.
@@ -59,7 +59,7 @@ public class OriginsCompatDisplay implements SwitchyClientModule,  SwitchyDispla
 	public static final String KEY_ORIGIN = "Origin";
 
 	static {
-		SwitchyClientModuleRegistry.registerModule(ID, OriginsCompatDisplay::new);
+		SwitchyClientModuleRegistry.registerModule(ID, OriginsCompatUI::new);
 	}
 
 	/**
@@ -74,7 +74,7 @@ public class OriginsCompatDisplay implements SwitchyClientModule,  SwitchyDispla
 	}
 
 	@Override
-	public Pair<Component, SwitchySwitchScreenPosition> getDisplayComponent() {
+	public Pair<Component, SwitchyUIPosition> getPreviewComponent(String presetName) {
 		if (origins == null || origins.isEmpty()) return null;
 
 		HorizontalFlowLayout originsFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
@@ -84,7 +84,7 @@ public class OriginsCompatDisplay implements SwitchyClientModule,  SwitchyDispla
 						origins.values().stream().map(Identifier::getPath).collect(Collectors.joining(" | ")))
 				.setStyle(Style.EMPTY.withColor(Formatting.GRAY))));
 
-		return Pair.of(originsFlow, SwitchySwitchScreenPosition.LEFT);
+		return Pair.of(originsFlow, SwitchyUIPosition.LEFT);
 	}
 
 	@Override

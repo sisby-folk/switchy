@@ -13,8 +13,7 @@ import java.util.HashMap;
 import java.util.function.BiConsumer;
 
 import static folk.sisby.switchy.SwitchyClientServerNetworking.*;
-import static folk.sisby.switchy.client.api.SwitchyClientApi.API_EXPORT_LISTENERS;
-import static folk.sisby.switchy.client.api.SwitchyClientApi.API_RESPONSE_LISTENERS;
+import static folk.sisby.switchy.client.api.SwitchyClientApi.*;
 import static folk.sisby.switchy.util.SwitchyCommand.consumeEventPacket;
 
 /**

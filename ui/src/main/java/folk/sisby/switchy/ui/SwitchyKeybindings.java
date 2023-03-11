@@ -5,7 +5,7 @@ import folk.sisby.switchy.SwitchyClientServerNetworking;
 import folk.sisby.switchy.client.api.SwitchyClientApi;
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
 import folk.sisby.switchy.ui.screen.SwitchScreen;
-import folk.sisby.switchy.ui.screen.SwitchyDisplayScreen;
+import folk.sisby.switchy.ui.screen.SwitchyScreen;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBind;
 import org.lwjgl.glfw.GLFW;
@@ -33,7 +33,7 @@ public class SwitchyKeybindings implements SwitchyClientEvents.Init {
 			while (switchKeyBinding.wasPressed()) {
 				if (client.player != null && ClientPlayNetworking.canSend(SwitchyClientServerNetworking.C2S_REQUEST_CLIENT_PRESETS)) {
 					client.execute(() -> client.setScreen(new SwitchScreen()));
-					SwitchyClientApi.getClientPresets(SwitchyDisplayScreen::updatePresetScreens);
+					SwitchyClientApi.getClientPresets(SwitchyScreen::updatePresetScreens);
 				}
 			}
 		});

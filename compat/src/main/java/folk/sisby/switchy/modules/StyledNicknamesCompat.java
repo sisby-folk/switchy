@@ -21,7 +21,7 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  * @see SwitchyModule
  * @since 1.7.2
  */
-public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleClientable {
+public class StyledNicknamesCompat implements SwitchyModule, SwitchyModuleTransferable {
 	/**
 	 * Identifier for this module.
 	 */

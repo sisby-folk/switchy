@@ -1,6 +1,6 @@
 package folk.sisby.switchy.util;
 
-import folk.sisby.switchy.api.module.SwitchyModuleClientable;
+import folk.sisby.switchy.api.module.SwitchyModuleTransferable;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPreset;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
@@ -67,7 +67,7 @@ public class PresetConverter {
 	public static NbtCompound presetToNbt(SwitchyPreset preset) {
 		NbtCompound outNbt = new NbtCompound();
 		preset.getModules().forEach((id, module) -> {
-			if (module instanceof SwitchyModuleClientable clientableModule) {
+			if (module instanceof SwitchyModuleTransferable clientableModule) {
 				outNbt.put(id.toString(), clientableModule.toClientNbt());
 			}
 		});

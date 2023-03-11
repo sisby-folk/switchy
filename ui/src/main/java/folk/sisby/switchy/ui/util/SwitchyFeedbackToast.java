@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class FeedbackToast implements Toast {
+public class SwitchyFeedbackToast implements Toast {
 	private final SwitchyFeedbackStatus status;
 	private final List<OrderedText> textLines;
 	private final TextRenderer textRenderer;
@@ -29,7 +29,7 @@ public class FeedbackToast implements Toast {
 			SwitchyFeedbackStatus.FAIL, 0xA7FF0000
 	);
 
-	public FeedbackToast(SwitchyFeedback feedback, int duration) {
+	public SwitchyFeedbackToast(SwitchyFeedback feedback, int duration) {
 		this.duration = duration;
 		status = feedback.status();
 		textRenderer = MinecraftClient.getInstance().textRenderer;
@@ -40,7 +40,7 @@ public class FeedbackToast implements Toast {
 
 	public static void report(SwitchyFeedback feedback, int duration) {
 		if (feedback.status() == SwitchyFeedbackStatus.SUCCESS && !feedback.messages().isEmpty()) {
-			MinecraftClient.getInstance().getToastManager().add(new FeedbackToast(feedback, duration));
+			MinecraftClient.getInstance().getToastManager().add(new SwitchyFeedbackToast(feedback, duration));
 		}
 	}
 

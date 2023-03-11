@@ -7,8 +7,6 @@ import folk.sisby.switchy.client.api.SwitchyClientEvents;
 import folk.sisby.switchy.client.argument.IdentifiersArgumentType;
 import folk.sisby.switchy.client.argument.IdentifiersFromNbtArgArgumentType;
 import folk.sisby.switchy.client.argument.NbtFileArgumentType;
-import folk.sisby.switchy.client.util.SwitchyFiles;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.command.CommandBuildContext;
 import net.minecraft.nbt.NbtCompound;
@@ -19,7 +17,6 @@ import org.quiltmc.qsl.command.api.client.ClientCommandRegistrationCallback;
 import org.quiltmc.qsl.command.api.client.QuiltClientCommandSource;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
-import java.io.File;
 import java.util.List;
 
 import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_IMPORT_CONFIRM;
@@ -47,7 +44,7 @@ public class SwitchyClientCommands implements ClientCommandRegistrationCallback 
 	}
 
 	private static void exportPresets(ClientPlayerEntity player, List<Identifier> excludeModules) {
-		SwitchyClientApi.exportPresets(excludeModules, (feedback, presetsNbt) -> SwitchyFiles.exportPresetsToFile(MinecraftClient.getInstance(), presetsNbt, t -> sendClientMessage(player, t)));
+		SwitchyClientApi.exportPresetsToFile(excludeModules, (feedback, file) -> feedback.messages().forEach(t -> sendClientMessage(player, t)));
 		tellSuccess(player, "commands.switchy_client.export.sent");
 	}
 
@@ -69,7 +66,7 @@ public class SwitchyClientCommands implements ClientCommandRegistrationCallback 
 	}
 
 	static {
-		SwitchyClientEvents.COMMAND_INIT_IMPORT.register(((importArgument, helpTextRegistry) -> importArgument.then(ClientCommandManager.argument("file", NbtFileArgumentType.create(new File(SwitchyClient.EXPORT_PATH)))
+		SwitchyClientEvents.COMMAND_INIT_IMPORT.register(((importArgument, helpTextRegistry) -> importArgument.then(ClientCommandManager.argument("file", NbtFileArgumentType.create(SwitchyClientApi.getExportFolder()))
 				.executes(c -> executeClient(c, (command, player) -> importPresets(command, player, c.getArgument("file", NbtCompound.class), List.of(), List.of())))
 				.then(ClientCommandManager.argument("excludeModules", IdentifiersFromNbtArgArgumentType.create("file", null, "enabled"))
 						.executes(c -> executeClient(c, (command, player) -> importPresets(command, player, c.getArgument("file", NbtCompound.class), c.getArgument("excludeModules", List.class), List.of())))

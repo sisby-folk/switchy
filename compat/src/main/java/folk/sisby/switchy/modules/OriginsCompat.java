@@ -27,7 +27,7 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  * @see SwitchyModule
  * @since 1.0.0
  */
-public class OriginsCompat implements SwitchyModule, SwitchyModuleClientable {
+public class OriginsCompat implements SwitchyModule, SwitchyModuleTransferable {
 	/**
 	 * Identifier for this module.
 	 */

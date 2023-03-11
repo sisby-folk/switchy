@@ -7,8 +7,8 @@ import com.mojang.authlib.yggdrasil.response.MinecraftTexturesPayload;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.util.UUIDTypeAdapter;
 import folk.sisby.switchy.client.api.module.SwitchyClientModule;
-import folk.sisby.switchy.ui.api.SwitchySwitchScreenPosition;
-import folk.sisby.switchy.ui.api.module.SwitchyDisplayModule;
+import folk.sisby.switchy.ui.api.SwitchyUIPosition;
+import folk.sisby.switchy.ui.api.module.SwitchyUIModule;
 import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
 import folk.sisby.switchy.modules.FabricTailorCompatData;
 import io.wispforest.owo.ui.component.Components;
@@ -27,14 +27,14 @@ import java.util.UUID;
  * The client-displayable variant of a module that switches player skins from samolego's Fabric Tailor.
  *
  * @author Sisby folk
- * @see SwitchyDisplayModule
+ * @see SwitchyUIModule
  * @see folk.sisby.switchy.modules.FabricTailorCompat
  * @since 2.0.0
  */
 @ClientOnly
-public class FabricTailorCompatDisplay extends FabricTailorCompatData implements SwitchyClientModule,  SwitchyDisplayModule {
+public class FabricTailorCompatUI extends FabricTailorCompatData implements SwitchyClientModule, SwitchyUIModule {
 	static {
-		SwitchyClientModuleRegistry.registerModule(ID, FabricTailorCompatDisplay::new);
+		SwitchyClientModuleRegistry.registerModule(ID, FabricTailorCompatUI::new);
 	}
 
 	/**
@@ -44,7 +44,7 @@ public class FabricTailorCompatDisplay extends FabricTailorCompatData implements
 	}
 
 	@Override
-	public Pair<Component, SwitchySwitchScreenPosition> getDisplayComponent() {
+	public Pair<Component, SwitchyUIPosition> getPreviewComponent(String presetName) {
 		if (skinValue == null) return null;
 		MinecraftClient client = MinecraftClient.getInstance();
 		if (client.world == null) return null;
@@ -64,6 +64,6 @@ public class FabricTailorCompatDisplay extends FabricTailorCompatData implements
 
 		skinPreview.scale(0.5F);
 
-		return Pair.of(skinPreview, SwitchySwitchScreenPosition.SIDE_RIGHT);
+		return Pair.of(skinPreview, SwitchyUIPosition.SIDE_RIGHT);
 	}
 }

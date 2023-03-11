@@ -16,7 +16,7 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  * @see FabricTailorCompatData
  * @since 1.0.0
  */
-public class FabricTailorCompat extends FabricTailorCompatData implements SwitchyModule, SwitchyModuleClientable {
+public class FabricTailorCompat extends FabricTailorCompatData implements SwitchyModule, SwitchyModuleTransferable {
 	static {
 		SwitchyModuleRegistry.registerModule(ID, FabricTailorCompat::new, new SwitchyModuleInfo(
 						true,

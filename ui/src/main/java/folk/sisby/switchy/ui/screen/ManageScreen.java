@@ -5,15 +5,12 @@ import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
 import folk.sisby.switchy.api.presets.SwitchyPresetsData;
-import folk.sisby.switchy.client.SwitchyClient;
 import folk.sisby.switchy.client.api.SwitchyClientApi;
-import folk.sisby.switchy.client.util.SwitchyFiles;
 import folk.sisby.switchy.util.Feedback;
 import io.wispforest.owo.ui.base.BaseUIModelScreen;
 import io.wispforest.owo.ui.component.*;
 import io.wispforest.owo.ui.container.*;
 import io.wispforest.owo.ui.core.*;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
@@ -25,7 +22,6 @@ import org.apache.commons.compress.utils.FileNameUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +32,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 
-public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implements SwitchyDisplayScreen {
+public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements SwitchyScreen {
 
 	private FlowLayout root;
 	private ScrollContainer<VerticalFlowLayout> presetsTab;
@@ -51,7 +47,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 
 	private SwitchyClientPresets presets;
 
-	public PresetManagementScreen() {
+	public ManageScreen() {
 		super(FlowLayout.class, DataSource.asset(new Identifier("switchy", "preset_management_model")));
 	}
 
@@ -76,15 +72,12 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		ButtonComponent importButton = dataTab.childById(ButtonComponent.class, "importButton");
 		importButton.onPress(b -> openDialog("Confirm", "Cancel", 200, confirmButton -> {
 			lockScreen();
-			SwitchyClientApi.importPresets(selectedFileNbt, availableModules, includedModules, SwitchyDisplayScreen::updatePresetScreens);
+			SwitchyClientApi.importPresets(selectedFileNbt, availableModules, includedModules, SwitchyScreen::updatePresetScreens);
 		}, cancelButton -> {
 		}, List.of(Text.translatable("screen.switchy_ui.import.warn.info", Feedback.literal(String.valueOf(selectedFileNbt.getCompound(SwitchyPresetsData.KEY_PRESETS).getKeys().size())), Feedback.literal(String.valueOf(includedModules.size()))), Text.translatable("screen.switchy_ui.list.presets", Feedback.getHighlightedListText(selectedFileNbt.getCompound(SwitchyPresetsData.KEY_PRESETS).getKeys().stream().sorted().toList(), List.of(new Pair<>(presets.getPresetNames()::contains, Formatting.DARK_RED)))), Text.translatable("screen.switchy_ui.import.warn.collision"), Text.translatable("screen.switchy_ui.list.modules", Feedback.getIdListText(includedModules)))));
 		exportButton.onPress(b -> openDialog("Confirm", "Cancel", 200, confirmButton -> {
 			lockScreen();
-			SwitchyClientApi.exportPresets(availableModules, (feedback, nbt) -> {
-				SwitchyFiles.exportPresetsToFile(MinecraftClient.getInstance(), nbt, feedback.messages()::add);
-				SwitchyDisplayScreen.updatePresetScreens(feedback, presets);
-			});
+			SwitchyClientApi.exportPresetsToFile(availableModules, (feedback, file) -> SwitchyScreen.updatePresetScreens(feedback, presets));
 		}, cancelButton -> {
 		}, List.of(Text.translatable("commands.switchy_client.export.confirm", String.valueOf(includedModules.size())))));
 		importToggle.onPress(b -> {
@@ -199,7 +192,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 					focusedPresetName = null;
 					refreshPresetFlow(presetsFlow);
 					lockScreen();
-					SwitchyClientApi.renamePreset(presetName, nameEntry.getText(), SwitchyDisplayScreen::updatePresetScreens);
+					SwitchyClientApi.renamePreset(presetName, nameEntry.getText(), SwitchyScreen::updatePresetScreens);
 				}
 			} else {
 				focusedPresetName = null;
@@ -212,7 +205,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 				focusedPresetName = null;
 				refreshPresetFlow(presetsFlow);
 				lockScreen();
-				SwitchyClientApi.newPreset(nameEntry.getText(), SwitchyDisplayScreen::updatePresetScreens);
+				SwitchyClientApi.newPreset(nameEntry.getText(), SwitchyScreen::updatePresetScreens);
 			}
 
 		});
@@ -243,7 +236,7 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 			presets.deletePreset(name);
 			refreshPresetFlow(presetsFlow);
 			lockScreen();
-			SwitchyClientApi.deletePreset(name, SwitchyDisplayScreen::updatePresetScreens);
+			SwitchyClientApi.deletePreset(name, SwitchyScreen::updatePresetScreens);
 		}, cancel -> {
 		}, List.of(Text.translatable("commands.switchy_client.delete.confirm", name), Text.translatable("screen.switchy_ui.delete.warn"), Text.translatable("screen.switchy_ui.list.modules", presets.getEnabledModuleText())));
 		ButtonComponent deleteButton = Components.button(Text.literal("Delete"), deleteAction);
@@ -371,14 +364,14 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 			presets.enableModule(id);
 			refreshModulesFlow(disabledModulesFlow, enabledModulesFlow);
 			lockScreen();
-			SwitchyClientApi.enableModule(id, SwitchyDisplayScreen::updatePresetScreens);
+			SwitchyClientApi.enableModule(id, SwitchyScreen::updatePresetScreens);
 		}, true, Text.literal("Enable"), presets.getModuleInfo().get(module).descriptionWhenEnabled(), labelSize)));
 		// Enabled Modules
 		presets.getEnabledModules().forEach(module -> enabledModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> openDialog("OK", "Cancel", 200, okButton -> {
 			presets.disableModule(id);
 			refreshModulesFlow(disabledModulesFlow, enabledModulesFlow);
 			lockScreen();
-			SwitchyClientApi.disableModule(id, SwitchyDisplayScreen::updatePresetScreens);
+			SwitchyClientApi.disableModule(id, SwitchyScreen::updatePresetScreens);
 		}, cancel -> {
 		}, List.of(Text.translatable("commands.switchy_client.disable.confirm", id.getPath()), Text.translatable("screen.switchy_ui.disable.warn", presets.getModuleInfo().get(id).deletionWarning()))), true, Text.literal("Disable"), presets.getModuleInfo().get(module).descriptionWhenDisabled(), labelSize)));
 	}
@@ -393,21 +386,18 @@ public class PresetManagementScreen extends BaseUIModelScreen<FlowLayout> implem
 		VerticalFlowLayout fileSelectorPlaceholder = dataTab.childById(VerticalFlowLayout.class, "fileSelectorPlaceholder");
 		fileSelectorPlaceholder.clearChildren();
 		if (isImporting) {
-			File[] fileArray = new File(SwitchyClient.EXPORT_PATH).listFiles((dir, name) -> FileNameUtils.getExtension(name).equalsIgnoreCase("dat"));
-			if (fileArray != null) {
-				for (File file : fileArray) {
-					try {
-						NbtCompound nbt = NbtIo.readCompressed(file);
-						nbt.putString("filename", FilenameUtils.getBaseName(file.getName()));
+			SwitchyClientApi.getImportableFiles().forEach(file -> {
+				try {
+					NbtCompound nbt = NbtIo.readCompressed(file);
+					nbt.putString("filename", FilenameUtils.getBaseName(file.getName()));
 
-						String name = file.getName();
-						String baseName = FileNameUtils.getBaseName(name);
-						importFiles.put(baseName, nbt);
-					} catch (IOException ignored) {
-					}
+					String name = file.getName();
+					String baseName = FileNameUtils.getBaseName(name);
+					importFiles.put(baseName, nbt);
+				} catch (IOException ignored) {
 				}
-				importFiles.keySet().stream().map(Text::of).forEach(fileNames::add);
-			}
+			});
+			importFiles.keySet().stream().map(Text::of).forEach(fileNames::add);
 		} else {
 			fileNames.add(Text.of("New file..."));
 		}

@@ -19,7 +19,7 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  * @see DrogtorCompatData
  * @since 1.0.0
  */
-public class DrogtorCompat extends DrogtorCompatData implements SwitchyModule, SwitchyModuleClientable {
+public class DrogtorCompat extends DrogtorCompatData implements SwitchyModule, SwitchyModuleTransferable {
 	static {
 		SwitchyModuleRegistry.registerModule(ID, DrogtorCompat::new, new SwitchyModuleInfo(
 				true,

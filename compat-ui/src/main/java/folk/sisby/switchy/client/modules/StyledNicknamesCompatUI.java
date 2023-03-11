@@ -2,8 +2,8 @@ package folk.sisby.switchy.client.modules;
 
 import com.mojang.datafixers.util.Pair;
 import folk.sisby.switchy.client.api.module.SwitchyClientModule;
-import folk.sisby.switchy.ui.api.SwitchySwitchScreenPosition;
-import folk.sisby.switchy.ui.api.module.SwitchyDisplayModule;
+import folk.sisby.switchy.ui.api.SwitchyUIPosition;
+import folk.sisby.switchy.ui.api.module.SwitchyUIModule;
 import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.core.Component;
@@ -17,12 +17,12 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
  * The client-displayable variant of a module that switches nicknames from Patbox's Styled Nicknames.
  *
  * @author Sisby folk
- * @see SwitchyDisplayModule
+ * @see SwitchyUIModule
  * @see folk.sisby.switchy.modules.StyledNicknamesCompat
  * @since 2.0.0
  */
 @ClientOnly
-public class StyledNicknamesCompatDisplay implements SwitchyClientModule,  SwitchyDisplayModule {
+public class StyledNicknamesCompatUI implements SwitchyClientModule, SwitchyUIModule {
 	/**
 	 * Identifier for this module.
 	 * Must match {@link folk.sisby.switchy.modules.StyledNicknamesCompat}.
@@ -35,7 +35,7 @@ public class StyledNicknamesCompatDisplay implements SwitchyClientModule,  Switc
 	public static final String KEY_NICKNAME = "styled_nickname";
 
 	static {
-		SwitchyClientModuleRegistry.registerModule(ID, StyledNicknamesCompatDisplay::new);
+		SwitchyClientModuleRegistry.registerModule(ID, StyledNicknamesCompatUI::new);
 	}
 
 	/**
@@ -50,9 +50,9 @@ public class StyledNicknamesCompatDisplay implements SwitchyClientModule,  Switc
 	}
 
 	@Override
-	public Pair<Component, SwitchySwitchScreenPosition> getDisplayComponent() {
+	public Pair<Component, SwitchyUIPosition> getPreviewComponent(String presetName) {
 		if (styled_nickname == null) return null;
-		return Pair.of(Components.label(styled_nickname), SwitchySwitchScreenPosition.LEFT);
+		return Pair.of(Components.label(styled_nickname), SwitchyUIPosition.LEFT);
 	}
 
 	@Override
