@@ -88,13 +88,13 @@ This provides a visual preview of all your presets, and the ability to click to 
 
 It also provides the management screen, where you can perform all the functions specified above in a visual way.
 
-[Screenshot]
+![image](https://user-images.githubusercontent.com/55819817/224468651-95630575-72dd-4a8b-b59d-371d1f5ae86d.png)
 
-[Screenshot]
+![image](https://user-images.githubusercontent.com/55819817/224468657-98da4200-3a7c-43fc-8ade-b39e4a96abc8.png)
 
 Additionally, you can import and export your presets to a file for use on other servers/worlds.
 
-[Screenshot]
+![image](https://user-images.githubusercontent.com/55819817/224468676-8d539912-6fee-4792-b578-544dc10849af.png)
 
 ### Command-based Import/Export
 
