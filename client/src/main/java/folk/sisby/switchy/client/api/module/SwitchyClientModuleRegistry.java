@@ -5,6 +5,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.loader.api.minecraft.ClientOnly;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -45,5 +46,14 @@ public class SwitchyClientModuleRegistry {
 	 */
 	public static @Nullable SwitchyClientModule supplyModule(Identifier id) {
 		return SUPPLIERS.containsKey(id) ? SUPPLIERS.get(id).get() : null;
+	}
+
+	/**
+	 * Gets the IDs of all registered modules.
+	 *
+	 * @return a collection of registered module identifiers.
+	 */
+	public static Collection<Identifier> getModules() {
+		return SUPPLIERS.keySet();
 	}
 }

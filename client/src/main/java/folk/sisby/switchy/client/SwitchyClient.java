@@ -2,6 +2,7 @@ package folk.sisby.switchy.client;
 
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
+import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
 import org.slf4j.Logger;
@@ -31,6 +32,6 @@ public class SwitchyClient implements ClientModInitializer {
 	public void onInitializeClient(ModContainer mod) {
 		SwitchyClientReceivers.InitializeReceivers();
 		SwitchyClientEvents.INIT.invoker().onInitialize();
-		LOGGER.info("[Switchy Client] Initialized.");
+		LOGGER.info("[Switchy Client] Initialized! Registered Modules: " + SwitchyClientModuleRegistry.getModules());
 	}
 }
