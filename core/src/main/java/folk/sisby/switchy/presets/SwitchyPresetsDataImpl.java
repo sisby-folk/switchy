@@ -30,6 +30,7 @@ import static folk.sisby.switchy.util.Feedback.getIdListText;
 public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset extends SwitchyPresetData<Module>> implements SwitchyPresetsData<Module, Preset> {
 	private final Map<String, Preset> presets = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 	private final Map<Identifier, Boolean> modules;
+	private final Map<Identifier, Boolean> backup = new HashMap<>();
 	private final BiFunction<String, Map<Identifier, Boolean>, Preset> presetConstructor;
 	private final Function<Identifier, Module> moduleSupplier;
 	private final boolean forPlayer;
@@ -94,9 +95,16 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 		NbtList enabledList = new NbtList();
 		NbtList disabledList = new NbtList();
 
-		modules.forEach((key, value) -> {
-			if (value) enabledList.add(NbtString.of(key.toString()));
-			if (!value) disabledList.add(NbtString.of(key.toString()));
+		modules.forEach((id, enabled) -> {
+			if (enabled) enabledList.add(NbtString.of(id.toString()));
+			if (!enabled) disabledList.add(NbtString.of(id.toString()));
+		});
+
+		backup.forEach((id, enabled) -> {
+			if (!modules.containsKey(id)) {
+				if (enabled) enabledList.add(NbtString.of(id.toString()));
+				if (!enabled) disabledList.add(NbtString.of(id.toString()));
+			}
 		});
 
 		outNbt.put(KEY_PRESET_MODULE_ENABLED, enabledList);
@@ -127,7 +135,11 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 				modules.put(id, enabled);
 			} else if (!silent) {
 				logger.warn("[Switchy] Unable to toggle a module - Was a module unloaded?");
-				logger.warn("[Switchy] NBT Element: " + e.asString());
+				logger.warn("[Switchy] Key: " + e.asString());
+				if (id != null) {
+					logger.warn("[Switchy] Saved as lost puppy {} module.", enabled ? "enabled" : "disabled");
+					backup.put(id, enabled);
+				}
 			}
 		});
 	}
