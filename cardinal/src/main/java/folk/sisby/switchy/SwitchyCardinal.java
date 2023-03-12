@@ -13,6 +13,11 @@ import org.quiltmc.qsl.resource.loader.api.ResourceLoader;
  * @since 1.8.4
  */
 public class SwitchyCardinal implements SwitchyEvents.Init {
+	/**
+	 * The Switchy Cardinal namespace.
+	 */
+	public static final String ID = "switchy_cardinal";
+
 	@Override
 	public void onInitialize() {
 		if (QuiltLoader.isModLoaded("cardinal-components-base") && QuiltLoader.isModLoaded("cardinal-components-entity")) {

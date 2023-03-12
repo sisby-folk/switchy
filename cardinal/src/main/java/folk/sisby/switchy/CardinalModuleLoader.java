@@ -44,7 +44,7 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 	 * The global instance for this resource loader.
 	 */
 	public static final CardinalModuleLoader INSTANCE = new CardinalModuleLoader(new Gson());
-	private static final Identifier ID = new Identifier(Switchy.ID, "switchy_cardinal");
+	private static final Identifier ID = new Identifier(SwitchyCardinal.ID, "module_loader");
 	private static final String KEY_DEFAULT = "default";
 	private static final String KEY_EDITABLE = "editable";
 	private static final String KEY_DESCRIPTION = "description";
