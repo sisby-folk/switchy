@@ -6,6 +6,8 @@ import folk.sisby.switchy.client.modules.FabricTailorClientModule;
 import folk.sisby.switchy.client.modules.OriginsClientModule;
 import folk.sisby.switchy.client.modules.StyledNicknamesClientModule;
 import org.quiltmc.loader.api.QuiltLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Initializer for the Switchy Compat addon for Switchy Client.
@@ -16,11 +18,20 @@ import org.quiltmc.loader.api.QuiltLoader;
  * @since 2.0.0
  */
 public class SwitchyCompatClient implements SwitchyClientEvents.Init {
+	/**
+	 * The switchy compat ui namespace.
+	 */
+	public static final String ID = "switchy_compat_ui";
+	/**
+	 * The switchy compat ui logger.
+	 */
+	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
 	@Override
 	public void onInitialize() {
 		DrogtorClientModule.touch();
 		FabricTailorClientModule.touch();
 		StyledNicknamesClientModule.touch();
 		if (QuiltLoader.isModLoaded("origins")) OriginsClientModule.touch();
+		LOGGER.info("[Switchy Compat UI] Initialized!");
 	}
 }

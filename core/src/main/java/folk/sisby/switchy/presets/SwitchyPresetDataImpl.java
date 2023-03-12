@@ -1,6 +1,7 @@
 package folk.sisby.switchy.presets;
 
 import com.mojang.brigadier.StringReader;
+import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.SwitchySerializable;
 import folk.sisby.switchy.api.exception.ClassNotAssignableException;
 import folk.sisby.switchy.api.exception.InvalidWordException;
@@ -21,6 +22,7 @@ import java.util.function.Function;
  */
 public class SwitchyPresetDataImpl<Module extends SwitchySerializable> implements SwitchyPresetData<Module> {
 	private final Map<Identifier, Module> modules;
+	private final Map<Identifier, NbtCompound> backup = new HashMap<>();
 	private String name;
 
 	/**
@@ -47,12 +49,23 @@ public class SwitchyPresetDataImpl<Module extends SwitchySerializable> implement
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		modules.forEach((id, module) -> outNbt.put(id.toString(), module.toNbt()));
+		backup.forEach((id, nbt) -> {
+			if (!outNbt.contains(id.toString())) { // Put in Foster Home
+				outNbt.put(id.toString(), nbt);
+			}
+		});
 		return outNbt;
 	}
 
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
 		modules.forEach((id, module) -> module.fillFromNbt(nbt.getCompound(id.toString())));
+		nbt.getKeys().forEach(key -> {
+			if (Identifier.tryParse(key) != null && !modules.containsKey(Identifier.tryParse(key))) { // Lost Puppy
+				Switchy.LOGGER.warn("[Switchy] Saving lost puppy {} - {}. Reinstall the module and then disable it to fully clear the data.", name, key);
+				backup.put(Identifier.tryParse(key), nbt.getCompound(key));
+			}
+		});
 	}
 
 	@Override

@@ -3,6 +3,8 @@ package folk.sisby.switchy;
 import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.modules.*;
 import org.quiltmc.loader.api.QuiltLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Initializer for the Switchy Compat addon.
@@ -17,6 +19,10 @@ public class SwitchyCompat implements SwitchyEvents.Init {
 	 * The switchy compat namespace.
 	 */
 	public static final String ID = "switchy_compat";
+	/**
+	 * The switchy compat logger.
+	 */
+	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
 
 	@Override
 	public void onInitialize() {
@@ -27,5 +33,6 @@ public class SwitchyCompat implements SwitchyEvents.Init {
 		if (QuiltLoader.isModLoaded("apoli")) ApoliModule.touch();
 		if (QuiltLoader.isModLoaded("pehkui")) PehkuiModule.touch();
 		if (QuiltLoader.isModLoaded("fabrication")) FabricationArmorModule.touch();
+		LOGGER.info("[Switchy Compat] Initialized!");
 	}
 }
