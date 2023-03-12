@@ -4,19 +4,21 @@ import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.loader.api.config.QuiltConfig;
-import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
+import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
+import org.quiltmc.qsl.base.api.entrypoint.server.DedicatedServerModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Initializes core addons by invoking {@link SwitchyEvents.Init}.
  * Responsible for logging initial modules.
+ * Works around limitations on init-time {@code events} entrypoints by using post-qsl-init entrypoints.
  *
  * @author Sisby folk
  * @see SwitchyPlayConnectionListener
  * @since 1.0.0
  */
-public class Switchy implements ModInitializer {
+public class Switchy implements ClientModInitializer, DedicatedServerModInitializer {
 	/**
 	 * The switchy namespace.
 	 */
@@ -32,9 +34,18 @@ public class Switchy implements ModInitializer {
 	 */
 	public static final SwitchyConfig CONFIG = QuiltConfig.create(ID, "config", SwitchyConfig.class);
 
-	@Override
-	public void onInitialize(ModContainer mod) {
+	private void onInitialize(ModContainer ignored) {
 		SwitchyEvents.INIT.invoker().onInitialize();
 		Switchy.LOGGER.info("[Switchy] Initialized! Registered Modules: " + SwitchyModuleRegistry.getModules());
+	}
+
+	@Override
+	public void onInitializeClient(ModContainer mod) {
+		onInitialize(mod);
+	}
+
+	@Override
+	public void onInitializeServer(ModContainer mod) {
+		onInitialize(mod);
 	}
 }
