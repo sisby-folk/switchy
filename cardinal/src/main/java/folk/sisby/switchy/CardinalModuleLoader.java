@@ -55,7 +55,7 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 	private static final String KEY_COMPONENTS = "components";
 
 	CardinalModuleLoader(Gson gson) {
-		super(gson, "switchy_cca_modules");
+		super(gson, "switchy_cardinal");
 	}
 
 	@Override
