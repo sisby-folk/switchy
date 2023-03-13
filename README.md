@@ -46,7 +46,7 @@ More functionality can be added with these Addons:
 
 These mods have Switchy support built-in:
 
-- [RPGStats](https://modrinth.com/mod/rpgstats) - All 6 stats can be kept per-preset
+- [RPGStats](https://modrinth.com/mod/rpgstats) - All stat levels and XP can be kept per-preset
 
 ## Showcase
 
