@@ -60,7 +60,7 @@ public class StyledNicknamesClientModule implements SwitchyClientModule, Switchy
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		if (styled_nickname != null) {
-			outNbt.putString(KEY_NICKNAME, Text.Serializer.toJsonTree(styled_nickname).getAsString());
+			outNbt.putString(KEY_NICKNAME, Text.Serializer.toJsonTree(styled_nickname).toString());
 		}
 		return outNbt;
 	}
