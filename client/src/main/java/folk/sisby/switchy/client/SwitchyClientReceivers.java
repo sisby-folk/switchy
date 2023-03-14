@@ -5,8 +5,11 @@ import folk.sisby.switchy.api.events.SwitchySwitchEvent;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
 import folk.sisby.switchy.presets.SwitchyClientPresetsImpl;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
+import org.quiltmc.qsl.networking.api.client.ClientPlayConnectionEvents;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
 import java.util.HashMap;
@@ -23,7 +26,7 @@ import static folk.sisby.switchy.util.SwitchyCommand.consumeEventPacket;
  * @author Sisby folk
  * @since 1.9.1
  */
-public class SwitchyClientReceivers {
+public class SwitchyClientReceivers implements ClientPlayConnectionEvents.Disconnect {
 	/**
 	 * Register client-side receivers for Switchy Client.
 	 */
@@ -62,6 +65,15 @@ public class SwitchyClientReceivers {
 					listener.accept(feedback, presetsNbt);
 				}
 			}
+		}
+	}
+
+	@Override
+	public void onPlayDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
+		SwitchySwitchEvent event = SwitchyClientEvents.PREVIOUS_SWITCH_EVENT;
+		if (event != null) {
+			SwitchyClientEvents.SWITCH.invoker().onSwitch(new SwitchySwitchEvent(event.player(), null, event.currentPreset(), event.enabledModules()));
+			SwitchyClientEvents.PREVIOUS_SWITCH_EVENT = null;
 		}
 	}
 }

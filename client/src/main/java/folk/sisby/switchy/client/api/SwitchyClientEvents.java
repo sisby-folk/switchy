@@ -4,6 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import folk.sisby.switchy.api.events.SwitchySwitchEvent;
 import folk.sisby.switchy.client.api.module.SwitchyClientModule;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 import org.quiltmc.loader.api.minecraft.ClientOnly;
 import org.quiltmc.qsl.base.api.event.Event;
 import org.quiltmc.qsl.base.api.event.EventAwareListener;
@@ -23,6 +24,11 @@ import java.util.function.Consumer;
 @ClientOnly
 public class SwitchyClientEvents {
 	/**
+	 * A cached copy of the most recent switch event for use in case of disconnects.
+	 */
+	public static @Nullable SwitchySwitchEvent PREVIOUS_SWITCH_EVENT = null;
+
+	/**
 	 * @see Init
 	 */
 	public static final Event<Init> INIT = Event.create(Init.class, callbacks -> () -> {
@@ -38,6 +44,7 @@ public class SwitchyClientEvents {
 		for (Switch callback : callbacks) {
 			callback.onSwitch(event);
 		}
+		PREVIOUS_SWITCH_EVENT = event;
 	});
 
 	/**
