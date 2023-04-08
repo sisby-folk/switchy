@@ -35,7 +35,7 @@ public record SwitchySwitchEvent(UUID player, @Nullable String currentPreset, @N
 	 * @return an event constructed from the NBT.
 	 */
 	public static SwitchySwitchEvent fromNbt(NbtCompound nbt) {
-		return new SwitchySwitchEvent(nbt.getUuid(KEY_PLAYER), nbt.getString(KEY_CURRENT_PRESET), nbt.contains(KEY_PREVIOUS_PRESET, NbtElement.STRING_TYPE) ? nbt.getString(KEY_PREVIOUS_PRESET) : null, nbt.getList(KEY_ENABLED_MODULES, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).toList());
+		return new SwitchySwitchEvent(nbt.getUuid(KEY_PLAYER), nbt.contains(KEY_CURRENT_PRESET, NbtElement.STRING_TYPE) ? nbt.getString(KEY_CURRENT_PRESET) : null, nbt.contains(KEY_PREVIOUS_PRESET, NbtElement.STRING_TYPE) ? nbt.getString(KEY_PREVIOUS_PRESET) : null, nbt.getList(KEY_ENABLED_MODULES, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).toList());
 	}
 
 	/**
