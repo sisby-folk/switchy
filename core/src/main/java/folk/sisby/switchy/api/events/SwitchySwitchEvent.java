@@ -46,7 +46,7 @@ public record SwitchySwitchEvent(UUID player, @Nullable String currentPreset, @N
 	public NbtCompound toNbt() {
 		NbtCompound nbt = new NbtCompound();
 		nbt.putUuid(KEY_PLAYER, player);
-		nbt.putString(KEY_CURRENT_PRESET, currentPreset);
+		if (currentPreset != null) nbt.putString(KEY_CURRENT_PRESET, currentPreset);
 		NbtList nbtModules = new NbtList();
 		nbtModules.addAll(enabledModules.stream().map(NbtString::of).toList());
 		nbt.put(KEY_ENABLED_MODULES, nbtModules);
