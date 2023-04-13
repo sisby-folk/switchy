@@ -205,7 +205,7 @@ loaded [like so](https://github.com/sisby-folk/switchy/blob/1.19/compat/src/main
 ## Further Info
 
 This mod is primarily motivated by improving accessibility for [plural systems](https://morethanone.info).<br/>
-Check out [Plural Respect](https://pluralrespect.github.io).
+❓ Check out [Plural Respect](https://pluralrespect.neocities.org).
 
 ### Fabric?
 
