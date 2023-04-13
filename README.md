@@ -207,13 +207,6 @@ loaded [like so](https://github.com/sisby-folk/switchy/blob/1.19/compat/src/main
 This mod is primarily motivated by improving accessibility for [plural systems](https://morethanone.info).<br/>
 ❓ Check out [Plural Respect](https://pluralrespect.neocities.org).
 
-### Fabric?
-
-Switchy is inescapably a plural mod. It's motivated and maintained by a plural system.
-
-Unlike the Quilt development community, the fabric development community is not safe for plural systems. Try moving your
-modlist to Quilt/QSL!
-
 ### Afterword
 
 All mods are built on the work of many others.
