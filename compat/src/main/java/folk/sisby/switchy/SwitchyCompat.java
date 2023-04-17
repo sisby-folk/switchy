@@ -26,7 +26,7 @@ public class SwitchyCompat implements SwitchyEvents.Init {
 
 	@Override
 	public void onInitialize() {
-		if (QuiltLoader.isModLoaded("drogtor")) DrogtorModule.touch();
+		if (QuiltLoader.isModLoaded("drogtor") && !QuiltLoader.isModLoaded("drogstyle")) DrogtorModule.touch();
 		if (QuiltLoader.isModLoaded("styled-nicknames")) StyledNicknamesModule.touch();
 		if (QuiltLoader.isModLoaded("fabrictailor")) FabricTailorModule.touch();
 		if (QuiltLoader.isModLoaded("origins")) OriginsModule.touch();
