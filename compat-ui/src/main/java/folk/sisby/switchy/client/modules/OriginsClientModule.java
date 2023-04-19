@@ -6,10 +6,15 @@ import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
 import folk.sisby.switchy.modules.OriginsModule;
 import folk.sisby.switchy.ui.api.SwitchyUIPosition;
 import folk.sisby.switchy.ui.api.module.SwitchyUIModule;
+import io.github.apace100.origins.origin.Origin;
+import io.github.apace100.origins.origin.OriginLayer;
+import io.github.apace100.origins.origin.OriginLayers;
+import io.github.apace100.origins.origin.OriginRegistry;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.HorizontalFlowLayout;
 import io.wispforest.owo.ui.core.Component;
+import io.wispforest.owo.ui.core.Insets;
 import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owo.ui.core.VerticalAlignment;
 import net.minecraft.nbt.NbtCompound;
@@ -21,9 +26,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.quiltmc.loader.api.minecraft.ClientOnly;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import static io.github.apace100.origins.registry.ModItems.ORB_OF_ORIGIN;
 
@@ -66,7 +69,7 @@ public class OriginsClientModule implements SwitchyClientModule, SwitchyUIModule
 	/**
 	 * The origin identifiers per layer.
 	 */
-	public Map<String, Identifier> origins;
+	public Map<OriginLayer, Origin> origins;
 
 	/**
 	 * Executes {@code static} the first time it's invoked.
@@ -80,10 +83,10 @@ public class OriginsClientModule implements SwitchyClientModule, SwitchyUIModule
 
 		HorizontalFlowLayout originsFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 		originsFlow.verticalAlignment(VerticalAlignment.CENTER);
-		originsFlow.child(Components.item(ORB_OF_ORIGIN.getDefaultStack()));
-		originsFlow.child(Components.label(Text.literal(
-						origins.values().stream().map(Identifier::getPath).collect(Collectors.joining(" | ")))
-				.setStyle(Style.EMPTY.withColor(Formatting.GRAY))));
+		originsFlow.child(Components.item(ORB_OF_ORIGIN.getDefaultStack()).margins(Insets.right(2)));
+		List<String> names = new ArrayList<>(origins.values().stream().map(Origin::getName).map(Text::getString).toList());
+		Collections.reverse(names);
+		originsFlow.child(Components.label(Text.literal(String.join(" | ", names)).setStyle(Style.EMPTY.withColor(Formatting.GRAY))));
 
 		return Pair.of(originsFlow, SwitchyUIPosition.LEFT);
 	}
@@ -95,7 +98,7 @@ public class OriginsClientModule implements SwitchyClientModule, SwitchyUIModule
 		if (origins != null) {
 			origins.forEach((key, value) -> {
 				NbtCompound layerTag = new NbtCompound();
-				layerTag.putString(KEY_LAYER, key);
+				layerTag.putString(KEY_LAYER, key.getIdentifier().toString());
 				layerTag.putString(KEY_ORIGIN, value.toString());
 				originLayerList.add(layerTag);
 			});
@@ -111,7 +114,7 @@ public class OriginsClientModule implements SwitchyClientModule, SwitchyUIModule
 			NbtList originLayerList = nbt.getList(KEY_ORIGINS_LIST, NbtElement.COMPOUND_TYPE);
 			for (NbtElement layerElement : originLayerList) {
 				if (layerElement instanceof NbtCompound layerCompound) {
-					origins.put(layerCompound.getString(KEY_LAYER), new Identifier(layerCompound.getString(KEY_ORIGIN)));
+					origins.put(OriginLayers.getLayer(Identifier.tryParse(layerCompound.getString(KEY_LAYER))), OriginRegistry.get(Identifier.tryParse(layerCompound.getString(KEY_ORIGIN))));
 				}
 			}
 		}

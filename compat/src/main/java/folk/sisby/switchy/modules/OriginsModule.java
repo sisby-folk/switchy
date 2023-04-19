@@ -85,11 +85,7 @@ public class OriginsModule implements SwitchyModule, SwitchyModuleTransferable {
 
 	@Override
 	public void applyToPlayer(ServerPlayerEntity player) {
-		if (origins != null) {
-			for (OriginLayer layer : origins.keySet()) {
-				setOrigin(player, layer, origins.get(layer));
-			}
-		}
+		if (origins != null) origins.forEach((layer, origin) -> setOrigin(player, layer, origin));
 	}
 
 	@Override
