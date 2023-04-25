@@ -26,8 +26,7 @@ You can hotswap these features out-of-the box by installing their relevant mods:
 - Player Skin with [Fabric Tailor](https://modrinth.com/mod/fabrictailor)
 - Player Origin with [Origins](https://modrinth.com/mod/origins) (includes all layers,
   e.g. [Statures](https://modrinth.com/mod/tinkerers-statures))
-    - [Contributed by [MerchantPug](https://github.com/MerchantPug)] Apoli power state - e.g. Origin power inventories,
-      cooldowns
+    - Apoli power state - e.g. Origin power inventories, cooldowns (via [MerchantPug](https://github.com/MerchantPug))
 - Player height and size with [Pehkui](https://modrinth.com/mod/pehkui)
 - Detailed player profiles for conventions with [Lanyard](https://modrinth.com/mod/lanyard)
 
@@ -44,9 +43,10 @@ More functionality can be added with these Addons:
 - [Switchy Proxy](https://modrinth.com/mod/switchy-proxy) - single-message nickname switching with custom patterns using
   either nickname mod.
 
-These mods have Switchy support built-in:
+These mods have Switchy support built-in (or built in to switchy):
 
 - [RPGStats](https://modrinth.com/mod/rpgstats) - All stat levels and XP can be kept per-preset
+- [Hexcasting](https://modrinth.com/mod/hex-casting) - Internalized pigment can be kept per-preset (via [leo60228](https://github.com/leo60228))
 
 ## Showcase
 
