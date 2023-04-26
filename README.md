@@ -6,7 +6,7 @@ Works in singleplayer and on server-side.</center>
 ---
 
 <center><span style="font-weight: bold">Packs:</span> <a href="https://modrinth.com/modpack/tinkerers-quilt">Tinkerer's Quilt</a> (<a href="https://modrinth.com/modpack/tinkerers-silk">Silk</a>) - <a href="https://modrinth.com/modpack/switchy-pack">Switchy Pack</a></center>
-<center><span style="font-weight: bold">Mods:</span> Switchy (<a href="https://modrinth.com/mod/switchy-inventories">Inventories</a>) (<a href="https://modrinth.com/mod/switchy-proxy">Proxy</a>) - <a href="https://modrinth.com/mod/origins-minus">Origins Minus</a> (<a href="https://modrinth.com/mod/tinkerers-statures">Statures</a>) - <a href="https://modrinth.com/mod/tinkerers-smithing">Tinkerer's Smithing</a></center>
+<center><span style="font-weight: bold">Mods:</span> Switchy - <a href="https://modrinth.com/mod/origins-minus">Origins Minus</a> (<a href="https://modrinth.com/mod/tinkerers-statures">Statures</a>) - <a href="https://modrinth.com/mod/tinkerers-smithing">Tinkerer's Smithing</a></center>
 
 ---
 
