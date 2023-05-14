@@ -70,27 +70,33 @@ dependencyResolutionManagement {
 			version('fabrictailor', "2.0.1")
 			version('origins', "v1.7.1")
 			version('apoli', "v2.6.0")
+			version('calio', "1.9.0")
 			version('pehkui', "3.4.2")
 			version('fabrication', "3.0.2+${mc_major}")
 			version('placeholderApi', "2.0.0-pre.1+${mc}")
 			version('styledNicknames', "1.1.2+${mc_major}")
 			version('placeholder', "2.0.0-beta.7+${mc_major}")
 			version('playerData', "0.2.2+${mc}")
-			version('figura', "0.1.0-rc.13")
+			version('luaj', "3.0.5-figura")
+			version('figura', "0.1.0-rc.14")
 
 			library('drogtor', 'maven.modrinth', 'drogtor').versionRef('drogtor')
 			library('fabrictailor', 'maven.modrinth', 'fabrictailor').versionRef('fabrictailor')
 			library('origins', 'com.github.apace100', 'origins-fabric').versionRef('origins')
 			library('apoli', 'com.github.apace100', 'apoli').versionRef('apoli')
+			library('calio', 'com.github.apace100', 'calio').versionRef('calio')
 			library('pehkui', 'com.github.Virtuoel', 'Pehkui').versionRef('pehkui')
 			library('fabrication', 'maven.modrinth', 'fabrication').versionRef('fabrication')
 			library('placeholderApi', 'eu.pb4', 'placeholder-api').versionRef('placeholderApi')
 			library('styledNicknames', 'maven.modrinth', 'styled-nicknames').versionRef('styledNicknames')
 			library('placeholder', 'eu.pb4', 'placeholder-api').versionRef('placeholder')
 			library('playerData', 'eu.pb4', 'player-data-api').versionRef('playerData')
+			library('luaj', 'com.github.Kingdom-of-The-Moon.luaj', 'luaj-core').versionRef('luaj')
 			library('figura', 'com.github.Kingdom-of-The-Moon', 'FiguraRewriteRewrite').versionRef('figura')
 
 			bundle('compat_compile', [
+					'cardinal',
+					'calio',
 					'qfapi',
 					'drogtor',
 					'fabrictailor',
@@ -98,6 +104,7 @@ dependencyResolutionManagement {
 					'fabrication',
 					'styledNicknames',
 					'placeholder',
+					'luaj',
 					'figura'
 			])
 			bundle('compat_runtime', [
