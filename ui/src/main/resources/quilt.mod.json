@@ -27,7 +27,7 @@
 		"depends": [
 			{
 				"id": "minecraft",
-				"versions": "${mc}"
+				"versions": ">=${mc}"
 			},
 			{
 				"id": "quilt_loader",
@@ -47,11 +47,14 @@
 			},
 			{
 				"id": "owo-lib",
-				"versions": "${owo}"
+				"versions": ">=${owo}"
 			}
 		]
 	},
 	"modmenu": {
 		"parent": "switchy"
+	},
+	"minecraft": {
+		"environment": "client"
 	}
 }

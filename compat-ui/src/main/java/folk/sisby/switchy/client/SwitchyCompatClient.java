@@ -28,10 +28,12 @@ public class SwitchyCompatClient implements SwitchyClientEvents.Init {
 	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
 	@Override
 	public void onInitialize() {
-		DrogtorClientModule.touch();
-		FabricTailorClientModule.touch();
-		StyledNicknamesClientModule.touch();
-		if (QuiltLoader.isModLoaded("origins")) OriginsClientModule.touch();
-		LOGGER.info("[Switchy Compat UI] Initialized!");
+		if (QuiltLoader.isModLoaded("owo")) {
+			DrogtorClientModule.touch();
+			FabricTailorClientModule.touch();
+			StyledNicknamesClientModule.touch();
+			if (QuiltLoader.isModLoaded("origins")) OriginsClientModule.touch();
+			LOGGER.info("[Switchy Compat UI] Initialized!");
+		}
 	}
 }

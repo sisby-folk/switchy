@@ -40,9 +40,6 @@ dependencies {
 	// Include runtime-only libraries //
 	include(libs.bundles.runtime.include)
 
-	// Include other libraries //
-	include(libs.bundles.ui.include)
-
 	// Re-apply Runtime from Subprojects //
 	modLocalRuntime libs.bundles.compat.runtime
 	modLocalRuntime libs.bundles.ui
@@ -218,6 +215,7 @@ if (System.getenv("MODRINTH_TOKEN")) {
 		detectLoaders = false
 		dependencies {
 			required.project "qsl"
+			required.project "owo-lib"
 			embedded.project "lib39"
 			embedded.project "owo-lib"
 			optional.project "drogtor"

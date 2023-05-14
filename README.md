@@ -1,7 +1,9 @@
 <center><img alt="switchy banner" src="https://user-images.githubusercontent.com/55819817/198210616-eb37be12-cd96-40c8-a941-68a96b2aadfc.png" /></center>
 
 <center>An extensible preset system for player customizations provided by other mods.<br/>
-Works in singleplayer and on server-side.</center>
+Works in singleplayer and on server-side.<br/>
+Requires <a href="https://modrinth.com/mod/owo-lib">oωo</a> on client-side.
+</center>
 
 ---
 

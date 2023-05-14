@@ -9,6 +9,7 @@ import folk.sisby.switchy.ui.screen.SwitchyScreen;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBind;
 import org.lwjgl.glfw.GLFW;
+import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.qsl.lifecycle.api.client.event.ClientTickEvents;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
@@ -41,6 +42,8 @@ public class SwitchyKeybindings implements SwitchyClientEvents.Init {
 
 	@Override
 	public void onInitialize() {
-		initializeKeybindings();
+		if (QuiltLoader.isModLoaded("owo")) {
+			initializeKeybindings();
+		}
 	}
 }
