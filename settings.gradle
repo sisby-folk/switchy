@@ -20,7 +20,7 @@ dependencyResolutionManagement {
 			def mc = mc_major + '.2'
 
 			// // Build Tools // //
-			version('loom', '1.0.+')
+			version('loom', '1.1.+')
 
 			plugin('loom', 'org.quiltmc.loom').versionRef('loom')
 
@@ -42,13 +42,8 @@ dependencyResolutionManagement {
 			bundle('base', ['ql', 'qsl', 'serverTranslationsApi'])
 
 			// // Runtime Libraries // //
-			version('lib39', "1.5.0-pre3+${mc}")
-
-			library('lib39Core', 'com.unascribed', 'lib39-core').versionRef('lib39')
-			library('lib39Dessicant', 'com.unascribed', 'lib39-dessicant').versionRef('lib39')
-
-			bundle('runtime', ['qfapi', 'lib39Core', 'lib39Dessicant'])
-			bundle('runtime.include', ['serverTranslationsApi', 'lib39Core', 'lib39Dessicant'])
+			bundle('runtime', ['qfapi'])
+			bundle('runtime.include', ['serverTranslationsApi'])
 
 			// // Client // //
 

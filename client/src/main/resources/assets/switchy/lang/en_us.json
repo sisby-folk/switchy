@@ -1,47 +1,16 @@
 {
-  "lib39:enable_enhanced_lang": true,
-  "commands": {
-    "switchy_client": {
-      "export": {
-        "command": "/switchy_client export",
-        "sent": "Requested export from server",
-        "success": "Presets saved to {}",
-        "fail": "Saving to file failed! See log for details",
-        "confirm": "Export {} modules?"
-      },
-      "import": {
-        "command": "/switchy_client import {}",
-        "success": "Presets sent to server"
-      },
-      "delete": {
-        "confirm": "You are about to delete preset '{}'"
-      },
-      "disable": {
-        "confirm": "You are about to disable module {}"
-      }
-    },
-    "fail": "Error occurred while executing command: '{}' - Check the server log for more details."
-  },
-  "command": {
-    "exception": {
-      "identifiers": {
-        "expected_namespace": "Expected namespace to begin after separator",
-        "expected_path": "Expected path to begin after namespace"
-      },
-      "file": {
-        "not_found": "File not found",
-        "invalid_nbt": "File contained invalid NBT"
-      }
-    }
-  },
-  "key": {
-    "switchy": {
-      "switch": "Open Quick-Switcher"
-    }
-  },
-  "category": {
-    "switchy": {
-      "switchy": "Switchy"
-    }
-  }
+  "commands.switchy_client.export.command": "/switchy_client export",
+  "commands.switchy_client.export.sent": "Requested export from server",
+  "commands.switchy_client.export.success": "Presets saved to %s",
+  "commands.switchy_client.export.fail": "Saving to file failed! See log for details",
+  "commands.switchy_client.export.confirm": "Export %s modules?",
+  "commands.switchy_client.import.command": "/switchy_client import %s",
+  "commands.switchy_client.import.success": "Presets sent to server",
+  "commands.switchy_client.delete.confirm": "You are about to delete preset '%s'",
+  "commands.switchy_client.disable.confirm": "You are about to disable module %s",
+  "commands.switchy_client.fail": "Error occurred while executing command: '%s' - Check the server log for more details.",
+  "command.exception.identifiers.expected_namespace": "Expected namespace to begin after separator",
+  "command.exception.identifiers.expected_path": "Expected path to begin after namespace",
+  "command.exception.file.not_found": "File not found",
+  "command.exception.file.invalid_nbt": "File contained invalid NBT"
 }

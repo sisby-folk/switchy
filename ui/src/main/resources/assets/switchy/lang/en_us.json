@@ -1,38 +1,13 @@
 {
-  "lib39:enable_enhanced_lang": true,
-  "screen": {
-    "switchy_ui": {
-      "import": {
-        "warn": {
-          "info": "You are about to import {} presets with {} modules:",
-          "collision": "Red presets will have these modules overwritten:"
-        }
-      },
-      "export": {
-        "confirm": "Export {} modules?"
-      },
-      "delete": {
-        "warn": "WARNING: Preset data from enabled modules will be deleted",
-        "confirm": "You are about to delete preset '{}'"
-      },
-      "disable": {
-        "confirm": "You are about to disable module {}",
-        "warn": "Warning: {}"
-      },
-      "list": {
-        "presets": "Presets: {}",
-        "modules": "Modules: {}"
-      }
-    }
-  },
-  "key": {
-    "switchy": {
-      "switch": "Open Quick-Switcher"
-    }
-  },
-  "category": {
-    "switchy": {
-      "switchy": "Switchy"
-    }
-  }
+  "screen.switchy_ui.import.warn.info": "You are about to import %s presets with %s modules:",
+  "screen.switchy_ui.import.warn.collision": "Red presets will have these modules overwritten:",
+  "screen.switchy_ui.export.confirm": "Export %s modules?",
+  "screen.switchy_ui.delete.warn": "WARNING: Preset data from enabled modules will be deleted",
+  "screen.switchy_ui.delete.confirm": "You are about to delete preset '%s'",
+  "screen.switchy_ui.disable.confirm": "You are about to disable module %s",
+  "screen.switchy_ui.disable.warn": "Warning: %s",
+  "screen.switchy_ui.list.presets": "Presets: %s",
+  "screen.switchy_ui.list.modules": "Modules: %s",
+  "key.switchy.switch": "Open Quick-Switcher",
+  "category.switchy.switchy": "Switchy"
 }

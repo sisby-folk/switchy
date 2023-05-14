@@ -84,10 +84,6 @@ allprojects {
 				includeGroup "maven.modrinth"
 			}
 		}
-
-		maven { // Lib39
-			url 'https://repo.sleeping.town'
-		}
 		maven { // Server Translations API
 			url "https://maven.nucleoid.xyz/"
 		}
@@ -149,7 +145,6 @@ allprojects {
 				"mc"                   : libs.versions.mc.get(),
 				"ql"                   : libs.versions.ql.get(),
 				"qsl"                  : libs.versions.qsl.get(),
-				"lib39"                : libs.versions.lib39.get(),
 				"serverTranslationsAPI": libs.versions.serverTranslationsApi.get(),
 				"qfapi"                : libs.versions.qfapi.get(),
 				"owo"                  : libs.versions.owo.get(),

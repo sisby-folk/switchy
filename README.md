@@ -143,9 +143,6 @@ maven { // Switchy
         includeGroup 'folk.sisby'
     }
 }
-maven { // Lib39
-    url 'https://repo.sleeping.town'
-}
 maven { // Server Translations API
     url "https://maven.nucleoid.xyz/"
 }
