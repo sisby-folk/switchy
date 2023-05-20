@@ -30,7 +30,7 @@ You can hotswap these features out-of-the box by installing their relevant mods:
     - [Drogtor The Nickinator](https://modrinth.com/mod/drogtor)
     - [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) (Note: Switchy force-allows nickname
       self-assignment)
-- Player Skin with [Fabric Tailor](https://modrinth.com/mod/fabrictailor)
+- Player Skin with [Fabric Tailor](https://modrinth.com/mod/fabrictailor) or model with [Figura](https://modrinth.com/mod/figura) (via API)
 - Player Origin with [Origins](https://modrinth.com/mod/origins) (includes all layers,
   e.g. [Statures](https://modrinth.com/mod/tinkerers-statures))
     - Apoli power state - e.g. Origin power inventories, cooldowns (via [MerchantPug](https://github.com/MerchantPug))
@@ -170,6 +170,19 @@ if you're making an addon, just use `modImplementation`.<br/>
 Switchy includes a rich API for both client and server addons for performing all of its basic functions.
 
 Try `SwitchyPresets` (via `SwitchyPlayer.getPresets()`) covers most mod functions, then `SwitchyApi` provides them with text feedback, `SwitchyClientApi` provides them on the client, and `SwitchyEvents` and `SwitchyClientEvents` offer hooks for addons, registering modules, and adding new commands.
+
+#### Figura Lua API
+
+Listen to switches by passing a function to `switchy:registerSwitchListener`, e.g.
+
+```
+switchy:registerSwitchListener(function(playerId, oldPreset, newPreset, enabledModules)
+  log("New Switch: " .. oldPreset .. " > " .. newPreset)
+end)
+```
+
+The function body can then match specific preset names to swap in specific models.
+
 
 ### Modules
 
