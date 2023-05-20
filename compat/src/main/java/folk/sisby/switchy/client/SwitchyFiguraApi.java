@@ -5,11 +5,11 @@ import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.FiguraAPI;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * A Figura API that exposes Switchy events to its avatar scripting system.
@@ -18,6 +18,7 @@ import java.util.Objects;
  * @see SwitchyClientEvents
  * @since 2.0.0
  */
+@LuaWhitelist
 public class SwitchyFiguraApi implements FiguraAPI {
 	/**
 	 * Registers a lua listener for switch events.
@@ -26,12 +27,12 @@ public class SwitchyFiguraApi implements FiguraAPI {
 	 * @see SwitchyClientEvents#SWITCH
 	 */
 	@LuaWhitelist
-	public static void registerSwitchListener(LuaFunction function) {
+	public static void registerSwitchListener(@LuaNotNil LuaFunction function) {
 		SwitchyClientEvents.SWITCH.register((event) -> function.invoke(
 				LuaValue.varargsOf(new LuaValue[]{
 						LuaValue.valueOf(event.player().toString()),
-						LuaValue.valueOf(Objects.requireNonNullElse(event.currentPreset(), "")),
-						LuaValue.valueOf(Objects.requireNonNullElse(event.previousPreset(), "")),
+						event.currentPreset() != null ? LuaValue.valueOf(event.currentPreset()) : LuaValue.NIL,
+						event.previousPreset() != null ? LuaValue.valueOf(event.previousPreset()) : LuaValue.NIL,
 						LuaValue.listOf(event.enabledModules().stream().map(LuaValue::valueOf).toArray(LuaValue[]::new))
 				})
 		));
@@ -49,6 +50,11 @@ public class SwitchyFiguraApi implements FiguraAPI {
 
 	@Override
 	public Collection<Class<?>> getWhitelistedClasses() {
-		return List.of(getClass());
+		return List.of(this.getClass());
+	}
+
+	@Override
+	public String toString() {
+		return "SwitchyFiguraApi";
 	}
 }
