@@ -20,14 +20,14 @@ dependencyResolutionManagement {
 			def mc = mc_major + '.2'
 
 			// // Build Tools // //
-			version('loom', '1.1.+')
+			version('loom', '1.2.+')
 
 			plugin('loom', 'org.quiltmc.loom').versionRef('loom')
 
 			// // Base // //
 			version('mc', mc)
 			version('ql', "0.17.10")
-			version('qm', "${mc}+build.21")
+			version('qm', "${mc}+build.22")
 			version('qsl', "3.0.0-beta.29+${mc}")
 			version('qfapi', "4.0.0-beta.28+0.73.2-${mc}")
 			version('serverTranslationsApi', "1.4.18+${mc}")
@@ -78,7 +78,7 @@ dependencyResolutionManagement {
 			version('placeholder', "2.0.0-beta.7+${mc_major}")
 			version('playerData', "0.2.2+${mc}")
 			version('luaj', "3.0.5-figura")
-			version('figura', "0.1.0-rc.14")
+			version('figura', "0.1.0")
 
 			library('drogtor', 'maven.modrinth', 'drogtor').versionRef('drogtor')
 			library('fabrictailor', 'maven.modrinth', 'fabrictailor').versionRef('fabrictailor')

@@ -4,7 +4,7 @@ import folk.sisby.switchy.client.api.SwitchyClientEvents;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
 import org.moon.figura.avatar.Avatar;
-import org.moon.figura.lua.FiguraAPI;
+import org.moon.figura.entries.FiguraAPI;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 
@@ -51,6 +51,11 @@ public class SwitchyFiguraApi implements FiguraAPI {
 	@Override
 	public Collection<Class<?>> getWhitelistedClasses() {
 		return List.of(this.getClass());
+	}
+
+	@Override
+	public Collection<Class<?>> getDocsClasses() {
+		return List.of();
 	}
 
 	@Override
