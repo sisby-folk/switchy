@@ -1,20 +1,9 @@
 dependencies {
-	implementation(project(path: ':core', configuration: 'namedElements'))
-	implementation(project(path: ':client', configuration: 'namedElements'))
-	implementation(project(path: ':compat', configuration: 'namedElements'))
-	implementation(project(path: ':ui', configuration: 'namedElements'))
-
-	// Redo UI Deps (why)
-	modCompileOnly libs.bundles.ui
-	modLocalRuntime libs.bundles.ui
-
-	// Optional Compatible Mods
-	modCompileOnly libs.bundles.compat.compile
-	modLocalRuntime libs.bundles.compat.runtime
+	api project(path: ':compat', configuration: 'namedElements')
+	api project(path: ':ui', configuration: 'namedElements')
+	modCompileOnly libs.qfapi
+	modCompileOnly libs.calio
 	modCompileOnly(libs.origins) {
 		exclude module: 'apoli'
-	}
-	modCompileOnly(libs.apoli) {
-		exclude module: 'AdditionalEntityAttributes'
 	}
 }

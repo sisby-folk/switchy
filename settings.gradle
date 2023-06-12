@@ -39,12 +39,6 @@ dependencyResolutionManagement {
 			library('qfapi', 'org.quiltmc.quilted-fabric-api', 'quilted-fabric-api',).versionRef('qfapi')
 			library('serverTranslationsApi', 'fr.catcore', 'server-translations-api').versionRef('serverTranslationsApi')
 
-			bundle('base', ['ql', 'qsl', 'serverTranslationsApi'])
-
-			// // Runtime Libraries // //
-			bundle('runtime', ['qfapi'])
-			bundle('runtime.include', ['serverTranslationsApi'])
-
 			// // Client // //
 
 			// // UI // //
@@ -52,18 +46,11 @@ dependencyResolutionManagement {
 
 			library('owo', 'io.wispforest', 'owo-lib').versionRef('owo')
 
-			bundle('ui', ['qfapi', 'owo'])
-
 			// // Cardinal // //
 			version('cardinal', "5.1.0")
 
 			library('cardinal', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-base').versionRef('cardinal')
 			library('cardinalEntity', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-entity').versionRef('cardinal')
-
-			bundle('cardinal', [
-					'cardinal',
-					'cardinalEntity',
-			])
 
 			// // Compat // //
 			version('drogtor', "1.1.3${mc_major == '1.18' ? '' : "+${mc_major}"}")
@@ -93,28 +80,6 @@ dependencyResolutionManagement {
 			library('playerData', 'eu.pb4', 'player-data-api').versionRef('playerData')
 			library('luaj', 'com.github.Kingdom-of-The-Moon.luaj', 'luaj-core').versionRef('luaj')
 			library('figura', 'com.github.Kingdom-of-The-Moon', 'FiguraRewriteRewrite').versionRef('figura')
-
-			bundle('compat_compile', [
-					'cardinal',
-					'calio',
-					'qfapi',
-					'drogtor',
-					'fabrictailor',
-					'pehkui',
-					'fabrication',
-					'styledNicknames',
-					'placeholder',
-					'luaj',
-					'figura'
-			])
-			bundle('compat_runtime', [
-					// 'drogtor',
-					'placeholder',
-					'playerData',
-					'styledNicknames',
-					// 'fabrictailor',
-					'pehkui'
-			])
 
 			// // Local Debugging Convenience // //
 			version('lazydfu', "0.1.3")

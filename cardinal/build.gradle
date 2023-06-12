@@ -1,5 +1,5 @@
 dependencies {
-	implementation(project(path: ':core', configuration: 'namedElements'))
-
-	modCompileOnly libs.bundles.cardinal
+	api project(path: ':core', configuration: 'namedElements')
+	modCompileOnly libs.cardinal
+	modCompileOnly libs.cardinalEntity
 }

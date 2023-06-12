@@ -1,14 +1,23 @@
 dependencies {
-	implementation(project(path: ':core', configuration: 'namedElements'))
-	implementation(project(path: ':client', configuration: 'namedElements'))
+	api project(path: ':client', configuration: 'namedElements')
 
-	// Optional Compatible Mods
-	modCompileOnly libs.bundles.compat.compile
-	modLocalRuntime libs.bundles.compat.runtime
-	modCompileOnly(libs.origins) {
-		exclude module: 'apoli'
-	}
+	modCompileOnly libs.qfapi // Compile fabric mods
+
+	modCompileOnly libs.drogtor
+	modCompileOnly libs.fabrictailor
+	modCompileOnly libs.pehkui
+	modCompileOnly libs.fabrication
+	modCompileOnly libs.placeholder
+	modCompileOnly libs.styledNicknames
+	modCompileOnly libs.luaj
+	modCompileOnly libs.figura
+	modCompileOnly libs.cardinal
+	modCompileOnly libs.calio
 	modCompileOnly(libs.apoli) {
 		exclude module: 'AdditionalEntityAttributes'
+		exclude module: 'calio'
+	}
+	modCompileOnly(libs.origins) {
+		exclude module: 'apoli'
 	}
 }

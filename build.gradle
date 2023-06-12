@@ -37,12 +37,11 @@ dependencies {
 	runtimeOnly(include(project(path: ':compat', configuration: 'namedElements')))
 	runtimeOnly(include(project(path: ':compat-ui', configuration: 'namedElements')))
 
-	// Include runtime-only libraries //
-	include(libs.bundles.runtime.include)
-
-	// Re-apply Runtime from Subprojects //
-	modLocalRuntime libs.bundles.compat.runtime
-	modLocalRuntime libs.bundles.ui
+	// Run Compat Mods Locally //
+	modLocalRuntime libs.placeholder
+	modLocalRuntime libs.playerData
+	modLocalRuntime libs.styledNicknames
+	modLocalRuntime libs.pehkui
 }
 
 allprojects {
@@ -130,9 +129,7 @@ allprojects {
 		// // Base // //
 		minecraft libs.mc
 		mappings variantOf(libs.qm) { classifier "intermediary-v2" }
-		modImplementation libs.bundles.base
-		modRuntimeOnly libs.bundles.runtime
-
+		modImplementation libs.ql
 		modLocalRuntime libs.bundles.local.conveniences
 	}
 
