@@ -1,5 +1,5 @@
 dependencies {
 	api project(path: ':core', configuration: 'namedElements')
-	modCompileOnly libs.cardinal
-	modCompileOnly libs.cardinalEntity
+	modApi libs.cardinal
+	modApi libs.cardinalEntity
 }
