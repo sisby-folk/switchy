@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerPlayNetworkHandler.class)
 public abstract class MixinServerPlayNetworkHandler {
 	@SuppressWarnings("DataFlowIssue")
-	@Inject(at = @At(value = "TAIL"), method = "m_lseobmtm")
+	@Inject(at = @At(value = "TAIL"), method = "method_45010")
 	void onChatCommand(ChatCommandC2SPacket packet, CallbackInfo ci) {
 		SwitchyCommands.HISTORY.put(((ServerPlayNetworkHandler) (Object) this).player.getUuid(), packet.command());
 	}
