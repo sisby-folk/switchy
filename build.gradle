@@ -213,8 +213,6 @@ if (System.getenv("MODRINTH_TOKEN")) {
 		dependencies {
 			required.project "qsl"
 			required.project "owo-lib"
-			embedded.project "lib39"
-			embedded.project "owo-lib"
 			optional.project "drogtor"
 			optional.project "fabrictailor"
 			optional.project "pehkui"
