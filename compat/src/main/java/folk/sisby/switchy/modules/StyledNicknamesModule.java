@@ -59,14 +59,14 @@ public class StyledNicknamesModule implements SwitchyModule, SwitchyModuleTransf
 	@Override
 	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
 		NicknameHolder holder = NicknameHolder.of(player);
-		styled_nickname = holder.sn_get();
+		styled_nickname = holder.styledNicknames$get();
 	}
 
 	@Override
 	public void applyToPlayer(ServerPlayerEntity player) {
 		NicknameHolder holder = NicknameHolder.of(player);
 		String oldName = player.getDisplayName().getString();
-		if (styled_nickname != null) holder.sn_set(styled_nickname, false);
+		if (styled_nickname != null) holder.styledNicknames$set(styled_nickname, false);
 		String newName = player.getDisplayName().getString();
 		if (!Objects.equals(oldName, newName))
 			Switchy.LOGGER.info("[Switchy] Player Nickname Change: '" + oldName + "' -> '" + newName + "' [" + player.getGameProfile().getName() + "]");
@@ -83,7 +83,7 @@ public class StyledNicknamesModule implements SwitchyModule, SwitchyModuleTransf
 	public NbtCompound toClientNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		if (styled_nickname != null) {
-			outNbt.putString(KEY_NICKNAME, Text.Serializer.toJsonTree(TextParserUtils.formatText(styled_nickname)).toString());
+			outNbt.putString(KEY_NICKNAME, Text.Serializer.toJsonTree(getText()).toString());
 		}
 		return outNbt;
 	}

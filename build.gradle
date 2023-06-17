@@ -23,7 +23,7 @@ if (System.getenv("GITHUB_TOKEN")) {
 archivesBaseName = project.archives_base_name
 
 def mc_major = '1.19'
-def mc = mc_major + '.2'
+def mc = mc_major + '.3'
 def default_branch = '1.19'
 
 def origVersion = project.version
@@ -49,7 +49,7 @@ allprojects {
 	apply plugin: 'maven-publish'
 
 
-	project.version = project.version + "+" + mc_major
+	project.version = project.version + "+" + mc
 	group = project.maven_group
 
 	loom {
