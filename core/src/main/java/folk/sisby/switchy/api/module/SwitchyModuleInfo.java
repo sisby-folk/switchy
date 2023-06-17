@@ -1,7 +1,5 @@
 package folk.sisby.switchy.api.module;
 
-import fr.catcore.server.translations.api.LocalizationTarget;
-import fr.catcore.server.translations.api.text.LocalizableText;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -11,6 +9,8 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.server.translations.api.LocalizationTarget;
+import xyz.nucleoid.server.translations.impl.LocalizableText;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -88,10 +88,10 @@ public final class SwitchyModuleInfo {
 		NbtCompound nbt = new NbtCompound();
 		nbt.putBoolean(KEY_DEFAULT, isDefault);
 		nbt.putString(KEY_EDITABLE, editable.name());
-		nbt.putString(KEY_DESCRIPTION, Text.Serializer.toJson(player == null ? description : LocalizableText.asLocalizedFor(description, (LocalizationTarget) player)));
-		nbt.putString(KEY_WHEN_ENABLED, Text.Serializer.toJson(player == null ? descriptionWhenEnabled : LocalizableText.asLocalizedFor(descriptionWhenEnabled, (LocalizationTarget) player)));
-		nbt.putString(KEY_WHEN_DISABLED, Text.Serializer.toJson(player == null ? descriptionWhenDisabled : LocalizableText.asLocalizedFor(descriptionWhenDisabled, (LocalizationTarget) player)));
-		nbt.putString(KEY_DELETION_WARNING, Text.Serializer.toJson(player == null ? deletionWarning : LocalizableText.asLocalizedFor(deletionWarning, (LocalizationTarget) player)));
+		nbt.putString(KEY_DESCRIPTION, Text.Serializer.toJson(player == null ? description : LocalizableText.asLocalizedFor(description, ((LocalizationTarget) player).getLanguage(), true)));
+		nbt.putString(KEY_WHEN_ENABLED, Text.Serializer.toJson(player == null ? descriptionWhenEnabled : LocalizableText.asLocalizedFor(descriptionWhenEnabled, ((LocalizationTarget) player).getLanguage(), true)));
+		nbt.putString(KEY_WHEN_DISABLED, Text.Serializer.toJson(player == null ? descriptionWhenDisabled : LocalizableText.asLocalizedFor(descriptionWhenDisabled, ((LocalizationTarget) player).getLanguage(), true)));
+		nbt.putString(KEY_DELETION_WARNING, Text.Serializer.toJson(player == null ? deletionWarning : LocalizableText.asLocalizedFor(deletionWarning, ((LocalizationTarget) player).getLanguage(), true)));
 		NbtList nbtDependencies = new NbtList();
 		nbtDependencies.addAll(applyDependencies.stream().map(Identifier::toString).map(NbtString::of).toList());
 		nbt.put(KEY_APPLY_DEPENDENCIES, nbtDependencies);

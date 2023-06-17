@@ -192,7 +192,7 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 		HorizontalFlowLayout renamePresetFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 		TextBoxComponent nameEntry = Components.textBox(Sizing.fill(53), (presetName != null) ? presetName : "newPreset");
 		nameEntry.setTextPredicate(s -> s.chars().mapToObj(i -> (char) i).allMatch(StringReader::isAllowedInUnquotedString));
-		this.setInitialFocus(nameEntry);
+		this.focusOn(nameEntry);
 		renamePresetFlow.child(nameEntry);
 		ButtonComponent confirmButton = Components.button(Text.literal("Confirm"), (presetName != null) ? b -> {
 			if (!presetName.equals(nameEntry.getText())) {

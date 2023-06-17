@@ -23,7 +23,7 @@ if (System.getenv("GITHUB_TOKEN")) {
 archivesBaseName = project.archives_base_name
 
 def mc_major = '1.19'
-def mc = mc_major + '.3'
+def mc = mc_major + '.4'
 def default_branch = '1.19'
 
 def origVersion = project.version

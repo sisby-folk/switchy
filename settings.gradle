@@ -17,7 +17,7 @@ dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
 			def mc_major = '1.19'
-			def mc = mc_major + '.3'
+			def mc = mc_major + '.4'
 
 			// // Build Tools // //
 			version('loom', '1.2.+')
@@ -27,22 +27,22 @@ dependencyResolutionManagement {
 			// // Base // //
 			version('mc', mc)
 			version('ql', "0.19.0")
-			version('qm', "${mc}+build.28")
-			version('qsl', "4.0.0-beta.13+${mc}")
-			version('qfapi', "5.0.0-beta.9+0.76.0-${mc}")
-			version('serverTranslationsApi', "1.4.19+${mc}")
+			version('qm', "${mc}+build.10")
+			version('qsl', "5.0.0-beta.10+${mc}")
+			version('qfapi', "6.0.0-beta.9+0.83.0-${mc}")
+			version('serverTranslationsApi', "2.0.0-beta.2+${mc}-pre2")
 
 			library('mc', 'mojang', 'minecraft').versionRef('mc')
 			library('ql', 'org.quiltmc', 'quilt-loader').versionRef('ql')
 			library('qm', 'org.quiltmc', 'quilt-mappings').versionRef('qm')
 			library('qsl', 'org.quiltmc', 'qsl').versionRef('qsl')
 			library('qfapi', 'org.quiltmc.quilted-fabric-api', 'quilted-fabric-api',).versionRef('qfapi')
-			library('serverTranslationsApi', 'fr.catcore', 'server-translations-api').versionRef('serverTranslationsApi')
+			library('serverTranslationsApi', 'xyz.nucleoid', 'server-translations-api').versionRef('serverTranslationsApi')
 
 			// // Client // //
 
 			// // UI // //
-			version('owo', "0.10.3+${mc}")
+			version('owo', "0.10.6+${mc}")
 
 			library('owo', 'io.wispforest', 'owo-lib').versionRef('owo')
 
@@ -55,14 +55,14 @@ dependencyResolutionManagement {
 			// // Compat // //
 			version('drogtor', "1.1.3+${mc_major}")
 			version('fabrictailor', "2.0.2")
-			version('origins', "v1.8.1")
-			version('apoli', "v2.7.1")
-			version('calio', "1.9.0")
+			version('origins', "v1.9.0")
+			version('apoli', "v2.8.0")
+			version('calio', "1.10.0")
 			version('pehkui', "3.7.5")
 			version('fabrication', "3.2.7+${mc}")
-			version('styledNicknames', "1.2.0+${mc}")
-			version('placeholder', "2.0.0-rc.1+${mc}")
-			version('playerData', "0.2.2+${mc}")
+			version('styledNicknames', "1.2.0+1.19.3")
+			version('placeholder', "2.1.0+${mc}")
+			version('playerData', "0.2.2+1.19.3")
 			version('luaj', "3.0.6-figura")
 			version('figura', "0.1.0")
 
@@ -80,22 +80,16 @@ dependencyResolutionManagement {
 			library('figura', 'com.github.Kingdom-of-The-Moon', 'FiguraRewriteRewrite').versionRef('figura')
 
 			// // Local Debugging Convenience // //
-			version('lazydfu', "0.1.3")
 			version('fastload', "3.4.0")
-			version('smoothboot-fabric', "${mc_major}-1.7.1")
-			version('sodium', "mc${mc}-0.4.9")
-			version('modmenu', "5.1.0-beta.4")
+			version('sodium', "mc${mc}-0.4.10")
+			version('modmenu', "6.2.3")
 
-			library('lazydfu', 'maven.modrinth', 'lazydfu').versionRef('lazydfu')
 			library('fastload', 'maven.modrinth', 'fastload').versionRef('fastload')
-			library('smoothboot-fabric', 'maven.modrinth', 'smoothboot-fabric').versionRef('smoothboot-fabric')
 			library('sodium', 'com.github.CaffeineMC', 'sodium-fabric').versionRef('sodium')
 			library('modmenu', 'com.terraformersmc', 'modmenu').versionRef('modmenu')
 
 			bundle('local_conveniences', [
-					'lazydfu',
 					'fastload',
-					'smoothboot-fabric',
 					'sodium',
 					'modmenu'
 			])

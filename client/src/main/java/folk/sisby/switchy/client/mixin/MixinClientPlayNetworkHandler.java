@@ -2,7 +2,7 @@ package folk.sisby.switchy.client.mixin;
 
 import folk.sisby.switchy.client.SwitchyClientCommands;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.Packet;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.play.ChatCommandC2SPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

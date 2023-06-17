@@ -1,7 +1,5 @@
 package folk.sisby.switchy.api;
 
-import fr.catcore.server.translations.api.LocalizationTarget;
-import fr.catcore.server.translations.api.text.LocalizableText;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -9,6 +7,8 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.server.translations.api.LocalizationTarget;
+import xyz.nucleoid.server.translations.impl.LocalizableText;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,7 +48,7 @@ public record SwitchyFeedback(SwitchyFeedbackStatus status, Collection<Text> mes
 		NbtCompound nbt = new NbtCompound();
 		nbt.putString(KEY_STATUS, status.name());
 		NbtList nbtMessages = new NbtList();
-		nbtMessages.addAll(messages.stream().map(text -> Text.Serializer.toJson(player == null ? text : LocalizableText.asLocalizedFor(text, (LocalizationTarget) player))).map(NbtString::of).toList());
+		nbtMessages.addAll(messages.stream().map(text -> Text.Serializer.toJson(player == null ? text : LocalizableText.asLocalizedFor(text, ((LocalizationTarget) player).getLanguage(), true))).map(NbtString::of).toList());
 		nbt.put(KEY_MESSAGES_LIST, nbtMessages);
 		return nbt;
 	}
