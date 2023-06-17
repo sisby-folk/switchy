@@ -142,7 +142,7 @@ public class Feedback {
 	 * @return a command as might be returned by context.getInput(). Identical in 1.19+.
 	 */
 	public static String command(String string) {
-		return "" + string;
+		return string;
 	}
 
 	/**

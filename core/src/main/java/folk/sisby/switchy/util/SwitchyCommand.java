@@ -38,15 +38,19 @@ import static folk.sisby.switchy.util.Feedback.sendMessage;
  * @since 1.8.13
  */
 public class SwitchyCommand {
-	private static CompletableFuture<Suggestions> suggestPresets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, BiPredicate<SwitchyPresets, SwitchyPreset> suggestionPredicate) throws CommandSyntaxException {
-		SwitchyPresets presets = ((SwitchyPlayer) context.getSource().getPlayer()).switchy$getPresets();
-		CommandSource.suggestMatching(presets.getPresets().values().stream().filter(p -> suggestionPredicate.test(presets, p)).map(SwitchyPresetData::getName), builder);
+	private static CompletableFuture<Suggestions> suggestPresets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, BiPredicate<SwitchyPresets, SwitchyPreset> suggestionPredicate) {
+		if (serverPlayerOrNull(context.getSource()) instanceof SwitchyPlayer switchyPlayer) {
+			SwitchyPresets presets = switchyPlayer.switchy$getPresets();
+			CommandSource.suggestMatching(presets.getPresets().values().stream().filter(p -> suggestionPredicate.test(presets, p)).map(SwitchyPresetData::getName), builder);
+		}
 		return builder.buildFuture();
 	}
 
-	private static CompletableFuture<Suggestions> suggestModules(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, BiPredicate<SwitchyPresets, Identifier> suggestionPredicate) throws CommandSyntaxException {
-		SwitchyPresets presets = ((SwitchyPlayer) context.getSource().getPlayer()).switchy$getPresets();
-		CommandSource.suggestIdentifiers(presets.getModules().keySet().stream().filter(id -> suggestionPredicate.test(presets, id)), builder);
+	private static CompletableFuture<Suggestions> suggestModules(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, BiPredicate<SwitchyPresets, Identifier> suggestionPredicate) {
+		if (serverPlayerOrNull(context.getSource()) instanceof SwitchyPlayer switchyPlayer) {
+			SwitchyPresets presets = switchyPlayer.switchy$getPresets();
+			CommandSource.suggestIdentifiers(presets.getModules().keySet().stream().filter(id -> suggestionPredicate.test(presets, id)), builder);
+		}
 		return builder.buildFuture();
 	}
 
@@ -57,9 +61,8 @@ public class SwitchyCommand {
 	 * @param builder      the suggestion builder.
 	 * @param allowCurrent whether to include the player's current preset.
 	 * @return the suggestion promise.
-	 * @throws CommandSyntaxException when the source is not a player.
 	 */
-	public static CompletableFuture<Suggestions> suggestPresets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, boolean allowCurrent) throws CommandSyntaxException {
+	public static CompletableFuture<Suggestions> suggestPresets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, boolean allowCurrent) {
 		return suggestPresets(context, builder, allowCurrent ? (presets, preset) -> true : (presets, preset) -> !presets.getCurrentPresetName().equalsIgnoreCase(preset.getName()));
 	}
 
@@ -80,9 +83,8 @@ public class SwitchyCommand {
 	 * @param builder the suggestion builder.
 	 * @param enabled whether to show enabled or disabled modules.
 	 * @return the suggestion promise.
-	 * @throws CommandSyntaxException when the source is not a player.
 	 */
-	public static CompletableFuture<Suggestions> suggestModules(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, Boolean enabled) throws CommandSyntaxException {
+	public static CompletableFuture<Suggestions> suggestModules(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, Boolean enabled) {
 		return suggestModules(context, builder, (presets, id) -> enabled == null || presets.isModuleEnabled(id) == enabled);
 	}
 
