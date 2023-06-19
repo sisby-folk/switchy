@@ -5,7 +5,6 @@ import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
 import folk.sisby.switchy.api.presets.SwitchyPresetsData;
-import folk.sisby.switchy.client.SwitchyClient;
 import folk.sisby.switchy.client.api.SwitchyClientApi;
 import folk.sisby.switchy.util.Feedback;
 import io.wispforest.owo.ui.base.BaseUIModelScreen;
@@ -288,6 +287,7 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 	void openDialog(String leftButtonText, String rightButtonText, int hSize, Consumer<ButtonComponent> leftButtonAction, Consumer<ButtonComponent> rightButtonAction, List<Text> messages) {
 		FlowLayout dialog = model.expandTemplate(FlowLayout.class, "dialog-box", Map.of("leftText", leftButtonText, "rightText", rightButtonText, "hSize", String.valueOf(hSize)));
 		OverlayContainer<FlowLayout> overlay = Containers.overlay(dialog).closeOnClick(false);
+		overlay.zIndex(100);
 		overlay.mouseDown().subscribe((x, y, b) -> true); // eat all input
 		FlowLayout messageFlow = dialog.childById(FlowLayout.class, "messageFlow");
 		ButtonComponent leftButton = dialog.childById(ButtonComponent.class, "leftButton");

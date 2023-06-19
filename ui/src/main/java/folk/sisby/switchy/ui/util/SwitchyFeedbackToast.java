@@ -3,7 +3,6 @@ package folk.sisby.switchy.ui.util;
 import folk.sisby.switchy.api.SwitchyFeedback;
 import folk.sisby.switchy.api.SwitchyFeedbackStatus;
 import io.wispforest.owo.ops.TextOps;
-import io.wispforest.owo.ui.core.OwoUIDrawContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.GuiGraphics;
@@ -57,10 +56,17 @@ public class SwitchyFeedbackToast implements Toast {
 		}
 	}
 
+	private static void outline(GuiGraphics graphics, int x, int y, int width, int height, int color) {
+		graphics.fill(x, y, x + width, y + 1, color);
+		graphics.fill(x, y + height - 1, x + width, y + height, color);
+		graphics.fill(x, y + 1, x + 1, y + height - 1, color);
+		graphics.fill(x + width - 1, y + 1, x + width, y + height - 1, color);
+	}
+
 	@Override
 	public Visibility draw(GuiGraphics graphics, ToastManager manager, long startTime) {
-		OwoUIDrawContext.of(graphics).fill(0, 0, getWidth(), getHeight(), 0x77000000);
-		OwoUIDrawContext.of(graphics).drawRectOutline(0, 0, getWidth(), getHeight(), colours.get(status));
+		graphics.fill(0, 0, getWidth(), getHeight(), 0x77000000);
+		outline(graphics, 0, 0, getWidth(), getHeight(), colours.get(status));
 
 		int xOffset = getWidth() / 2 - textRenderer.getWidth(textLines.get(0)) / 2;
 		graphics.drawText(textRenderer, textLines.get(0), 4 + xOffset, 4, 0xFFFFFF, true);
