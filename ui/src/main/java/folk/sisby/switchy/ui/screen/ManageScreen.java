@@ -377,17 +377,13 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 			SwitchyClientApi.enableModule(id, SwitchyScreen::updatePresetScreens);
 		}, true, Text.literal("Enable"), presets.getModuleInfo().get(module).descriptionWhenEnabled(), labelSize)));
 		// Enabled Modules
-		presets.getEnabledModules().forEach(module -> enabledModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
-			SwitchyClient.LOGGER.info(module.getPath());
-			SwitchyClient.LOGGER.info(Text.translatable("commands.switchy_client.disable.confirm", Feedback.literal(module.getPath())).getString());
-			openDialog("OK", "Cancel", 200, okButton -> {
-				presets.disableModule(id);
-				refreshModulesFlow(disabledModulesFlow, enabledModulesFlow);
-				lockScreen();
-				SwitchyClientApi.disableModule(id, SwitchyScreen::updatePresetScreens);
-			}, cancel -> {
-			}, List.of(Text.translatable("commands.switchy_client.disable.confirm", Feedback.literal(id.getPath())), Text.translatable("screen.switchy_ui.disable.warn", presets.getModuleInfo().get(id).deletionWarning())));
-		}, true, Text.literal("Disable"), presets.getModuleInfo().get(module).descriptionWhenDisabled(), labelSize)));
+		presets.getEnabledModules().forEach(module -> enabledModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> openDialog("OK", "Cancel", 200, okButton -> {
+			presets.disableModule(id);
+			refreshModulesFlow(disabledModulesFlow, enabledModulesFlow);
+			lockScreen();
+			SwitchyClientApi.disableModule(id, SwitchyScreen::updatePresetScreens);
+		}, cancel -> {
+		}, List.of(Text.translatable("commands.switchy_client.disable.confirm", Feedback.literal(id.getPath())), Text.translatable("screen.switchy_ui.disable.warn", presets.getModuleInfo().get(id).deletionWarning()))), true, Text.literal("Disable"), presets.getModuleInfo().get(module).descriptionWhenDisabled(), labelSize)));
 
 	}
 
