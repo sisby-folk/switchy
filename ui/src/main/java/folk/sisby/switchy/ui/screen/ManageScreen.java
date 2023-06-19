@@ -283,16 +283,17 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 	@SuppressWarnings("ConstantConditions")
 	void openDialog(String leftButtonText, String rightButtonText, int hSize, Consumer<ButtonComponent> leftButtonAction, Consumer<ButtonComponent> rightButtonAction, List<Text> messages) {
 		FlowLayout dialog = model.expandTemplate(FlowLayout.class, "dialog-box", Map.of("leftText", leftButtonText, "rightText", rightButtonText, "hSize", String.valueOf(hSize)));
+		OverlayContainer<FlowLayout> overlay = Containers.overlay(dialog).closeOnClick(false);
 		FlowLayout messageFlow = dialog.childById(FlowLayout.class, "messageFlow");
 		ButtonComponent leftButton = dialog.childById(ButtonComponent.class, "leftButton");
 		ButtonComponent rightButton = dialog.childById(ButtonComponent.class, "rightButton");
 		leftButton.onPress(leftB -> {
 			leftButtonAction.accept(leftB);
-			root.removeChild(dialog);
+			root.removeChild(overlay);
 		});
 		rightButton.onPress(rightB -> {
 			rightButtonAction.accept(rightB);
-			root.removeChild(dialog);
+			root.removeChild(overlay);
 		});
 		messages.forEach(m -> {
 			LabelComponent message = Components.label(m);
@@ -300,7 +301,9 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 			messageFlow.child(message);
 		});
 
-		root.child(dialog);
+
+
+		root.child(overlay);
 	}
 
 	void lockScreen() {
