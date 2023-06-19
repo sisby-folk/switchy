@@ -288,6 +288,7 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 	void openDialog(String leftButtonText, String rightButtonText, int hSize, Consumer<ButtonComponent> leftButtonAction, Consumer<ButtonComponent> rightButtonAction, List<Text> messages) {
 		FlowLayout dialog = model.expandTemplate(FlowLayout.class, "dialog-box", Map.of("leftText", leftButtonText, "rightText", rightButtonText, "hSize", String.valueOf(hSize)));
 		OverlayContainer<FlowLayout> overlay = Containers.overlay(dialog).closeOnClick(false);
+		overlay.mouseDown().subscribe((x, y, b) -> true); // eat all input
 		FlowLayout messageFlow = dialog.childById(FlowLayout.class, "messageFlow");
 		ButtonComponent leftButton = dialog.childById(ButtonComponent.class, "leftButton");
 		ButtonComponent rightButton = dialog.childById(ButtonComponent.class, "rightButton");
@@ -304,9 +305,6 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 			message.horizontalSizing(Sizing.fill(90));
 			messageFlow.child(message);
 		});
-
-
-
 		root.child(overlay);
 	}
 
