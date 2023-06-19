@@ -16,8 +16,8 @@ pluginManagement {
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-			def mc_major = '1.19'
-			def mc = mc_major + '.4'
+			def mc_major = '1.20'
+			def mc = mc_major + ''
 
 			// // Build Tools // //
 			version('loom', '1.2.+')
@@ -27,10 +27,10 @@ dependencyResolutionManagement {
 			// // Base // //
 			version('mc', mc)
 			version('ql', "0.19.0")
-			version('qm', "${mc}+build.10")
-			version('qsl', "5.0.0-beta.10+${mc}")
-			version('qfapi', "6.0.0-beta.9+0.83.0-${mc}")
-			version('serverTranslationsApi', "2.0.0-beta.2+${mc}-pre2")
+			version('qm', "${mc}+build.4")
+			version('qsl', "6.0.1+${mc}")
+			version('qfapi', "7.0.1+0.83.0-${mc}")
+			version('serverTranslationsApi', "2.0.0+${mc}")
 
 			library('mc', 'mojang', 'minecraft').versionRef('mc')
 			library('ql', 'org.quiltmc', 'quilt-loader').versionRef('ql')
@@ -42,31 +42,29 @@ dependencyResolutionManagement {
 			// // Client // //
 
 			// // UI // //
-			version('owo', "0.10.6+${mc}")
+			version('owo', "0.11.0+${mc}")
 
 			library('owo', 'io.wispforest', 'owo-lib').versionRef('owo')
 
 			// // Cardinal // //
-			version('cardinal', "5.1.0")
+			version('cardinal', "5.2.1")
 
 			library('cardinal', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-base').versionRef('cardinal')
 			library('cardinalEntity', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-entity').versionRef('cardinal')
 
 			// // Compat // //
-			version('drogtor', "1.1.3+${mc_major}")
-			version('fabrictailor', "2.0.2")
+			version('fabrictailor', "2.1.2")
 			version('origins', "v1.9.0")
 			version('apoli', "v2.8.0")
 			version('calio', "1.10.0")
 			version('pehkui', "3.7.5")
-			version('fabrication', "3.2.7+${mc}")
-			version('styledNicknames', "1.2.0+1.19.3")
-			version('placeholder', "2.1.0+${mc}")
+			version('fabrication', "3.2.7+1.19.4")
+			version('styledNicknames', "1.2.1+${mc}")
+			version('placeholder', "2.1.1+${mc}")
 			version('playerData', "0.2.2+1.19.3")
 			version('luaj', "3.0.6-figura")
 			version('figura', "0.1.0")
 
-			library('drogtor', 'maven.modrinth', 'drogtor').versionRef('drogtor')
 			library('fabrictailor', 'maven.modrinth', 'fabrictailor').versionRef('fabrictailor')
 			library('origins', 'com.github.apace100', 'origins-fabric').versionRef('origins')
 			library('apoli', 'com.github.apace100', 'apoli').versionRef('apoli')
@@ -82,7 +80,7 @@ dependencyResolutionManagement {
 			// // Local Debugging Convenience // //
 			version('fastload', "3.4.0")
 			version('sodium', "mc${mc}-0.4.10")
-			version('modmenu', "6.2.3")
+			version('modmenu', "7.0.1")
 
 			library('fastload', 'maven.modrinth', 'fastload').versionRef('fastload')
 			library('sodium', 'com.github.CaffeineMC', 'sodium-fabric').versionRef('sodium')

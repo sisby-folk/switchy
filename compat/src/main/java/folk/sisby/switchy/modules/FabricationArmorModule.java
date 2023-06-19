@@ -84,7 +84,7 @@ public class FabricationArmorModule implements SwitchyModule {
 			gss.fabrication$getSuppressedSlots().addAll(suppressedSlots);
 
 			// Sketchily copied from feature
-			((ServerWorld) player.world).getChunkManager().sendToOtherNearbyPlayers(player, new EntityEquipmentUpdateS2CPacket(player.getId(), Arrays.stream(EquipmentSlot.values()).map((es) ->
+			((ServerWorld) player.getWorld()).getChunkManager().sendToOtherNearbyPlayers(player, new EntityEquipmentUpdateS2CPacket(player.getId(), Arrays.stream(EquipmentSlot.values()).map((es) ->
 					Pair.of(es, gss.fabrication$getSuppressedSlots().contains(es) ? ItemStack.EMPTY : player.getEquippedStack(es))).toList()));
 			FeatureHideArmor.sendSuppressedSlotsForSelf(player);
 		}

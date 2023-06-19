@@ -6,7 +6,7 @@
 		"version": "${switchy}",
 		"metadata": {
 			"name": "Switchy Compat UI",
-			"description": "UI compatibility for built-in switchy modules like drogtor, styled nicknames, fabric tailor, and origins.",
+			"description": "UI compatibility for built-in switchy modules like styled nicknames, fabric tailor, and origins.",
 			"contributors": {
 				"Sisby folk": "Co-Authors"
 			},
@@ -45,11 +45,6 @@
 			{
 				"id": "switchy-ui",
 				"versions": "${switchy}"
-			},
-			{
-				"id": "drogtor",
-				"versions": ">=${drogtor}",
-				"optional": true
 			},
 			{
 				"id": "styled-nicknames",

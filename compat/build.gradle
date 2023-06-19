@@ -3,7 +3,6 @@ dependencies {
 
 	modCompileOnly libs.qfapi // Compile fabric mods
 
-	modCompileOnly libs.drogtor
 	modCompileOnly libs.fabrictailor
 	modCompileOnly libs.pehkui
 	modCompileOnly libs.fabrication

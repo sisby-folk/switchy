@@ -22,8 +22,8 @@ if (System.getenv("GITHUB_TOKEN")) {
 
 archivesBaseName = project.archives_base_name
 
-def mc_major = '1.19'
-def mc = mc_major + '.4'
+def mc_major = '1.20'
+def mc = mc_major + ''
 def default_branch = '1.19'
 
 def origVersion = project.version
@@ -142,7 +142,6 @@ allprojects {
 				"serverTranslationsAPI": libs.versions.serverTranslationsApi.get(),
 				"qfapi"                : libs.versions.qfapi.get(),
 				"owo"                  : libs.versions.owo.get(),
-				"drogtor"              : libs.versions.drogtor.get(),
 				"styledNicknames"      : libs.versions.styledNicknames.get(),
 				"fabrictailor"         : libs.versions.fabrictailor.get(),
 				"origins"              : libs.versions.origins.get().replaceFirst('v', ''),
@@ -213,7 +212,6 @@ if (System.getenv("MODRINTH_TOKEN")) {
 		dependencies {
 			required.project "qsl"
 			required.project "owo-lib"
-			optional.project "drogtor"
 			optional.project "fabrictailor"
 			optional.project "pehkui"
 			optional.project "origins"

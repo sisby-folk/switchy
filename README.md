@@ -26,10 +26,8 @@ Most modules provide inter-compatibility with other mods - be sure to follow the
 
 You can hotswap these features out-of-the box by installing their relevant mods:
 
-- Player Nicknames/Pronouns with either of:
-    - [Drogtor The Nickinator](https://modrinth.com/mod/drogtor)
-    - [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) (Note: Switchy force-allows nickname
-      self-assignment)
+- Player Nicknames with [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) (Note: Switchy force-allows nickname self-assignment)
+    - Player Pronouns/Bio through `<hover>` or [Drogstyle](https://modrinth.com/mod/drogstyle)'s `/bio`
 - Player Skin with [Fabric Tailor](https://modrinth.com/mod/fabrictailor) or model with [Figura](https://modrinth.com/mod/figura) (via API)
 - Player Origin with [Origins](https://modrinth.com/mod/origins) (includes all layers,
   e.g. [Statures](https://modrinth.com/mod/tinkerers-statures))
@@ -78,7 +76,7 @@ Remember, switching does nothing on its own! Make sure you install a mod from ab
 ### How do I change a preset nickname? or skin?
 
 Switch to the module you'd like to change things for, then just do it as normal! <br/>
-`/nick` for drogtor nicknames, `k` for fabric tailor skins, etc.<br/>
+`/nick` for nicknames, `k` for fabric tailor skins, etc.<br/>
 When you switch away, they'll be saved - and when you switch back, they'll be restored.
 
 ### Customize your modules
@@ -162,7 +160,7 @@ if you're making an addon, just use `modImplementation`.<br/>
 `switchy-client` enables import/export commands and a client API. <br/>
 `switchy-ui` provides the client-side switch and manage screens, and module-displaying API. <br/>
 `switchy-cardinal` provides data-driven CCA switchy modules and an API. <br/>
-`switchy-compat` provides the built-in modules for drogtor etc. <br/>
+`switchy-compat` provides the built-in modules for styled nicknames etc. <br/>
 `switchy-compat-ui` adds ui support to compat. <br/>
 
 ### API

@@ -1,7 +1,6 @@
 package folk.sisby.switchy.client;
 
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
-import folk.sisby.switchy.client.modules.DrogtorClientModule;
 import folk.sisby.switchy.client.modules.FabricTailorClientModule;
 import folk.sisby.switchy.client.modules.OriginsClientModule;
 import folk.sisby.switchy.client.modules.StyledNicknamesClientModule;
@@ -29,7 +28,6 @@ public class SwitchyCompatClient implements SwitchyClientEvents.Init {
 	@Override
 	public void onInitialize() {
 		if (QuiltLoader.isModLoaded("owo")) {
-			DrogtorClientModule.touch();
 			FabricTailorClientModule.touch();
 			StyledNicknamesClientModule.touch();
 			if (QuiltLoader.isModLoaded("origins")) OriginsClientModule.touch();

@@ -3,12 +3,12 @@ package folk.sisby.switchy.ui.util;
 import folk.sisby.switchy.api.SwitchyFeedback;
 import folk.sisby.switchy.api.SwitchyFeedbackStatus;
 import io.wispforest.owo.ops.TextOps;
-import io.wispforest.owo.ui.util.Drawer;
+import io.wispforest.owo.ui.core.OwoUIDrawContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -58,15 +58,15 @@ public class SwitchyFeedbackToast implements Toast {
 	}
 
 	@Override
-	public Visibility draw(MatrixStack matrices, ToastManager manager, long startTime) {
-		Drawer.fill(matrices, 0, 0, getWidth(), getHeight(), 0x77000000);
-		Drawer.drawRectOutline(matrices, 0, 0, getWidth(), getHeight(), colours.get(status));
+	public Visibility draw(GuiGraphics graphics, ToastManager manager, long startTime) {
+		OwoUIDrawContext.of(graphics).fill(0, 0, getWidth(), getHeight(), 0x77000000);
+		OwoUIDrawContext.of(graphics).drawRectOutline(0, 0, getWidth(), getHeight(), colours.get(status));
 
 		int xOffset = getWidth() / 2 - textRenderer.getWidth(textLines.get(0)) / 2;
-		textRenderer.drawWithShadow(matrices, textLines.get(0), 4 + xOffset, 4, 0xFFFFFF);
+		graphics.drawText(textRenderer, textLines.get(0), 4 + xOffset, 4, 0xFFFFFF, true);
 
 		for (int i = 1; i < textLines.size(); i++) {
-			textRenderer.draw(matrices, textLines.get(i), 4, 4 + i * 11, 0xFFFFFF);
+			graphics.drawText(textRenderer, textLines.get(i), 4, 4 + i * 11, 0xFFFFFF, false);
 		}
 
 		return startTime > duration ? Visibility.HIDE : Visibility.SHOW;
