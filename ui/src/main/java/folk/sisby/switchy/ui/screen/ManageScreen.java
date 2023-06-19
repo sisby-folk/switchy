@@ -41,10 +41,10 @@ import java.util.stream.Collectors;
 public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements SwitchyScreen {
 
 	private FlowLayout root;
-	private ScrollContainer<VerticalFlowLayout> presetsTab;
-	private HorizontalFlowLayout modulesTab;
-	private VerticalFlowLayout dataTab;
-	private VerticalFlowLayout loadingOverlay;
+	private ScrollContainer<?> presetsTab;
+	private FlowLayout modulesTab;
+	private FlowLayout dataTab;
+	private FlowLayout loadingOverlay;
 	private List<Identifier> includedModules = new ArrayList<>();
 	private List<Identifier> availableModules = new ArrayList<>();
 	private NbtCompound selectedFileNbt;
@@ -61,22 +61,20 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 	}
 
 	@Override
+	@SuppressWarnings("ConstantConditions")
 	protected void build(FlowLayout rootComponent) {
 		this.root = rootComponent;
 		// Preset Tab
 		presetsTab = model.expandTemplate(ScrollContainer.class, "presets-tab", Map.of("id", "presetsTab"));
-		VerticalFlowLayout presetsFlow = presetsTab.childById(VerticalFlowLayout.class, "presetsFlow");
-		presetsFlow.gap(2);
-
 
 		// Modules Tab
-		modulesTab = model.expandTemplate(HorizontalFlowLayout.class, "modules-tab", Map.of());
+		modulesTab = model.expandTemplate(FlowLayout.class, "modules-tab", Map.of());
 
 		// Data Tab
-		dataTab = model.expandTemplate(VerticalFlowLayout.class, "data-tab", Map.of());
+		dataTab = model.expandTemplate(FlowLayout.class, "data-tab", Map.of());
 		ButtonComponent importToggle = dataTab.childById(ButtonComponent.class, "importToggleButton");
 		ButtonComponent exportToggle = dataTab.childById(ButtonComponent.class, "exportToggleButton");
-		HorizontalFlowLayout actionFlow = dataTab.childById(HorizontalFlowLayout.class, "actionButtons");
+		FlowLayout actionFlow = dataTab.childById(FlowLayout.class, "actionButtons");
 		ButtonComponent exportButton = dataTab.childById(ButtonComponent.class, "exportButton");
 		ButtonComponent importButton = dataTab.childById(ButtonComponent.class, "importButton");
 		importButton.onPress(b -> openDialog("Confirm", "Cancel", 200, confirmButton -> {
@@ -93,27 +91,27 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 			isImporting = true;
 			importToggle.active(false);
 			exportToggle.active(true);
-			actionFlow.removeChild(exportButton);
-			actionFlow.child(importButton);
+			actionFlow.removeChild((Component) exportButton);
+			actionFlow.child((Component) importButton);
 			updateDataMethod();
 		});
 		exportToggle.onPress(b -> {
 			isImporting = false;
 			exportToggle.active(false);
 			importToggle.active(true);
-			actionFlow.removeChild(importButton);
-			actionFlow.child(exportButton);
+			actionFlow.removeChild((Component) importButton);
+			actionFlow.child((Component) exportButton);
 			updateDataMethod();
 		});
 		importToggle.active(false);
-		actionFlow.removeChild(exportButton);
+		actionFlow.removeChild((Component) exportButton);
 
 
-		VerticalFlowLayout sourceSelectorPlaceholder = dataTab.childById(VerticalFlowLayout.class, "sourceSelectorPlaceholder");
+		FlowLayout sourceSelectorPlaceholder = dataTab.childById(FlowLayout.class, "sourceSelectorPlaceholder");
 		sourceSelectorPlaceholder.child(getDropdownButton(getDropdown(sourceSelectorPlaceholder, List.of(Text.of("File")), text -> updateDataMethod()), Text.of("File")));
 
 		// Header
-		VerticalFlowLayout panel = root.childById(VerticalFlowLayout.class, "panel");
+		FlowLayout panel = root.childById(FlowLayout.class, "panel");
 		ButtonComponent backButton = root.childById(ButtonComponent.class, "backButton");
 		ButtonComponent presetsTabButton = root.childById(ButtonComponent.class, "presetsTabButton");
 		ButtonComponent modulesTabButton = root.childById(ButtonComponent.class, "modulesTabButton");
@@ -188,12 +186,12 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 		return dropdown;
 	}
 
-	private HorizontalFlowLayout getRenameFlow(VerticalFlowLayout presetsFlow, @Nullable String presetName) {
-		HorizontalFlowLayout renamePresetFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
+	private FlowLayout getRenameFlow(FlowLayout presetsFlow, @Nullable String presetName) {
+		FlowLayout renamePresetFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 		TextBoxComponent nameEntry = Components.textBox(Sizing.fill(53), (presetName != null) ? presetName : "newPreset");
 		nameEntry.setTextPredicate(s -> s.chars().mapToObj(i -> (char) i).allMatch(StringReader::isAllowedInUnquotedString));
 		this.setInitialFocus(nameEntry);
-		renamePresetFlow.child(nameEntry);
+		renamePresetFlow.child((Component) nameEntry);
 		ButtonComponent confirmButton = Components.button(Text.literal("Confirm"), (presetName != null) ? b -> {
 			if (!presetName.equals(nameEntry.getText())) {
 				if (presets.getPresetNames().stream().noneMatch(s -> s.equalsIgnoreCase(nameEntry.getText()))) {
@@ -225,15 +223,15 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 			refreshPresetFlow(presetsFlow);
 		});
 		cancelButton.horizontalSizing(Sizing.fill(22));
-		renamePresetFlow.child(confirmButton);
-		renamePresetFlow.child(cancelButton);
+		renamePresetFlow.child((Component) confirmButton);
+		renamePresetFlow.child((Component) cancelButton);
 		renamePresetFlow.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
 		renamePresetFlow.gap(2);
 		return renamePresetFlow;
 	}
 
-	private HorizontalFlowLayout getPresetFlow(VerticalFlowLayout presetsFlow, @Nullable String name) {
-		HorizontalFlowLayout presetFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
+	private FlowLayout getPresetFlow(FlowLayout presetsFlow, @Nullable String name) {
+		FlowLayout presetFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 		LabelComponent presetLabel = Components.label(Text.literal(name));
 		presetLabel.horizontalSizing(Sizing.fill(54));
 		ButtonComponent renameButton = Components.button(Text.literal("Rename"), b -> {
@@ -253,8 +251,8 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 		deleteButton.horizontalSizing(Sizing.fill(22));
 		deleteButton.active(!presets.getCurrentPresetName().equals(name));
 		presetFlow.child(presetLabel);
-		presetFlow.child(renameButton);
-		presetFlow.child(deleteButton);
+		presetFlow.child((Component) renameButton);
+		presetFlow.child((Component) deleteButton);
 		presetFlow.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
 		presetFlow.gap(2);
 		presetFlow.padding(Insets.of(1));
@@ -262,8 +260,8 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 		return presetFlow;
 	}
 
-	HorizontalFlowLayout getModuleFlow(Identifier id, @Nullable Text labelTooltip, BiConsumer<ButtonComponent, Identifier> buttonAction, boolean enabled, Text buttonText, @Nullable Text buttonTooltip, int labelSize) {
-		HorizontalFlowLayout moduleFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
+	FlowLayout getModuleFlow(Identifier id, @Nullable Text labelTooltip, BiConsumer<ButtonComponent, Identifier> buttonAction, boolean enabled, Text buttonText, @Nullable Text buttonTooltip, int labelSize) {
+		FlowLayout moduleFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 		LabelComponent moduleName = Components.label(Text.literal(id.getPath()));
 		Text namespaceText = Text.literal(id.getNamespace()).setStyle(Feedback.FORMAT_INFO.getLeft());
 		moduleName.tooltip(labelTooltip != null ? List.of(namespaceText, labelTooltip) : List.of(namespaceText));
@@ -273,7 +271,7 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 		enableButton.active(enabled);
 		enableButton.horizontalSizing(Sizing.content());
 		moduleFlow.child(moduleName);
-		moduleFlow.child(enableButton);
+		moduleFlow.child((Component) enableButton);
 		moduleFlow.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
 		moduleFlow.gap(2);
 		moduleFlow.padding(Insets.of(1));
@@ -282,10 +280,10 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 	}
 
 	// Special Components
-
-	VerticalFlowLayout openDialog(String leftButtonText, String rightButtonText, int hSize, Consumer<ButtonComponent> leftButtonAction, Consumer<ButtonComponent> rightButtonAction, List<Text> messages) {
-		VerticalFlowLayout dialog = model.expandTemplate(VerticalFlowLayout.class, "dialog-box", Map.of("leftText", leftButtonText, "rightText", rightButtonText, "hSize", String.valueOf(hSize)));
-		VerticalFlowLayout messageFlow = dialog.childById(VerticalFlowLayout.class, "messageFlow");
+	@SuppressWarnings("ConstantConditions")
+	void openDialog(String leftButtonText, String rightButtonText, int hSize, Consumer<ButtonComponent> leftButtonAction, Consumer<ButtonComponent> rightButtonAction, List<Text> messages) {
+		FlowLayout dialog = model.expandTemplate(FlowLayout.class, "dialog-box", Map.of("leftText", leftButtonText, "rightText", rightButtonText, "hSize", String.valueOf(hSize)));
+		FlowLayout messageFlow = dialog.childById(FlowLayout.class, "messageFlow");
 		ButtonComponent leftButton = dialog.childById(ButtonComponent.class, "leftButton");
 		ButtonComponent rightButton = dialog.childById(ButtonComponent.class, "rightButton");
 		leftButton.onPress(leftB -> {
@@ -296,7 +294,6 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 			rightButtonAction.accept(rightB);
 			root.removeChild(dialog);
 		});
-		messageFlow.gap(2);
 		messages.forEach(m -> {
 			LabelComponent message = Components.label(m);
 			message.horizontalSizing(Sizing.fill(90));
@@ -304,12 +301,11 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 		});
 
 		root.child(dialog);
-		return dialog;
 	}
 
 	void lockScreen() {
 		if (loadingOverlay == null) {
-			VerticalFlowLayout overlay = model.expandTemplate(VerticalFlowLayout.class, "loading-overlay", Map.of());
+			FlowLayout overlay = model.expandTemplate(FlowLayout.class, "loading-overlay", Map.of());
 			overlay.mouseDown().subscribe((x, y, b) -> true); // eat all input
 			loadingOverlay = overlay;
 			root.child(loadingOverlay);
@@ -317,10 +313,10 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 	}
 
 	// Refreshers
-
+	@SuppressWarnings({"ConstantConditions"})
 	private void refreshPresets() {
 		// Presets Tab
-		VerticalFlowLayout presetsFlow = presetsTab.childById(VerticalFlowLayout.class, "presetsFlow");
+		FlowLayout presetsFlow = presetsTab.childById(FlowLayout.class, "presetsFlow");
 		refreshPresetFlow(presetsFlow);
 		presetsTab.childById(ButtonComponent.class, "newPreset").onPress(buttonComponent -> {
 			focusedPresetName = "";
@@ -328,10 +324,8 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 		});
 
 		//Modules Tab
-		VerticalFlowLayout disabledModulesFlow = modulesTab.childById(VerticalFlowLayout.class, "leftModulesFlow");
-		VerticalFlowLayout enabledModulesFlow = modulesTab.childById(VerticalFlowLayout.class, "rightModulesFlow");
-		enabledModulesFlow.gap(2);
-		disabledModulesFlow.gap(2);
+		FlowLayout disabledModulesFlow = modulesTab.childById(FlowLayout.class, "leftModulesFlow");
+		FlowLayout enabledModulesFlow = modulesTab.childById(FlowLayout.class, "rightModulesFlow");
 		refreshModulesFlow(disabledModulesFlow, enabledModulesFlow);
 
 		//Data Tab
@@ -344,11 +338,11 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 		}
 	}
 
-	private void refreshPresetFlow(VerticalFlowLayout presetsFlow) {
+	private void refreshPresetFlow(FlowLayout presetsFlow) {
 		presetsFlow.clearChildren();
-		HorizontalFlowLayout focusedFlow = null;
+		FlowLayout focusedFlow = null;
 		for (String name : presets.getPresets().keySet()) {
-			HorizontalFlowLayout presetFlow = name.equals(focusedPresetName) ? getRenameFlow(presetsFlow, name) : getPresetFlow(presetsFlow, name);
+			FlowLayout presetFlow = name.equals(focusedPresetName) ? getRenameFlow(presetsFlow, name) : getPresetFlow(presetsFlow, name);
 			if (name.equals(focusedPresetName)) focusedFlow = presetFlow;
 			presetsFlow.child(presetFlow);
 		}
@@ -359,7 +353,7 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 		if (focusedFlow != null) presetsTab.scrollTo(focusedFlow);
 	}
 
-	private void refreshModulesFlow(VerticalFlowLayout disabledModulesFlow, VerticalFlowLayout enabledModulesFlow) {
+	private void refreshModulesFlow(FlowLayout disabledModulesFlow, FlowLayout enabledModulesFlow) {
 		disabledModulesFlow.clearChildren();
 		enabledModulesFlow.clearChildren();
 		int labelSize = 100;
@@ -385,14 +379,13 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 		}, List.of(Text.translatable("commands.switchy_client.disable.confirm", id.getPath()), Text.translatable("screen.switchy_ui.disable.warn", presets.getModuleInfo().get(id).deletionWarning()))), true, Text.literal("Disable"), presets.getModuleInfo().get(module).descriptionWhenDisabled(), labelSize)));
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	void updateDataMethod() {
-		VerticalFlowLayout availableModulesFlow = dataTab.childById(VerticalFlowLayout.class, "leftModulesFlow");
-		VerticalFlowLayout includedModulesFlow = dataTab.childById(VerticalFlowLayout.class, "rightModulesFlow");
-		availableModulesFlow.gap(2);
-		includedModulesFlow.gap(2);
+		FlowLayout availableModulesFlow = dataTab.childById(FlowLayout.class, "leftModulesFlow");
+		FlowLayout includedModulesFlow = dataTab.childById(FlowLayout.class, "rightModulesFlow");
 		List<Text> fileNames = new ArrayList<>();
 		Map<String, NbtCompound> importFiles = new HashMap<>();
-		VerticalFlowLayout fileSelectorPlaceholder = dataTab.childById(VerticalFlowLayout.class, "fileSelectorPlaceholder");
+		FlowLayout fileSelectorPlaceholder = dataTab.childById(FlowLayout.class, "fileSelectorPlaceholder");
 		fileSelectorPlaceholder.clearChildren();
 		if (isImporting) {
 			SwitchyClientApi.getImportableFiles().forEach(file -> {
@@ -437,7 +430,7 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 		refreshDataModulesFlow(availableModulesFlow, includedModulesFlow, availableModules, includedModules);
 	}
 
-	void refreshDataModulesFlow(VerticalFlowLayout availableModulesFlow, VerticalFlowLayout includedModulesFlow, List<Identifier> availableModules, List<Identifier> includedModules) {
+	void refreshDataModulesFlow(FlowLayout availableModulesFlow, FlowLayout includedModulesFlow, List<Identifier> availableModules, List<Identifier> includedModules) {
 		availableModulesFlow.clearChildren();
 		includedModulesFlow.clearChildren();
 		int labelSize = 100;

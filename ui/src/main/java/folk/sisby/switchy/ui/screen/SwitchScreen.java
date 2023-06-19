@@ -47,11 +47,11 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchySc
 		registerBasicPresetComponent(clientPreset -> Pair.of(Components.label(Text.literal(clientPreset.getName())), SwitchyUIPosition.SIDE_LEFT));
 	}
 
-	private ScrollContainer<VerticalFlowLayout> presetsScroll;
-	private VerticalFlowLayout presetsFlow;
+	private ScrollContainer<FlowLayout> presetsScroll;
+	private FlowLayout presetsFlow;
 	private SwitchyClientPresets presets;
 	private FlowLayout root;
-	private VerticalFlowLayout loadingOverlay;
+	private FlowLayout loadingOverlay;
 
 	/**
 	 * Constructs an instance of the screen.
@@ -94,7 +94,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchySc
 		presetsScroll.surface(Surface.DARK_PANEL);
 		presetsScroll.padding(Insets.of(4));
 
-		HorizontalFlowLayout labelManageFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
+		FlowLayout labelManageFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 		labelManageFlow.verticalAlignment(VerticalAlignment.CENTER);
 		labelManageFlow.gap(10);
 
@@ -108,7 +108,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchySc
 		});
 
 		labelManageFlow.child(screenLabel);
-		labelManageFlow.child(manageButton);
+		labelManageFlow.child((Component) manageButton);
 
 		root.child(labelManageFlow);
 		root.child(presetsScroll);
@@ -117,7 +117,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchySc
 
 	void lockScreen() {
 		if (loadingOverlay == null) {
-			VerticalFlowLayout overlay = Containers.verticalFlow(Sizing.fill(100), Sizing.fill(100));
+			FlowLayout overlay = Containers.verticalFlow(Sizing.fill(100), Sizing.fill(100));
 			overlay.alignment(HorizontalAlignment.LEFT, VerticalAlignment.BOTTOM);
 			overlay.positioning(Positioning.absolute(0, 0));
 			overlay.child(Components.label(Text.of("Loading...")));
@@ -147,7 +147,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchySc
 			});
 
 			// Main Horizontal Flow Panel
-			HorizontalFlowLayout horizontalFlow = Containers.horizontalFlow(Sizing.fixed(400), Sizing.content());
+			FlowLayout horizontalFlow = Containers.horizontalFlow(Sizing.fixed(400), Sizing.content());
 			horizontalFlow.padding(Insets.vertical(4).withLeft(10).withRight(10));
 			horizontalFlow.gap(2);
 			horizontalFlow.verticalAlignment(VerticalAlignment.CENTER);
@@ -170,13 +170,13 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchySc
 			if (!sideLeftComponents.isEmpty()) horizontalFlow.children(sideLeftComponents);
 
 			// Main Elements
-			HorizontalFlowLayout leftRightFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
+			FlowLayout leftRightFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 			leftRightFlow.margins(Insets.horizontal(6));
 			leftRightFlow.gap(4);
 
 			List<Component> leftComponents = componentList.stream().filter(p -> p.getSecond() == SwitchyUIPosition.LEFT).map(Pair::getFirst).filter(Objects::nonNull).toList();
 			if (!leftComponents.isEmpty()) {
-				VerticalFlowLayout leftAlignedFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
+				FlowLayout leftAlignedFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
 				leftAlignedFlow.horizontalAlignment(HorizontalAlignment.LEFT);
 				leftAlignedFlow.gap(2);
 				leftAlignedFlow.children(leftComponents);
@@ -185,7 +185,7 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchySc
 
 			List<Component> rightComponents = componentList.stream().filter(p -> p.getSecond() == SwitchyUIPosition.RIGHT).map(Pair::getFirst).filter(Objects::nonNull).toList();
 			if (!rightComponents.isEmpty()) {
-				VerticalFlowLayout rightAlignedFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
+				FlowLayout rightAlignedFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
 				rightAlignedFlow.horizontalAlignment(HorizontalAlignment.RIGHT);
 				rightAlignedFlow.gap(2);
 				rightAlignedFlow.children(rightComponents);

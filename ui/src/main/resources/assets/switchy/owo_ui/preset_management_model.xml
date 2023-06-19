@@ -1,5 +1,5 @@
 <owo-ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/wisp-forest/owo-lib/1.19/owo-ui.xsd">
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/wisp-forest/owo-lib/1.19.3/owo-ui.xsd">
     <components>
         <flow-layout direction="vertical">
             <children>
@@ -59,6 +59,7 @@
                 <flow-layout id="innerScrollPane" direction="vertical">
                     <children>
                         <flow-layout id="presetsFlow" direction="vertical">
+                            <gap>2</gap>
                         </flow-layout>
                         <button id="newPreset">
                             <text>New Preset</text>
@@ -90,6 +91,7 @@
                             </label>
                             <scroll direction="vertical">
                                 <flow-layout id="leftModulesFlow" direction="vertical">
+                                    <gap>2</gap>
                                 </flow-layout>
                                 <surface>
                                     <flat>#FF141414</flat>
@@ -109,6 +111,7 @@
                             </label>
                             <scroll direction="vertical">
                                 <flow-layout id="rightModulesFlow" direction="vertical">
+                                    <gap>2</gap>
                                 </flow-layout>
                                 <surface>
                                     <flat>#FF141414</flat>
@@ -204,7 +207,9 @@
                 <children>
                     <flow-layout direction="vertical">
                         <children>
-                            <flow-layout id="messageFlow" direction="vertical"/>
+                            <flow-layout id="messageFlow" direction="vertical">
+                                <gap>2</gap>
+                            </flow-layout>
                             <flow-layout direction="horizontal">
                                 <children>
                                     <button id="leftButton">
