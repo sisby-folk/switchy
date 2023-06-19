@@ -5,11 +5,15 @@ import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
 import folk.sisby.switchy.api.presets.SwitchyPresetsData;
+import folk.sisby.switchy.client.SwitchyClient;
 import folk.sisby.switchy.client.api.SwitchyClientApi;
 import folk.sisby.switchy.util.Feedback;
 import io.wispforest.owo.ui.base.BaseUIModelScreen;
 import io.wispforest.owo.ui.component.*;
-import io.wispforest.owo.ui.container.*;
+import io.wispforest.owo.ui.container.Containers;
+import io.wispforest.owo.ui.container.FlowLayout;
+import io.wispforest.owo.ui.container.OverlayContainer;
+import io.wispforest.owo.ui.container.ScrollContainer;
 import io.wispforest.owo.ui.core.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -86,7 +90,7 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 			lockScreen();
 			SwitchyClientApi.exportPresetsToFile(availableModules, null, (feedback, file) -> SwitchyScreen.updatePresetScreens(feedback, presets));
 		}, cancelButton -> {
-		}, List.of(Text.translatable("commands.switchy_client.export.confirm", String.valueOf(includedModules.size())))));
+		}, List.of(Text.translatable("commands.switchy_client.export.confirm", Feedback.literal(String.valueOf(includedModules.size()))))));
 		importToggle.onPress(b -> {
 			isImporting = true;
 			importToggle.active(false);
@@ -245,7 +249,7 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 			lockScreen();
 			SwitchyClientApi.deletePreset(name, SwitchyScreen::updatePresetScreens);
 		}, cancel -> {
-		}, List.of(Text.translatable("commands.switchy_client.delete.confirm", name), Text.translatable("screen.switchy_ui.delete.warn"), Text.translatable("screen.switchy_ui.list.modules", presets.getEnabledModuleText())));
+		}, List.of(Text.translatable("commands.switchy_client.delete.confirm", Feedback.literal(name)), Text.translatable("screen.switchy_ui.delete.warn"), Text.translatable("screen.switchy_ui.list.modules", presets.getEnabledModuleText())));
 		ButtonComponent deleteButton = Components.button(Text.literal("Delete"), deleteAction);
 		deleteButton.margins(Insets.vertical(1));
 		deleteButton.horizontalSizing(Sizing.fill(22));
@@ -283,24 +287,25 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 	@SuppressWarnings("ConstantConditions")
 	void openDialog(String leftButtonText, String rightButtonText, int hSize, Consumer<ButtonComponent> leftButtonAction, Consumer<ButtonComponent> rightButtonAction, List<Text> messages) {
 		FlowLayout dialog = model.expandTemplate(FlowLayout.class, "dialog-box", Map.of("leftText", leftButtonText, "rightText", rightButtonText, "hSize", String.valueOf(hSize)));
+		OverlayContainer<FlowLayout> overlay = Containers.overlay(dialog).closeOnClick(false);
+		overlay.mouseDown().subscribe((x, y, b) -> true); // eat all input
 		FlowLayout messageFlow = dialog.childById(FlowLayout.class, "messageFlow");
 		ButtonComponent leftButton = dialog.childById(ButtonComponent.class, "leftButton");
 		ButtonComponent rightButton = dialog.childById(ButtonComponent.class, "rightButton");
 		leftButton.onPress(leftB -> {
 			leftButtonAction.accept(leftB);
-			root.removeChild(dialog);
+			root.removeChild(overlay);
 		});
 		rightButton.onPress(rightB -> {
 			rightButtonAction.accept(rightB);
-			root.removeChild(dialog);
+			root.removeChild(overlay);
 		});
 		messages.forEach(m -> {
 			LabelComponent message = Components.label(m);
 			message.horizontalSizing(Sizing.fill(90));
 			messageFlow.child(message);
 		});
-
-		root.child(dialog);
+		root.child(overlay);
 	}
 
 	void lockScreen() {
@@ -376,7 +381,8 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 			lockScreen();
 			SwitchyClientApi.disableModule(id, SwitchyScreen::updatePresetScreens);
 		}, cancel -> {
-		}, List.of(Text.translatable("commands.switchy_client.disable.confirm", id.getPath()), Text.translatable("screen.switchy_ui.disable.warn", presets.getModuleInfo().get(id).deletionWarning()))), true, Text.literal("Disable"), presets.getModuleInfo().get(module).descriptionWhenDisabled(), labelSize)));
+		}, List.of(Text.translatable("commands.switchy_client.disable.confirm", Feedback.literal(id.getPath())), Text.translatable("screen.switchy_ui.disable.warn", presets.getModuleInfo().get(id).deletionWarning()))), true, Text.literal("Disable"), presets.getModuleInfo().get(module).descriptionWhenDisabled(), labelSize)));
+
 	}
 
 	@SuppressWarnings("ConstantConditions")

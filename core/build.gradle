@@ -1,5 +1,5 @@
 dependencies {
 	modApi libs.qsl
-	modImplementation libs.serverTranslationsApi // Implementation for ModuleInfo
+	modApi libs.serverTranslationsApi // Implementation for ModuleInfo
 	include libs.serverTranslationsApi
 }

@@ -78,16 +78,13 @@ dependencyResolutionManagement {
 			library('figura', 'com.github.Kingdom-of-The-Moon', 'FiguraRewriteRewrite').versionRef('figura')
 
 			// // Local Debugging Convenience // //
-			version('fastload', "3.4.0")
 			version('sodium', "mc${mc}-0.4.10")
 			version('modmenu', "7.0.1")
 
-			library('fastload', 'maven.modrinth', 'fastload').versionRef('fastload')
 			library('sodium', 'com.github.CaffeineMC', 'sodium-fabric').versionRef('sodium')
 			library('modmenu', 'com.terraformersmc', 'modmenu').versionRef('modmenu')
 
 			bundle('local_conveniences', [
-					'fastload',
 					'sodium',
 					'modmenu'
 			])
