@@ -205,49 +205,35 @@
         <dialog-box>
             <flow-layout direction="vertical">
                 <children>
-                    <flow-layout direction="vertical">
+                    <flow-layout id="messageFlow" direction="vertical">
+                        <gap>2</gap>
+                    </flow-layout>
+                    <flow-layout direction="horizontal">
                         <children>
-                            <flow-layout id="messageFlow" direction="vertical">
-                                <gap>2</gap>
-                            </flow-layout>
-                            <flow-layout direction="horizontal">
-                                <children>
-                                    <button id="leftButton">
-                                        <text>{{leftText}}</text>
-                                    </button>
-                                    <button id="rightButton">
-                                        <text>{{rightText}}</text>
-                                        <margins>
-                                            <left>4</left>
-                                        </margins>
-                                    </button>
-                                </children>
+                            <button id="leftButton">
+                                <text>{{leftText}}</text>
+                            </button>
+                            <button id="rightButton">
+                                <text>{{rightText}}</text>
                                 <margins>
-                                    <top>4</top>
+                                    <left>4</left>
                                 </margins>
-                            </flow-layout>
+                            </button>
                         </children>
-                        <padding>
-                            <all>10</all>
-                        </padding>
-                        <surface>
-                            <panel dark="true"/>
-                        </surface>
-                        <sizing>
-                            <horizontal method="fixed">{{hSize}}</horizontal>
-                        </sizing>
+                        <margins>
+                            <top>4</top>
+                        </margins>
                     </flow-layout>
                 </children>
-                <sizing>
-                    <horizontal method="fill">100</horizontal>
-                    <vertical method="fill">100</vertical>
-                </sizing>
-                <positioning type="absolute">0,0</positioning>
-                <vertical-alignment>center</vertical-alignment>
-                <horizontal-alignment>center</horizontal-alignment>
+                <padding>
+                    <all>10</all>
+                </padding>
                 <surface>
-                    <vanilla-translucent/>
+                    <panel dark="true"/>
                 </surface>
+                <sizing>
+                    <horizontal method="fixed">{{hSize}}</horizontal>
+                </sizing>
             </flow-layout>
         </dialog-box>
         <loading-overlay>
