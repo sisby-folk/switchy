@@ -12,6 +12,7 @@ import io.github.apace100.origins.origin.OriginLayers;
 import io.github.apace100.origins.origin.OriginRegistry;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.Containers;
+import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.container.HorizontalFlowLayout;
 import io.wispforest.owo.ui.core.Component;
 import io.wispforest.owo.ui.core.Insets;
@@ -81,7 +82,7 @@ public class OriginsClientModule implements SwitchyClientModule, SwitchyUIModule
 	public Pair<Component, SwitchyUIPosition> getPreviewComponent(String presetName) {
 		if (origins == null || origins.isEmpty()) return null;
 
-		HorizontalFlowLayout originsFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
+		FlowLayout originsFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 		originsFlow.verticalAlignment(VerticalAlignment.CENTER);
 		originsFlow.child(Components.item(ORB_OF_ORIGIN.getDefaultStack()).margins(Insets.right(2)));
 		List<String> names = new ArrayList<>(origins.values().stream().map(Origin::getName).map(Text::getString).toList());
