@@ -32,7 +32,7 @@ You can hotswap these features out-of-the box by installing their relevant mods:
 - Player Origin with [Origins](https://modrinth.com/mod/origins) (includes all layers,
   e.g. [Statures](https://modrinth.com/mod/tinkerers-statures))
     - Apoli power state - e.g. Origin power inventories, cooldowns (via [MerchantPug](https://github.com/MerchantPug))
-- Player height and size with [Pehkui](https://modrinth.com/mod/pehkui)
+- Player sizes and scales with [Pehkui](https://modrinth.com/mod/pehkui)
 - Detailed player profiles for conventions with [Lanyard](https://modrinth.com/mod/lanyard)
 
 More functionality can be added with these Addons:
@@ -118,12 +118,14 @@ adding those in `[operator]` if you're a server operator.
 
 You can use `~` to specify no modules.
 
-## Module Editing Permissions
+## Configuration
+
+### Module Editing Permission
 
 Switchy doesn't and will not support permissions on its basic commands, and has no way to enable or disable modules
 server-wide.
 
-However, you can minorly configure which players can import module data in `/config/switchy/config.toml`
+However, you can minorly configure which players can import module data in `/config/switchy/config.toml`.
 
 Modules will be listed with one of four import settings:
 
@@ -131,6 +133,16 @@ Modules will be listed with one of four import settings:
 - `OPERATOR`: Importable by operators when specified - can be changed to `ALLOWED` (e.g. inventories)
 - `ALWAYS_ALLOWED`: Importable by any player - can't be changed (e.g. nicknames/skins)
 - `NEVER`: Can't be imported due to technical limitations - can't be changed
+
+### Pehkui Scale Types
+
+The pehkui module will switch scale types by the IDs defined in `/config/switchy/pehkui.toml`.
+
+By default, it switches height, width, model  height, and model width.
+
+This is set by the server - so you can add anything you want to give players switch access to, and remove anything that should be only temporary and switchy might accidentally let players keep.
+
+As an example, [Origins Minus](https://modrinth.com/mod/origins-minus) uses `pehkui:base` to give temporary buffs to players with the Sanguine origin - so this shouldn't be added to the config when it's installed!
 
 ## Developers
 
