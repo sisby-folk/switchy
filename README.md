@@ -64,9 +64,9 @@ Older showcase that shows fully setting up presets using commands:
 
 ## Quick Start Guide
 
-### Via Server Commands
-
 Remember, switching does nothing on its own! Make sure you install a mod from above.
+
+### Via Server Commands
 
 1. Use `/switchy list` to see your current presets
 
