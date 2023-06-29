@@ -144,6 +144,14 @@ This is set by the server - so you can add anything you want to give players swi
 
 As an example, [Origins Minus](https://modrinth.com/mod/origins-minus) uses `pehkui:base` to give temporary buffs to players with the Sanguine origin - so this shouldn't be added to the config when it's installed!
 
+### Apoli `/Power` Types
+
+The apoli module will by default only restore data for powers that the preset already has (e.g. from switching in an origin).
+
+This can be expanded to include powers granted using `/power grant` (i.e powers with the `apoli:command` source) in `/config/switchy/apoli.toml` - with whitelist and blacklist modes.
+
+This allows, for example, adding an extra power to one preset to give it a 'hybrid origin'.
+
 ## Developers
 
 Switchy can be added to your project using `modCompileOnly "folk.sisby:switchy-core:x.x.x"` and these repos:
