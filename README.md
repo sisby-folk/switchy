@@ -31,9 +31,8 @@ You can hotswap these features out-of-the box by installing their relevant mods:
     - [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) (Note: Switchy force-allows nickname
       self-assignment)
 - Player Skin with [Fabric Tailor](https://modrinth.com/mod/fabrictailor) or model with [Figura](https://modrinth.com/mod/figura) (via API)
-- Player Origin with [Origins](https://modrinth.com/mod/origins) (includes all layers,
-  e.g. [Statures](https://modrinth.com/mod/tinkerers-statures))
-    - Apoli power state - e.g. Origin power inventories, cooldowns (via [MerchantPug](https://github.com/MerchantPug))
+- Player Origin with [Origins](https://modrinth.com/mod/origins) (includes all layers, e.g. [Statures](https://modrinth.com/mod/tinkerers-statures))
+    - Power state and command powers - e.g. Origin inventories and cooldowns, `/power grant` powers (via [MerchantPug](https://github.com/MerchantPug))
 - Player sizes and scales with [Pehkui](https://modrinth.com/mod/pehkui)
 - Detailed player profiles for conventions with [Lanyard](https://modrinth.com/mod/lanyard)
 
