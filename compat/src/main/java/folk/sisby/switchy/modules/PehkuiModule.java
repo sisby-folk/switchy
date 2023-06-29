@@ -1,19 +1,20 @@
 package folk.sisby.switchy.modules;
 
+import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
+import folk.sisby.switchy.config.PehkuiModuleConfig;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
+import org.quiltmc.loader.api.config.QuiltConfig;
 import virtuoel.pehkui.api.ScaleRegistries;
 import virtuoel.pehkui.api.ScaleType;
-import virtuoel.pehkui.api.ScaleTypes;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static folk.sisby.switchy.util.Feedback.translatable;
@@ -30,11 +31,10 @@ public class PehkuiModule implements SwitchyModule {
 	 * Identifier for this module.
 	 */
 	public static final Identifier ID = new Identifier("switchy", "pehkui");
-
 	/**
-	 * The NBT keys where each scale value is stored, per ScaleType.
+	 * The config object for the pehkui module, containing the current state of {@code /config/switchy/pehkui.toml}.
 	 */
-	public static final Map<ScaleType, String> scaleKeys = new HashMap<>();
+	public static final PehkuiModuleConfig CONFIG = QuiltConfig.create(Switchy.ID, "pehkui", PehkuiModuleConfig.class);
 
 	static {
 		SwitchyModuleRegistry.registerModule(ID, PehkuiModule::new, new SwitchyModuleInfo(
@@ -46,7 +46,6 @@ public class PehkuiModule implements SwitchyModule {
 						.withDescriptionWhenDisabled(translatable("switchy.compat.module.pehkui.disabled"))
 						.withDeletionWarning(translatable("switchy.compat.module.pehkui.warning"))
 		);
-		List.of(ScaleTypes.HEIGHT, ScaleTypes.WIDTH, ScaleTypes.MODEL_HEIGHT, ScaleTypes.MODEL_WIDTH).forEach(PehkuiModule::addScaleType);
 	}
 
 	/**
@@ -55,14 +54,7 @@ public class PehkuiModule implements SwitchyModule {
 	public final Map<ScaleType, @Nullable Float> scaleValues = new HashMap<>();
 
 	PehkuiModule() {
-		scaleKeys.forEach((type, key) -> scaleValues.put(type, null));
-	}
-
-	/**
-	 * @param type the scale type to request be switched.
-	 */
-	public static void addScaleType(ScaleType type) {
-		scaleKeys.put(type, ScaleRegistries.SCALE_TYPES.inverse().get(type).getPath());
+		CONFIG.scaleTypes.forEach(id -> scaleValues.put(ScaleRegistries.SCALE_TYPES.get(new Identifier(id)), null));
 	}
 
 	/**
@@ -87,15 +79,16 @@ public class PehkuiModule implements SwitchyModule {
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		scaleValues.forEach((type, value) -> {
-			if (value != null) outNbt.putFloat(scaleKeys.get(type), value);
+			if (value != null) outNbt.putFloat(ScaleRegistries.getId(ScaleRegistries.SCALE_TYPES, type).toString(), value);
 		});
 		return outNbt;
 	}
 
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
-		scaleKeys.forEach((type, key) -> {
-			if (nbt.contains(key)) scaleValues.put(type, nbt.getFloat(key));
+		scaleValues.forEach((type, value) -> {
+			String path = ScaleRegistries.getId(ScaleRegistries.SCALE_TYPES, type).toString();
+			if (nbt.contains(path)) scaleValues.put(type, nbt.getFloat(path));
 		});
 	}
 }
