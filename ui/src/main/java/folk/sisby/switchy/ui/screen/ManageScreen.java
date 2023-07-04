@@ -21,8 +21,6 @@ import net.minecraft.util.Pair;
 import org.apache.commons.compress.utils.FileNameUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.Nullable;
-import org.quiltmc.loader.api.ModContainer;
-import org.quiltmc.loader.api.QuiltLoader;
 
 import java.io.IOException;
 import java.util.*;
