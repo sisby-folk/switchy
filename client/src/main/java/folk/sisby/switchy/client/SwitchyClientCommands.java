@@ -16,11 +16,9 @@ import net.minecraft.util.Identifier;
 import org.quiltmc.qsl.command.api.client.ClientCommandManager;
 import org.quiltmc.qsl.command.api.client.ClientCommandRegistrationCallback;
 import org.quiltmc.qsl.command.api.client.QuiltClientCommandSource;
-import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
 import java.util.List;
 
-import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_IMPORT_CONFIRM;
 import static folk.sisby.switchy.client.util.CommandClient.executeClient;
 import static folk.sisby.switchy.client.util.FeedbackClient.sendClientMessage;
 
@@ -30,6 +28,7 @@ import static folk.sisby.switchy.client.util.FeedbackClient.sendClientMessage;
  * @author Sisby folk
  * @since 1.7.0
  */
+@SuppressWarnings("unchecked")
 public class SwitchyClientCommands implements ClientCommandRegistrationCallback {
 	/**
 	 * A map of the previously executed command, per player UUID.
@@ -70,7 +69,7 @@ public class SwitchyClientCommands implements ClientCommandRegistrationCallback 
 	public void registerCommands(CommandDispatcher<QuiltClientCommandSource> dispatcher, CommandBuildContext buildContext, CommandManager.RegistrationEnvironment environment) {
 		LiteralArgumentBuilder<QuiltClientCommandSource> rootArgument = ClientCommandManager.literal("switchy_client");
 		LiteralArgumentBuilder<QuiltClientCommandSource> importArgument = ClientCommandManager.literal("import");
-		rootArgument.requires(source -> ClientPlayNetworking.canSend(C2S_IMPORT_CONFIRM));
+		rootArgument.requires(source -> SwitchyClientApi.isSwitchyServer());
 
 		SwitchyClientEvents.COMMAND_INIT_IMPORT.invoker().registerCommands(importArgument, (t) -> {
 		});

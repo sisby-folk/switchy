@@ -1,8 +1,13 @@
 package folk.sisby.switchy.api.module;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import folk.sisby.switchy.Switchy;
+import folk.sisby.switchy.api.SwitchyPlayer;
+import folk.sisby.switchy.api.SwitchySerializable;
 import folk.sisby.switchy.api.exception.ModuleNotFoundException;
+import folk.sisby.switchy.util.SwitchyCommand;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Identifier;
@@ -194,6 +199,33 @@ public class SwitchyModuleRegistry {
 			}
 		});
 		return outMap;
+	}
+
+	/**
+	 * Generates a player-level module configuration object, if the module has one.
+	 * @param id a module identifier.
+	 * @return a configuration object for that module, or null if it doesn't have one.
+	 */
+	public static @Nullable SwitchySerializable generateModuleConfig(Identifier id) {
+		if (!INFO.containsKey(id)) throw new ModuleNotFoundException();
+		return INFO.get(id).moduleConfig() != null ? INFO.get(id).moduleConfig().get() : null;
+	}
+
+	/**
+	 * Adds all registered config commands under literal arguments matching their module ID.
+	 *
+	 * @param configArgument the literal argument where module ID arguments will be added.
+	 * @return whether any module ID arguments were added.
+	 */
+	public static boolean addConfigCommands(LiteralArgumentBuilder<ServerCommandSource> configArgument) {
+		INFO.forEach((id, info) -> {
+			LiteralArgumentBuilder<ServerCommandSource> idArgument = LiteralArgumentBuilder.literal(id.toString());
+			if (info.configCommands(idArgument)) {
+				idArgument.requires(src -> SwitchyCommand.serverPlayerOrNull(src) instanceof SwitchyPlayer sp && sp.switchy$getPresets().isModuleEnabled(id));
+				configArgument.then(idArgument);
+			}
+		});
+		return !configArgument.getArguments().isEmpty();
 	}
 
 	/**
