@@ -38,6 +38,10 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 * NBT key for the compound of presets.
 	 */
 	String KEY_PRESETS = "list";
+	/**
+	 * NBT key for compound of module configs.
+	 */
+	String KEY_MODULE_CONFIGS = "moduleConfigs";
 
 	/**
 	 * Adds a preset to this object.
@@ -267,6 +271,19 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 * @throws ModuleNotFoundException when a module with the specified ID doesn't exist.
 	 */
 	boolean isModuleEnabled(Identifier id) throws ModuleNotFoundException;
+
+	/**
+	 * Gets the player-level configuration object for a module, if one exists.
+	 *
+	 * @param <ConfigType> the type of config to return.
+	 * @param id           a module identifier.
+	 * @param clazz        the class of the specified config.
+	 * @return the module configuration object for this module, or null if it doesn't exist
+	 * @throws ModuleNotFoundException     when a module with the specified ID doesn't exist.
+	 * @throws ClassNotAssignableException when the specified module's config is not of {@code <ConfigType>}.
+	 * @throws IllegalStateException       when the specified module is disabled.
+	 */
+	<ConfigType extends SwitchySerializable> SwitchySerializable getModuleConfig(Identifier id, Class<ConfigType> clazz) throws ModuleNotFoundException, ClassNotAssignableException, IllegalStateException;
 
 	/**
 	 * Gets a list of all enabled modules as ID paths.
