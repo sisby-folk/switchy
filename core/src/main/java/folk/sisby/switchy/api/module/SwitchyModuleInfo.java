@@ -2,8 +2,6 @@ package folk.sisby.switchy.api.module;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import folk.sisby.switchy.api.SwitchySerializable;
-import fr.catcore.server.translations.api.LocalizationTarget;
-import fr.catcore.server.translations.api.text.LocalizableText;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
