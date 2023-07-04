@@ -216,6 +216,15 @@ Adding new Modules allows more data to be switched per-preset. They only need to
 Just implement `SwitchyModule` and register it with `SwitchyModuleRegistry` using `SwitchyEvents.Init` -
 See [Switchy Inventories](https://github.com/sisby-folk/switchy-inventories) for an example. (Remember to add the `events` entrypoint in your QMJ)
 
+
+#### Module Configuration & Commands
+
+Alongside server-level module configuration, which is easily set up [within the module itself](https://github.com/sisby-folk/switchy/blob/1.19/compat/src/main/java/folk/sisby/switchy/modules/PehkuiModule.java#L37), modules can also register for player-level configuration when registering their `SwitchyModuleInfo`.
+
+`withConfigCommands()` allows for arbitrary commands to be registered under `/switchy module config [moduleid]`. This is used by [Switchy Proxy](https://modrinth.com/mod/switchy-proxy) both to change the player-level `latch` option, as well as directly edit module data for proxies.
+
+`withModuleConfig()` lets you register a serializable class to construct for every player. You can then easily access it from `presets.getModuleConfig(moduleId, YourConfig.class)` in your addon and config commands.
+
 #### Client Integration
 
 Modules can integrate with the client if they implement `SwitchyModuleTransferable` and have a matching `SwitchyClientModule` registered with `SwitchyClientModuleRegistry`.
