@@ -25,7 +25,7 @@ public abstract class MixinClientPlayNetworkHandler {
 	 * @param packet a packet being sent to the server.
 	 * @param ci     callback info.
 	 */
-	@Inject(at = @At("HEAD"), method = "sendPacket")
+	@Inject(at = @At("HEAD"), method = "sendPacket(Lnet/minecraft/network/packet/Packet;)V")
 	public void sendPacket(Packet<?> packet, CallbackInfo ci) {
 		if (packet instanceof ChatCommandC2SPacket chatPacket) {
 			SwitchyClientCommands.HISTORY = chatPacket.command();
