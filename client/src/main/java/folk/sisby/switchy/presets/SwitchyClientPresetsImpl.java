@@ -54,7 +54,7 @@ public class SwitchyClientPresetsImpl extends SwitchyPresetsDataImpl<SwitchyClie
 
 	@Override
 	public @Nullable SwitchySerializable supplyModuleConfig(Identifier id) {
-		return moduleInfo.get(id).moduleConfig() != null ? moduleInfo.get(id).moduleConfig().get() : null;
+		return moduleInfo.containsKey(id) && moduleInfo.get(id).moduleConfig() != null ? moduleInfo.get(id).moduleConfig().get() : null;
 	}
 
 	@Override

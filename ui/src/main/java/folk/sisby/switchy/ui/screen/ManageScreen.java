@@ -21,12 +21,11 @@ import net.minecraft.util.Pair;
 import org.apache.commons.compress.utils.FileNameUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.Nullable;
+import org.quiltmc.loader.api.ModContainer;
+import org.quiltmc.loader.api.QuiltLoader;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -265,7 +264,7 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 	HorizontalFlowLayout getModuleFlow(Identifier id, @Nullable Text labelTooltip, BiConsumer<ButtonComponent, Identifier> buttonAction, boolean enabled, Text buttonText, @Nullable Text buttonTooltip, int labelSize) {
 		HorizontalFlowLayout moduleFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 		LabelComponent moduleName = Components.label(Text.literal(id.getPath()));
-		Text namespaceText = Text.literal(id.getNamespace()).setStyle(Feedback.FORMAT_INFO.getLeft());
+		Text namespaceText = Text.literal(Feedback.guessModTitle(id.getNamespace())).setStyle(Feedback.FORMAT_INFO.getLeft());
 		moduleName.tooltip(labelTooltip != null ? List.of(namespaceText, labelTooltip) : List.of(namespaceText));
 		moduleName.horizontalSizing(Sizing.fixed(labelSize));
 		ButtonComponent enableButton = Components.button(buttonText, b -> buttonAction.accept(b, id));
