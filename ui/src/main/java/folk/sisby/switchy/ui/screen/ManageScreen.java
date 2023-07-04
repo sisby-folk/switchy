@@ -5,7 +5,6 @@ import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
 import folk.sisby.switchy.api.presets.SwitchyPresetsData;
-import folk.sisby.switchy.client.SwitchyClient;
 import folk.sisby.switchy.client.api.SwitchyClientApi;
 import folk.sisby.switchy.util.Feedback;
 import io.wispforest.owo.ui.base.BaseUIModelScreen;
