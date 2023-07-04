@@ -4,8 +4,6 @@ import io.github.apace100.apoli.power.PowerType;
 import org.quiltmc.config.api.WrappedConfig;
 import org.quiltmc.config.api.annotations.Comment;
 import org.quiltmc.config.api.values.ValueList;
-import virtuoel.pehkui.api.ScaleRegistries;
-import virtuoel.pehkui.api.ScaleTypes;
 
 /**
  * Handles module cold-editing permission configuration (including importing).

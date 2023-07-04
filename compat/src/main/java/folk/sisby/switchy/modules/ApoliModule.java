@@ -6,7 +6,6 @@ import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.config.ApoliModuleConfig;
-import folk.sisby.switchy.config.PehkuiModuleConfig;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.InventoryPower;
 import io.github.apace100.apoli.power.Power;
