@@ -29,9 +29,8 @@ You can hotswap these features out-of-the box by installing their relevant mods:
 - Player Nicknames with [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) (Note: Switchy force-allows nickname self-assignment)
     - Player Pronouns/Bio through `<hover>` or [Drogstyle](https://modrinth.com/mod/drogstyle)'s `/bio`
 - Player Skin with [Fabric Tailor](https://modrinth.com/mod/fabrictailor) or model with [Figura](https://modrinth.com/mod/figura) (via API)
-- Player Origin with [Origins](https://modrinth.com/mod/origins) (includes all layers,
-  e.g. [Statures](https://modrinth.com/mod/tinkerers-statures))
-    - Apoli power state - e.g. Origin power inventories, cooldowns (via [MerchantPug](https://github.com/MerchantPug))
+- Player Origin with [Origins](https://modrinth.com/mod/origins) (includes all layers, e.g. [Statures](https://modrinth.com/mod/tinkerers-statures))
+    - Power state / command powers - e.g. Origin inventories and `/power grant` powers (via [MerchantPug](https://github.com/MerchantPug))
 - Player sizes and scales with [Pehkui](https://modrinth.com/mod/pehkui)
 - Detailed player profiles for conventions with [Lanyard](https://modrinth.com/mod/lanyard)
 
@@ -65,6 +64,8 @@ Older showcase that shows fully setting up presets using commands:
 
 Remember, switching does nothing on its own! Make sure you install a mod from above.
 
+### Via Server Commands
+
 1. Use `/switchy list` to see your current presets
 
 2. use `/switchy rename default [name]` to give your starting preset a name
@@ -73,13 +74,7 @@ Remember, switching does nothing on its own! Make sure you install a mod from ab
 
 4. `/switchy set [name]` or `/switch [name]` will switch between existing presets
 
-### How do I change a preset nickname? or skin?
-
-Switch to the module you'd like to change things for, then just do it as normal! <br/>
-`/nick` for nicknames, `k` for fabric tailor skins, etc.<br/>
-When you switch away, they'll be saved - and when you switch back, they'll be restored.
-
-### Customize your modules
+#### Toggling Modules
 
 When a module is **Enabled**, it makes things "switch" (load and save) per-preset.
 
@@ -87,27 +82,29 @@ When a module is **Enabled**, it makes things "switch" (load and save) per-prese
 
 `/switchy module help` will tell you about a module, and what enabling it does.
 
-### UI
+### Via Client UI
 
-As of `2.0.0`, installing Switchy on the client as well as the server provides you with a UI, defaulted to semicolon (`;`).
+With Switchy also installed on the client, click `;` to open the UI.
 
-This provides a visual preview of all your presets, and the ability to click to switch between them.
-
+The Quick-Switcher allows you to preview and switch presets by clicking on them.<br/>
 ![image](https://user-images.githubusercontent.com/55819817/224468718-55137a82-8269-4ce6-9bb5-0c5ce8322a68.png)
 
-It also provides the management screen, where you can perform all the functions specified above in a visual way.
-
+Clicking the manage button shows the *manage presets* screen, allowing creating, renaming, and deleting presets.<br/>
 ![image](https://user-images.githubusercontent.com/55819817/224468651-95630575-72dd-4a8b-b59d-371d1f5ae86d.png)
 
+Clicking the modules button shows the *manage modules* screen, allowing enabling and disabling modules.<br/>
 ![image](https://user-images.githubusercontent.com/55819817/224468657-98da4200-3a7c-43fc-8ade-b39e4a96abc8.png)
+*Hovering over toggle buttons will show detailed information on the effects of pressing them.*<br/>
 
-Additionally, you can import and export your presets to a file for use on other servers/worlds.
-
+Clicking the data button shows the *manage data* screen, where you can import and export your presets to a file for use on other servers/worlds.
 ![image](https://user-images.githubusercontent.com/55819817/224468676-8d539912-6fee-4792-b578-544dc10849af.png)
+To save to a file, choose export, choose which modules to include in the file, and click export!<br/>
+To load from a file, choose import, choose which modules to import from the file, and click import!<br/>
+Files are saved to `.minecraft/config/switchy/`, and are safe to copy between instances.<br/>
 
-### Command-based Import/Export
+#### Client Data Commands
 
-Instead of the UI, you can also use commands:
+Data operations can also be performed using client-side commands:
 
 `/switchy_client export` will export all of your presets and modules to a file.
 
@@ -117,6 +114,12 @@ Instead of the UI, you can also use commands:
 adding those in `[operator]` if you're a server operator.
 
 You can use `~` to specify no modules.
+
+### How do I change a preset nickname? or skin?
+
+Switch to the preset you'd like to change things for, then just do it as normal! <br/>
+`/nick` for nicknames, `k` for fabric tailor skins, etc.<br/>
+When you switch away, they'll be saved - and when you switch back, they'll be restored.
 
 ## Configuration
 

@@ -1,5 +1,6 @@
 package folk.sisby.switchy.presets;
 
+import folk.sisby.switchy.api.SwitchySerializable;
 import folk.sisby.switchy.api.exception.ModuleNotFoundException;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
@@ -12,6 +13,7 @@ import folk.sisby.switchy.util.PresetConverter;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 import java.util.HashMap;
@@ -35,9 +37,24 @@ public class SwitchyClientPresetsImpl extends SwitchyPresetsDataImpl<SwitchyClie
 	 * @param permissionLevel the permission level for the player.
 	 */
 	public SwitchyClientPresetsImpl(Map<Identifier, SwitchyModuleInfo> moduleInfo, int permissionLevel) {
-		super(new HashMap<>(), SwitchyClientPresetImpl::new, SwitchyClientModuleRegistry::supplyModule, true, SwitchyClient.LOGGER);
+		super(new HashMap<>(), true, SwitchyClient.LOGGER);
 		this.moduleInfo = moduleInfo;
 		this.permissionLevel = permissionLevel;
+	}
+
+	@Override
+	public SwitchyClientPreset constructPreset(String name, Map<Identifier, Boolean> modules) {
+		return new SwitchyClientPresetImpl(name, modules);
+	}
+
+	@Override
+	public SwitchyClientModule supplyModule(Identifier id) {
+		return SwitchyClientModuleRegistry.supplyModule(id);
+	}
+
+	@Override
+	public @Nullable SwitchySerializable supplyModuleConfig(Identifier id) {
+		return moduleInfo.containsKey(id) && moduleInfo.get(id).moduleConfig() != null ? moduleInfo.get(id).moduleConfig().get() : null;
 	}
 
 	@Override

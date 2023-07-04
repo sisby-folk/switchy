@@ -13,12 +13,12 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.InvalidIdentifierException;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import static folk.sisby.switchy.util.Feedback.getIdListText;
 
@@ -27,12 +27,11 @@ import static folk.sisby.switchy.util.Feedback.getIdListText;
  * @see SwitchyPresetsData
  * @since 2.0.0
  */
-public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset extends SwitchyPresetData<Module>> implements SwitchyPresetsData<Module, Preset> {
+public abstract class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset extends SwitchyPresetData<Module>> implements SwitchyPresetsData<Module, Preset> {
 	private final Map<String, Preset> presets = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+	private final Map<Identifier, SwitchySerializable> moduleConfigs = new HashMap<>();
 	private final Map<Identifier, Boolean> modules;
 	private final Map<Identifier, Boolean> backup = new HashMap<>();
-	private final BiFunction<String, Map<Identifier, Boolean>, Preset> presetConstructor;
-	private final Function<Identifier, Module> moduleSupplier;
 	private final boolean forPlayer;
 	private final Logger logger;
 	private Preset currentPreset;
@@ -41,18 +40,39 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 	 * Constructs an instance of the object.
 	 *
 	 * @param modules           the enabled status of modules.
-	 * @param presetConstructor a constructor for the contained presets.
-	 * @param moduleSupplier    a function to supply module instances from their ID, usually from a registry.
 	 * @param forPlayer         whether the presets object is "for a player" - affects recovering lost presets, and logging failures.
 	 * @param logger            the logger to use for construction failures.
 	 */
-	SwitchyPresetsDataImpl(Map<Identifier, Boolean> modules, BiFunction<String, Map<Identifier, Boolean>, Preset> presetConstructor, Function<Identifier, Module> moduleSupplier, boolean forPlayer, Logger logger) {
+	SwitchyPresetsDataImpl(Map<Identifier, Boolean> modules, boolean forPlayer, Logger logger) {
 		this.modules = modules;
-		this.presetConstructor = presetConstructor;
-		this.moduleSupplier = moduleSupplier;
 		this.forPlayer = forPlayer;
 		this.logger = logger;
 	}
+
+	/**
+	 * Constructs a preset instance.
+	 *
+	 * @param name    the desired name for the new preset.
+	 * @param modules a map representing which modules are enabled.
+	 * @return a new preset.
+	 */
+	public abstract Preset constructPreset(String name, Map<Identifier, Boolean> modules);
+
+	/**
+	 * Supplies a module instance.
+	 *
+	 * @param id     a module identifier.
+	 * @return an instance of the module.
+	 */
+	public abstract Module supplyModule(Identifier id);
+
+	/**
+	 * Supplies the player-level module configuration for the given module.
+	 *
+	 * @param id     a module identifier.
+	 * @return the configuration object for the module, or null if it doesn't exist.
+	 */
+	public abstract @Nullable SwitchySerializable supplyModuleConfig(Identifier id);
 
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
@@ -62,6 +82,23 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 			List<Identifier> enabledModules = nbt.getList(KEY_PRESET_MODULE_ENABLED, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).toList();
 			modules.forEach((id, enabled) -> modules.put(id, enabledModules.contains(id)));
 		}
+
+		NbtCompound configCompound = nbt.getCompound(KEY_MODULE_CONFIGS);
+		for (String key : configCompound.getKeys()) {
+			try {
+				SwitchySerializable config = setConfig(new Identifier(key));
+				if (config != null) {
+					config.fillFromNbt(configCompound.getCompound(key));
+				}
+			} catch (InvalidIdentifierException ignoredInvalidIdentifier) {
+				logger.warn("[Switchy] Player data contained invalid module config '{}'. Data may have been lost.", key);
+			} catch (ModuleNotFoundException ignoredModuleNotFound) {
+				logger.warn("[Switchy] Player data contained missing module config '{}'. Data may have been lost.", key);
+			} catch (IllegalStateException ignored) {
+				logger.warn("[Switchy] Player data contained disabled module config '{}'. Data may have been lost.", key);
+			}
+		}
+		getEnabledModules().stream().filter(key -> !moduleConfigs.containsKey(key)).forEach(this::setConfig);
 
 		NbtCompound presetsCompound = nbt.getCompound(KEY_PRESETS);
 		for (String key : presetsCompound.getKeys()) {
@@ -88,6 +125,12 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 		}
 	}
 
+	private @Nullable SwitchySerializable setConfig(Identifier id) throws ModuleNotFoundException, IllegalStateException {
+		if (!isModuleEnabled(id)) throw new IllegalStateException("Specified preset already exists.");
+		SwitchySerializable config = supplyModuleConfig(id);
+		return config != null ? moduleConfigs.put(id, supplyModuleConfig(id)) : null;
+	}
+
 	@Override
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
@@ -99,6 +142,10 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 			if (enabled) enabledList.add(NbtString.of(id.toString()));
 			if (!enabled) disabledList.add(NbtString.of(id.toString()));
 		});
+
+		NbtCompound configCompound = new NbtCompound();
+		moduleConfigs.forEach((id, config) -> configCompound.put(id.toString(), config.toNbt()));
+		outNbt.put(KEY_MODULE_CONFIGS, configCompound);
 
 		backup.forEach((id, enabled) -> {
 			if (!modules.containsKey(id)) {
@@ -153,7 +200,7 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 	@Override
 	public Preset newPreset(String name) throws InvalidWordException, IllegalStateException {
 		if (presets.containsKey(name)) throw new IllegalStateException("Specified preset already exists.");
-		Preset newPreset = presetConstructor.apply(name, modules);
+		Preset newPreset = constructPreset(name, modules);
 		presets.put(name, newPreset);
 		return newPreset;
 	}
@@ -187,6 +234,7 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 		if (!modules.get(id)) throw new IllegalStateException("Specified module is disabled");
 		if (dryRun) return;
 		modules.put(id, false);
+		moduleConfigs.remove(id);
 		presets.forEach((name, preset) -> preset.removeModule(id));
 	}
 
@@ -206,8 +254,12 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 		if (modules.get(id)) throw new IllegalStateException("Specified module is enabled");
 		List<Module> outList = new ArrayList<>();
 		modules.put(id, true);
+		SwitchySerializable config = supplyModuleConfig(id);
+		if (config != null) {
+			moduleConfigs.put(id, config);
+		}
 		presets.values().forEach(preset -> {
-			Module module = moduleSupplier.apply(id);
+			Module module = supplyModule(id);
 			preset.putModule(id, module);
 			outList.add(module);
 		});
@@ -320,6 +372,16 @@ public class SwitchyPresetsDataImpl<Module extends SwitchySerializable, Preset e
 	public boolean isModuleEnabled(Identifier id) throws ModuleNotFoundException {
 		if (!containsModule(id)) throw new ModuleNotFoundException();
 		return modules.get(id);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <ConfigType extends SwitchySerializable> ConfigType getModuleConfig(Identifier id, Class<ConfigType> clazz) throws ModuleNotFoundException, ClassNotAssignableException, IllegalStateException {
+		if (!isModuleEnabled(id)) throw new IllegalStateException("Specified module is disabled");
+		SwitchySerializable config = moduleConfigs.get(id);
+		if (config == null) return null;
+		if (!clazz.isAssignableFrom(config.getClass())) throw new ClassNotAssignableException("Module Config '" + id.toString(), config, clazz);
+		return (ConfigType) config;
 	}
 
 	@Override
