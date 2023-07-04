@@ -2,6 +2,7 @@ package folk.sisby.switchy.presets;
 
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.SwitchyEvents;
+import folk.sisby.switchy.api.SwitchySerializable;
 import folk.sisby.switchy.api.events.SwitchySwitchEvent;
 import folk.sisby.switchy.api.exception.ClassNotAssignableException;
 import folk.sisby.switchy.api.exception.ModuleNotFoundException;
@@ -12,6 +13,7 @@ import folk.sisby.switchy.api.presets.SwitchyPreset;
 import folk.sisby.switchy.api.presets.SwitchyPresets;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -33,11 +35,24 @@ public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, Sw
 	public SwitchyPresetsImpl(boolean forPlayer) {
 		super(
 				SwitchyModuleRegistry.getModuleDefaults(),
-				SwitchyPresetImpl::new,
-				SwitchyModuleRegistry::supplyModule,
 				forPlayer,
 				Switchy.LOGGER
 		);
+	}
+
+	@Override
+	public SwitchyPreset constructPreset(String name, Map<Identifier, Boolean> modules) {
+		return new SwitchyPresetImpl(name, modules);
+	}
+
+	@Override
+	public SwitchyModule supplyModule(Identifier id) {
+		return SwitchyModuleRegistry.supplyModule(id);
+	}
+
+	@Override
+	public @Nullable SwitchySerializable supplyModuleConfig(Identifier id) {
+		return SwitchyModuleRegistry.generateModuleConfig(id);
 	}
 
 	@Override

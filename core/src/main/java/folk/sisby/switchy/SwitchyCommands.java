@@ -3,8 +3,10 @@ package folk.sisby.switchy;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import folk.sisby.switchy.api.SwitchyApi;
 import folk.sisby.switchy.api.SwitchyEvents;
+import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.util.SwitchyCommand;
 import net.minecraft.command.CommandBuildContext;
 import net.minecraft.server.command.CommandManager;
@@ -40,6 +42,16 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 	 */
 	public static boolean IMPORT_ENABLED = false;
 
+	// Shared Arguments
+	private static final LiteralArgumentBuilder<ServerCommandSource> ARG_ROOT = CommandManager.literal("switchy");
+	private static final LiteralArgumentBuilder<ServerCommandSource> ARG_IMPORT = CommandManager.literal("import");
+	private static final LiteralArgumentBuilder<ServerCommandSource> ARG_MODULE = CommandManager.literal("module");
+	private static final LiteralArgumentBuilder<ServerCommandSource> ARG_MODULE_CONFIG = CommandManager.literal("config");
+
+	// Aliased Arguments
+	private static final RequiredArgumentBuilder<ServerCommandSource, String> ARG_SWITCH_SET_PRESET = SwitchyCommand.presetArgument(false)
+		.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.switchPreset(pl, pr, f, c.getArgument("preset", String.class))));
+
 	static {
 		SwitchyEvents.COMMAND_INIT.register((switchyRoot, helpTextRegistry) -> {
 			switchyRoot.then(CommandManager.literal("help").executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.displayHelp(pl, f))));
@@ -48,8 +60,7 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 					.then(CommandManager.argument("name", StringArgumentType.word())
 							.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.newPreset(pr, f, c.getArgument("name", String.class))))));
 			switchyRoot.then(CommandManager.literal("set")
-					.then(SwitchyCommand.presetArgument(false)
-							.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.switchPreset(pl, pr, f, c.getArgument("preset", String.class))))));
+					.then(ARG_SWITCH_SET_PRESET));
 			switchyRoot.then(CommandManager.literal("delete")
 					.then(SwitchyCommand.presetArgument(false)
 							.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.deletePreset(pl, pr, f, c.getArgument("preset", String.class))))));
@@ -57,7 +68,7 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 					.then(SwitchyCommand.presetArgument(true)
 							.then(CommandManager.argument("name", StringArgumentType.word())
 									.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.renamePreset(pr, f, c.getArgument("preset", String.class), c.getArgument("name", String.class)))))));
-			switchyRoot.then(CommandManager.literal("module")
+			switchyRoot.then(ARG_MODULE
 					.then(CommandManager.literal("help")
 							.then(SwitchyCommand.moduleArgument(null)
 									.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.displayModuleHelp(pr, f, c.getArgument("module", Identifier.class))))))
@@ -84,20 +95,18 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 
 	@Override
 	public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandBuildContext buildContext, CommandManager.RegistrationEnvironment environment) {
-		LiteralArgumentBuilder<ServerCommandSource> switchyImport = CommandManager.literal("import");
-		LiteralArgumentBuilder<ServerCommandSource> switchyRoot = CommandManager.literal("switchy");
-
-		SwitchyEvents.COMMAND_INIT_IMPORT.invoker().registerCommands(switchyImport, HELP_TEXT::put);
+		SwitchyEvents.COMMAND_INIT_IMPORT.invoker().registerCommands(ARG_IMPORT, HELP_TEXT::put);
 		if (IMPORT_ENABLED) {
-			switchyRoot.then(switchyImport);
+			ARG_ROOT.then(ARG_IMPORT);
 		}
 
-		SwitchyEvents.COMMAND_INIT.invoker().registerCommands(switchyRoot, HELP_TEXT::put);
-		dispatcher.register(switchyRoot);
+		if (SwitchyModuleRegistry.addConfigCommands(ARG_MODULE_CONFIG)) {
+			ARG_MODULE.then(ARG_MODULE_CONFIG);
+		}
 
-		dispatcher.register(
-				CommandManager.literal("switch")
-						.then(SwitchyCommand.presetArgument(false)
-								.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.switchPreset(pl, pr, f, c.getArgument("preset", String.class))))));
+		SwitchyEvents.COMMAND_INIT.invoker().registerCommands(ARG_ROOT, HELP_TEXT::put);
+		dispatcher.register(ARG_ROOT);
+
+		dispatcher.register(CommandManager.literal("switch").then(ARG_SWITCH_SET_PRESET));
 	}
 }

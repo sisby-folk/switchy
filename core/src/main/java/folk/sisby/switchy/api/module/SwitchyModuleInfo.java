@@ -1,9 +1,14 @@
 package folk.sisby.switchy.api.module;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import folk.sisby.switchy.api.SwitchySerializable;
+import fr.catcore.server.translations.api.LocalizationTarget;
+import fr.catcore.server.translations.api.text.LocalizableText;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -14,6 +19,8 @@ import xyz.nucleoid.server.translations.impl.LocalizableText;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static folk.sisby.switchy.util.Feedback.translatable;
@@ -42,6 +49,8 @@ public final class SwitchyModuleInfo {
 	private MutableText descriptionWhenDisabled = translatable("commands.switchy.module.help.disable.default");
 	private Set<Identifier> applyDependencies = new HashSet<>();
 	private Set<Identifier> uniqueIds = new HashSet<>();
+	private Consumer<LiteralArgumentBuilder<ServerCommandSource>> configCommands = null;
+	private Supplier<SwitchySerializable> moduleConfig = null;
 
 	/**
 	 * Constructs an instance with the minimum options.
@@ -186,13 +195,34 @@ public final class SwitchyModuleInfo {
 
 	/**
 	 * Sets arbitrary IDs that must not clash with any other module.
-	 * *
 	 *
 	 * @param uniqueIds a set of unique IDs that cannot collide with other added modules.
 	 * @return this.
 	 */
 	public SwitchyModuleInfo withUniqueIds(Set<Identifier> uniqueIds) {
 		this.uniqueIds = uniqueIds;
+		return this;
+	}
+
+	/**
+	 * Sets a configuration object that can be used to store player-level data for the module, like settings.
+	 *
+	 * @param moduleConfig a supplier for a player-scoped configuration object
+	 * @return this.
+	 */
+	public SwitchyModuleInfo withModuleConfig(Supplier<SwitchySerializable> moduleConfig) {
+		this.moduleConfig = moduleConfig;
+		return this;
+	}
+
+	/**
+	 * Sets the callback used to generate commands under /switchy module config [id].
+	 *
+	 * @param configCommands a consumer for the argument builder of the [id] arg in the command.
+	 * @return this.
+	 */
+	public SwitchyModuleInfo withConfigCommands(Consumer<LiteralArgumentBuilder<ServerCommandSource>> configCommands) {
+		this.configCommands = configCommands;
 		return this;
 	}
 
@@ -270,5 +300,27 @@ public final class SwitchyModuleInfo {
 	 */
 	public MutableText descriptionWhenDisabled() {
 		return descriptionWhenDisabled;
+	}
+
+	/**
+	 * Gets the configuration object that can be used to store player-level data for the module, like settings.
+	 * @return a supplier for a player-scoped configuration object
+	 */
+	public Supplier<SwitchySerializable> moduleConfig() {
+		return moduleConfig;
+	}
+
+	/**
+	 * Adds any registered config commands to the argument builder specified.
+	 *
+	 * @param configIdArgument the module ID-like literal argument where config arguments will be added.
+	 * @return whether any commands were added.
+	 */
+	public boolean configCommands(LiteralArgumentBuilder<ServerCommandSource> configIdArgument) {
+		if (configCommands != null) {
+			configCommands.accept(configIdArgument);
+			return !configIdArgument.getArguments().isEmpty();
+		}
+		return false;
 	}
 }

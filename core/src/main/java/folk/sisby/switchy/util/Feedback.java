@@ -5,9 +5,12 @@ import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
+import org.quiltmc.loader.api.ModContainer;
+import org.quiltmc.loader.api.QuiltLoader;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
@@ -212,5 +215,18 @@ public class Feedback {
 	 */
 	public static MutableText warn(String key, MutableText... args) {
 		return translatableWithArgs(key, FORMAT_WARN, args);
+	}
+
+	/**
+	 * Transforms a namespace into a loaded mod's title where possible.
+	 * @param namespace a namespace used by the mod.
+	 * @return The mod's title if a match or dash-replaced match is found, otherwise namespace.
+	 */
+	public static String guessModTitle(String namespace) {
+		Optional<ModContainer> mod = QuiltLoader.getModContainer(namespace).or(() -> QuiltLoader.getModContainer(namespace.replace('_', '-')));
+		if (mod.isPresent()) {
+			return mod.get().metadata().name();
+		}
+		return namespace;
 	}
 }
