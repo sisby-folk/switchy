@@ -44,8 +44,7 @@ More functionality can be added with these Addons:
   and system tags - directly from Pluralkit or Tupperbox.
 - [Switchy Resource Packs](https://modrinth.com/mod/switchy-resource-packs) - separate enabled resource packs per
   preset.
-- [Switchy Proxy](https://modrinth.com/mod/switchy-proxy) - single-message nickname switching with custom patterns using
-  either nickname mod.
+- [Switchy Proxy](https://modrinth.com/mod/switchy-proxy) - match message patterns (proxies) to switch nicknames per-chat-message.
 
 These mods have Switchy support built-in (or built in to switchy):
 
