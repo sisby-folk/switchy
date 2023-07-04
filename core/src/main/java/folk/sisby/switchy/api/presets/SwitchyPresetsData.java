@@ -283,7 +283,7 @@ public interface SwitchyPresetsData<Module extends SwitchySerializable, Preset e
 	 * @throws ClassNotAssignableException when the specified module's config is not of {@code <ConfigType>}.
 	 * @throws IllegalStateException       when the specified module is disabled.
 	 */
-	<ConfigType extends SwitchySerializable> SwitchySerializable getModuleConfig(Identifier id, Class<ConfigType> clazz) throws ModuleNotFoundException, ClassNotAssignableException, IllegalStateException;
+	<ConfigType extends SwitchySerializable> ConfigType getModuleConfig(Identifier id, Class<ConfigType> clazz) throws ModuleNotFoundException, ClassNotAssignableException, IllegalStateException;
 
 	/**
 	 * Gets a list of all enabled modules as ID paths.

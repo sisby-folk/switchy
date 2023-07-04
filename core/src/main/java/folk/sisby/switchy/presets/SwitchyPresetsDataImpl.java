@@ -375,12 +375,13 @@ public abstract class SwitchyPresetsDataImpl<Module extends SwitchySerializable,
 	}
 
 	@Override
-	public <ConfigType extends SwitchySerializable> SwitchySerializable getModuleConfig(Identifier id, Class<ConfigType> clazz) throws ModuleNotFoundException, ClassNotAssignableException, IllegalStateException {
+	@SuppressWarnings("unchecked")
+	public <ConfigType extends SwitchySerializable> ConfigType getModuleConfig(Identifier id, Class<ConfigType> clazz) throws ModuleNotFoundException, ClassNotAssignableException, IllegalStateException {
 		if (!isModuleEnabled(id)) throw new IllegalStateException("Specified module is disabled");
 		SwitchySerializable config = moduleConfigs.get(id);
 		if (config == null) return null;
 		if (!clazz.isAssignableFrom(config.getClass())) throw new ClassNotAssignableException("Module Config '" + id.toString(), config, clazz);
-		return config;
+		return (ConfigType) config;
 	}
 
 	@Override
