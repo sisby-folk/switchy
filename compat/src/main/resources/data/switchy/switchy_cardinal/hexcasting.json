@@ -6,6 +6,6 @@
     "hexcasting"
   ],
   "components": [
-    "hexcasting:favored_colorizer"
+    "hexcasting:favored_pigment"
   ]
 }
