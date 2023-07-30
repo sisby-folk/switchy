@@ -26,6 +26,15 @@ public interface SwitchyPresetData<Module extends SwitchySerializable> extends S
 	Map<Identifier, Module> getModules();
 
 	/**
+	 * Gets a map of all modules that are instances of the specified class.
+	 *
+	 * @param <ModuleType> the class of module to return.
+	 * @param clazz        the class of the desired modules.
+	 * @return a map of all clazz modules.
+	 */
+	<ModuleType> Map<Identifier, ModuleType> getModules(Class<ModuleType> clazz);
+
+	/**
 	 * Gets the specified module.
 	 *
 	 * @param id a module identifier.

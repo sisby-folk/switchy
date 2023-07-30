@@ -1,13 +1,17 @@
 {
-  "screen.switchy_ui.import.warn.info": "You are about to import %s presets with %s modules:",
-  "screen.switchy_ui.import.warn.collision": "Red presets will have these modules overwritten:",
-  "screen.switchy_ui.export.confirm": "Export %s modules?",
-  "screen.switchy_ui.delete.warn": "WARNING: Preset data from enabled modules will be deleted",
-  "screen.switchy_ui.delete.confirm": "You are about to delete preset '%s'",
-  "screen.switchy_ui.disable.confirm": "You are about to disable module %s",
-  "screen.switchy_ui.disable.warn": "Warning: %s",
-  "screen.switchy_ui.list.presets": "Presets: %s",
-  "screen.switchy_ui.list.modules": "Modules: %s",
   "key.switchy.switch": "Open Quick-Switcher",
-  "category.switchy.switchy": "Switchy"
+  "category.switchy.switchy": "Switchy",
+
+  "screen.switchy.manage.import.warn.info": "You are about to import %s presets with %s modules:",
+  "screen.switchy.manage.import.warn.collision": "Red presets will have these modules overwritten:",
+  "screen.switchy.manage.export.confirm": "Export %s modules?",
+  "screen.switchy.manage.delete.warn": "WARNING: Preset data from enabled modules will be deleted",
+  "screen.switchy.manage.delete.confirm": "You are about to delete preset '%s'",
+  "screen.switchy.manage.disable.confirm": "You are about to disable module %s",
+  "screen.switchy.manage.disable.warn": "Warning: %s",
+  "screen.switchy.manage.list.presets": "Presets: %s",
+  "screen.switchy.manage.list.modules": "Modules: %s",
+
+  "screen.switchy.switch.title": "Switch Preset",
+  "screen.switchy.switch.manage": "Manage"
 }

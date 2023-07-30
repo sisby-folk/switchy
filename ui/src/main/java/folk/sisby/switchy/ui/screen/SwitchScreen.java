@@ -7,18 +7,29 @@ import folk.sisby.switchy.client.api.SwitchyClientApi;
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
 import folk.sisby.switchy.ui.api.SwitchyUIPosition;
 import folk.sisby.switchy.ui.api.module.SwitchyUIModule;
+import folk.sisby.switchy.ui.component.LockableFlowLayout;
 import io.wispforest.owo.ui.base.BaseOwoScreen;
 import io.wispforest.owo.ui.component.ButtonComponent;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.component.LabelComponent;
-import io.wispforest.owo.ui.container.*;
-import io.wispforest.owo.ui.core.*;
+import io.wispforest.owo.ui.container.GridLayout;
+import io.wispforest.owo.ui.container.HorizontalFlowLayout;
+import io.wispforest.owo.ui.container.ScrollContainer;
+import io.wispforest.owo.ui.container.VerticalFlowLayout;
+import io.wispforest.owo.ui.core.Color;
+import io.wispforest.owo.ui.core.Component;
+import io.wispforest.owo.ui.core.HorizontalAlignment;
+import io.wispforest.owo.ui.core.Insets;
+import io.wispforest.owo.ui.core.OwoUIAdapter;
+import io.wispforest.owo.ui.core.Sizing;
+import io.wispforest.owo.ui.core.Surface;
+import io.wispforest.owo.ui.core.VerticalAlignment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -30,11 +41,11 @@ import java.util.function.Function;
  * @author Sisby folk
  * @since 1.9.0
  */
-public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchyScreen {
+public class SwitchScreen extends BaseOwoScreen<LockableFlowLayout> implements SwitchyScreen {
 	private static final List<Function<SwitchyClientPreset, Pair<Component, SwitchyUIPosition>>> basicComponents = new ArrayList<>();
 
 	static {
-		// Close on switch
+		// Close Screen on Switch
 		SwitchyClientEvents.SWITCH.register(event -> {
 			MinecraftClient client = MinecraftClient.getInstance();
 			if (Objects.equals(client.getSession().getPlayerUuid(), event.player()))
@@ -43,15 +54,12 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchySc
 				});
 		});
 
-		// Add base components
+		// Add Preset Name
 		registerBasicPresetComponent(clientPreset -> Pair.of(Components.label(Text.literal(clientPreset.getName())), SwitchyUIPosition.SIDE_LEFT));
 	}
 
-	private ScrollContainer<VerticalFlowLayout> presetsScroll;
-	private VerticalFlowLayout presetsFlow;
+	private SwitcherScrollContainer presetsScroll;
 	private SwitchyClientPresets presets;
-	private FlowLayout root;
-	private VerticalFlowLayout loadingOverlay;
 
 	/**
 	 * Constructs an instance of the screen.
@@ -71,144 +79,137 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchySc
 	}
 
 	@Override
-	protected @NotNull OwoUIAdapter<FlowLayout> createAdapter() {
-		return OwoUIAdapter.create(this, Containers::verticalFlow);
+	protected @NotNull OwoUIAdapter<LockableFlowLayout> createAdapter() {
+		return OwoUIAdapter.create(this, LockableFlowLayout::new);
 	}
 
 	@Override
-	protected void build(FlowLayout rootComponent) {
-		root = rootComponent;
-
-		root.surface(Surface.VANILLA_TRANSLUCENT);
-		root.horizontalAlignment(HorizontalAlignment.CENTER);
-		root.verticalAlignment(VerticalAlignment.CENTER);
-		root.gap(2);
-
-		presetsFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
-		presetsFlow.padding(Insets.of(6));
-		presetsFlow.verticalAlignment(VerticalAlignment.CENTER);
-		presetsFlow.horizontalAlignment(HorizontalAlignment.CENTER);
-		presetsFlow.gap(4);
-
-		presetsScroll = Containers.verticalScroll(Sizing.content(), Sizing.fill(80), presetsFlow);
-		presetsScroll.surface(Surface.DARK_PANEL);
-		presetsScroll.padding(Insets.of(4));
-
-		HorizontalFlowLayout labelManageFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
-		labelManageFlow.verticalAlignment(VerticalAlignment.CENTER);
-		labelManageFlow.gap(10);
-
-		LabelComponent screenLabel = Components.label(Text.literal("Switch Preset"));
-
-
-		ButtonComponent manageButton = Components.button(Text.literal("Manage"), b -> {
-			ManageScreen managementScreen = new ManageScreen();
-			if (client != null) client.setScreen(managementScreen);
-			managementScreen.updatePresets(presets);
-		});
-
-		labelManageFlow.child(screenLabel);
-		labelManageFlow.child(manageButton);
-
-		root.child(labelManageFlow);
+	protected void build(LockableFlowLayout root) {
+		root.child(new SwitcherTitleFlow());
+		presetsScroll = new SwitcherScrollContainer();
 		root.child(presetsScroll);
-		lockScreen();
+		root.lock();
 	}
 
-	void lockScreen() {
-		if (loadingOverlay == null) {
-			VerticalFlowLayout overlay = Containers.verticalFlow(Sizing.fill(100), Sizing.fill(100));
-			overlay.alignment(HorizontalAlignment.LEFT, VerticalAlignment.BOTTOM);
-			overlay.positioning(Positioning.absolute(0, 0));
-			overlay.child(Components.label(Text.of("Loading...")));
-			overlay.mouseDown().subscribe((x, y, b) -> true); // eat all input
-			loadingOverlay = overlay;
-			root.child(loadingOverlay);
-		}
+	protected List<Pair<Component, SwitchyUIPosition>> generatePreviewComponents(SwitchyClientPreset preset) {
+		List<Pair<Component, SwitchyUIPosition>> outlist = new ArrayList<>(basicComponents.stream().map(fun -> fun.apply(preset)).toList());
+		preset.getModules(SwitchyUIModule.class).values().stream().map(m -> m.getPreviewComponent(preset.getName())).filter(Objects::nonNull).forEach(outlist::add);
+		return outlist;
 	}
 
 	@Override
 	public void updatePresets(SwitchyClientPresets clientPresets) {
 		presets = clientPresets;
-		presetsFlow.clearChildren();
+		presetsScroll.child().clearChildren();
 
 		// Process Preset Flows
 		Component currentPresetComponent = null;
 		for (SwitchyClientPreset preset : presets.getPresets().values()) {
-			List<Pair<Component, SwitchyUIPosition>> componentList = new ArrayList<>(basicComponents.stream().map(fun -> fun.apply(preset)).toList());
+			boolean currentPreset = preset.getName().equals(presets.getCurrentPresetName());
+			PresetFlow presetFlow = new PresetFlow(preset.getName(), currentPreset);
+			if (currentPreset) currentPresetComponent = presetFlow;
 
-			preset.getModules().forEach((id, module) -> {
-				if (module instanceof SwitchyUIModule dm) {
-					@Nullable Pair<Component, SwitchyUIPosition> component = dm.getPreviewComponent(preset.getName());
-					if (component != null) {
-						componentList.add(component);
-					}
-				}
-			});
-
-			// Main Horizontal Flow Panel
-			HorizontalFlowLayout horizontalFlow = Containers.horizontalFlow(Sizing.fixed(400), Sizing.content());
-			horizontalFlow.padding(Insets.vertical(4).withLeft(10).withRight(10));
-			horizontalFlow.gap(2);
-			horizontalFlow.verticalAlignment(VerticalAlignment.CENTER);
-			horizontalFlow.horizontalAlignment(HorizontalAlignment.CENTER);
-			if (preset.getName().equals(presets.getCurrentPresetName())) {
-				horizontalFlow.surface(Surface.DARK_PANEL.and(Surface.outline(Color.BLUE.argb())));
-				currentPresetComponent = horizontalFlow;
-			} else {
-				horizontalFlow.surface(Surface.DARK_PANEL);
-				horizontalFlow.mouseEnter().subscribe(() -> horizontalFlow.surface(Surface.DARK_PANEL.and(Surface.outline(Color.WHITE.argb()))));
-				horizontalFlow.mouseLeave().subscribe(() -> horizontalFlow.surface(Surface.DARK_PANEL));
-				horizontalFlow.mouseDown().subscribe((x, y, button) -> {
-					SwitchyClientApi.switchCurrentPreset(preset.getName(), SwitchyScreen::updatePresetScreens);
-					return true;
-				});
-			}
+			// Generate Component List
+			List<Pair<Component, SwitchyUIPosition>> componentList = generatePreviewComponents(preset);
 
 			// Left Side Elements
 			List<Component> sideLeftComponents = componentList.stream().filter(p -> p.getSecond() == SwitchyUIPosition.SIDE_LEFT).map(Pair::getFirst).filter(Objects::nonNull).toList();
-			if (!sideLeftComponents.isEmpty()) horizontalFlow.children(sideLeftComponents);
+			if (!sideLeftComponents.isEmpty()) presetFlow.children(sideLeftComponents);
 
-			// Main Elements
-			HorizontalFlowLayout leftRightFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
-			leftRightFlow.margins(Insets.horizontal(6));
-			leftRightFlow.gap(4);
-
+			// Left Aligned Elements
 			List<Component> leftComponents = componentList.stream().filter(p -> p.getSecond() == SwitchyUIPosition.LEFT).map(Pair::getFirst).filter(Objects::nonNull).toList();
-			if (!leftComponents.isEmpty()) {
-				VerticalFlowLayout leftAlignedFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
-				leftAlignedFlow.horizontalAlignment(HorizontalAlignment.LEFT);
-				leftAlignedFlow.gap(2);
-				leftAlignedFlow.children(leftComponents);
-				leftRightFlow.child(leftAlignedFlow);
-			}
-
-			if (!leftComponents.isEmpty()) horizontalFlow.child(leftRightFlow);
+			if (!leftComponents.isEmpty()) presetFlow.child(new PreviewLeftVerticalFlow(leftComponents));
 
 			// Grid Right Elements
 			List<Component> gridRightComponents = componentList.stream().filter(p -> p.getSecond() == SwitchyUIPosition.GRID_RIGHT).map(Pair::getFirst).filter(Objects::nonNull).toList();
-			if (!gridRightComponents.isEmpty()) {
-				int width = (int) Math.ceil(Math.sqrt(gridRightComponents.size()));
-				int height = (int) Math.ceil(Math.sqrt(gridRightComponents.size()));
-				GridLayout gridRight = Containers.grid(Sizing.content(), Sizing.content(), height, width);
-				for (int i = 0; i < gridRightComponents.size(); i++) {
-					gridRight.child(gridRightComponents.get(i), i % height, i / height);
-				}
-				horizontalFlow.child(gridRight);
-			}
+			if (!gridRightComponents.isEmpty()) presetFlow.child(new PreviewRightGridLayout(gridRightComponents));
 
 			// Right Side Elements
 			List<Component> sideRightComponents = componentList.stream().filter(p -> p.getSecond() == SwitchyUIPosition.SIDE_RIGHT).map(Pair::getFirst).filter(Objects::nonNull).toList();
-			if (!sideRightComponents.isEmpty()) horizontalFlow.children(sideRightComponents);
+			if (!sideRightComponents.isEmpty()) presetFlow.children(sideRightComponents);
 
-			presetsFlow.child(horizontalFlow);
+			presetsScroll.child().child(presetFlow);
 		}
 
 		if (currentPresetComponent != null) presetsScroll.scrollTo(currentPresetComponent);
-		// Clear locked state
-		if (loadingOverlay != null) {
-			root.removeChild(loadingOverlay);
-			loadingOverlay = null;
+		this.uiAdapter.rootComponent.unlock();
+	}
+
+	public class SwitcherTitleFlow extends HorizontalFlowLayout {
+		protected SwitcherTitleFlow() {
+			super(Sizing.content(), Sizing.content());
+			this.verticalAlignment(VerticalAlignment.CENTER);
+			this.gap(10);
+
+			LabelComponent screenLabel = Components.label(Text.translatable("screen.switchy.switch.title"));
+
+			ButtonComponent manageButton = Components.button(Text.translatable("screen.switchy.switch.manage"), b -> {
+				ManageScreen managementScreen = new ManageScreen();
+				if (client != null) client.setScreen(managementScreen);
+				managementScreen.updatePresets(presets);
+			});
+
+			this.child(screenLabel);
+			this.child((Component) manageButton);
+		}
+	}
+
+	public static class SwitcherScrollContainer extends ScrollContainer<SwitcherFlow> {
+		protected SwitcherScrollContainer() {
+			super(ScrollDirection.VERTICAL, Sizing.content(), Sizing.fill(80), new SwitcherFlow());
+			this.surface(Surface.DARK_PANEL);
+			this.padding(Insets.of(4));
+		}
+	}
+
+	public static class SwitcherFlow extends VerticalFlowLayout {
+		protected SwitcherFlow() {
+			super(Sizing.content(), Sizing.content());
+			this.padding(Insets.of(6));
+			this.verticalAlignment(VerticalAlignment.CENTER);
+			this.horizontalAlignment(HorizontalAlignment.CENTER);
+			this.gap(4);
+		}
+	}
+
+	public static class PresetFlow extends HorizontalFlowLayout {
+		protected PresetFlow(String presetName, boolean current) {
+			super(Sizing.fixed(400), Sizing.content());
+			this.padding(Insets.vertical(4).withLeft(10).withRight(10));
+			this.gap(2);
+			this.verticalAlignment(VerticalAlignment.CENTER);
+			this.horizontalAlignment(HorizontalAlignment.CENTER);
+			if (current) {
+				this.surface(Surface.DARK_PANEL.and(Surface.outline(Color.BLUE.argb())));
+			} else {
+				this.surface(Surface.DARK_PANEL);
+				this.mouseEnter().subscribe(() -> this.surface(Surface.DARK_PANEL.and(Surface.outline(Color.WHITE.argb()))));
+				this.mouseLeave().subscribe(() -> this.surface(Surface.DARK_PANEL));
+				this.mouseDown().subscribe((x, y, button) -> {
+					SwitchyClientApi.switchCurrentPreset(presetName, SwitchyScreen::updatePresetScreens);
+					return true;
+				});
+			}
+		}
+	}
+
+	public static class PreviewLeftVerticalFlow extends VerticalFlowLayout {
+		protected PreviewLeftVerticalFlow(Collection<Component> children) {
+			super(Sizing.content(), Sizing.content());
+			this.horizontalAlignment(HorizontalAlignment.LEFT);
+			this.gap(2);
+			this.children(children);
+		}
+	}
+
+	public static class PreviewRightGridLayout extends GridLayout {
+		protected PreviewRightGridLayout(Collection<Component> children) {
+			super(Sizing.content(), Sizing.content(), (int) Math.ceil(Math.sqrt(children.size())), (int) Math.ceil(Math.sqrt(children.size())));
+			int i = 0;
+			for (Component child : children) {
+				this.child(child, i % rows, i / rows);
+				i++;
+			}
 		}
 	}
 }

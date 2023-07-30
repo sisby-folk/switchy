@@ -80,7 +80,7 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 			lockScreen();
 			SwitchyClientApi.importPresets(selectedFileNbt, availableModules, includedModules, SwitchyScreen::updatePresetScreens);
 		}, cancelButton -> {
-		}, List.of(Text.translatable("screen.switchy_ui.import.warn.info", Feedback.literal(String.valueOf(selectedFileNbt.getCompound(SwitchyPresetsData.KEY_PRESETS).getKeys().size())), Feedback.literal(String.valueOf(includedModules.size()))), Text.translatable("screen.switchy_ui.list.presets", Feedback.getHighlightedListText(selectedFileNbt.getCompound(SwitchyPresetsData.KEY_PRESETS).getKeys().stream().sorted().toList(), List.of(new Pair<>(presets.getPresetNames()::contains, Formatting.DARK_RED)))), Text.translatable("screen.switchy_ui.import.warn.collision"), Text.translatable("screen.switchy_ui.list.modules", Feedback.getIdListText(includedModules)))));
+		}, List.of(Text.translatable("screen.switchy.manage.import.warn.info", Feedback.literal(String.valueOf(selectedFileNbt.getCompound(SwitchyPresetsData.KEY_PRESETS).getKeys().size())), Feedback.literal(String.valueOf(includedModules.size()))), Text.translatable("screen.switchy.manage.list.presets", Feedback.getHighlightedListText(selectedFileNbt.getCompound(SwitchyPresetsData.KEY_PRESETS).getKeys().stream().sorted().toList(), List.of(new Pair<>(presets.getPresetNames()::contains, Formatting.DARK_RED)))), Text.translatable("screen.switchy.manage.import.warn.collision"), Text.translatable("screen.switchy.manage.list.modules", Feedback.getIdListText(includedModules)))));
 		exportButton.onPress(b -> openDialog("Confirm", "Cancel", 200, confirmButton -> {
 			lockScreen();
 			SwitchyClientApi.exportPresetsToFile(availableModules, null, (feedback, file) -> SwitchyScreen.updatePresetScreens(feedback, presets));
@@ -244,7 +244,7 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 			lockScreen();
 			SwitchyClientApi.deletePreset(name, SwitchyScreen::updatePresetScreens);
 		}, cancel -> {
-		}, List.of(Text.translatable("commands.switchy_client.delete.confirm", name), Text.translatable("screen.switchy_ui.delete.warn"), Text.translatable("screen.switchy_ui.list.modules", presets.getEnabledModuleText())));
+		}, List.of(Text.translatable("commands.switchy_client.delete.confirm", name), Text.translatable("screen.switchy.manage.delete.warn"), Text.translatable("screen.switchy.manage.list.modules", presets.getEnabledModuleText())));
 		ButtonComponent deleteButton = Components.button(Text.literal("Delete"), deleteAction);
 		deleteButton.margins(Insets.vertical(1));
 		deleteButton.horizontalSizing(Sizing.fill(22));
@@ -379,7 +379,7 @@ public class ManageScreen extends BaseUIModelScreen<FlowLayout> implements Switc
 			lockScreen();
 			SwitchyClientApi.disableModule(id, SwitchyScreen::updatePresetScreens);
 		}, cancel -> {
-		}, List.of(Text.translatable("commands.switchy_client.disable.confirm", id.getPath()), Text.translatable("screen.switchy_ui.disable.warn", presets.getModuleInfo().get(id).deletionWarning()))), true, Text.literal("Disable"), presets.getModuleInfo().get(module).descriptionWhenDisabled(), labelSize)));
+		}, List.of(Text.translatable("commands.switchy_client.disable.confirm", id.getPath()), Text.translatable("screen.switchy.manage.disable.warn", presets.getModuleInfo().get(id).deletionWarning()))), true, Text.literal("Disable"), presets.getModuleInfo().get(module).descriptionWhenDisabled(), labelSize)));
 	}
 
 	void updateDataMethod() {
