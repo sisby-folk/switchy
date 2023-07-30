@@ -194,6 +194,18 @@ public class SwitchScreen extends BaseOwoScreen<FlowLayout> implements SwitchySc
 
 			if (!rightComponents.isEmpty() || !leftComponents.isEmpty()) horizontalFlow.child(leftRightFlow);
 
+			// Grid Right Elements
+			List<Component> gridRightComponents = componentList.stream().filter(p -> p.getSecond() == SwitchyUIPosition.GRID_RIGHT).map(Pair::getFirst).filter(Objects::nonNull).toList();
+			if (!gridRightComponents.isEmpty()) {
+				int width = (int) Math.ceil(Math.sqrt(gridRightComponents.size()));
+				int height = (int) Math.ceil(Math.sqrt(gridRightComponents.size()));
+				GridLayout gridRight = Containers.grid(Sizing.content(), Sizing.content(), height, width);
+				for (int i = 0; i < gridRightComponents.size(); i++) {
+					gridRight.child(gridRightComponents.get(i), i % height, i / height);
+				}
+				horizontalFlow.child(gridRight);
+			}
+
 			// Right Side Elements
 			List<Component> sideRightComponents = componentList.stream().filter(p -> p.getSecond() == SwitchyUIPosition.SIDE_RIGHT).map(Pair::getFirst).filter(Objects::nonNull).toList();
 			if (!sideRightComponents.isEmpty()) horizontalFlow.children(sideRightComponents);

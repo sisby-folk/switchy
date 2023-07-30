@@ -25,6 +25,10 @@ public enum SwitchyUIPosition {
 	 */
 	RIGHT,
 	/**
+	 * Between RIGHT and SIDE_RIGHT, inside a grid designed for ItemComponents.
+	 */
+	GRID_RIGHT,
+	/**
 	 * On the right side of the overall horizontal flow.
 	 */
 	SIDE_RIGHT
