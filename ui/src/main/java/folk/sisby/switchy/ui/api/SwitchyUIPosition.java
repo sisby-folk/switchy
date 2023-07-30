@@ -14,22 +14,22 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
 public enum SwitchyUIPosition {
 	/**
 	 * On the left side of the overall horizontal flow.
+	 * Used for the preset name.
 	 */
 	SIDE_LEFT,
 	/**
 	 * Within the centered, left aligned vertical flow inside the overall horizontal flow.
+	 * Good for variable-size text like names.
 	 */
 	LEFT,
 	/**
-	 * Within the centered, right aligned vertical flow inside the overall horizontal flow.
-	 */
-	RIGHT,
-	/**
-	 * Between RIGHT and SIDE_RIGHT, inside a grid designed for ItemComponents.
+	 * Between RIGHT and SIDE_RIGHT, inside a grid.
+	 * Good for ItemComponents with tooltips.
 	 */
 	GRID_RIGHT,
 	/**
 	 * On the right side of the overall horizontal flow.
+	 * Good for large previews like entity renderers, or short text with tooltips.
 	 */
 	SIDE_RIGHT
 }
