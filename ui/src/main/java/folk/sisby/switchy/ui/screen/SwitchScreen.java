@@ -176,7 +176,7 @@ public class SwitchScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		protected PresetFlow(String presetName, boolean current) {
 			super(Sizing.fixed(400), Sizing.content());
 			this.padding(Insets.vertical(4).withLeft(10).withRight(10));
-			this.gap(2);
+			this.gap(4);
 			this.verticalAlignment(VerticalAlignment.CENTER);
 			this.horizontalAlignment(HorizontalAlignment.CENTER);
 			if (current) {
