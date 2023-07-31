@@ -6,6 +6,7 @@ import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
 import folk.sisby.switchy.api.presets.SwitchyPresetsData;
 import folk.sisby.switchy.client.api.SwitchyClientApi;
+import folk.sisby.switchy.ui.component.DialogOverlayComponent;
 import folk.sisby.switchy.ui.component.LockableFlowLayout;
 import folk.sisby.switchy.ui.component.TabLayout;
 import folk.sisby.switchy.util.Feedback;
@@ -105,7 +106,7 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 	}
 
 	void openDialog(Text leftButtonText, Text rightButtonText, Consumer<ButtonComponent> leftButtonAction, Consumer<ButtonComponent> rightButtonAction, Collection<Text> messages) {
-		this.uiAdapter.rootComponent.child(new DialogOverlayFlow(c -> this.uiAdapter.rootComponent.removeChild(c), leftButtonText, rightButtonText, leftButtonAction, rightButtonAction, messages));
+		this.uiAdapter.rootComponent.addOverlay(new DialogOverlayComponent(leftButtonText, rightButtonText, leftButtonAction, rightButtonAction, messages));
 	}
 
 	private void refreshPresets() {
@@ -120,43 +121,6 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 			super(leftComponents, tabs);
 			this.verticalAlignment(VerticalAlignment.CENTER);
 			this.horizontalAlignment(HorizontalAlignment.CENTER);
-		}
-	}
-
-	public static class DialogOverlayFlow extends VerticalFlowLayout {
-		public DialogOverlayFlow(Consumer<Component> dismiss, Text leftButtonText, Text rightButtonText, Consumer<ButtonComponent> leftButtonAction, Consumer<ButtonComponent> rightButtonAction, Collection<Text> messages) {
-			super(Sizing.fill(100), Sizing.fill(100));
-			this.positioning(Positioning.absolute(0, 0));
-			this.horizontalAlignment(HorizontalAlignment.CENTER);
-			this.verticalAlignment(VerticalAlignment.CENTER);
-			this.surface(Surface.VANILLA_TRANSLUCENT);
-			this.mouseDown().subscribe((x, y, b) -> true);
-			this.child(new DialogBoxFlow(() -> dismiss.accept(this), leftButtonText, rightButtonText, leftButtonAction, rightButtonAction, messages));
-		}
-	}
-
-	public static class DialogBoxFlow extends VerticalFlowLayout {
-		public VerticalFlowLayout messageFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
-		public HorizontalFlowLayout actionsFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
-
-		public DialogBoxFlow(Runnable dismiss, Text leftButtonText, Text rightButtonText, Consumer<ButtonComponent> leftButtonAction, Consumer<ButtonComponent> rightButtonAction, Collection<Text> messages) {
-			super(Sizing.fixed(200), Sizing.content());
-			this.surface(Surface.DARK_PANEL);
-			this.padding(Insets.of(10));
-			this.gap(4);
-			messageFlow.gap(2);
-			actionsFlow.gap(4);
-			messages.forEach(t -> messageFlow.child(Components.label(t).horizontalSizing(Sizing.fill(90))));
-			this.child(messageFlow);
-			actionsFlow.child((Component) Components.button(leftButtonText, leftB -> {
-				leftButtonAction.accept(leftB);
-				dismiss.run();
-			}));
-			actionsFlow.child((Component) Components.button(rightButtonText, rightB -> {
-				rightButtonAction.accept(rightB);
-				dismiss.run();
-			}));
-			this.child(actionsFlow);
 		}
 	}
 

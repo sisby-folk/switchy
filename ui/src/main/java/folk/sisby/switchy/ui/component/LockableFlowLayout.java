@@ -1,13 +1,12 @@
 package folk.sisby.switchy.ui.component;
 
-import io.wispforest.owo.ui.container.VerticalFlowLayout;
 import io.wispforest.owo.ui.core.HorizontalAlignment;
 import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owo.ui.core.Surface;
 import io.wispforest.owo.ui.core.VerticalAlignment;
 
-public class LockableFlowLayout extends VerticalFlowLayout {
-	protected final LoadingOverlayComponent lockOverlay = new LoadingOverlayComponent();
+public class LockableFlowLayout extends OverlayableFlowLayout {
+	protected final LoadingOverlayComponent loadingOverlay = new LoadingOverlayComponent();
 
 	public LockableFlowLayout(Sizing horizontalSizing, Sizing verticalSizing) {
 		super(horizontalSizing, verticalSizing);
@@ -18,10 +17,10 @@ public class LockableFlowLayout extends VerticalFlowLayout {
 	}
 
 	public void lock() {
-		if (!this.children.contains(lockOverlay)) this.child(lockOverlay);
+		addOverlay(loadingOverlay);
 	}
 
 	public void unlock() {
-		this.removeChild(lockOverlay);
+		removeOverlay();
 	}
 }
