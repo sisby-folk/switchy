@@ -6,6 +6,7 @@ import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
 import folk.sisby.switchy.api.presets.SwitchyPresetsData;
 import folk.sisby.switchy.client.api.SwitchyClientApi;
+import folk.sisby.switchy.ui.component.ComboBoxComponent;
 import folk.sisby.switchy.ui.component.DialogOverlayComponent;
 import folk.sisby.switchy.ui.component.LockableFlowLayout;
 import folk.sisby.switchy.ui.component.TabLayout;
@@ -102,18 +103,10 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 	@Override
 	public void updatePresets(SwitchyClientPresets clientPresets) {
 		presets = clientPresets;
-		refreshPresets();
-	}
-
-	void openDialog(Text leftButtonText, Text rightButtonText, Consumer<ButtonComponent> leftButtonAction, Consumer<ButtonComponent> rightButtonAction, Collection<Text> messages) {
-		this.uiAdapter.rootComponent.addOverlay(new DialogOverlayComponent(leftButtonText, rightButtonText, leftButtonAction, rightButtonAction, messages));
-	}
-
-	private void refreshPresets() {
 		presetsTab.child().refresh();
 		modulesTab.refresh();
 		dataTab.refresh();
-		this.uiAdapter.rootComponent.unlock();
+		this.uiAdapter.rootComponent.unlock();;
 	}
 
 	public static class ManageTabLayout extends TabLayout {
@@ -209,13 +202,13 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 				refresh();
 			});
 			renameButton.horizontalSizing(Sizing.fill(22));
-			Consumer<ButtonComponent> deleteAction = b -> openDialog(Text.translatable("screen.switchy.manage.dialog.confirm"), Text.translatable("screen.switchy.manage.dialog.cancel"), okButton -> {
+			Consumer<ButtonComponent> deleteAction = b -> ManageScreen.this.uiAdapter.rootComponent.addOverlay(new DialogOverlayComponent(Text.translatable("screen.switchy.manage.dialog.confirm"), Text.translatable("screen.switchy.manage.dialog.cancel"), okButton -> {
 				presets.deletePreset(name);
 				refresh();
 				ManageScreen.this.uiAdapter.rootComponent.lock();
 				SwitchyClientApi.deletePreset(name, SwitchyScreen::updatePresetScreens);
 			}, cancel -> {
-			}, List.of(Text.translatable("commands.switchy_client.delete.confirm", name), Text.translatable("screen.switchy.manage.messages.delete.warn"), Text.translatable("screen.switchy.manage.dialog.modules", presets.getEnabledModuleText())));
+			}, List.of(Text.translatable("commands.switchy_client.delete.confirm", name), Text.translatable("screen.switchy.manage.messages.delete.warn"), Text.translatable("screen.switchy.manage.dialog.modules", presets.getEnabledModuleText()))));
 			ButtonComponent deleteButton = Components.button(Text.translatable("screen.switchy.manage.presets.delete"), deleteAction);
 			deleteButton.margins(Insets.vertical(1));
 			deleteButton.horizontalSizing(Sizing.fill(22));
@@ -255,13 +248,13 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 				SwitchyClientApi.enableModule(id, SwitchyScreen::updatePresetScreens);
 			}, true, Text.translatable("screen.switchy.manage.modules.enable"), presets.getModuleInfo().get(module).descriptionWhenEnabled(), labelSize)));
 			// Enabled Modules
-			presets.getEnabledModules().forEach(module -> rightModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> openDialog(Text.translatable("screen.switchy.manage.dialog.confirm"), Text.translatable("screen.switchy.manage.dialog.cancel"), okButton -> {
+			presets.getEnabledModules().forEach(module -> rightModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> ManageScreen.this.uiAdapter.rootComponent.addOverlay(new DialogOverlayComponent(Text.translatable("screen.switchy.manage.dialog.confirm"), Text.translatable("screen.switchy.manage.dialog.cancel"), okButton -> {
 				presets.disableModule(id);
 				refresh();
 				ManageScreen.this.uiAdapter.rootComponent.lock();
 				SwitchyClientApi.disableModule(id, SwitchyScreen::updatePresetScreens);
 			}, cancel -> {
-			}, List.of(Text.translatable("commands.switchy_client.disable.confirm", id.getPath()), Text.translatable("screen.switchy.manage.modules.disable.warn", presets.getModuleInfo().get(id).deletionWarning()))), true, Text.translatable("screen.switchy.manage.modules.disable"), presets.getModuleInfo().get(module).descriptionWhenDisabled(), labelSize)));
+			}, List.of(Text.translatable("commands.switchy_client.disable.confirm", id.getPath()), Text.translatable("screen.switchy.manage.modules.disable.warn", presets.getModuleInfo().get(id).deletionWarning())))), true, Text.translatable("screen.switchy.manage.modules.disable"), presets.getModuleInfo().get(module).descriptionWhenDisabled(), labelSize)));
 		}
 	}
 
@@ -346,7 +339,7 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 
 		@Override
 		protected void onAction() {
-			openDialog(Text.translatable("screen.switchy.manage.dialog.confirm"), Text.translatable("screen.switchy.manage.dialog.cancel"), confirmButton -> {
+			ManageScreen.this.uiAdapter.rootComponent.addOverlay(new DialogOverlayComponent(Text.translatable("screen.switchy.manage.dialog.confirm"), Text.translatable("screen.switchy.manage.dialog.cancel"), confirmButton -> {
 				ManageScreen.this.uiAdapter.rootComponent.lock();
 				SwitchyClientApi.importPresets(selectedFileNbt, availableModules, includedModules, SwitchyScreen::updatePresetScreens);
 			}, cancelButton -> {
@@ -357,7 +350,7 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 					Feedback.getHighlightedListText(selectedFileNbt.getCompound(SwitchyPresetsData.KEY_PRESETS).getKeys().stream().sorted().toList(), List.of(new Pair<>(presets.getPresetNames()::contains, Formatting.DARK_RED)))),
 				Text.translatable("screen.switchy.manage.data.import.collision"),
 				Text.translatable("screen.switchy.manage.dialog.modules", Feedback.getIdListText(includedModules))
-			));
+			)));
 		}
 
 		@Override
@@ -385,11 +378,11 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 
 		@Override
 		protected void onAction() {
-			openDialog(Text.translatable("screen.switchy.manage.dialog.confirm"), Text.translatable("screen.switchy.manage.dialog.cancel"), confirmButton -> {
+			ManageScreen.this.uiAdapter.rootComponent.addOverlay(new DialogOverlayComponent(Text.translatable("screen.switchy.manage.dialog.confirm"), Text.translatable("screen.switchy.manage.dialog.cancel"), confirmButton -> {
 				ManageScreen.this.uiAdapter.rootComponent.lock();
 				SwitchyClientApi.exportPresetsToFile(availableModules, null, (feedback, file) -> SwitchyScreen.updatePresetScreens(feedback, presets));
 			}, cancelButton -> {
-			}, List.of(Text.translatable("commands.switchy_client.export.confirm", String.valueOf(includedModules.size()))));
+			}, List.of(Text.translatable("commands.switchy_client.export.confirm", String.valueOf(includedModules.size())))));
 		}
 
 		@Override
@@ -402,8 +395,8 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 	}
 
 	public abstract class DataTabModeFlow extends VerticalFlowLayout {
-		public Dropdown<String> methodDropdown = new Dropdown<>(ManageScreen.this.uiAdapter.rootComponent, Text.translatable("screen.switchy.manage.data.method"), this::updateDataMethod);
-		public Dropdown<NbtCompound> fileDropdown = new Dropdown<>(ManageScreen.this.uiAdapter.rootComponent, Text.translatable("screen.switchy.manage.data.file"), this::onNbtSourceChange);
+		public DataTabComboField<String> methodDropdown = new DataTabComboField<>(ManageScreen.this.uiAdapter.rootComponent, Text.translatable("screen.switchy.manage.data.method"), this::updateDataMethod);
+		public DataTabComboField<NbtCompound> fileDropdown = new DataTabComboField<>(ManageScreen.this.uiAdapter.rootComponent, Text.translatable("screen.switchy.manage.data.file"), this::onNbtSourceChange);
 		public ModuleSelectorFlow moduleSelector = new ModuleSelectorFlow(80, Text.translatable("screen.switchy.manage.data.available"), Text.translatable("screen.switchy.manage.data.included"));
 		public ButtonComponent actionButton;
 
@@ -520,59 +513,16 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		}
 	}
 
-	public static class Dropdown<T> extends HorizontalFlowLayout {
-		public final ComboBox<T> comboBox;
+	public static class DataTabComboField<T> extends HorizontalFlowLayout {
+		public final ComboBoxComponent<T> comboBox;
 
-		public Dropdown(FlowLayout contextParent, Text label, Consumer<T> onUpdate) {
+		public DataTabComboField(FlowLayout contextParent, Text label, Consumer<T> onUpdate) {
 			super(Sizing.content(), Sizing.content());
 			this.verticalAlignment(VerticalAlignment.CENTER); // So label lines up with box.
 			this.gap(4);
-			this.comboBox = new ComboBox<>(Sizing.content(), contextParent, onUpdate);
+			this.comboBox = new ComboBoxComponent<>(Sizing.content(), contextParent, onUpdate);
 			this.child(Components.label(label));
 			this.child(comboBox);
-		}
-	}
-
-	public static class ComboBox<T> extends DropdownComponent {
-		public final Map<Text, T> options = new HashMap<>();
-		private final Consumer<T> onUpdate;
-		private final FlowLayout contextParent;
-
-		public final DropdownComponent contextMenu;
-		public final Button openMenuButton;
-
-		public ComboBox(Sizing horizontalSizing, FlowLayout contextParent, Consumer<T> onUpdate) {
-			super(horizontalSizing);
-			this.contextParent = contextParent;
-			this.onUpdate = onUpdate;
-			this.contextMenu = Components.dropdown(Sizing.content());
-			this.openMenuButton = new EditableButton(Text.of(""), b -> {
-				if (!contextMenu.hasParent()) {
-					contextMenu.positioning(Positioning.absolute(x(), y() + height()));
-					contextParent.child(contextMenu);
-				} else {
-					contextParent.removeChild(contextMenu);
-				}
-			});
-			this.entries.child(openMenuButton);
-		}
-
-		public void setOptions(Map<Text, T> options, Text selected) {
-			this.options.clear();
-			this.options.putAll(options);
-			openMenuButton.text(selected);
-			((FlowLayout) contextMenu.children().get(0)).clearChildren();
-			this.options.keySet().forEach(t -> contextMenu.button(t, b -> {
-				contextParent.removeChild(contextMenu);
-				openMenuButton.text(t);
-				this.onUpdate.accept(this.options.get(t));
-			}));
-		}
-
-		public static class EditableButton extends Button {
-			protected EditableButton(Text text, Consumer<DropdownComponent> onClick) {
-				super(text, onClick);
-			}
 		}
 	}
 }
