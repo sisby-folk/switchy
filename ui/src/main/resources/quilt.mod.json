@@ -51,6 +51,7 @@
 			}
 		]
 	},
+	"mixin": "switchy-ui.mixins.json",
 	"modmenu": {
 		"parent": "switchy"
 	},
