@@ -29,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Flow;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -60,7 +61,7 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		return OwoUIAdapter.create(this, LockableFlowLayout::new);
 	}
 
-	public class PresetsTabScroll extends ScrollContainer<VerticalFlowLayout> {
+	public class PresetsTabScroll extends ScrollContainer<FlowLayout> {
 		public PresetsTabScroll() {
 			super(ScrollDirection.VERTICAL, Sizing.content(), Sizing.fixed(180), new PresetsTabFlow());
 			this.surface(Surface.flat(0xFF141414).and(Surface.outline(0xFF202020)));
@@ -117,17 +118,17 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		}
 	}
 
-	public class PresetsTabFlow extends VerticalFlowLayout {
+	public class PresetsTabFlow extends FlowLayout {
 		private String focusedPresetName;
 
-		public final VerticalFlowLayout presetsFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
+		public final FlowLayout presetsFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
 		public final ButtonComponent newPresetButton = Components.button(Text.translatable("screen.switchy.manage.presets.new"), b -> {
 			focusedPresetName = "";
 			refresh();
 		});
 
 		public PresetsTabFlow() {
-			super(Sizing.fixed(200), Sizing.content());
+			super(Sizing.fixed(200), Sizing.content(), Algorithm.VERTICAL);
 			this.margins(Insets.horizontal(4));
 			presetsFlow.gap(2);
 			this.child(presetsFlow);
@@ -136,9 +137,9 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 
 		private void refresh() {
 			presetsFlow.clearChildren();
-			HorizontalFlowLayout focusedFlow = null;
+			FlowLayout focusedFlow = null;
 			for (String name : presets.getPresets().keySet()) {
-				HorizontalFlowLayout presetFlow = name.equals(focusedPresetName) ? getRenameFlow(name) : getPresetFlow(name);
+				FlowLayout presetFlow = name.equals(focusedPresetName) ? getRenameFlow(name) : getPresetFlow(name);
 				if (name.equals(focusedPresetName)) focusedFlow = presetFlow;
 				presetsFlow.child(presetFlow);
 			}
@@ -149,8 +150,8 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 			if (focusedFlow != null) presetsTab.scrollTo(focusedFlow);
 		}
 
-		private HorizontalFlowLayout getRenameFlow(@Nullable String presetName) {
-			HorizontalFlowLayout renamePresetFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
+		private FlowLayout getRenameFlow(@Nullable String presetName) {
+			FlowLayout renamePresetFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 			TextBoxComponent nameEntry = Components.textBox(Sizing.fill(53), (presetName != null) ? presetName : "newPreset");
 			nameEntry.setTextPredicate(s -> s.chars().mapToObj(i -> (char) i).allMatch(StringReader::isAllowedInUnquotedString));
 			nameEntry.onChanged();
@@ -193,8 +194,8 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 			return renamePresetFlow;
 		}
 
-		private HorizontalFlowLayout getPresetFlow(@Nullable String name) {
-			HorizontalFlowLayout presetFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
+		private FlowLayout getPresetFlow(@Nullable String name) {
+			FlowLayout presetFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 			LabelComponent presetLabel = Components.label(Text.literal(name));
 			presetLabel.horizontalSizing(Sizing.fill(54));
 			ButtonComponent renameButton = Components.button(Text.translatable("screen.switchy.manage.presets.rename"), b -> {
@@ -258,12 +259,12 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		}
 	}
 
-	public static class ModuleSelectorFlow extends HorizontalFlowLayout {
+	public static class ModuleSelectorFlow extends FlowLayout {
 		public final ModulesFlow leftModulesFlow;
 		public final ModulesFlow rightModulesFlow;
 
 		public ModuleSelectorFlow(int vSize, Text leftText, Text rightText) {
-			super(Sizing.content(), Sizing.content());
+			super(Sizing.content(), Sizing.content(), Algorithm.HORIZONTAL);
 			this.gap(2);
 			leftModulesFlow = new ModulesFlow();
 			rightModulesFlow = new ModulesFlow();
@@ -271,8 +272,8 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 			this.child(Containers.verticalFlow(Sizing.content(), Sizing.content()).child(Components.label(rightText)).child(new ModulesScroll(vSize, rightModulesFlow)).horizontalAlignment(HorizontalAlignment.CENTER));
 		}
 
-		public static HorizontalFlowLayout getModuleFlow(Identifier id, @Nullable Text labelTooltip, BiConsumer<ButtonComponent, Identifier> buttonAction, boolean enabled, Text buttonText, @Nullable Text buttonTooltip, int labelSize) {
-			HorizontalFlowLayout moduleFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
+		public static FlowLayout getModuleFlow(Identifier id, @Nullable Text labelTooltip, BiConsumer<ButtonComponent, Identifier> buttonAction, boolean enabled, Text buttonText, @Nullable Text buttonTooltip, int labelSize) {
+			FlowLayout moduleFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 			LabelComponent moduleName = Components.label(Text.literal(id.getPath()));
 			Text namespaceText = Text.literal(Feedback.guessModTitle(id.getNamespace())).setStyle(Feedback.FORMAT_INFO.getLeft());
 			moduleName.tooltip(labelTooltip != null ? List.of(namespaceText, labelTooltip) : List.of(namespaceText));
@@ -291,16 +292,16 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		}
 	}
 
-	public static class ModulesScroll extends ScrollContainer<VerticalFlowLayout> {
-		protected ModulesScroll(int vSize, VerticalFlowLayout child) {
+	public static class ModulesScroll extends ScrollContainer<FlowLayout> {
+		protected ModulesScroll(int vSize, FlowLayout child) {
 			super(ScrollDirection.VERTICAL, Sizing.content(), Sizing.fixed(vSize), child);
 			this.surface(Surface.flat(0xFF141414).and(Surface.outline(0xFF202020)));
 		}
 	}
 
-	public static class ModulesFlow extends VerticalFlowLayout {
+	public static class ModulesFlow extends FlowLayout {
 		public ModulesFlow() {
-			super(Sizing.content(), Sizing.content());
+			super(Sizing.content(), Sizing.content(), Algorithm.VERTICAL);
 			this.gap(2);
 		}
 	}
@@ -403,7 +404,7 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		}
 	}
 
-	public abstract class DataTabModeFlow extends VerticalFlowLayout {
+	public abstract class DataTabModeFlow extends FlowLayout {
 		public DataTabComboField<String> methodDropdown = new DataTabComboField<>(ManageScreen.this.uiAdapter.rootComponent, Text.translatable("screen.switchy.manage.data.method"), this::updateDataMethod);
 		public DataTabComboField<NbtCompound> fileDropdown = new DataTabComboField<>(ManageScreen.this.uiAdapter.rootComponent, Text.translatable("screen.switchy.manage.data.file"), this::onNbtSourceChange);
 		public ModuleSelectorFlow moduleSelector = new ModuleSelectorFlow(80, Text.translatable("screen.switchy.manage.data.available"), Text.translatable("screen.switchy.manage.data.included"));
@@ -415,7 +416,7 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		protected final boolean isImporting;
 
 		public DataTabModeFlow(boolean isImporting) {
-			super(Sizing.content(), Sizing.content());
+			super(Sizing.content(), Sizing.content(), Algorithm.VERTICAL);
 			this.margins(Insets.of(4));
 			this.gap(6);
 			moduleSelector.margins(Insets.vertical(4));
@@ -522,11 +523,11 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		}
 	}
 
-	public static class DataTabComboField<T> extends HorizontalFlowLayout {
+	public static class DataTabComboField<T> extends FlowLayout {
 		public final ComboBoxComponent<T> comboBox;
 
 		public DataTabComboField(FlowLayout contextParent, Text label, Consumer<T> onUpdate) {
-			super(Sizing.content(), Sizing.content());
+			super(Sizing.content(), Sizing.content(), Algorithm.HORIZONTAL);
 			this.verticalAlignment(VerticalAlignment.CENTER); // So label lines up with box.
 			this.gap(4);
 			this.comboBox = new ComboBoxComponent<>(Sizing.content(), contextParent, onUpdate);

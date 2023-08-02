@@ -3,17 +3,16 @@ package folk.sisby.switchy.ui.component;
 import io.wispforest.owo.ui.component.ButtonComponent;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.Containers;
-import io.wispforest.owo.ui.container.HorizontalFlowLayout;
-import io.wispforest.owo.ui.container.VerticalFlowLayout;
+import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.core.*;
 import net.minecraft.text.Text;
 
 import java.util.Collection;
 import java.util.function.Consumer;
 
-public class DialogOverlayComponent extends OverlayComponent<VerticalFlowLayout> {
-	public VerticalFlowLayout messageFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
-	public HorizontalFlowLayout actionsFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
+public class DialogOverlayComponent extends OverlayComponent<FlowLayout> {
+	public FlowLayout messageFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
+	public FlowLayout actionsFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 
 	public DialogOverlayComponent(Text leftButtonText, Text rightButtonText, Consumer<ButtonComponent> leftButtonAction, Consumer<ButtonComponent> rightButtonAction, Collection<Text> messages) {
 		super(HorizontalAlignment.CENTER, VerticalAlignment.CENTER, Containers.verticalFlow(Sizing.fixed(200), Sizing.content()));

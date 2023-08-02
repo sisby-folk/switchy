@@ -24,7 +24,7 @@ public class ComboBoxComponent<T> extends DropdownComponent {
 		this.contextParent = contextParent;
 		this.onUpdate = onUpdate;
 		this.contextMenu = Components.dropdown(Sizing.content());
-		this.openMenuButton = new EditableButton(Text.of(""), b -> {
+		this.openMenuButton = new EditableButton(this, Text.of(""), b -> {
 			if (!contextMenu.hasParent()) {
 				contextMenu.positioning(Positioning.absolute(x(), y() + height()));
 				contextParent.child(contextMenu);
@@ -52,8 +52,8 @@ public class ComboBoxComponent<T> extends DropdownComponent {
 	}
 
 	public static class EditableButton extends Button {
-		protected EditableButton(Text text, Consumer<DropdownComponent> onClick) {
-			super(text, onClick);
+		protected EditableButton(DropdownComponent parentDropdown, Text text, Consumer<DropdownComponent> onClick) {
+			super(parentDropdown, text, onClick);
 		}
 	}
 }

@@ -1,8 +1,7 @@
 package folk.sisby.switchy.ui.component;
 
 import io.wispforest.owo.ui.component.ButtonComponent;
-import io.wispforest.owo.ui.container.HorizontalFlowLayout;
-import io.wispforest.owo.ui.container.VerticalFlowLayout;
+import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.core.*;
 import net.minecraft.text.Text;
 
@@ -11,13 +10,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public class TabLayout extends VerticalFlowLayout {
+public class TabLayout extends FlowLayout {
 	protected List<TabButton> tabButtons = new ArrayList<>();
 	protected List<Component> tabContents = new ArrayList<>();
 	protected TabContentPanel contentPanel = new TabContentPanel();
 
 	public TabLayout(Collection<Component> leftComponents, Tab... tabs) {
-		super(Sizing.content(), Sizing.content());
+		super(Sizing.content(), Sizing.content(), Algorithm.VERTICAL);
 
 		Arrays.stream(tabs).forEach(t -> tabButtons.add(new TabButton(t.buttonText, t.tabContents)));
 		Arrays.stream(tabs).forEach(t -> tabContents.add(t.tabContents));
@@ -46,18 +45,18 @@ public class TabLayout extends VerticalFlowLayout {
 		}
 	}
 
-	public static class TabContentPanel extends VerticalFlowLayout {
+	public static class TabContentPanel extends FlowLayout {
 		protected TabContentPanel() {
-			super(Sizing.content(), Sizing.fixed(200));
+			super(Sizing.content(), Sizing.fixed(200), Algorithm.VERTICAL);
 			this.verticalAlignment(VerticalAlignment.CENTER);
 			this.horizontalAlignment(HorizontalAlignment.CENTER);
 			this.surface(Surface.DARK_PANEL);
 		}
 	}
 
-	public static class TabButtonFlow extends HorizontalFlowLayout {
+	public static class TabButtonFlow extends FlowLayout {
 		protected TabButtonFlow(Collection<Component> children) {
-			super(Sizing.content(), Sizing.content());
+			super(Sizing.content(), Sizing.content(), Algorithm.HORIZONTAL);
 			this.verticalAlignment(VerticalAlignment.BOTTOM);
 			this.margins(Insets.horizontal(8));
 			this.children(children);

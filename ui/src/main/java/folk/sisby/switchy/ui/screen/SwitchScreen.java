@@ -12,10 +12,7 @@ import io.wispforest.owo.ui.base.BaseOwoScreen;
 import io.wispforest.owo.ui.component.ButtonComponent;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.component.LabelComponent;
-import io.wispforest.owo.ui.container.GridLayout;
-import io.wispforest.owo.ui.container.HorizontalFlowLayout;
-import io.wispforest.owo.ui.container.ScrollContainer;
-import io.wispforest.owo.ui.container.VerticalFlowLayout;
+import io.wispforest.owo.ui.container.*;
 import io.wispforest.owo.ui.core.Color;
 import io.wispforest.owo.ui.core.Component;
 import io.wispforest.owo.ui.core.HorizontalAlignment;
@@ -135,9 +132,9 @@ public class SwitchScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		this.uiAdapter.rootComponent.unlock();
 	}
 
-	public class SwitcherTitleFlow extends HorizontalFlowLayout {
+	public class SwitcherTitleFlow extends FlowLayout {
 		protected SwitcherTitleFlow() {
-			super(Sizing.content(), Sizing.content());
+			super(Sizing.content(), Sizing.content(), Algorithm.HORIZONTAL);
 			this.verticalAlignment(VerticalAlignment.CENTER);
 			this.gap(10);
 
@@ -162,9 +159,9 @@ public class SwitchScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		}
 	}
 
-	public static class SwitcherFlow extends VerticalFlowLayout {
+	public static class SwitcherFlow extends FlowLayout {
 		protected SwitcherFlow() {
-			super(Sizing.content(), Sizing.content());
+			super(Sizing.content(), Sizing.content(), Algorithm.VERTICAL);
 			this.padding(Insets.of(6));
 			this.verticalAlignment(VerticalAlignment.CENTER);
 			this.horizontalAlignment(HorizontalAlignment.CENTER);
@@ -172,9 +169,9 @@ public class SwitchScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		}
 	}
 
-	public static class PresetFlow extends HorizontalFlowLayout {
+	public static class PresetFlow extends FlowLayout {
 		protected PresetFlow(String presetName, boolean current) {
-			super(Sizing.fixed(400), Sizing.content());
+			super(Sizing.fixed(400), Sizing.content(), Algorithm.HORIZONTAL);
 			this.padding(Insets.vertical(4).withLeft(10).withRight(10));
 			this.gap(4);
 			this.verticalAlignment(VerticalAlignment.CENTER);
@@ -193,9 +190,9 @@ public class SwitchScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		}
 	}
 
-	public static class PreviewLeftVerticalFlow extends VerticalFlowLayout {
+	public static class PreviewLeftVerticalFlow extends FlowLayout {
 		protected PreviewLeftVerticalFlow(Collection<Component> children) {
-			super(Sizing.content(), Sizing.content());
+			super(Sizing.content(), Sizing.content(), Algorithm.VERTICAL);
 			this.horizontalAlignment(HorizontalAlignment.LEFT);
 			this.gap(2);
 			this.children(children);

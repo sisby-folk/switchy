@@ -1,16 +1,16 @@
 package folk.sisby.switchy.ui.component;
 
-import io.wispforest.owo.ui.container.VerticalFlowLayout;
+import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.core.*;
 
 import java.util.function.Consumer;
 
-public class OverlayComponent<T extends Component> extends VerticalFlowLayout {
+public class OverlayComponent<T extends Component> extends FlowLayout {
 	public Consumer<Component> dismiss;
 	public final T child;
 
 	public OverlayComponent(HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment, T child) {
-		super(Sizing.fill(100), Sizing.fill(100));
+		super(Sizing.fill(100), Sizing.fill(100), Algorithm.VERTICAL);
 		this.positioning(Positioning.absolute(0, 0));
 		this.surface(Surface.VANILLA_TRANSLUCENT);
 		this.mouseDown().subscribe((x, y, b) -> true); // eat all input

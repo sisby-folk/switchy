@@ -1,13 +1,13 @@
 package folk.sisby.switchy.ui.component;
 
-import io.wispforest.owo.ui.container.VerticalFlowLayout;
+import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.core.Sizing;
 
-public class OverlayableFlowLayout extends VerticalFlowLayout {
+public class OverlayableFlowLayout extends FlowLayout {
 	public OverlayComponent<?> overlay;
 
 	public OverlayableFlowLayout(Sizing horizontalSizing, Sizing verticalSizing) {
-		super(horizontalSizing, verticalSizing);
+		super(horizontalSizing, verticalSizing, Algorithm.VERTICAL);
 	}
 
 	public void addOverlay(OverlayComponent<?> overlay) {
