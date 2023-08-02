@@ -35,6 +35,10 @@ public class ComboBoxComponent<T> extends DropdownComponent {
 		this.entries.child(openMenuButton);
 	}
 
+	public void closeMenu() {
+		contextParent.removeChild(contextMenu);
+	}
+
 	public void setOptions(Map<Text, T> options, Text selected) {
 		this.options.clear();
 		this.options.putAll(options);

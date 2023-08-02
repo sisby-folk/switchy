@@ -321,6 +321,15 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 			this.exportFlow = exportFlow;
 		}
 
+		@Override
+		public void swapTabs(ButtonComponent tabButton, Component tabComponent) {
+			super.swapTabs(tabButton, tabComponent);
+			importFlow.methodDropdown.comboBox.closeMenu();
+			importFlow.fileDropdown.comboBox.closeMenu();
+			exportFlow.methodDropdown.comboBox.closeMenu();
+			exportFlow.fileDropdown.comboBox.closeMenu();
+		}
+
 		public DataTabTabLayout() {
 			this(new DataTabImportFlow(), new DataTabExportFlow());
 		}

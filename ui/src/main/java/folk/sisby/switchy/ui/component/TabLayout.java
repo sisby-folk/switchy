@@ -33,14 +33,16 @@ public class TabLayout extends VerticalFlowLayout {
 
 	public record Tab(Text buttonText, Component tabContents) {}
 
+	public void swapTabs(ButtonComponent tabButton, Component tabComponent) {
+		contentPanel.clearChildren();
+		contentPanel.child(tabComponent);
+		tabButtons.forEach(b2 -> b2.active(true));
+		tabButton.active(false);
+	}
+
 	public class TabButton extends ButtonComponent {
-		protected TabButton(Text message, Component tabComponent) {
-			super(message, b -> {
-				contentPanel.clearChildren();
-				contentPanel.child(tabComponent);
-				tabButtons.forEach(b2 -> b2.active(true));
-				b.active(false);
-			});
+		public TabButton(Text message, Component tabComponent) {
+			super(message, b -> TabLayout.this.swapTabs(b, tabComponent));
 		}
 	}
 
