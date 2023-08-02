@@ -20,11 +20,11 @@ public class FabricTailorModule extends FabricTailorModuleData implements Switch
 		SwitchyModuleRegistry.registerModule(ID, FabricTailorModule::new, new SwitchyModuleInfo(
 						true,
 						SwitchyModuleEditable.ALWAYS_ALLOWED,
-						translatable("switchy.compat.module.fabrictailor.description")
+						translatable("switchy.modules.switchy_compat.fabrictailor.description")
 				)
-						.withDescriptionWhenEnabled(translatable("switchy.compat.module.fabrictailor.enabled"))
-						.withDescriptionWhenDisabled(translatable("switchy.compat.module.fabrictailor.disabled"))
-						.withDeletionWarning(translatable("switchy.compat.module.fabrictailor.warning"))
+						.withDescriptionWhenEnabled(translatable("switchy.modules.switchy_compat.fabrictailor.enabled"))
+						.withDescriptionWhenDisabled(translatable("switchy.modules.switchy_compat.fabrictailor.disabled"))
+						.withDeletionWarning(translatable("switchy.modules.switchy_compat.fabrictailor.warning"))
 		);
 	}
 

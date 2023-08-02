@@ -75,6 +75,16 @@ public class SwitchyPresetDataImpl<Module extends SwitchySerializable> implement
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
+	public <ModuleType> Map<Identifier, ModuleType> getModules(Class<ModuleType> clazz) {
+		Map<Identifier, ModuleType> outMap = new HashMap<>();
+		modules.forEach((id, module) -> {
+			if (clazz.isAssignableFrom(module.getClass())) outMap.put(id, (ModuleType) module);
+		});
+		return outMap;
+	}
+
+	@Override
 	@ApiStatus.Internal
 	public Module getModule(Identifier id) throws ModuleNotFoundException {
 		if (!containsModule(id)) throw new ModuleNotFoundException();

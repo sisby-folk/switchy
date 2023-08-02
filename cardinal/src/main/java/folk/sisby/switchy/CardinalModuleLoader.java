@@ -47,12 +47,12 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 	private static final Identifier ID = new Identifier(SwitchyCardinal.ID, "module_loader");
 	private static final String KEY_DEFAULT = "default";
 	private static final String KEY_EDITABLE = "editable";
-	private static final String KEY_DESCRIPTION = "description";
-	private static final String KEY_DESCRIPTION_ENABLED = "descriptionWhenEnabled";
-	private static final String KEY_DESCRIPTION_DISABLED = "descriptionWhenDisabled";
-	private static final String KEY_DESCRIPTION_DELETION_WARNING = "deletionWarning";
 	private static final String KEY_IF_MODS_LOADED = "ifModsLoaded";
 	private static final String KEY_COMPONENTS = "components";
+	private static final String KEY_PREVIEW = "preview";
+	private static final String KEY_PREVIEW_CONDITION = "condition";
+	private static final String KEY_PREVIEW_ICON = "icon";
+	private static final String KEY_PREVIEW_VALUES = "values";
 
 	CardinalModuleLoader(Gson gson) {
 		super(gson, "switchy_cardinal");
@@ -65,7 +65,7 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 				return;
 			}
 			JsonObject moduleOptions = contents.getAsJsonObject();
-			if (!moduleOptions.has(KEY_DEFAULT) || !moduleOptions.has(KEY_EDITABLE) || !moduleOptions.has(KEY_COMPONENTS) || !moduleOptions.has(KEY_DESCRIPTION)) {
+			if (!moduleOptions.has(KEY_DEFAULT) || !moduleOptions.has(KEY_EDITABLE) || !moduleOptions.has(KEY_COMPONENTS)) {
 				Switchy.LOGGER.warn("[Switchy] CCA module '{}' is missing options, skipping...", moduleId);
 				return;
 			}
@@ -75,7 +75,6 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 			try {
 				SwitchyModuleEditable moduleEditable = SwitchyModuleEditable.valueOf(moduleOptions.get(KEY_EDITABLE).getAsString());
 				boolean moduleDefault = moduleOptions.get(KEY_DEFAULT).getAsBoolean();
-				String moduleDescription = moduleOptions.get(KEY_DESCRIPTION).getAsString();
 				Set<Identifier> componentIds = new HashSet<>();
 				for (JsonElement componentEntry : moduleOptions.get(KEY_COMPONENTS).getAsJsonArray()) {
 					Identifier componentId = Identifier.tryParse(componentEntry.getAsString());
@@ -88,13 +87,10 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 				}
 				if (!componentIds.isEmpty()) {
 					try {
-						SwitchyModuleInfo info = new SwitchyModuleInfo(moduleDefault, moduleEditable, Text.literal(moduleDescription));
-						if (moduleOptions.has(KEY_DESCRIPTION_ENABLED))
-							info.withDescriptionWhenEnabled(Text.literal(moduleOptions.get(KEY_DESCRIPTION_ENABLED).getAsString()));
-						if (moduleOptions.has(KEY_DESCRIPTION_DISABLED))
-							info.withDescriptionWhenDisabled(Text.literal(moduleOptions.get(KEY_DESCRIPTION_DISABLED).getAsString()));
-						if (moduleOptions.has(KEY_DESCRIPTION_DELETION_WARNING))
-							info.withDeletionWarning(Text.literal(moduleOptions.get(KEY_DESCRIPTION_DELETION_WARNING).getAsString()));
+						SwitchyModuleInfo info = new SwitchyModuleInfo(moduleDefault, moduleEditable, Text.translatable("switchy.modules.%s.%s.description".formatted(moduleId.getNamespace(), moduleId.getPath())));
+						info.withDescriptionWhenEnabled(Text.translatable(moduleOptions.get("switchy.modules.%s.%s.enabled".formatted(moduleId.getNamespace(), moduleId.getPath())).getAsString()));
+						info.withDescriptionWhenDisabled(Text.translatable(moduleOptions.get("switchy.modules.%s.%s.disabled".formatted(moduleId.getNamespace(), moduleId.getPath())).getAsString()));
+						info.withDeletionWarning(Text.translatable(moduleOptions.get("switchy.modules.%s.%s.warning".formatted(moduleId.getNamespace(), moduleId.getPath())).getAsString()));
 						CardinalSerializerModule.register(moduleId, componentIds, info);
 					} catch (IllegalStateException ignoredRegistrationEx) {
 						Switchy.LOGGER.warn("[Switchy] CCA module {} tried to register a component that already has a module!, skipping...", moduleId);

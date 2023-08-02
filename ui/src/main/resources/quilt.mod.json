@@ -21,7 +21,7 @@
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
 			"client_events": [
-				"folk.sisby.switchy.ui.SwitchyKeybindings"
+				"folk.sisby.switchy.ui.SwitchyUI"
 			]
 		},
 		"depends": [
@@ -51,6 +51,7 @@
 			}
 		]
 	},
+	"mixin": "switchy-ui.mixins.json",
 	"modmenu": {
 		"parent": "switchy"
 	},

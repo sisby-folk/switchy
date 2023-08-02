@@ -1,11 +1,19 @@
 {
   "default": true,
-  "description": "A module that switches nekoarc state contents from Arathain's Arcpocalypse",
   "editable": "OPERATOR",
   "ifModsLoaded": [
     "arcpocalypse"
   ],
   "components": [
     "arcpocalypse:nekoarc"
-  ]
+  ],
+  "preview": {
+    "icon": {
+      "item": "arcpocalypse:suspicious_broom"
+    },
+    "condition": "nekoarcueidbrunestud",
+    "values": [
+      "neco", "flying"
+    ]
+  }
 }
