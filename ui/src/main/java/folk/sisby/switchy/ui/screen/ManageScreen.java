@@ -209,7 +209,7 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 				ManageScreen.this.uiAdapter.rootComponent.lock();
 				SwitchyClientApi.deletePreset(name, SwitchyScreen::updatePresetScreens);
 			}, cancel -> {
-			}, List.of(Text.translatable("commands.switchy_client.delete.confirm", name), Text.translatable("screen.switchy.manage.messages.delete.warn"), Text.translatable("screen.switchy.manage.dialog.modules", presets.getEnabledModuleText()))));
+			}, List.of(Text.translatable("commands.switchy_client.delete.confirm", Text.literal(name)), Text.translatable("screen.switchy.manage.messages.delete.warn"), Text.translatable("screen.switchy.manage.dialog.modules", presets.getEnabledModuleText()))));
 			ButtonComponent deleteButton = Components.button(Text.translatable("screen.switchy.manage.presets.delete"), deleteAction);
 			deleteButton.margins(Insets.vertical(1));
 			deleteButton.horizontalSizing(Sizing.fill(22));
@@ -255,7 +255,7 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 				ManageScreen.this.uiAdapter.rootComponent.lock();
 				SwitchyClientApi.disableModule(id, SwitchyScreen::updatePresetScreens);
 			}, cancel -> {
-			}, List.of(Text.translatable("commands.switchy_client.disable.confirm", id.getPath()), Text.translatable("screen.switchy.manage.modules.disable.warn", presets.getModuleInfo().get(id).deletionWarning())))), true, Text.translatable("screen.switchy.manage.modules.disable"), presets.getModuleInfo().get(module).descriptionWhenDisabled(), labelSize)));
+			}, List.of(Text.translatable("commands.switchy_client.disable.confirm", Text.literal(id.getPath())), Text.translatable("screen.switchy.manage.modules.disable.warn", presets.getModuleInfo().get(id).deletionWarning())))), true, Text.translatable("screen.switchy.manage.modules.disable"), presets.getModuleInfo().get(module).descriptionWhenDisabled(), labelSize)));
 		}
 	}
 
@@ -392,7 +392,7 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 				ManageScreen.this.uiAdapter.rootComponent.lock();
 				SwitchyClientApi.exportPresetsToFile(availableModules, null, (feedback, file) -> SwitchyScreen.updatePresetScreens(feedback, presets));
 			}, cancelButton -> {
-			}, List.of(Text.translatable("commands.switchy_client.export.confirm", String.valueOf(includedModules.size())))));
+			}, List.of(Text.translatable("commands.switchy_client.export.confirm", Text.literal(String.valueOf(includedModules.size()))))));
 		}
 
 		@Override
