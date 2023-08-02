@@ -63,7 +63,7 @@ public class SwitchyFeedbackToast implements Toast {
 		Drawer.drawRectOutline(matrices, 0, 0, getWidth(), getHeight(), colours.get(status));
 
 		OrderedText header = textLines.get(0);
-		textRenderer.drawWithShadow(matrices, header, ((width - textRenderer.getWidth(header)) >> 1) - 5, 4, 0xFFFFFF);
+		textRenderer.drawWithShadow(matrices, header, ((width - textRenderer.getWidth(header)) >> 1) - 7, 4, 0xFFFFFF);
 
 		for (int i = 1; i < textLines.size(); i++) {
 			textRenderer.draw(matrices, textLines.get(i), 4, 4 + i * 11, 0xFFFFFF);
