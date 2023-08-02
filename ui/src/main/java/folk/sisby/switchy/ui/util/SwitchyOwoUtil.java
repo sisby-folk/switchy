@@ -10,7 +10,7 @@ public class SwitchyOwoUtil {
 		do {
 			if (parent instanceof OverlayComponent) break;
 			parent = parent.parent();
-			if (parent instanceof OverlayableFlowLayout ofl) return ofl.overlay != null;
+			if (parent instanceof OverlayableFlowLayout ofl) return ofl.overlay == null;
 		} while (parent != null);
 		return true;
 	}
