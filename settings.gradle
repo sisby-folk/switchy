@@ -47,7 +47,7 @@ dependencyResolutionManagement {
 			library('owo', 'io.wispforest', 'owo-lib').versionRef('owo')
 
 			// // Cardinal // //
-			version('cardinal', "5.1.0")
+			version('cardinal', "5.0.2")
 
 			library('cardinal', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-base').versionRef('cardinal')
 			library('cardinalEntity', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-entity').versionRef('cardinal')
