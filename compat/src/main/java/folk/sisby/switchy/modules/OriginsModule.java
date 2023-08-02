@@ -50,11 +50,11 @@ public class OriginsModule implements SwitchyModule, SwitchyModuleTransferable {
 		SwitchyModuleRegistry.registerModule(ID, OriginsModule::new, new SwitchyModuleInfo(
 						true,
 						SwitchyModuleEditable.ALLOWED,
-						translatable("switchy.modules.switchy_compat.origins.description")
+						translatable("switchy.modules.switchy.origins.description")
 				)
-						.withDescriptionWhenEnabled(translatable("switchy.modules.switchy_compat.origins.enabled"))
-						.withDescriptionWhenDisabled(translatable("switchy.modules.switchy_compat.origins.disabled"))
-						.withDeletionWarning(translatable("switchy.modules.switchy_compat.origins.warning"))
+						.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.origins.enabled"))
+						.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.origins.disabled"))
+						.withDeletionWarning(translatable("switchy.modules.switchy.origins.warning"))
 		);
 	}
 

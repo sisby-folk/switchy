@@ -49,11 +49,11 @@ public class FabricationArmorModule implements SwitchyModule {
 		SwitchyModuleRegistry.registerModule(ID, FabricationArmorModule::new, new SwitchyModuleInfo(
 						true,
 						SwitchyModuleEditable.ALLOWED,
-						translatable("switchy.modules.switchy_compat.hidearmor.description")
+						translatable("switchy.modules.switchy.hidearmor.description")
 				)
-						.withDescriptionWhenEnabled(translatable("switchy.modules.switchy_compat.hidearmor.enabled"))
-						.withDescriptionWhenDisabled(translatable("switchy.modules.switchy_compat.hidearmor.disabled"))
-						.withDeletionWarning(translatable("switchy.modules.switchy_compat.hidearmor.warning"))
+						.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.hidearmor.enabled"))
+						.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.hidearmor.disabled"))
+						.withDeletionWarning(translatable("switchy.modules.switchy.hidearmor.warning"))
 						.withApplyDependencies(QuiltLoader.isModLoaded("fabrictailor") ? Set.of(FabricTailorModule.ID) : Set.of())
 		);
 	}
