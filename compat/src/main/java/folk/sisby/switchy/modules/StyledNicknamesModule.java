@@ -37,11 +37,11 @@ public class StyledNicknamesModule implements SwitchyModule, SwitchyModuleTransf
 		SwitchyModuleRegistry.registerModule(ID, StyledNicknamesModule::new, new SwitchyModuleInfo(
 						true,
 						SwitchyModuleEditable.ALWAYS_ALLOWED,
-						translatable("switchy.compat.module.styled_nicknames.description")
+						translatable("switchy.modules.switchy_compat.styled_nicknames.description")
 				)
-						.withDescriptionWhenEnabled(translatable("switchy.compat.module.styled_nicknames.enabled"))
-						.withDescriptionWhenDisabled(translatable("switchy.compat.module.styled_nicknames.disabled"))
-						.withDeletionWarning(translatable("switchy.compat.module.styled_nicknames.warning"))
+						.withDescriptionWhenEnabled(translatable("switchy.modules.switchy_compat.styled_nicknames.enabled"))
+						.withDescriptionWhenDisabled(translatable("switchy.modules.switchy_compat.styled_nicknames.disabled"))
+						.withDeletionWarning(translatable("switchy.modules.switchy_compat.styled_nicknames.warning"))
 		);
 	}
 

@@ -23,11 +23,11 @@ public class DrogtorModule extends DrogtorModuleData implements SwitchyModule, S
 		SwitchyModuleRegistry.registerModule(ID, DrogtorModule::new, new SwitchyModuleInfo(
 						true,
 						SwitchyModuleEditable.ALWAYS_ALLOWED,
-						translatable("switchy.compat.module.drogtor.description")
+						translatable("switchy.modules.switchy_compat.drogtor.description")
 				)
-						.withDescriptionWhenEnabled(translatable("switchy.compat.module.drogtor.enabled"))
-						.withDescriptionWhenDisabled(translatable("switchy.compat.module.drogtor.disabled"))
-						.withDeletionWarning(translatable("switchy.compat.module.drogtor.warning"))
+						.withDescriptionWhenEnabled(translatable("switchy.modules.switchy_compat.drogtor.enabled"))
+						.withDescriptionWhenDisabled(translatable("switchy.modules.switchy_compat.drogtor.disabled"))
+						.withDeletionWarning(translatable("switchy.modules.switchy_compat.drogtor.warning"))
 		);
 	}
 
