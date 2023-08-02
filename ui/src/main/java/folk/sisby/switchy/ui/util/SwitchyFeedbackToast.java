@@ -41,7 +41,7 @@ public class SwitchyFeedbackToast implements Toast {
 		status = feedback.status();
 		textRenderer = MinecraftClient.getInstance().textRenderer;
 		List<Text> texts = initText(feedback);
-		width = Math.min(240, TextOps.width(textRenderer, texts) + 8);
+		width = Math.min(240, Math.max(TextOps.width(textRenderer, texts) + 8, 107));
 		textLines = wrap(texts);
 	}
 
@@ -62,8 +62,8 @@ public class SwitchyFeedbackToast implements Toast {
 		Drawer.fill(matrices, 0, 0, getWidth(), getHeight(), 0x77000000);
 		Drawer.drawRectOutline(matrices, 0, 0, getWidth(), getHeight(), colours.get(status));
 
-		int xOffset = getWidth() / 2 - textRenderer.getWidth(textLines.get(0)) / 2;
-		textRenderer.drawWithShadow(matrices, textLines.get(0), 4 + xOffset, 4, 0xFFFFFF);
+		OrderedText header = textLines.get(0);
+		textRenderer.drawWithShadow(matrices, header, ((width - textRenderer.getWidth(header)) >> 1) - 5, 4, 0xFFFFFF);
 
 		for (int i = 1; i < textLines.size(); i++) {
 			textRenderer.draw(matrices, textLines.get(i), 4, 4 + i * 11, 0xFFFFFF);
