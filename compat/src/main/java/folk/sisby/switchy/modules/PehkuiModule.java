@@ -40,11 +40,11 @@ public class PehkuiModule implements SwitchyModule {
 		SwitchyModuleRegistry.registerModule(ID, PehkuiModule::new, new SwitchyModuleInfo(
 						true,
 						SwitchyModuleEditable.OPERATOR,
-						translatable("switchy.modules.switchy_compat.pehkui.description")
+						translatable("switchy.modules.switchy.pehkui.description")
 				)
-						.withDescriptionWhenEnabled(translatable("switchy.modules.switchy_compat.pehkui.enabled"))
-						.withDescriptionWhenDisabled(translatable("switchy.modules.switchy_compat.pehkui.disabled"))
-						.withDeletionWarning(translatable("switchy.modules.switchy_compat.pehkui.warning"))
+						.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.pehkui.enabled"))
+						.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.pehkui.disabled"))
+						.withDeletionWarning(translatable("switchy.modules.switchy.pehkui.warning"))
 		);
 	}
 
