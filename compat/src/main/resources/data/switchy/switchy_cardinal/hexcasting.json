@@ -1,6 +1,5 @@
 {
   "default": true,
-  "description": "A module that switches the internalized pigment from petrak@'s Hex Casting",
   "editable": "ALLOWED",
   "ifModsLoaded": [
     "hexcasting"

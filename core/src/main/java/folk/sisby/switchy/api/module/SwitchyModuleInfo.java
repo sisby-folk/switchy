@@ -42,9 +42,9 @@ public final class SwitchyModuleInfo {
 	private boolean isDefault;
 	private SwitchyModuleEditable editable;
 	private MutableText description;
-	private MutableText deletionWarning = translatable("commands.switchy.help.disable.warn.default");
-	private MutableText descriptionWhenEnabled = translatable("commands.switchy.module.help.enable.default");
-	private MutableText descriptionWhenDisabled = translatable("commands.switchy.module.help.disable.default");
+	private MutableText deletionWarning = translatable("commands.switchy.module.help.disable.warn.default");
+	private MutableText descriptionWhenEnabled = translatable("commands.switchy.module.help.enabled.default");
+	private MutableText descriptionWhenDisabled = translatable("commands.switchy.module.help.disabled.default");
 	private Set<Identifier> applyDependencies = new HashSet<>();
 	private Set<Identifier> uniqueIds = new HashSet<>();
 	private Consumer<LiteralArgumentBuilder<ServerCommandSource>> configCommands = null;

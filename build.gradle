@@ -92,7 +92,7 @@ allprojects {
 
 		// Origins
 		maven {
-			url 'https://ladysnake.jfrog.io/artifactory/mods'
+			url 'https://maven.ladysnake.org/releases'
 		}
 		maven {
 			url 'https://maven.cafeteria.dev'

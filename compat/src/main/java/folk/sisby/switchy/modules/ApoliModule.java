@@ -54,11 +54,11 @@ public class ApoliModule implements SwitchyModule {
 		SwitchyModuleRegistry.registerModule(ID, ApoliModule::new, new SwitchyModuleInfo(
 				true,
 				SwitchyModuleEditable.OPERATOR,
-				translatable("switchy.compat.module.apoli.description")
+				translatable("switchy.modules.switchy.apoli.description")
 		)
-				.withDescriptionWhenEnabled(translatable("switchy.compat.module.apoli.enabled"))
-				.withDescriptionWhenDisabled(translatable("switchy.compat.module.apoli.disabled"))
-				.withDeletionWarning(translatable("switchy.compat.module.apoli.warning"))
+				.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.apoli.enabled"))
+				.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.apoli.disabled"))
+				.withDeletionWarning(translatable("switchy.modules.switchy.apoli.warning"))
 				.withApplyDependencies(Set.of(OriginsModule.ID)));
 	}
 

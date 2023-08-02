@@ -1,6 +1,5 @@
 {
   "default": true,
-  "description": "A module that switches lanyard contents from Pyrrha's Lanyard",
   "editable": "ALLOWED",
   "ifModsLoaded": [
     "lanyard"

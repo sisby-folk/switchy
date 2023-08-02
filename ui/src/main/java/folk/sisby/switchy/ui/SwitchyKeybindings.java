@@ -3,13 +3,11 @@ package folk.sisby.switchy.ui;
 import com.mojang.blaze3d.platform.InputUtil;
 import folk.sisby.switchy.SwitchyClientServerNetworking;
 import folk.sisby.switchy.client.api.SwitchyClientApi;
-import folk.sisby.switchy.client.api.SwitchyClientEvents;
 import folk.sisby.switchy.ui.screen.SwitchScreen;
 import folk.sisby.switchy.ui.screen.SwitchyScreen;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBind;
 import org.lwjgl.glfw.GLFW;
-import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.qsl.lifecycle.api.client.event.ClientTickEvents;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
@@ -19,13 +17,13 @@ import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
  * @author Sisby folk
  * @since 1.9.0
  */
-public class SwitchyKeybindings implements SwitchyClientEvents.Init {
+public class SwitchyKeybindings {
 	/**
 	 * registers all keybindings for Switchy UI.
 	 */
 	public static void initializeKeybindings() {
 		KeyBind switchKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBind(
-				"key.switchy.switch",
+				"key.switchy.open",
 				InputUtil.Type.KEYSYM,
 				GLFW.GLFW_KEY_SEMICOLON,
 				"category.switchy.switchy"
@@ -38,12 +36,5 @@ public class SwitchyKeybindings implements SwitchyClientEvents.Init {
 				}
 			}
 		});
-	}
-
-	@Override
-	public void onInitialize() {
-		if (QuiltLoader.isModLoaded("owo")) {
-			initializeKeybindings();
-		}
 	}
 }
