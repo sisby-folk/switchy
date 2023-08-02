@@ -88,9 +88,9 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 				if (!componentIds.isEmpty()) {
 					try {
 						SwitchyModuleInfo info = new SwitchyModuleInfo(moduleDefault, moduleEditable, Text.translatable("switchy.modules.%s.%s.description".formatted(moduleId.getNamespace(), moduleId.getPath())));
-						info.withDescriptionWhenEnabled(Text.translatable(moduleOptions.get("switchy.modules.%s.%s.enabled".formatted(moduleId.getNamespace(), moduleId.getPath())).getAsString()));
-						info.withDescriptionWhenDisabled(Text.translatable(moduleOptions.get("switchy.modules.%s.%s.disabled".formatted(moduleId.getNamespace(), moduleId.getPath())).getAsString()));
-						info.withDeletionWarning(Text.translatable(moduleOptions.get("switchy.modules.%s.%s.warning".formatted(moduleId.getNamespace(), moduleId.getPath())).getAsString()));
+						info.withDescriptionWhenEnabled(Text.translatable("switchy.modules.%s.%s.enabled".formatted(moduleId.getNamespace(), moduleId.getPath())));
+						info.withDescriptionWhenDisabled(Text.translatable("switchy.modules.%s.%s.disabled".formatted(moduleId.getNamespace(), moduleId.getPath())));
+						info.withDeletionWarning(Text.translatable("switchy.modules.%s.%s.warning".formatted(moduleId.getNamespace(), moduleId.getPath())));
 						CardinalSerializerModule.register(moduleId, componentIds, info);
 					} catch (IllegalStateException ignoredRegistrationEx) {
 						Switchy.LOGGER.warn("[Switchy] CCA module {} tried to register a component that already has a module!, skipping...", moduleId);
