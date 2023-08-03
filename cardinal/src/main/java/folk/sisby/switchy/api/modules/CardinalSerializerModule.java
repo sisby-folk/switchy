@@ -4,9 +4,13 @@ import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import folk.sisby.switchy.Switchy;
+import folk.sisby.switchy.SwitchyCardinal;
 import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
+import folk.sisby.switchy.api.module.SwitchyModuleTransferable;
+import net.minecraft.inventory.Inventories;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -24,11 +28,8 @@ import java.util.function.BiConsumer;
  * @see SwitchyModule
  * @since 1.8.0
  */
-public class CardinalSerializerModule implements SwitchyModule {
-	// Generic Fields
+public class CardinalSerializerModule extends CardinalSerializerData implements SwitchyModule, SwitchyModuleTransferable {
 	private final Map<Identifier, ComponentConfig<? extends Component>> componentConfigs;
-	// Module Data
-	private NbtCompound moduleNbt = new NbtCompound();
 
 	private CardinalSerializerModule(Map<Identifier, ComponentConfig<? extends Component>> componentConfigs) {
 		this.componentConfigs = componentConfigs;
@@ -65,7 +66,7 @@ public class CardinalSerializerModule implements SwitchyModule {
 			for (Identifier identifier : componentKeyIds) {
 				ComponentKey<?> componentKey = ComponentRegistry.get(identifier);
 				if (componentKey == null) {
-					Switchy.LOGGER.warn("[Switchy] cardinal module {} failed to instantiate, as its component isn't created yet.", id);
+					SwitchyCardinal.LOGGER.warn("[Switchy Cardinal] module {} failed to instantiate, as its component isn't created yet.", id);
 					return null;
 				}
 				map.put(identifier, new ComponentConfig<>(componentKey, (k, p) -> {
@@ -95,16 +96,6 @@ public class CardinalSerializerModule implements SwitchyModule {
 			componentConfig.invokePostApplySync(player);
 			componentConfig.registryKey.sync(player);
 		});
-	}
-
-	@Override
-	public NbtCompound toNbt() {
-		return moduleNbt.copy();
-	}
-
-	@Override
-	public void fillFromNbt(NbtCompound nbt) {
-		moduleNbt.copyFrom(nbt);
 	}
 
 	private record ComponentConfig<T1 extends Component>(ComponentKey<T1> registryKey,

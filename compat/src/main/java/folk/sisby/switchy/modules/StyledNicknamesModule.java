@@ -3,6 +3,7 @@ package folk.sisby.switchy.modules;
 import eu.pb4.placeholders.api.TextParserUtils;
 import eu.pb4.stylednicknames.NicknameHolder;
 import folk.sisby.switchy.Switchy;
+import folk.sisby.switchy.SwitchyCompat;
 import folk.sisby.switchy.api.module.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -69,7 +70,7 @@ public class StyledNicknamesModule implements SwitchyModule, SwitchyModuleTransf
 		if (styled_nickname != null) holder.sn_set(styled_nickname, false);
 		String newName = player.getDisplayName().getString();
 		if (!Objects.equals(oldName, newName))
-			Switchy.LOGGER.info("[Switchy] Player Nickname Change: '" + oldName + "' -> '" + newName + "' [" + player.getGameProfile().getName() + "]");
+			SwitchyCompat.LOGGER.info("[Switchy] Player Nickname Change: '" + oldName + "' -> '" + newName + "' [" + player.getGameProfile().getName() + "]");
 	}
 
 	@Override

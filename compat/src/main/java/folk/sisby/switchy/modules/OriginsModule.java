@@ -1,6 +1,7 @@
 package folk.sisby.switchy.modules;
 
 import folk.sisby.switchy.Switchy;
+import folk.sisby.switchy.SwitchyCompat;
 import folk.sisby.switchy.api.module.*;
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.origin.Origin;
@@ -119,7 +120,7 @@ public class OriginsModule implements SwitchyModule, SwitchyModuleTransferable {
 						Origin origin = OriginRegistry.get(Identifier.tryParse(originId));
 						origins.put(layer, origin);
 					} catch (IllegalArgumentException originGetEx) {
-						Switchy.LOGGER.warn("[Switchy] Failed to load preset origin with layer {} and origin {}. Exception: {}", layerId, originId, originGetEx);
+						SwitchyCompat.LOGGER.warn("[Switchy Compat] Failed to load preset origin with layer {} and origin {}. Exception: {}", layerId, originId, originGetEx);
 					}
 				}
 			}

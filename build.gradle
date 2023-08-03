@@ -34,6 +34,7 @@ dependencies {
 	runtimeOnly(include(project(path: ':client', configuration: 'namedElements')))
 	runtimeOnly(include(project(path: ':ui', configuration: 'namedElements')))
 	runtimeOnly(include(project(path: ':cardinal', configuration: 'namedElements')))
+	runtimeOnly(include(project(path: ':cardinal-ui', configuration: 'namedElements')))
 	runtimeOnly(include(project(path: ':compat', configuration: 'namedElements')))
 	runtimeOnly(include(project(path: ':compat-ui', configuration: 'namedElements')))
 
