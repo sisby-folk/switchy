@@ -1,0 +1,7 @@
+dependencies {
+	api project(path: ':cardinal', configuration: 'namedElements')
+	api project(path: ':ui', configuration: 'namedElements')
+	loom {
+		accessWidenerPath = file("src/main/resources/switchy-cardinal-ui.accesswidener")
+	}
+}
