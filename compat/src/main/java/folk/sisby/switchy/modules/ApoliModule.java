@@ -1,6 +1,7 @@
 package folk.sisby.switchy.modules;
 
 import folk.sisby.switchy.Switchy;
+import folk.sisby.switchy.SwitchyCompat;
 import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
@@ -158,7 +159,7 @@ public class ApoliModule implements SwitchyModule {
 					PowerType<?> powerType = PowerTypeRegistry.get(Identifier.tryParse(id.asString()));
 					commandPowers.add(powerType);
 				} catch (IllegalArgumentException powerGetEx) {
-					Switchy.LOGGER.warn("[Switchy] Failed to load preset command power with id {}. Exception: {}", id, powerGetEx);
+					SwitchyCompat.LOGGER.warn("[Switchy Compat] Failed to load preset command power with id {}. Exception: {}", id, powerGetEx);
 				}
 			});
 		}
@@ -173,7 +174,7 @@ public class ApoliModule implements SwitchyModule {
 						PowerType<?> powerType = PowerTypeRegistry.get(Identifier.tryParse(powerId));
 						powerNbt.put(powerType, powerData);
 					} catch (IllegalArgumentException powerGetEx) {
-						Switchy.LOGGER.warn("[Switchy] Failed to load preset power with id {}. Exception: {}", powerId, powerGetEx);
+						SwitchyCompat.LOGGER.warn("[Switchy Compat] Failed to load preset power with id {}. Exception: {}", powerId, powerGetEx);
 					}
 				}
 			}

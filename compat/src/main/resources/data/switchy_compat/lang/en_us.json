@@ -31,7 +31,6 @@
   "switchy.modules.switchy.arcpocalypse.enabled": "You will have your neco-arc transformation contained to each preset.",
   "switchy.modules.switchy.arcpocalypse.disabled": "Neco-arc transformations will apply to all presets.",
   "switchy.modules.switchy.arcpocalypse.warning": "All other neco-arc transformations (or lack thereof) will be cleared!",
-  "switchy.modules.switchy.arcpocalypse.preview": "Transformed into %s! Flying: %b",
   "switchy.modules.switchy.hexcasting.description": "A module that switches the internalized pigment from petrak@'s Hex Casting.",
   "switchy.modules.switchy.hexcasting.enabled": "You will have one internalized pigment per-preset.",
   "switchy.modules.switchy.hexcasting.disabled": "You will share a single internalized pigment over all presets.",

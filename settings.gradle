@@ -94,4 +94,4 @@ dependencyResolutionManagement {
 	}
 }
 
-include('core', 'client', 'ui', 'cardinal', 'compat', 'compat-ui')
+include('core', 'client', 'ui', 'cardinal', 'cardinal-ui', 'compat', 'compat-ui')
