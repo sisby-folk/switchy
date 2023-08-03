@@ -1,6 +1,5 @@
 package folk.sisby.switchy.client.api.module;
 
-import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.client.SwitchyClient;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -56,5 +55,9 @@ public class SwitchyClientModuleRegistry {
 	 */
 	public static Collection<Identifier> getModules() {
 		return SUPPLIERS.keySet();
+	}
+
+	public static boolean containsModule(Identifier id) {
+		return SUPPLIERS.containsKey(id);
 	}
 }

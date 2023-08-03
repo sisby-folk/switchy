@@ -3,6 +3,7 @@ package folk.sisby.switchy.client.api.modules;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import folk.sisby.switchy.api.modules.CardinalSerializerData;
+import folk.sisby.switchy.client.SwitchyCardinalClient;
 import folk.sisby.switchy.client.api.PrettyElementVisitor;
 import folk.sisby.switchy.client.api.module.SwitchyClientModule;
 import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
@@ -14,7 +15,6 @@ import io.wispforest.owo.ui.core.Component;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.item.BundleTooltipData;
 import net.minecraft.command.argument.NbtPathArgumentType;
-import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtByte;
 import net.minecraft.nbt.NbtCompound;
@@ -82,9 +82,10 @@ public class CardinalSerializerClientModule extends CardinalSerializerData imple
 			DefaultedList<ItemStack> items = DefaultedList.of();
 			inventoryPaths.forEach(v -> {
 				try {
-					DefaultedList<ItemStack> inv = DefaultedList.ofSize(255);
-					v.get(nbt).forEach(compound -> Inventories.readNbt((NbtCompound) compound, inv));
-					inv.stream().filter(i -> !i.isEmpty()).forEach(items::add);
+					v.get(nbt).forEach(compound -> nbt.getList("Items", 10).forEach(e -> {
+						ItemStack stack = ItemStack.fromNbt((NbtCompound) e);
+						if (!stack.isEmpty()) items.add(stack);
+					}));
 				} catch (CommandSyntaxException | ClassCastException ignored) {}
 			});
 			return items;

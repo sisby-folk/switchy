@@ -7,7 +7,7 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.JsonOps;
-import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
+import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
 import folk.sisby.switchy.client.api.modules.CardinalSerializerClientModule;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.item.ItemStack;
@@ -60,7 +60,7 @@ public class CardinalClientModuleLoader extends JsonDataLoader implements Identi
 	@Override
 	protected void apply(Map<Identifier, JsonElement> prepared, ResourceManager manager, Profiler profiler) {
 		prepared.forEach((moduleId, contents) -> {
-			if (SwitchyModuleRegistry.containsModule(moduleId)) {
+			if (SwitchyClientModuleRegistry.containsModule(moduleId)) {
 				return;
 			}
 			JsonObject moduleOptions = contents.getAsJsonObject();
