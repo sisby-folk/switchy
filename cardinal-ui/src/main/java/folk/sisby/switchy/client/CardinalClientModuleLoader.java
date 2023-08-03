@@ -63,7 +63,7 @@ public class CardinalClientModuleLoader extends JsonDataLoader implements Identi
 				return;
 			}
 			JsonObject moduleOptions = contents.getAsJsonObject();
-			if (!moduleOptions.has(KEY_ICON) || (!moduleOptions.has(KEY_VALUES) && !moduleOptions.has(KEY_CONDITION))) {
+			if (!moduleOptions.has(KEY_ICON)) {
 				SwitchyCardinalClient.LOGGER.warn("[Switchy Cardinal UI] module '{}' is missing options, skipping...", moduleId);
 				return;
 			}
