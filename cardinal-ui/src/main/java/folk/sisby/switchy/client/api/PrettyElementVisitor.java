@@ -1,6 +1,5 @@
 package folk.sisby.switchy.client.api;
 
-import folk.sisby.switchy.client.SwitchyCardinalClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.nbt.visitor.NbtElementVisitor;

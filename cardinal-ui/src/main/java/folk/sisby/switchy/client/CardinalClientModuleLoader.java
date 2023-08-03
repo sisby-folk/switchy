@@ -14,7 +14,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.recipe.ShapedRecipe;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -49,7 +48,6 @@ public class CardinalClientModuleLoader extends JsonDataLoader implements Identi
 	private static final Identifier ID = new Identifier(SwitchyCardinalClient.ID, "module_loader");
 	private static final String KEY_CONDITION = "condition";
 	private static final String KEY_ICON = "icon";
-	private static final String KEY_ICON_DATA = "data";
 	private static final String KEY_ICON_PATH = "path";
 	private static final String KEY_VALUES = "values";
 	private static final NbtPathArgumentType pathAtg = NbtPathArgumentType.nbtPath();
