@@ -57,17 +57,14 @@ public class CardinalSerializerClientModule extends CardinalSerializerData imple
 		ItemComponent component = Components.item(config.icon.apply(moduleNbt));
 		List<TooltipComponent> tooltips = new ArrayList<>(List.of(TooltipComponent.of(Text.translatable("switchy.modules.%s.%s.preview.tooltip".formatted(id.getNamespace(), id.getPath()), config.getValues(moduleNbt).toArray()).asOrderedText())));
 
-		DefaultedList<ItemStack> inv = DefaultedList.ofSize(255);
-		Inventories.readNbt(moduleNbt, inv);
-		DefaultedList<ItemStack> items = DefaultedList.of();
-		inv.stream().filter(i -> !i.isEmpty()).forEach(items::add);
-		if (!inv.isEmpty()) tooltips.add(TooltipComponent.of(new BundleTooltipData(items, 0)));
+		DefaultedList<ItemStack> items = config.getStacks(moduleNbt);
+		if (!items.isEmpty()) tooltips.add(TooltipComponent.of(new BundleTooltipData(items, 0)));
 
 		component.tooltip(tooltips);
 		return Pair.of(component, SwitchyUIPosition.GRID_RIGHT);
 	}
 
-	public record PreviewConfig(Function<NbtCompound, ItemStack> icon, List<NbtPathArgumentType.NbtPath> valuePaths, @Nullable NbtPathArgumentType.NbtPath conditionPath) {
+	public record PreviewConfig(Function<NbtCompound, ItemStack> icon, List<NbtPathArgumentType.NbtPath> valuePaths, List<NbtPathArgumentType.NbtPath> inventoryPaths, @Nullable NbtPathArgumentType.NbtPath conditionPath) {
 		public List<MutableText> getValues(NbtCompound nbt) {
 			return valuePaths.stream().map(v -> {
 				try {
@@ -79,6 +76,18 @@ public class CardinalSerializerClientModule extends CardinalSerializerData imple
 					return Text.literal("???");
 				}
 			}).toList();
+		}
+
+		public DefaultedList<ItemStack> getStacks(NbtCompound nbt) {
+			DefaultedList<ItemStack> items = DefaultedList.of();
+			inventoryPaths.forEach(v -> {
+				try {
+					DefaultedList<ItemStack> inv = DefaultedList.ofSize(255);
+					v.get(nbt).forEach(compound -> Inventories.readNbt((NbtCompound) compound, inv));
+					inv.stream().filter(i -> !i.isEmpty()).forEach(items::add);
+				} catch (CommandSyntaxException | ClassCastException ignored) {}
+			});
+			return items;
 		}
 
 		public boolean failsCondition(NbtCompound nbt) {
