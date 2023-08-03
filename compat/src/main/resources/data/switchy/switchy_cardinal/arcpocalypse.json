@@ -6,14 +6,5 @@
   ],
   "components": [
     "arcpocalypse:nekoarc"
-  ],
-  "preview": {
-    "icon": {
-      "item": "arcpocalypse:suspicious_broom"
-    },
-    "condition": "nekoarcueidbrunestud",
-    "values": [
-      "neco", "flying"
-    ]
-  }
+  ]
 }

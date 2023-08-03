@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import com.unascribed.fabrication.features.FeatureHideArmor;
 import com.unascribed.fabrication.interfaces.GetSuppressedSlots;
 import folk.sisby.switchy.Switchy;
+import folk.sisby.switchy.SwitchyCompat;
 import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
@@ -110,7 +111,7 @@ public class FabricationArmorModule implements SwitchyModule {
 		for (int i = 0; i < nbtList.size(); i++) {
 			EquipmentSlot slot = Enums.getIfPresent(EquipmentSlot.class, nbtList.getString(i).toUpperCase(Locale.ROOT)).orNull();
 			if (slot == null) {
-				Switchy.LOGGER.warn("[Switchy] Unrecognized slot " + nbtList.getString(i) + " while loading profile");
+				SwitchyCompat.LOGGER.warn("[Switchy Compat] Unrecognized slot " + nbtList.getString(i) + " while loading profile");
 			} else {
 				suppressedSlots.add(slot);
 			}

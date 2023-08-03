@@ -2,18 +2,13 @@
 	"schema_version": 1,
 	"quilt_loader": {
 		"group": "folk.sisby",
-		"id": "switchy",
+		"id": "switchy-cardinal-ui",
 		"version": "${switchy}",
 		"metadata": {
-			"name": "Switchy",
-			"description": "Commands for switching between nothing - including nicknames, skins, and more.",
+			"name": "Switchy Cardinal UI",
+			"description": "Data-driven UI compatibility for data-driven CCA components from Switchy Cardinal.",
 			"contributors": {
-				"Sisby folk": "Co-Authors",
-				"MerchantPug": "Contributor/s",
-				"Ampflower": "Contributor/s",
-				"SilverAndro": "Contributor/s",
-				"Ami": "Contributor/s",
-				"Garden System": "Contributor/s"
+				"Sisby folk": "Co-Authors"
 			},
 			"contact": {
 				"homepage": "https://modrinth.com/mod/switchy",
@@ -23,6 +18,9 @@
 			"icon": "assets/switchy/icon.png"
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
+		"entrypoints": {
+			"client_events": "folk.sisby.switchy.client.SwitchyCardinalClient"
+		},
 		"depends": [
 			{
 				"id": "minecraft",
@@ -47,23 +45,14 @@
 			{
 				"id": "switchy-ui",
 				"versions": "${switchy}"
-			},
-			{
-				"id": "switchy-compat",
-				"versions": "${switchy}"
-			},
-			{
-				"id": "switchy-compat-ui",
-				"versions": "${switchy}"
-			},
-			{
-				"id": "switchy-cardinal",
-				"versions": "${switchy}"
-			},
-			{
-				"id": "switchy-cardinal-ui",
-				"versions": "${switchy}"
 			}
 		]
-	}
+	},
+	"modmenu": {
+		"parent": "switchy"
+	},
+	"minecraft": {
+		"environment": "client"
+	},
+	"access_widener": "switchy-cardinal-ui.accesswidener"
 }

@@ -1,6 +1,7 @@
 package folk.sisby.switchy.client.api.module;
 
 import folk.sisby.switchy.Switchy;
+import folk.sisby.switchy.client.SwitchyClient;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.loader.api.minecraft.ClientOnly;
@@ -34,7 +35,7 @@ public class SwitchyClientModuleRegistry {
 			throw new IllegalArgumentException("Specified id is already registered");
 		}
 		SUPPLIERS.put(id, moduleConstructor);
-		Switchy.LOGGER.info("[Switchy Client] Registered client module " + id);
+		SwitchyClient.LOGGER.info("[Switchy Client] Registered client module " + id);
 	}
 
 	/**

@@ -49,10 +49,6 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 	private static final String KEY_EDITABLE = "editable";
 	private static final String KEY_IF_MODS_LOADED = "ifModsLoaded";
 	private static final String KEY_COMPONENTS = "components";
-	private static final String KEY_PREVIEW = "preview";
-	private static final String KEY_PREVIEW_CONDITION = "condition";
-	private static final String KEY_PREVIEW_ICON = "icon";
-	private static final String KEY_PREVIEW_VALUES = "values";
 
 	CardinalModuleLoader(Gson gson) {
 		super(gson, "switchy_cardinal");
@@ -66,7 +62,7 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 			}
 			JsonObject moduleOptions = contents.getAsJsonObject();
 			if (!moduleOptions.has(KEY_DEFAULT) || !moduleOptions.has(KEY_EDITABLE) || !moduleOptions.has(KEY_COMPONENTS)) {
-				Switchy.LOGGER.warn("[Switchy] CCA module '{}' is missing options, skipping...", moduleId);
+				SwitchyCardinal.LOGGER.warn("[Switchy Cardinal] module '{}' is missing options, skipping...", moduleId);
 				return;
 			}
 			if (moduleOptions.has(KEY_IF_MODS_LOADED) && !StreamSupport.stream(moduleOptions.get(KEY_IF_MODS_LOADED).getAsJsonArray().spliterator(), true).map(JsonElement::getAsString).allMatch(QuiltLoader::isModLoaded)) {
@@ -79,7 +75,7 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 				for (JsonElement componentEntry : moduleOptions.get(KEY_COMPONENTS).getAsJsonArray()) {
 					Identifier componentId = Identifier.tryParse(componentEntry.getAsString());
 					if (componentId == null) {
-						Switchy.LOGGER.warn("[Switchy] Cardinal component '{}' from module {} is not a valid identifier, skipping...", componentEntry.getAsString(), moduleId);
+						SwitchyCardinal.LOGGER.warn("[Switchy Cardinal] component '{}' from module {} is not a valid identifier, skipping...", componentEntry.getAsString(), moduleId);
 						componentIds.clear();
 						break;
 					}
@@ -93,15 +89,16 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 						info.withDeletionWarning(Text.translatable("switchy.modules.%s.%s.warning".formatted(moduleId.getNamespace(), moduleId.getPath())));
 						CardinalSerializerModule.register(moduleId, componentIds, info);
 					} catch (IllegalStateException ignoredRegistrationEx) {
-						Switchy.LOGGER.warn("[Switchy] CCA module {} tried to register a component that already has a module!, skipping...", moduleId);
+						SwitchyCardinal.LOGGER.warn("[Switchy Cardinal] module {} tried to register a component that already has a module!, skipping...", moduleId);
 					}
 				}
 			} catch (UnsupportedOperationException ignoredGetFromJsonEx) {
-				Switchy.LOGGER.warn("[Switchy] CCA module '{}' has non-boolean options, skipping...", moduleId);
+				SwitchyCardinal.LOGGER.warn("[Switchy Cardinal] module '{}' has non-boolean options, skipping...", moduleId);
 			} catch (IllegalArgumentException ignoredValueOfEx) {
-				Switchy.LOGGER.warn("[Switchy] CCA module '{}' has invalid editable option, skipping...", moduleId);
+				SwitchyCardinal.LOGGER.warn("[Switchy Cardinal] module '{}' has invalid editable option, skipping...", moduleId);
 			}
 		});
+		SwitchyCardinal.LOGGER.info("[Switchy Cardinal] Finished reloading {} modules!", prepared.size());
 	}
 
 	@Override
