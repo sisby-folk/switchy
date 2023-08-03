@@ -248,6 +248,19 @@ loaded [like so](https://github.com/sisby-folk/switchy/blob/1.19/compat/src/main
     - `ifModsLoaded`: mod IDs to check before trying to register the module.
     - `components`: the cardinal components to swap.
 
+Modules can also be previewed in the UI using the serialized NBT data.<br/>
+Any data matching `assets/*/switchy_cardinal/*.json` will be
+loaded [like so](https://github.com/sisby-folk/switchy/blob/1.19/compat-ui/src/main/resources/assets/switchy/switchy_cardinal/lanyard.json):
+
+- File namespace and name - module namespace and path.
+    - `icon`: object. either parsed as a stack or use `"path"` with an NBT path to a stack.
+    - `condition`: optional. NBT path to a boolean
+    - `inventories`: optional. Array of NBT paths for inventories.
+    - `components`: optional. Array of NBT paths to pretty print into the tooltip key.
+
+The tooltip will be loaded from `switchy.modules.[namespace].[path].preview.tooltip`.
+
+
 ## Further Info
 
 This mod is primarily motivated by improving accessibility for [plural systems](https://morethanone.info).<br/>
