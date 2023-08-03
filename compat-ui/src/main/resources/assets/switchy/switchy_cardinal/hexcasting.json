@@ -1,8 +1,8 @@
 {
   "icon": {
-    "path": "hexcasting:favored_colorizer.colorizer.stack"
+    "path": "hexcasting:favored_pigment.pigment.stack"
   },
   "values": [
-    "hexcasting:favored_colorizer.colorizer.stack"
+    "hexcasting:favored_pigment.pigment.stack"
   ]
 }
