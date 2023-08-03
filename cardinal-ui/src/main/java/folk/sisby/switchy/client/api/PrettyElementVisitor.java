@@ -4,11 +4,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 import net.minecraft.nbt.visitor.NbtTextFormatter;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class PrettyElementVisitor extends NbtTextFormatter implements NbtElementVisitor {
 	public PrettyElementVisitor() {
@@ -22,7 +22,7 @@ public class PrettyElementVisitor extends NbtTextFormatter implements NbtElement
 			this.result = Text.Serializer.fromJson(element.asString()).formatted(Formatting.GREEN);
 			return;
 		} catch (Exception ignored) {}
-		Registry.ITEM.getOrEmpty(Identifier.tryParse(element.asString())).ifPresentOrElse(
+		Registries.ITEM.getOrEmpty(Identifier.tryParse(element.asString())).ifPresentOrElse(
 			i -> this.result = Text.translatable(i.getTranslationKey()).formatted(Formatting.AQUA),
 			() -> this.result = Text.literal(element.asString()).formatted(Formatting.GREEN)
 		);
