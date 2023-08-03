@@ -16,6 +16,7 @@ import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.item.BundleTooltipData;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtByte;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.MutableText;
@@ -54,10 +55,15 @@ public class CardinalSerializerClientModule extends CardinalSerializerData imple
 	@Override
 	public Pair<Component, SwitchyUIPosition> getPreviewComponent(String presetName) {
 		if (moduleNbt.isEmpty() || config.failsCondition(moduleNbt)) return null;
-		ItemComponent component = Components.item(config.icon.apply(moduleNbt));
-		List<TooltipComponent> tooltips = new ArrayList<>(List.of(TooltipComponent.of(Text.translatable("switchy.modules.%s.%s.preview.tooltip".formatted(id.getNamespace(), id.getPath()), config.getValues(moduleNbt).toArray()).asOrderedText())));
 
+		ItemStack stack = config.icon.apply(moduleNbt);
+		List<MutableText> values = config.getValues(moduleNbt);
 		DefaultedList<ItemStack> items = config.getStacks(moduleNbt);
+
+		if (values.isEmpty() && items.isEmpty() && config.conditionPath == null && !config.icon.apply(null).isOf(Items.DIRT)) return null;
+
+		ItemComponent component = Components.item(stack);
+		List<TooltipComponent> tooltips = new ArrayList<>(List.of(TooltipComponent.of(Text.translatable("switchy.modules.%s.%s.preview.tooltip".formatted(id.getNamespace(), id.getPath()), values.toArray()).asOrderedText())));
 		if (!items.isEmpty()) tooltips.add(TooltipComponent.of(new BundleTooltipData(items, 0)));
 
 		component.tooltip(tooltips);
@@ -82,10 +88,14 @@ public class CardinalSerializerClientModule extends CardinalSerializerData imple
 			DefaultedList<ItemStack> items = DefaultedList.of();
 			inventoryPaths.forEach(v -> {
 				try {
-					v.get(nbt).forEach(compound -> nbt.getList("Items", 10).forEach(e -> {
-						ItemStack stack = ItemStack.fromNbt((NbtCompound) e);
-						if (!stack.isEmpty()) items.add(stack);
-					}));
+					v.get(nbt).forEach(e1 -> {
+						if (e1 instanceof NbtCompound c1) {
+							c1.getList("Items", 10).forEach(e2 -> {
+								ItemStack stack = ItemStack.fromNbt((NbtCompound) e2);
+								if (!stack.isEmpty()) items.add(stack);
+							});
+						}
+					});
 				} catch (CommandSyntaxException | ClassCastException ignored) {}
 			});
 			return items;
