@@ -1,3 +1,4 @@
+<!--suppress HtmlDeprecatedTag, XmlDeprecatedElement -->
 <center><img alt="switchy banner" src="https://user-images.githubusercontent.com/55819817/198210616-eb37be12-cd96-40c8-a941-68a96b2aadfc.png" /></center>
 
 <center>An extensible preset system for player customizations provided by other mods.<br/>
@@ -196,7 +197,7 @@ Try `SwitchyPresets` (via `SwitchyPlayer.getPresets()`) covers most mod function
 Listen to switches by passing a function to `switchy:registerSwitchListener`, e.g.
 
 ```
-switchy:registerSwitchListener(function(playerId, oldPreset, newPreset, enabledModules)
+switchy:registerSwitchListener(function(playerId, newPreset, oldPreset, enabledModules)
   log("New Switch: " .. oldPreset .. " > " .. newPreset)
 end)
 ```

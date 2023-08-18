@@ -64,7 +64,7 @@ dependencyResolutionManagement {
 			version('placeholder', "2.1.0+${mc}")
 			version('playerData', "0.2.2+1.19.3")
 			version('luaj', "3.0.6-figura")
-			version('figura', "0.1.0")
+			version('figura', "0.1.2")
 
 			library('drogtor', 'maven.modrinth', 'drogtor').versionRef('drogtor')
 			library('fabrictailor', 'maven.modrinth', 'fabrictailor').versionRef('fabrictailor')
@@ -77,7 +77,7 @@ dependencyResolutionManagement {
 			library('placeholder', 'eu.pb4', 'placeholder-api').versionRef('placeholder')
 			library('playerData', 'eu.pb4', 'player-data-api').versionRef('playerData')
 			library('luaj', 'com.github.Kingdom-of-The-Moon.luaj', 'luaj-core').versionRef('luaj')
-			library('figura', 'com.github.Kingdom-of-The-Moon', 'FiguraRewriteRewrite').versionRef('figura')
+			library('figura', 'com.github.FiguraMC', 'Figura').versionRef('figura')
 
 			// // Local Debugging Convenience // //
 			version('sodium', "mc${mc}-0.4.10")
