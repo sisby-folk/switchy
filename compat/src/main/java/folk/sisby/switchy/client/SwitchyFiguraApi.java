@@ -5,11 +5,14 @@ import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.entries.FiguraAPI;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
+import org.jetbrains.annotations.NotNull;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A Figura API that exposes Switchy events to its avatar scripting system.
@@ -21,6 +24,24 @@ import java.util.List;
 @SuppressWarnings("unused")
 @LuaWhitelist
 public class SwitchyFiguraApi implements FiguraAPI {
+	public static Map<Avatar, LuaFunction> AVATAR_LISTENERS = new HashMap<>();
+	public final @NotNull Avatar forAvatar;
+
+	static {
+		SwitchyClientEvents.SWITCH.register((event) -> AVATAR_LISTENERS.forEach((avatar, function) -> function.invoke(
+			LuaValue.varargsOf(new LuaValue[]{
+				LuaValue.valueOf(event.player().toString()),
+				event.currentPreset() != null ? LuaValue.valueOf(event.currentPreset()) : LuaValue.NIL,
+				event.previousPreset() != null ? LuaValue.valueOf(event.previousPreset()) : LuaValue.NIL,
+				LuaValue.listOf(event.enabledModules().stream().map(LuaValue::valueOf).toArray(LuaValue[]::new))
+			})
+		)));
+	}
+
+	private SwitchyFiguraApi(@NotNull Avatar avatar) {
+		forAvatar = avatar;
+	}
+
 	/**
 	 * Registers a lua listener for switch events.
 	 *
@@ -28,20 +49,13 @@ public class SwitchyFiguraApi implements FiguraAPI {
 	 * @see SwitchyClientEvents#SWITCH
 	 */
 	@LuaWhitelist
-	public static void registerSwitchListener(@LuaNotNil LuaFunction function) {
-		SwitchyClientEvents.SWITCH.register((event) -> function.invoke(
-				LuaValue.varargsOf(new LuaValue[]{
-						LuaValue.valueOf(event.player().toString()),
-						event.currentPreset() != null ? LuaValue.valueOf(event.currentPreset()) : LuaValue.NIL,
-						event.previousPreset() != null ? LuaValue.valueOf(event.previousPreset()) : LuaValue.NIL,
-						LuaValue.listOf(event.enabledModules().stream().map(LuaValue::valueOf).toArray(LuaValue[]::new))
-				})
-		));
+	public void registerSwitchListener(@LuaNotNil LuaFunction function) {
+		AVATAR_LISTENERS.put(forAvatar, function);
 	}
 
 	@Override
 	public FiguraAPI build(Avatar avatar) {
-		return new SwitchyFiguraApi();
+		return new SwitchyFiguraApi(avatar);
 	}
 
 	@Override
