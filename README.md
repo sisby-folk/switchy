@@ -196,7 +196,7 @@ Try `SwitchyPresets` (via `SwitchyPlayer.getPresets()`) covers most mod function
 Listen to switches by passing a function to `switchy:registerSwitchListener`, e.g.
 
 ```
-switchy:registerSwitchListener(function(playerId, oldPreset, newPreset, enabledModules)
+switchy:registerSwitchListener(function(playerId, newPreset, oldPreset, enabledModules)
   log("New Switch: " .. oldPreset .. " > " .. newPreset)
 end)
 ```
