@@ -1,12 +1,12 @@
 package folk.sisby.switchy.client;
 
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
+import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.entries.FiguraAPI;
+import org.figuramc.figura.lua.LuaNotNil;
+import org.figuramc.figura.lua.LuaWhitelist;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
-import org.moon.figura.avatar.Avatar;
-import org.moon.figura.entries.FiguraAPI;
-import org.moon.figura.lua.LuaNotNil;
-import org.moon.figura.lua.LuaWhitelist;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,6 +18,7 @@ import java.util.List;
  * @see SwitchyClientEvents
  * @since 2.0.0
  */
+@SuppressWarnings("unused")
 @LuaWhitelist
 public class SwitchyFiguraApi implements FiguraAPI {
 	/**
