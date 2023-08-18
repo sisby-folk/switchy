@@ -72,6 +72,11 @@
 				"id": "fabrication",
 				"versions": ">=${fabrication}",
 				"optional": true
+			},
+			{
+				"id": "figura",
+				"versions": ">=${figura}",
+				"optional": true
 			}
 		]
 	},
