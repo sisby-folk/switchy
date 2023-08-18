@@ -149,6 +149,7 @@ allprojects {
 				"origins"              : libs.versions.origins.get().replaceFirst('v', ''),
 				"pehkui"               : libs.versions.pehkui.get(),
 				"fabrication"          : libs.versions.fabrication.get(),
+				"figura"          	   : libs.versions.figura.get(),
 		]
 
 		inputs.properties(map)
