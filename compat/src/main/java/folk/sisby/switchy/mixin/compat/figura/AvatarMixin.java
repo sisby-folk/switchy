@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Avatar.class)
+@Mixin(value = Avatar.class, remap = false)
 public class AvatarMixin {
 	@Inject(method = "clean", at = @At("HEAD"))
 	public void clean(CallbackInfo ci) {
