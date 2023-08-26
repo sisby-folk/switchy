@@ -4,7 +4,7 @@
   "package": "folk.sisby.switchy.client.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "MixinClientPlayerEntity"
+    "MixinClientPlayNetworkHandler"
   ],
   "injectors": {
     "defaultRequire": 1
