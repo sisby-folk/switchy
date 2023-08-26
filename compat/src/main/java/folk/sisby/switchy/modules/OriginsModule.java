@@ -1,6 +1,5 @@
 package folk.sisby.switchy.modules;
 
-import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.SwitchyCompat;
 import folk.sisby.switchy.api.module.*;
 import io.github.apace100.origins.component.OriginComponent;
@@ -47,15 +46,18 @@ public class OriginsModule implements SwitchyModule, SwitchyModuleTransferable {
 	 */
 	public static final String KEY_ORIGIN = "Origin";
 
-	static {
+	/**
+	 * Registers the module
+	 */
+	public static void register() {
 		SwitchyModuleRegistry.registerModule(ID, OriginsModule::new, new SwitchyModuleInfo(
-						true,
-						SwitchyModuleEditable.ALLOWED,
-						translatable("switchy.modules.switchy.origins.description")
-				)
-						.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.origins.enabled"))
-						.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.origins.disabled"))
-						.withDeletionWarning(translatable("switchy.modules.switchy.origins.warning"))
+				true,
+				SwitchyModuleEditable.ALLOWED,
+				translatable("switchy.modules.switchy.origins.description")
+			)
+				.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.origins.enabled"))
+				.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.origins.disabled"))
+				.withDeletionWarning(translatable("switchy.modules.switchy.origins.warning"))
 		);
 	}
 
@@ -70,12 +72,6 @@ public class OriginsModule implements SwitchyModule, SwitchyModuleTransferable {
 		OriginComponent.sync(player);
 		boolean hadOriginBefore = component.hadOriginBefore();
 		OriginComponent.partialOnChosen(player, hadOriginBefore, origin);
-	}
-
-	/**
-	 * Executes {@code static} the first time it's invoked.
-	 */
-	public static void touch() {
 	}
 
 	@Override

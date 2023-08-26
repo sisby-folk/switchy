@@ -20,7 +20,7 @@
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"client_events": [
+			"switchy_client": [
 				"folk.sisby.switchy.ui.SwitchyUI"
 			]
 		},
@@ -47,7 +47,8 @@
 			},
 			{
 				"id": "owo-lib",
-				"versions": ">=${owo}"
+				"versions": ">=${owo}",
+				"optional": true
 			}
 		]
 	},

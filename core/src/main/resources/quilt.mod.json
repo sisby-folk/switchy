@@ -6,7 +6,7 @@
 		"version": "${switchy}",
 		"metadata": {
 			"name": "Switchy Core",
-			"description": "Switchy API, commands, and client functionality - without any modules.",
+			"description": "Switchy API and commands for server-side.",
 			"contributors": {
 				"Sisby folk": "Co-Authors"
 			},
@@ -19,12 +19,8 @@
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"server_init": "folk.sisby.switchy.Switchy",
-			"client_init": "folk.sisby.switchy.Switchy",
-			"events": [
-				"folk.sisby.switchy.SwitchyPlayConnectionListener",
-				"folk.sisby.switchy.SwitchyCommands"
-			]
+			"server": ["folk.sisby.switchy.Switchy"],
+			"client": ["folk.sisby.switchy.Switchy"]
 		},
 		"depends": [
 			{
@@ -36,16 +32,12 @@
 				"versions": ">=${ql}"
 			},
 			{
-				"id": "quilt_base",
-				"versions": ">=${qsl}"
+				"id": "quilted_fabric_api",
+				"versions": ">=${qfapi}"
 			},
 			{
-				"id": "quilt_command",
-				"versions": ">=${qsl}"
-			},
-			{
-				"id": "quilt_networking",
-				"versions": ">=${qsl}"
+				"id": "quilted_fabric_api",
+				"versions": ">=${qfapi}"
 			},
 			{
 				"id": "server_translations_api",

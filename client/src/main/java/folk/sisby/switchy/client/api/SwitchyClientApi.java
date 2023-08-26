@@ -7,6 +7,8 @@ import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
 import folk.sisby.switchy.api.presets.SwitchyPresets;
 import folk.sisby.switchy.client.SwitchyClient;
 import folk.sisby.switchy.client.util.SwitchyFiles;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -16,8 +18,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-import org.quiltmc.qsl.networking.api.PacketByteBufs;
-import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -35,6 +35,7 @@ import static folk.sisby.switchy.SwitchyClientServerNetworking.*;
  * @author Sisby folk
  * @since 1.9.1
  */
+@SuppressWarnings("deprecation")
 public class SwitchyClientApi {
 	/**
 	 * Map of listeners for API calls waiting for client preset returns.

@@ -1,7 +1,7 @@
 package folk.sisby.switchy.mixin.compat;
 
+import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.tree.ClassNode;
-import org.quiltmc.loader.api.QuiltLoader;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
@@ -14,6 +14,7 @@ import java.util.Set;
  * @author SilverAndro
  * @since 1.7.2
  */
+@SuppressWarnings("deprecation")
 public class MixinCompatPlugin implements IMixinConfigPlugin {
 	@Override
 	public void onLoad(String mixinPackage) {
@@ -30,7 +31,7 @@ public class MixinCompatPlugin implements IMixinConfigPlugin {
 			int startModID = mixinClassName.indexOf(".compat.") + ".compat.".length();
 			int endModID = mixinClassName.indexOf('.', startModID);
 			String modID = mixinClassName.substring(startModID, endModID);
-			return QuiltLoader.isModLoaded(modID) || QuiltLoader.isModLoaded(modID.replaceAll("_", "-"));
+			return FabricLoader.getInstance().isModLoaded(modID) || FabricLoader.getInstance().isModLoaded(modID.replaceAll("_", "-"));
 		}
 		return true;
 	}

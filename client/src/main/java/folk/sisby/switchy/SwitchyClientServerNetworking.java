@@ -6,6 +6,8 @@ import folk.sisby.switchy.api.presets.SwitchyPresets;
 import folk.sisby.switchy.presets.SwitchyPresetsImpl;
 import folk.sisby.switchy.util.PresetConverter;
 import folk.sisby.switchy.util.SwitchyCommand;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -16,8 +18,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.Nullable;
-import org.quiltmc.qsl.networking.api.PacketByteBufs;
-import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +32,7 @@ import static folk.sisby.switchy.util.Feedback.*;
  * @author Sisby folk
  * @since 2.0.0
  */
+@SuppressWarnings("deprecation")
 public class SwitchyClientServerNetworking {
 	// Data Requests
 	/**

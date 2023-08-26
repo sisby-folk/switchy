@@ -4,4 +4,6 @@ dependencies {
 	loom {
 		accessWidenerPath = file("src/main/resources/switchy-cardinal-ui.accesswidener")
 	}
+
+	modImplementation libs.qfapi
 }

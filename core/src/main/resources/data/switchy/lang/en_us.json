@@ -57,7 +57,7 @@
   "commands.switchy.import.success": "Import succeeded: added %s and updated %s presets",
   "commands.switchy.import.warn.info": "You are about to import %s presets with %s modules:",
   "commands.switchy.import.warn.collision": "Red presets will have these modules overwritten:",
-  "commands.switchy.fail": "Error occurred while executing command: '%s' - Check the server log for more details.",
+  "commands.switchy.fail": "Error occurred while executing command - Check the server log for more details.",
   "commands.switch.command": "/switch %s",
   "commands.switch.help": "alias of above"
 }

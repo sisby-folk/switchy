@@ -3,12 +3,13 @@ package folk.sisby.switchy.api;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import folk.sisby.switchy.SwitchyCommands;
 import folk.sisby.switchy.api.events.SwitchySwitchEvent;
+
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import org.quiltmc.qsl.base.api.event.Event;
-import org.quiltmc.qsl.base.api.event.EventAwareListener;
-
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
@@ -19,11 +20,12 @@ import java.util.function.Predicate;
  * @author Ami
  * @since 1.8.2
  */
+@SuppressWarnings("deprecation")
 public final class SwitchyEvents {
 	/**
 	 * @see Init
 	 */
-	public static final Event<Init> INIT = Event.create(Init.class, callbacks -> () -> {
+	public static final Event<Init> INIT = EventFactory.createArrayBacked(Init.class, callbacks -> () -> {
 		for (Init callback : callbacks) {
 			callback.onInitialize();
 		}
@@ -32,16 +34,17 @@ public final class SwitchyEvents {
 	/**
 	 * @see Switch
 	 */
-	public static final Event<Switch> SWITCH = Event.create(Switch.class, callbacks -> (player, event) -> {
+	public static final Event<Switch> SWITCH = EventFactory.createArrayBacked(Switch.class, callbacks -> (player, event) -> {
 		for (Switch callback : callbacks) {
 			callback.onSwitch(player, event);
 		}
 	});
 
+
 	/**
 	 * @see CommandInit
 	 */
-	public static final Event<CommandInit> COMMAND_INIT = Event.create(CommandInit.class, callbacks -> (switchyArgument, helpTextRegistry) -> {
+	public static final Event<CommandInit> COMMAND_INIT = EventFactory.createArrayBacked(CommandInit.class, callbacks -> (switchyArgument, helpTextRegistry) -> {
 		for (CommandInit callback : callbacks) {
 			callback.registerCommands(switchyArgument, helpTextRegistry);
 		}
@@ -50,7 +53,7 @@ public final class SwitchyEvents {
 	/**
 	 * @see CommandInitImport
 	 */
-	public static final Event<CommandInitImport> COMMAND_INIT_IMPORT = Event.create(CommandInitImport.class, callbacks -> (importArgument, helpTextRegistry) -> {
+	public static final Event<CommandInitImport> COMMAND_INIT_IMPORT = EventFactory.createArrayBacked(CommandInitImport.class, callbacks -> (importArgument, helpTextRegistry) -> {
 		for (CommandInitImport callback : callbacks) {
 			callback.registerCommands(importArgument, helpTextRegistry);
 			SwitchyCommands.IMPORT_ENABLED = true;
@@ -64,7 +67,7 @@ public final class SwitchyEvents {
 	 * @see folk.sisby.switchy.api.module.SwitchyModuleRegistry
 	 */
 	@FunctionalInterface
-	public interface Init extends EventAwareListener {
+	public interface Init {
 		/**
 		 * Occurs when Switchy loads modules during initialization.
 		 */
@@ -78,7 +81,7 @@ public final class SwitchyEvents {
 	 * @see SwitchySwitchEvent
 	 */
 	@FunctionalInterface
-	public interface CommandInit extends EventAwareListener {
+	public interface CommandInit {
 		/**
 		 * @param switchyArgument  the literal {@code /switchy} argument to add to.
 		 * @param helpTextRegistry a registry to add lines to {@code /switchy help}.
@@ -94,7 +97,7 @@ public final class SwitchyEvents {
 	 * @see SwitchySwitchEvent
 	 */
 	@FunctionalInterface
-	public interface CommandInitImport extends EventAwareListener {
+	public interface CommandInitImport {
 		/**
 		 * @param importArgument   the literal {@code /switchy import} argument to add to.
 		 * @param helpTextRegistry a registry to add lines to {@code /switchy help}.
@@ -110,11 +113,15 @@ public final class SwitchyEvents {
 	 * @see SwitchySwitchEvent
 	 */
 	@FunctionalInterface
-	public interface Switch extends EventAwareListener {
+	public interface Switch {
 		/**
 		 * @param player The relevant player.
 		 * @param event  The switch event that has occurred.
 		 */
 		void onSwitch(ServerPlayerEntity player, SwitchySwitchEvent event);
+	}
+
+	public static void registerEntrypointListeners() {
+		FabricLoader.getInstance().getEntrypoints("switchy", SwitchyEvents.Init.class).forEach(INIT::register);
 	}
 }
