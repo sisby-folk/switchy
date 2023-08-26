@@ -12,7 +12,6 @@ import net.minecraft.command.CommandBuildContext;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
-import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +28,7 @@ import static folk.sisby.switchy.util.SwitchyCommand.execute;
  * @author Sisby folk
  * @since 1.0.0
  */
-public class SwitchyCommands implements CommandRegistrationCallback {
+public class SwitchyCommands {
 	/**
 	 * A map of the previously executed command, per player UUID.
 	 * Can be used for "repeat-style" command confirmation.
@@ -93,8 +92,7 @@ public class SwitchyCommands implements CommandRegistrationCallback {
 		});
 	}
 
-	@Override
-	public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandBuildContext buildContext, CommandManager.RegistrationEnvironment environment) {
+	public static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandBuildContext buildContext, CommandManager.RegistrationEnvironment environment) {
 		SwitchyEvents.COMMAND_INIT_IMPORT.invoker().registerCommands(ARG_IMPORT, HELP_TEXT::put);
 		if (IMPORT_ENABLED) {
 			ARG_ROOT.then(ARG_IMPORT);

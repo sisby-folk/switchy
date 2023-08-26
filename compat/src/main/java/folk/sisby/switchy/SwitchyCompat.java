@@ -2,7 +2,7 @@ package folk.sisby.switchy;
 
 import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.modules.*;
-import org.quiltmc.loader.api.QuiltLoader;
+import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
  * @see SwitchyEvents
  * @since 1.8.4
  */
+@SuppressWarnings("deprecation")
 public class SwitchyCompat implements SwitchyEvents.Init {
 	/**
 	 * The switchy compat namespace.
@@ -26,12 +27,12 @@ public class SwitchyCompat implements SwitchyEvents.Init {
 
 	@Override
 	public void onInitialize() {
-		if (QuiltLoader.isModLoaded("styled-nicknames")) StyledNicknamesModule.touch();
-		if (QuiltLoader.isModLoaded("fabrictailor")) FabricTailorModule.touch();
-		if (QuiltLoader.isModLoaded("origins")) OriginsModule.touch();
-		if (QuiltLoader.isModLoaded("apoli")) ApoliModule.touch();
-		if (QuiltLoader.isModLoaded("pehkui")) PehkuiModule.touch();
-		if (QuiltLoader.isModLoaded("fabrication")) FabricationArmorModule.touch();
+		if (FabricLoader.getInstance().isModLoaded("styled-nicknames")) StyledNicknamesModule.register();
+		if (FabricLoader.getInstance().isModLoaded("fabrictailor")) FabricTailorModule.register();
+		if (FabricLoader.getInstance().isModLoaded("origins")) OriginsModule.register();
+		if (FabricLoader.getInstance().isModLoaded("apoli")) ApoliModule.register();
+		if (FabricLoader.getInstance().isModLoaded("pehkui")) PehkuiModule.register();
+		if (FabricLoader.getInstance().isModLoaded("fabrication")) FabricationArmorModule.register();
 		LOGGER.info("[Switchy Compat] Initialized!");
 	}
 }

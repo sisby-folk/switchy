@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "switchy-cardinal-ui",
+  "version": "${switchy}",
+  "name": "Switchy Cardinal UI",
+  "description": "Data-driven UI compatibility for data-driven CCA components from Switchy Cardinal.",
+  "authors": [
+    "Sisby folk"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/switchy",
+    "issues": "https://github.com/sisby-folk/switchy/issues",
+    "sources": "https://github.com/sisby-folk/switchy"
+  },
+  "icon": "assets/switchy/icon.png",
+  "license": "LGPL-3.0-only",
+  "environment": "client",
+  "entrypoints": {
+    "switchy_client": [
+      "folk.sisby.switchy.client.SwitchyCardinalClient"
+    ]
+  },
+  "depends": {
+    "minecraft": ">=${mc}",
+    "fabricloader": ">=0.14.9",
+    "fabric": ">=${fapi}",
+    "switchy-core": ">=${switchy}",
+    "switchy-client": ">=${switchy}",
+    "switchy-ui": ">=${switchy}"
+  },
+  "suggests": {
+    "cardinal-components-base": "*",
+    "cardinal-components-entity": "*"
+  },
+  "modmenu": {
+    "parent": "switchy"
+  },
+  "accessWidener": "switchy-cardinal-ui.accesswidener"
+}

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "switchy-client",
+  "version": "${switchy}",
+  "name": "Switchy Client",
+  "description": "A mixed-side addon for Switchy providing client-side API and commands.",
+  "authors": [
+    "Sisby folk"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/switchy",
+    "issues": "https://github.com/sisby-folk/switchy/issues",
+    "sources": "https://github.com/sisby-folk/switchy"
+  },
+  "icon": "assets/switchy/icon.png",
+  "license": "LGPL-3.0-only",
+  "environment": "*",
+  "entrypoints": {
+    "switchy": [
+      "folk.sisby.switchy.SwitchyClientServer"
+    ],
+    "client": [
+      "folk.sisby.switchy.client.SwitchyClient"
+    ]
+  },
+  "depends": {
+    "minecraft": ">=${mc}",
+    "fabricloader": ">=0.14.9",
+    "fabric": ">=${fapi}",
+    "switchy-core": ">=${switchy}"
+  },
+  "mixins": [
+    "switchy-client.mixins.json"
+  ],
+  "modmenu": {
+    "parent": "switchy"
+  }
+}

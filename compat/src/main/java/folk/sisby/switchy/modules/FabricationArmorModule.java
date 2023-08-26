@@ -4,7 +4,6 @@ import com.google.common.base.Enums;
 import com.mojang.datafixers.util.Pair;
 import com.unascribed.fabrication.features.FeatureHideArmor;
 import com.unascribed.fabrication.interfaces.GetSuppressedSlots;
-import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.SwitchyCompat;
 import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
@@ -21,7 +20,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
-import org.quiltmc.loader.api.QuiltLoader;
+import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.*;
 
@@ -35,6 +34,7 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  * @see SwitchyModule
  * @since 1.4.0
  */
+@SuppressWarnings("deprecation")
 public class FabricationArmorModule implements SwitchyModule {
 	/**
 	 * Identifier for this module.
@@ -46,16 +46,19 @@ public class FabricationArmorModule implements SwitchyModule {
 	 */
 	public static final String KEY_SUPPRESSED_SLOTS = "suppressedSlots";
 
-	static {
+	/**
+	 * Registers the module
+	 */
+	public static void register() {
 		SwitchyModuleRegistry.registerModule(ID, FabricationArmorModule::new, new SwitchyModuleInfo(
-						true,
-						SwitchyModuleEditable.ALLOWED,
-						translatable("switchy.modules.switchy.hidearmor.description")
-				)
-						.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.hidearmor.enabled"))
-						.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.hidearmor.disabled"))
-						.withDeletionWarning(translatable("switchy.modules.switchy.hidearmor.warning"))
-						.withApplyDependencies(QuiltLoader.isModLoaded("fabrictailor") ? Set.of(FabricTailorModule.ID) : Set.of())
+				true,
+				SwitchyModuleEditable.ALLOWED,
+				translatable("switchy.modules.switchy.hidearmor.description")
+			)
+				.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.hidearmor.enabled"))
+				.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.hidearmor.disabled"))
+				.withDeletionWarning(translatable("switchy.modules.switchy.hidearmor.warning"))
+				.withApplyDependencies(FabricLoader.getInstance().isModLoaded("fabrictailor") ? Set.of(FabricTailorModule.ID) : Set.of())
 		);
 	}
 
@@ -63,12 +66,6 @@ public class FabricationArmorModule implements SwitchyModule {
 	 * The NBT key where the list of EquipmentSlots to hide is stored.
 	 */
 	private @Nullable Set<EquipmentSlot> suppressedSlots;
-
-	/**
-	 * Executes {@code static} the first time it's invoked.
-	 */
-	public static void touch() {
-	}
 
 	@Override
 	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
@@ -86,7 +83,7 @@ public class FabricationArmorModule implements SwitchyModule {
 
 			// Sketchily copied from feature
 			((ServerWorld) player.getWorld()).getChunkManager().sendToOtherNearbyPlayers(player, new EntityEquipmentUpdateS2CPacket(player.getId(), Arrays.stream(EquipmentSlot.values()).map((es) ->
-					Pair.of(es, gss.fabrication$getSuppressedSlots().contains(es) ? ItemStack.EMPTY : player.getEquippedStack(es))).toList()));
+				Pair.of(es, gss.fabrication$getSuppressedSlots().contains(es) ? ItemStack.EMPTY : player.getEquippedStack(es))).toList()));
 			FeatureHideArmor.sendSuppressedSlotsForSelf(player);
 		}
 	}

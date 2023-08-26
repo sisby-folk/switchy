@@ -3,8 +3,8 @@ package folk.sisby.switchy.client;
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
 import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
-import org.quiltmc.loader.api.ModContainer;
-import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
  * @author Sisby folk
  * @since 1.7.0
  */
+@SuppressWarnings("deprecation")
 public class SwitchyClient implements ClientModInitializer {
 	/**
 	 * the Switchy Client namespace.
@@ -29,8 +30,10 @@ public class SwitchyClient implements ClientModInitializer {
 	public static final String EXPORT_PATH = "config/switchy";
 
 	@Override
-	public void onInitializeClient(ModContainer mod) {
+	public void onInitializeClient() {
 		SwitchyClientReceivers.InitializeReceivers();
+		ClientCommandRegistrationCallback.EVENT.register(SwitchyClientCommands::register);
+		SwitchyClientEvents.registerEntrypointListeners();
 		SwitchyClientEvents.INIT.invoker().onInitialize();
 		LOGGER.info("[Switchy Client] Initialized! Registered Modules: " + SwitchyClientModuleRegistry.getModules());
 	}

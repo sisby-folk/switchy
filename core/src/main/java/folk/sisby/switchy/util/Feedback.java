@@ -1,12 +1,12 @@
 package folk.sisby.switchy.util;
 
+import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
-import org.quiltmc.loader.api.ModContainer;
-import org.quiltmc.loader.api.QuiltLoader;
+import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,6 +19,7 @@ import java.util.function.Predicate;
  * @author Sisby folk
  * @since 1.6.1
  */
+@SuppressWarnings("deprecation")
 public class Feedback {
 	/**
 	 * Green text with white italic arguments.
@@ -223,9 +224,9 @@ public class Feedback {
 	 * @return The mod's title if a match or dash-replaced match is found, otherwise namespace.
 	 */
 	public static String guessModTitle(String namespace) {
-		Optional<ModContainer> mod = QuiltLoader.getModContainer(namespace).or(() -> QuiltLoader.getModContainer(namespace.replace('_', '-')));
+		Optional<ModContainer> mod = FabricLoader.getInstance().getModContainer(namespace).or(() -> FabricLoader.getInstance().getModContainer(namespace.replace('_', '-')));
 		if (mod.isPresent()) {
-			return mod.get().metadata().name();
+			return mod.get().getMetadata().getName();
 		}
 		return namespace;
 	}

@@ -35,7 +35,10 @@ public class StyledNicknamesClientModule implements SwitchyClientModule, Switchy
 	 */
 	public static final String KEY_NICKNAME = "styled_nickname";
 
-	static {
+	/**
+	 * Registers the module
+	 */
+	public static void register() {
 		SwitchyClientModuleRegistry.registerModule(ID, StyledNicknamesClientModule::new);
 	}
 
@@ -43,12 +46,6 @@ public class StyledNicknamesClientModule implements SwitchyClientModule, Switchy
 	 * The styled nickname, in Text format.
 	 */
 	public @Nullable Text styled_nickname;
-
-	/**
-	 * Executes {@code static} the first time it's invoked.
-	 */
-	public static void touch() {
-	}
 
 	@Override
 	public Pair<Component, SwitchyUIPosition> getPreviewComponent(String presetName) {

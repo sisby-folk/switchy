@@ -1,7 +1,11 @@
+plugins {
+	id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
 dependencies {
 	api project(path: ':client', configuration: 'namedElements')
 
-	modCompileOnly libs.qfapi // Compile fabric mods
+	modImplementation libs.qfapi
 
 	modCompileOnly libs.fabrictailor
 	modCompileOnly libs.pehkui
@@ -19,4 +23,17 @@ dependencies {
 	modCompileOnly(libs.origins) {
 		exclude module: 'apoli'
 	}
+}
+
+shadowJar {
+	relocate 'org.quiltmc.config', 'folk.sisby.switchy.repackage.quiltconfig'
+	dependencies {
+		include dependency(libs.quiltConfig.get()) // idk how to make it not include this
+	}
+	minimize()
+}
+
+remapJar {
+	dependsOn(shadowJar)
+	input.set(shadowJar.archivePath)
 }

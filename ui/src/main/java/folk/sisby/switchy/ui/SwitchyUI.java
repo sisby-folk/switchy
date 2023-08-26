@@ -1,7 +1,7 @@
 package folk.sisby.switchy.ui;
 
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
-import org.quiltmc.loader.api.QuiltLoader;
+import net.fabricmc.loader.api.FabricLoader;
 
 /**
  * Addon Initializer for Switchy UI
@@ -9,10 +9,11 @@ import org.quiltmc.loader.api.QuiltLoader;
  * @author Sisby folk
  * @since 2.4.2
  */
+@SuppressWarnings("deprecation")
 public class SwitchyUI implements SwitchyClientEvents.Init {
 	@Override
 	public void onInitialize() {
-		if (QuiltLoader.isModLoaded("owo")) {
+		if (FabricLoader.getInstance().isModLoaded("owo")) {
 			SwitchyKeybindings.initializeKeybindings();
 		}
 	}

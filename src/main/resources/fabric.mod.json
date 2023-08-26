@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "id": "switchy",
+  "version": "${switchy}",
+  "name": "Switchy",
+  "description": "Commands for switching between nothing - including nicknames, skins, and more.",
+  "authors": [
+    "Sisby folk",
+    "MerchantPug",
+    "Ampflower",
+    "SilverAndro",
+    "Ami",
+    "Garden System"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/switchy",
+    "issues": "https://github.com/sisby-folk/switchy/issues",
+    "sources": "https://github.com/sisby-folk/switchy"
+  },
+  "icon": "assets/switchy/icon.png",
+  "license": "LGPL-3.0-only",
+  "environment": "*",
+  "depends": {
+    "minecraft": ">=${mc}",
+    "fabricloader": ">=0.14.9",
+    "fabric": ">=${fapi}",
+    "switchy-core": "${switchy}",
+    "switchy-client": "${switchy}",
+    "switchy-ui": "${switchy}",
+    "switchy-compat": "${switchy}",
+    "switchy-compat-ui": "${switchy}",
+    "switchy-cardinal": "${switchy}",
+    "switchy-cardinal-ui": "${switchy}"
+  },
+  "jars": [
+    {
+      "file": "META-INF/jars/switchy-core-${switchy}.jar"
+    },
+    {
+      "file": "META-INF/jars/switchy-client-${switchy}.jar"
+    },
+    {
+      "file": "META-INF/jars/switchy-ui-${switchy}.jar"
+    },
+    {
+      "file": "META-INF/jars/switchy-cardinal-${switchy}.jar"
+    },
+    {
+      "file": "META-INF/jars/switchy-cardinal-ui-${switchy}.jar"
+    },
+    {
+      "file": "META-INF/jars/switchy-compat-${switchy}.jar"
+    },
+    {
+      "file": "META-INF/jars/switchy-compat-ui-${switchy}.jar"
+    }
+  ]
+}

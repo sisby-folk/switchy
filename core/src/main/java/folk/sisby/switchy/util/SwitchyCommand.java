@@ -132,7 +132,7 @@ public class SwitchyCommand {
 			executor.execute(player, presets, t -> sendMessage(player, t));
 			return 1;
 		} catch (Exception e) {
-			invalid("commands.switchy.fail");
+			sendMessage(player, invalid("commands.switchy.fail"));
 			LOGGER.error("[Switchy] Error while executing command: {}", context.getInput(), e);
 			return 0;
 		}

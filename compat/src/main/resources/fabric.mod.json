@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "id": "switchy-compat",
+  "version": "${switchy}",
+  "name": "Switchy Compat",
+  "description": "Built-in switchy modules like drogtor, styled nicknames, fabric tailor, and origins.",
+  "authors": [
+    "Sisby folk"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/switchy",
+    "issues": "https://github.com/sisby-folk/switchy/issues",
+    "sources": "https://github.com/sisby-folk/switchy"
+  },
+  "icon": "assets/switchy/icon.png",
+  "license": "LGPL-3.0-only",
+  "environment": "*",
+  "entrypoints": {
+    "switchy": [
+      "folk.sisby.switchy.SwitchyCompat"
+    ],
+    "figura_api": [
+      "folk.sisby.switchy.client.SwitchyFiguraApi"
+    ]
+  },
+  "depends": {
+    "minecraft": ">=${mc}",
+    "fabricloader": ">=0.14.9",
+    "fabric": ">=${fapi}",
+    "switchy-core": ">=${switchy}",
+    "switchy-client": ">=${switchy}"
+  },
+  "suggests": {
+    "drogtor": ">=${drogtor}",
+    "styled-nicknames": ">=${styledNicknames}",
+    "fabrictailor": ">=${fabrictailor}",
+    "origins": ">=${origins}",
+    "pehkui": ">=${pehkui}",
+    "fabrication": ">=${fabrication}",
+    "figura": ">=${figura}"
+  },
+  "mixins": [
+    "switchy-compat.mixins.json"
+  ],
+  "modmenu": {
+    "parent": "switchy"
+  }
+}

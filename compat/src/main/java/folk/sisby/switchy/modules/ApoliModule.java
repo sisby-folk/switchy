@@ -1,5 +1,6 @@
 package folk.sisby.switchy.modules;
 
+import folk.sisby.switchy.QuiltifiedFabricConfig;
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.SwitchyCompat;
 import folk.sisby.switchy.api.module.SwitchyModule;
@@ -19,7 +20,6 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
-import org.quiltmc.loader.api.config.QuiltConfig;
 
 import java.util.*;
 
@@ -40,7 +40,7 @@ public class ApoliModule implements SwitchyModule {
 	/**
 	 * The config object for the apoli module, containing the current state of {@code /config/switchy/apoli.toml}.
 	 */
-	public static final ApoliModuleConfig CONFIG = QuiltConfig.create(Switchy.ID, "apoli", ApoliModuleConfig.class);
+	public static final ApoliModuleConfig CONFIG = QuiltifiedFabricConfig.create(Switchy.ID, "apoli", ApoliModuleConfig.class);
 	private static final Identifier COMMAND_SOURCE = new Identifier("apoli", "command");
 	/**
 	 * The NBT key where the list of serialized apoli:command powers are stored.
@@ -51,16 +51,19 @@ public class ApoliModule implements SwitchyModule {
 	 */
 	public static final String KEY_POWER_DATA_LIST = "PowerData";
 
-	static {
+	/**
+	 * Registers the module
+	 */
+	public static void register() {
 		SwitchyModuleRegistry.registerModule(ID, ApoliModule::new, new SwitchyModuleInfo(
-				true,
-				SwitchyModuleEditable.OPERATOR,
-				translatable("switchy.modules.switchy.apoli.description")
+			true,
+			SwitchyModuleEditable.OPERATOR,
+			translatable("switchy.modules.switchy.apoli.description")
 		)
-				.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.apoli.enabled"))
-				.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.apoli.disabled"))
-				.withDeletionWarning(translatable("switchy.modules.switchy.apoli.warning"))
-				.withApplyDependencies(Set.of(OriginsModule.ID)));
+			.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.apoli.enabled"))
+			.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.apoli.disabled"))
+			.withDeletionWarning(translatable("switchy.modules.switchy.apoli.warning"))
+			.withApplyDependencies(Set.of(OriginsModule.ID)));
 	}
 
 	/**
@@ -74,12 +77,6 @@ public class ApoliModule implements SwitchyModule {
 
 	private static void clearInventories(List<InventoryPower> powers) {
 		powers.forEach(InventoryPower::clear);
-	}
-
-	/**
-	 * Executes {@code static} the first time it's invoked.
-	 */
-	public static void touch() {
 	}
 
 	@Override

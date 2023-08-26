@@ -4,7 +4,7 @@ import folk.sisby.switchy.client.api.SwitchyClientEvents;
 import folk.sisby.switchy.client.modules.FabricTailorClientModule;
 import folk.sisby.switchy.client.modules.OriginsClientModule;
 import folk.sisby.switchy.client.modules.StyledNicknamesClientModule;
-import org.quiltmc.loader.api.QuiltLoader;
+import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
  * @see SwitchyClientEvents
  * @since 2.0.0
  */
+@SuppressWarnings("deprecation")
 public class SwitchyCompatClient implements SwitchyClientEvents.Init {
 	/**
 	 * The switchy compat ui namespace.
@@ -27,10 +28,10 @@ public class SwitchyCompatClient implements SwitchyClientEvents.Init {
 	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
 	@Override
 	public void onInitialize() {
-		if (QuiltLoader.isModLoaded("owo")) {
-			FabricTailorClientModule.touch();
-			StyledNicknamesClientModule.touch();
-			if (QuiltLoader.isModLoaded("origins")) OriginsClientModule.touch();
+		if (FabricLoader.getInstance().isModLoaded("owo")) {
+			FabricTailorClientModule.register();
+			StyledNicknamesClientModule.register();
+			if (FabricLoader.getInstance().isModLoaded("origins")) OriginsClientModule.register();
 			LOGGER.info("[Switchy Compat UI] Initialized!");
 		}
 	}

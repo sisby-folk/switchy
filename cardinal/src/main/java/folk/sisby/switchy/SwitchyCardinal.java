@@ -1,9 +1,9 @@
 package folk.sisby.switchy;
 
 import folk.sisby.switchy.api.SwitchyEvents;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;
-import org.quiltmc.loader.api.QuiltLoader;
-import org.quiltmc.qsl.resource.loader.api.ResourceLoader;
+import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
  * @see SwitchyEvents
  * @since 1.8.4
  */
+@SuppressWarnings("deprecation")
 public class SwitchyCardinal implements SwitchyEvents.Init {
 	/**
 	 * The Switchy Cardinal namespace.
@@ -26,8 +27,8 @@ public class SwitchyCardinal implements SwitchyEvents.Init {
 
 	@Override
 	public void onInitialize() {
-		if (QuiltLoader.isModLoaded("cardinal-components-base") && QuiltLoader.isModLoaded("cardinal-components-entity")) {
-			ResourceLoader.get(ResourceType.SERVER_DATA).registerReloader(CardinalModuleLoader.INSTANCE);
+		if (FabricLoader.getInstance().isModLoaded("cardinal-components-base") && FabricLoader.getInstance().isModLoaded("cardinal-components-entity")) {
+			ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(CardinalModuleLoader.INSTANCE);
 			SwitchyCardinal.LOGGER.info("[Switchy Cardinal] Initialized!");
 		}
 	}

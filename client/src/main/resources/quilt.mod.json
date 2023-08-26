@@ -19,13 +19,12 @@
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"events": [
+			"switchy": [
 				"folk.sisby.switchy.SwitchyClientServer"
 			],
-			"client_events": [
-				"folk.sisby.switchy.client.SwitchyClientCommands"
-			],
-			"client_init": "folk.sisby.switchy.client.SwitchyClient"
+			"client": [
+				"folk.sisby.switchy.client.SwitchyClient"
+			]
 		},
 		"depends": [
 			{
@@ -37,8 +36,8 @@
 				"versions": ">=${ql}"
 			},
 			{
-				"id": "quilt_resource_loader",
-				"versions": ">=${qsl}"
+				"id": "quilted_fabric_api",
+				"versions": ">=${qfapi}"
 			},
 			{
 				"id": "switchy-core",
