@@ -3,7 +3,7 @@
   "id": "switchy-compat",
   "version": "${switchy}",
   "name": "Switchy Compat",
-  "description": "Built-in switchy modules like drogtor, styled nicknames, fabric tailor, and origins.",
+  "description": "Built-in switchy modules like styled nicknames, fabric tailor, and origins.",
   "authors": [
     "Sisby folk"
   ],
@@ -31,7 +31,6 @@
     "switchy-client": ">=${switchy}"
   },
   "suggests": {
-    "drogtor": ">=${drogtor}",
     "styled-nicknames": ">=${styledNicknames}",
     "fabrictailor": ">=${fabrictailor}",
     "origins": ">=${origins}",
