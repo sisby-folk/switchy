@@ -22,7 +22,7 @@ public abstract class MixinClientPlayNetworkHandler {
 		SwitchyClientCommands.HISTORY = string;
 	}
 
-	@Inject(method = "method_45730", at = @At("HEAD"))
+	@Inject(method = "sendChatCommand", at = @At("HEAD"))
 	public void recordChatCommands(String string, CallbackInfo ci) {
 		SwitchyClientCommands.HISTORY = string;
 	}
