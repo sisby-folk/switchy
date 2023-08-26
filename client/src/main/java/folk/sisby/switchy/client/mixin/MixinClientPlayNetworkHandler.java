@@ -8,9 +8,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Records server commands before they're sent into a map of previous commands per player UUID.
+ * Records client player commands before they're sent for confirmations.
  *
  * @author Garden System
  * @see SwitchyClientCommands
@@ -18,17 +19,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(ClientPlayNetworkHandler.class)
 public abstract class MixinClientPlayNetworkHandler {
+	@Inject(method = "method_45731", at = @At("HEAD"))
+	public void recordCommands(String string, CallbackInfoReturnable<Boolean> cir) {
+		SwitchyClientCommands.HISTORY = string;
+	}
 
-	/**
-	 * Intercepts outgoing chat packets and updates the command history using them.
-	 *
-	 * @param packet a packet being sent to the server.
-	 * @param ci     callback info.
-	 */
-	@Inject(at = @At("HEAD"), method = "sendPacket")
-	public void sendPacket(Packet<?> packet, CallbackInfo ci) {
-		if (packet instanceof ChatCommandC2SPacket chatPacket) {
-			SwitchyClientCommands.HISTORY = chatPacket.command();
-		}
+	@Inject(method = "method_45730", at = @At("HEAD"))
+	public void recordChatCommands(String string, CallbackInfo ci) {
+		SwitchyClientCommands.HISTORY = string;
 	}
 }
