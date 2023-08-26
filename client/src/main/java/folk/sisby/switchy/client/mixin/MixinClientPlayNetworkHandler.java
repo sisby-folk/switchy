@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  */
 @Mixin(ClientPlayNetworkHandler.class)
 public abstract class MixinClientPlayNetworkHandler {
-	@Inject(method = "method_45731", at = @At("HEAD"))
+	@Inject(method = "sendCommand", at = @At("HEAD"))
 	public void recordCommands(String string, CallbackInfoReturnable<Boolean> cir) {
 		SwitchyClientCommands.HISTORY = string;
 	}
