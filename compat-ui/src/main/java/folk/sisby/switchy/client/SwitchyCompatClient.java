@@ -30,10 +30,10 @@ public class SwitchyCompatClient implements SwitchyClientEvents.Init {
 	@Override
 	public void onInitialize() {
 		if (FabricLoader.getInstance().isModLoaded("owo")) {
-			DrogtorClientModule.touch();
-			FabricTailorClientModule.touch();
-			StyledNicknamesClientModule.touch();
-			if (FabricLoader.getInstance().isModLoaded("origins")) OriginsClientModule.touch();
+			DrogtorClientModule.register();
+			FabricTailorClientModule.register();
+			StyledNicknamesClientModule.register();
+			if (FabricLoader.getInstance().isModLoaded("origins")) OriginsClientModule.register();
 			LOGGER.info("[Switchy Compat UI] Initialized!");
 		}
 	}

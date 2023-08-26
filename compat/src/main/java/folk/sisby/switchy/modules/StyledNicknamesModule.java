@@ -2,7 +2,6 @@ package folk.sisby.switchy.modules;
 
 import eu.pb4.placeholders.api.TextParserUtils;
 import eu.pb4.stylednicknames.NicknameHolder;
-import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.SwitchyCompat;
 import folk.sisby.switchy.api.module.*;
 import net.minecraft.nbt.NbtCompound;
@@ -33,28 +32,24 @@ public class StyledNicknamesModule implements SwitchyModule, SwitchyModuleTransf
 	 */
 	public static final String KEY_NICKNAME = "styled_nickname";
 
-	// Runs on touch() - but only once.
-	static {
-		SwitchyModuleRegistry.registerModule(ID, StyledNicknamesModule::new, new SwitchyModuleInfo(
-						true,
-						SwitchyModuleEditable.ALWAYS_ALLOWED,
-						translatable("switchy.modules.switchy.styled_nicknames.description")
-				)
-						.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.styled_nicknames.enabled"))
-						.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.styled_nicknames.disabled"))
-						.withDeletionWarning(translatable("switchy.modules.switchy.styled_nicknames.warning"))
-		);
-	}
-
 	/**
 	 * The styled nickname, in placeholder API simplified text format.
 	 */
 	@Nullable public String styled_nickname;
 
 	/**
-	 * Executes {@code static} the first time it's invoked.
+	 * Registers the module
 	 */
-	public static void touch() {
+	public static void register() {
+		SwitchyModuleRegistry.registerModule(ID, StyledNicknamesModule::new, new SwitchyModuleInfo(
+				true,
+				SwitchyModuleEditable.ALWAYS_ALLOWED,
+				translatable("switchy.modules.switchy.styled_nicknames.description")
+			)
+				.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.styled_nicknames.enabled"))
+				.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.styled_nicknames.disabled"))
+				.withDeletionWarning(translatable("switchy.modules.switchy.styled_nicknames.warning"))
+		);
 	}
 
 	@Override

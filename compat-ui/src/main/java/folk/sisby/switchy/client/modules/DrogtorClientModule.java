@@ -22,14 +22,11 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
  */
 @ClientOnly
 public class DrogtorClientModule extends DrogtorModuleData implements SwitchyClientModule, SwitchyUIModule {
-	static {
-		SwitchyClientModuleRegistry.registerModule(DrogtorClientModule.ID, DrogtorClientModule::new);
-	}
-
 	/**
-	 * Executes {@code static} the first time it's invoked.
+	 * Registers the module
 	 */
-	public static void touch() {
+	public static void register() {
+		SwitchyClientModuleRegistry.registerModule(DrogtorClientModule.ID, DrogtorClientModule::new);
 	}
 
 	@Override

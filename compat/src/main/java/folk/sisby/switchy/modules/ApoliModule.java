@@ -51,16 +51,19 @@ public class ApoliModule implements SwitchyModule {
 	 */
 	public static final String KEY_POWER_DATA_LIST = "PowerData";
 
-	static {
+	/**
+	 * Registers the module
+	 */
+	public static void register() {
 		SwitchyModuleRegistry.registerModule(ID, ApoliModule::new, new SwitchyModuleInfo(
-				true,
-				SwitchyModuleEditable.OPERATOR,
-				translatable("switchy.modules.switchy.apoli.description")
+			true,
+			SwitchyModuleEditable.OPERATOR,
+			translatable("switchy.modules.switchy.apoli.description")
 		)
-				.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.apoli.enabled"))
-				.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.apoli.disabled"))
-				.withDeletionWarning(translatable("switchy.modules.switchy.apoli.warning"))
-				.withApplyDependencies(Set.of(OriginsModule.ID)));
+			.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.apoli.enabled"))
+			.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.apoli.disabled"))
+			.withDeletionWarning(translatable("switchy.modules.switchy.apoli.warning"))
+			.withApplyDependencies(Set.of(OriginsModule.ID)));
 	}
 
 	/**
@@ -74,12 +77,6 @@ public class ApoliModule implements SwitchyModule {
 
 	private static void clearInventories(List<InventoryPower> powers) {
 		powers.forEach(InventoryPower::clear);
-	}
-
-	/**
-	 * Executes {@code static} the first time it's invoked.
-	 */
-	public static void touch() {
 	}
 
 	@Override

@@ -34,14 +34,11 @@ import java.util.UUID;
  */
 @ClientOnly
 public class FabricTailorClientModule extends FabricTailorModuleData implements SwitchyClientModule, SwitchyUIModule {
-	static {
-		SwitchyClientModuleRegistry.registerModule(ID, FabricTailorClientModule::new);
-	}
-
 	/**
-	 * Executes {@code static} the first time it's invoked.
+	 * Registers the module
 	 */
-	public static void touch() {
+	public static void register() {
+		SwitchyClientModuleRegistry.registerModule(ID, FabricTailorClientModule::new);
 	}
 
 	@Override

@@ -27,13 +27,13 @@ public class SwitchyCompat implements SwitchyEvents.Init {
 
 	@Override
 	public void onInitialize() {
-		if (FabricLoader.getInstance().isModLoaded("drogtor") && !FabricLoader.getInstance().isModLoaded("drogstyle")) DrogtorModule.touch();
-		if (FabricLoader.getInstance().isModLoaded("styled-nicknames")) StyledNicknamesModule.touch();
-		if (FabricLoader.getInstance().isModLoaded("fabrictailor")) FabricTailorModule.touch();
-		if (FabricLoader.getInstance().isModLoaded("origins")) OriginsModule.touch();
-		if (FabricLoader.getInstance().isModLoaded("apoli")) ApoliModule.touch();
-		if (FabricLoader.getInstance().isModLoaded("pehkui")) PehkuiModule.touch();
-		if (FabricLoader.getInstance().isModLoaded("fabrication")) FabricationArmorModule.touch();
+		if (FabricLoader.getInstance().isModLoaded("drogtor") && !FabricLoader.getInstance().isModLoaded("drogstyle")) DrogtorModule.register();
+		if (FabricLoader.getInstance().isModLoaded("styled-nicknames")) StyledNicknamesModule.register();
+		if (FabricLoader.getInstance().isModLoaded("fabrictailor")) FabricTailorModule.register();
+		if (FabricLoader.getInstance().isModLoaded("origins")) OriginsModule.register();
+		if (FabricLoader.getInstance().isModLoaded("apoli")) ApoliModule.register();
+		if (FabricLoader.getInstance().isModLoaded("pehkui")) PehkuiModule.register();
+		if (FabricLoader.getInstance().isModLoaded("fabrication")) FabricationArmorModule.register();
 		LOGGER.info("[Switchy Compat] Initialized!");
 	}
 }

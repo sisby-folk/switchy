@@ -62,7 +62,10 @@ public class OriginsClientModule implements SwitchyClientModule, SwitchyUIModule
 	 */
 	public static final String KEY_ORIGIN = "Origin";
 
-	static {
+	/**
+	 * Registers the module
+	 */
+	public static void register() {
 		SwitchyClientModuleRegistry.registerModule(ID, OriginsClientModule::new);
 	}
 
@@ -70,12 +73,6 @@ public class OriginsClientModule implements SwitchyClientModule, SwitchyUIModule
 	 * The origin identifiers per layer.
 	 */
 	public Map<OriginLayer, Origin> origins;
-
-	/**
-	 * Executes {@code static} the first time it's invoked.
-	 */
-	public static void touch() {
-	}
 
 	@Override
 	public Pair<Component, SwitchyUIPosition> getPreviewComponent(String presetName) {

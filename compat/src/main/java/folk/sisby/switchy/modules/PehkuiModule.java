@@ -36,15 +36,18 @@ public class PehkuiModule implements SwitchyModule {
 	 */
 	public static final PehkuiModuleConfig CONFIG = QuiltifiedFabricConfig.create(Switchy.ID, "pehkui", PehkuiModuleConfig.class);
 
-	static {
+	/**
+	 * Registers the module
+	 */
+	public static void register() {
 		SwitchyModuleRegistry.registerModule(ID, PehkuiModule::new, new SwitchyModuleInfo(
-						true,
-						SwitchyModuleEditable.OPERATOR,
-						translatable("switchy.modules.switchy.pehkui.description")
-				)
-						.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.pehkui.enabled"))
-						.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.pehkui.disabled"))
-						.withDeletionWarning(translatable("switchy.modules.switchy.pehkui.warning"))
+				true,
+				SwitchyModuleEditable.OPERATOR,
+				translatable("switchy.modules.switchy.pehkui.description")
+			)
+				.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.pehkui.enabled"))
+				.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.pehkui.disabled"))
+				.withDeletionWarning(translatable("switchy.modules.switchy.pehkui.warning"))
 		);
 	}
 
@@ -55,12 +58,6 @@ public class PehkuiModule implements SwitchyModule {
 
 	PehkuiModule() {
 		CONFIG.scaleTypes.forEach(id -> scaleValues.put(ScaleRegistries.SCALE_TYPES.get(new Identifier(id)), null));
-	}
-
-	/**
-	 * Executes {@code static} the first time it's invoked.
-	 */
-	public static void touch() {
 	}
 
 	@Override
@@ -79,7 +76,8 @@ public class PehkuiModule implements SwitchyModule {
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		scaleValues.forEach((type, value) -> {
-			if (value != null) outNbt.putFloat(ScaleRegistries.getId(ScaleRegistries.SCALE_TYPES, type).toString(), value);
+			if (value != null)
+				outNbt.putFloat(ScaleRegistries.getId(ScaleRegistries.SCALE_TYPES, type).toString(), value);
 		});
 		return outNbt;
 	}

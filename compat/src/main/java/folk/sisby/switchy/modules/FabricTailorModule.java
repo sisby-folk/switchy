@@ -16,22 +16,19 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  * @since 1.0.0
  */
 public class FabricTailorModule extends FabricTailorModuleData implements SwitchyModule, SwitchyModuleTransferable {
-	static {
-		SwitchyModuleRegistry.registerModule(ID, FabricTailorModule::new, new SwitchyModuleInfo(
-						true,
-						SwitchyModuleEditable.ALWAYS_ALLOWED,
-						translatable("switchy.modules.switchy.fabrictailor.description")
-				)
-						.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.fabrictailor.enabled"))
-						.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.fabrictailor.disabled"))
-						.withDeletionWarning(translatable("switchy.modules.switchy.fabrictailor.warning"))
-		);
-	}
-
 	/**
-	 * Executes {@code static} the first time it's invoked.
+	 * Registers the module
 	 */
-	public static void touch() {
+	public static void register() {
+		SwitchyModuleRegistry.registerModule(ID, FabricTailorModule::new, new SwitchyModuleInfo(
+				true,
+				SwitchyModuleEditable.ALWAYS_ALLOWED,
+				translatable("switchy.modules.switchy.fabrictailor.description")
+			)
+				.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.fabrictailor.enabled"))
+				.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.fabrictailor.disabled"))
+				.withDeletionWarning(translatable("switchy.modules.switchy.fabrictailor.warning"))
+		);
 	}
 
 	@Override
