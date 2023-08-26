@@ -8,14 +8,14 @@ import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.api.modules.CardinalSerializerModule;
+import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import org.jetbrains.annotations.NotNull;
-import org.quiltmc.loader.api.QuiltLoader;
-import org.quiltmc.qsl.resource.loader.api.reloader.IdentifiableResourceReloader;
+import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -39,7 +39,8 @@ import java.util.stream.StreamSupport;
  * @see CardinalSerializerModule
  * @since 1.8.0
  */
-public class CardinalModuleLoader extends JsonDataLoader implements IdentifiableResourceReloader {
+@SuppressWarnings("deprecation")
+public class CardinalModuleLoader extends JsonDataLoader implements IdentifiableResourceReloadListener {
 	/**
 	 * The global instance for this resource loader.
 	 */
@@ -65,7 +66,7 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 				SwitchyCardinal.LOGGER.warn("[Switchy Cardinal] module '{}' is missing options, skipping...", moduleId);
 				return;
 			}
-			if (moduleOptions.has(KEY_IF_MODS_LOADED) && !StreamSupport.stream(moduleOptions.get(KEY_IF_MODS_LOADED).getAsJsonArray().spliterator(), true).map(JsonElement::getAsString).allMatch(QuiltLoader::isModLoaded)) {
+			if (moduleOptions.has(KEY_IF_MODS_LOADED) && !StreamSupport.stream(moduleOptions.get(KEY_IF_MODS_LOADED).getAsJsonArray().spliterator(), true).map(JsonElement::getAsString).allMatch(FabricLoader.getInstance()::isModLoaded)) {
 				return;
 			}
 			try {
@@ -102,7 +103,7 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 	}
 
 	@Override
-	public @NotNull Identifier getQuiltId() {
+	public @NotNull Identifier getFabricId() {
 		return ID;
 	}
 }

@@ -8,14 +8,12 @@ import folk.sisby.switchy.client.argument.IdentifiersArgumentType;
 import folk.sisby.switchy.client.argument.IdentifiersFromNbtArgArgumentType;
 import folk.sisby.switchy.client.argument.NbtFileArgumentType;
 import folk.sisby.switchy.util.Feedback;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.command.CommandBuildContext;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.util.Identifier;
-import org.quiltmc.qsl.command.api.client.ClientCommandManager;
-import org.quiltmc.qsl.command.api.client.ClientCommandRegistrationCallback;
-import org.quiltmc.qsl.command.api.client.QuiltClientCommandSource;
 
 import java.util.List;
 
@@ -28,8 +26,8 @@ import static folk.sisby.switchy.client.util.FeedbackClient.sendClientMessage;
  * @author Sisby folk
  * @since 1.7.0
  */
-@SuppressWarnings("unchecked")
-public class SwitchyClientCommands implements ClientCommandRegistrationCallback {
+@SuppressWarnings({"unchecked", "deprecation"})
+public class SwitchyClientCommands {
 	/**
 	 * A map of the previously executed command, per player UUID.
 	 * Can be used for "repeat-style" command confirmation.
@@ -65,10 +63,9 @@ public class SwitchyClientCommands implements ClientCommandRegistrationCallback 
 		sendClientMessage(player, Feedback.success("commands.switchy_client.export.sent"));
 	}
 
-	@Override
-	public void registerCommands(CommandDispatcher<QuiltClientCommandSource> dispatcher, CommandBuildContext buildContext, CommandManager.RegistrationEnvironment environment) {
-		LiteralArgumentBuilder<QuiltClientCommandSource> rootArgument = ClientCommandManager.literal("switchy_client");
-		LiteralArgumentBuilder<QuiltClientCommandSource> importArgument = ClientCommandManager.literal("import");
+	public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext buildContext) {
+		LiteralArgumentBuilder<FabricClientCommandSource> rootArgument = ClientCommandManager.literal("switchy_client");
+		LiteralArgumentBuilder<FabricClientCommandSource> importArgument = ClientCommandManager.literal("import");
 		rootArgument.requires(source -> SwitchyClientApi.isSwitchyServer());
 
 		SwitchyClientEvents.COMMAND_INIT_IMPORT.invoker().registerCommands(importArgument, (t) -> {

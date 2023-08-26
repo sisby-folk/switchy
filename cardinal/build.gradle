@@ -1,5 +1,6 @@
 dependencies {
 	api project(path: ':client', configuration: 'namedElements')
+	modImplementation libs.qfapi
 	modApi libs.cardinal
 	modApi libs.cardinalEntity
 }

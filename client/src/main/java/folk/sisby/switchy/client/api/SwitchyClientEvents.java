@@ -3,13 +3,13 @@ package folk.sisby.switchy.client.api;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import folk.sisby.switchy.api.events.SwitchySwitchEvent;
 import folk.sisby.switchy.client.api.module.SwitchyClientModule;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.loader.api.minecraft.ClientOnly;
-import org.quiltmc.qsl.base.api.event.Event;
-import org.quiltmc.qsl.base.api.event.EventAwareListener;
-import org.quiltmc.qsl.base.api.event.client.ClientEventAwareListener;
-import org.quiltmc.qsl.command.api.client.QuiltClientCommandSource;
 
 import java.util.function.Consumer;
 
@@ -21,6 +21,7 @@ import java.util.function.Consumer;
  * @author Ami
  * @since 1.8.2
  */
+@SuppressWarnings("deprecation")
 @ClientOnly
 public class SwitchyClientEvents {
 	/**
@@ -31,7 +32,7 @@ public class SwitchyClientEvents {
 	/**
 	 * @see Init
 	 */
-	public static final Event<Init> INIT = Event.create(Init.class, callbacks -> () -> {
+	public static final Event<Init> INIT = EventFactory.createArrayBacked(Init.class, callbacks -> () -> {
 		for (Init callback : callbacks) {
 			callback.onInitialize();
 		}
@@ -40,7 +41,7 @@ public class SwitchyClientEvents {
 	/**
 	 * @see Switch
 	 */
-	public static final Event<Switch> SWITCH = Event.create(Switch.class, callbacks -> (event) -> {
+	public static final Event<Switch> SWITCH = EventFactory.createArrayBacked(Switch.class, callbacks -> (event) -> {
 		for (Switch callback : callbacks) {
 			callback.onSwitch(event);
 		}
@@ -50,7 +51,7 @@ public class SwitchyClientEvents {
 	/**
 	 * @see CommandInit
 	 */
-	public static final Event<CommandInit> COMMAND_INIT = Event.create(CommandInit.class, callbacks -> (switchyArgument, helpTextRegistry) -> {
+	public static final Event<CommandInit> COMMAND_INIT = EventFactory.createArrayBacked(CommandInit.class, callbacks -> (switchyArgument, helpTextRegistry) -> {
 		for (CommandInit callback : callbacks) {
 			callback.registerCommands(switchyArgument, helpTextRegistry);
 		}
@@ -59,7 +60,7 @@ public class SwitchyClientEvents {
 	/**
 	 * @see CommandInitImport
 	 */
-	public static final Event<CommandInitImport> COMMAND_INIT_IMPORT = Event.create(CommandInitImport.class, callbacks -> (importArgument, helpTextRegistry) -> {
+	public static final Event<CommandInitImport> COMMAND_INIT_IMPORT = EventFactory.createArrayBacked(CommandInitImport.class, callbacks -> (importArgument, helpTextRegistry) -> {
 		for (CommandInitImport callback : callbacks) {
 			callback.registerCommands(importArgument, helpTextRegistry);
 		}
@@ -72,7 +73,7 @@ public class SwitchyClientEvents {
 	 * @see folk.sisby.switchy.client.SwitchyClient
 	 */
 	@FunctionalInterface
-	public interface Init extends ClientEventAwareListener {
+	public interface Init {
 		/**
 		 * Occurs when Switchy Client initializes.
 		 */
@@ -86,13 +87,13 @@ public class SwitchyClientEvents {
 	 * @see SwitchySwitchEvent
 	 */
 	@FunctionalInterface
-	public interface CommandInit extends EventAwareListener {
+	public interface CommandInit {
 		/**
 		 * @param rootArgument     the literal {@code /switchy_client} argument to add to.
 		 * @param helpTextRegistry a registry to add lines to {@code /switchy_client help}.
 		 *                         Lines should be generated using {@link folk.sisby.switchy.util.Feedback#helpText(String, String, String...)}.
 		 */
-		void registerCommands(LiteralArgumentBuilder<QuiltClientCommandSource> rootArgument, Consumer<Text> helpTextRegistry);
+		void registerCommands(LiteralArgumentBuilder<FabricClientCommandSource> rootArgument, Consumer<Text> helpTextRegistry);
 	}
 
 	/**
@@ -102,13 +103,13 @@ public class SwitchyClientEvents {
 	 * @see SwitchySwitchEvent
 	 */
 	@FunctionalInterface
-	public interface CommandInitImport extends EventAwareListener {
+	public interface CommandInitImport {
 		/**
 		 * @param importArgument   the literal {@code /switchy_client import} argument to add to.
 		 * @param helpTextRegistry a registry to add lines to {@code /switchy_client help}.
 		 *                         Lines should be generated using {@link folk.sisby.switchy.util.Feedback#helpText(String, String, String...)}.
 		 */
-		void registerCommands(LiteralArgumentBuilder<QuiltClientCommandSource> importArgument, Consumer<Text> helpTextRegistry);
+		void registerCommands(LiteralArgumentBuilder<FabricClientCommandSource> importArgument, Consumer<Text> helpTextRegistry);
 	}
 
 	/**
@@ -117,10 +118,14 @@ public class SwitchyClientEvents {
 	 * @see SwitchySwitchEvent
 	 */
 	@FunctionalInterface
-	public interface Switch extends ClientEventAwareListener {
+	public interface Switch {
 		/**
 		 * @param event The switch event that has occurred.
 		 */
 		void onSwitch(SwitchySwitchEvent event);
+	}
+
+	public static void registerEntrypointListeners() {
+		FabricLoader.getInstance().getEntrypoints("switchy_client", SwitchyClientEvents.Init.class).forEach(INIT::register);
 	}
 }

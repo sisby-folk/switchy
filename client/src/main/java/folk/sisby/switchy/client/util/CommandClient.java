@@ -2,8 +2,8 @@ package folk.sisby.switchy.client.util;
 
 import com.mojang.brigadier.context.CommandContext;
 import folk.sisby.switchy.util.Feedback;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.network.ClientPlayerEntity;
-import org.quiltmc.qsl.command.api.client.QuiltClientCommandSource;
 
 import static folk.sisby.switchy.Switchy.LOGGER;
 import static folk.sisby.switchy.client.util.FeedbackClient.sendClientMessage;
@@ -14,6 +14,7 @@ import static folk.sisby.switchy.client.util.FeedbackClient.sendClientMessage;
  * @author Sisby folk
  * @since 1.8.13
  */
+@SuppressWarnings("deprecation")
 public class CommandClient {
 	/**
 	 * Executes a given Switchy Client command method using context.
@@ -24,7 +25,7 @@ public class CommandClient {
 	 * @return an integer representing the command outcome. 1 for executed, 0 for exceptions.
 	 * @see folk.sisby.switchy.client.SwitchyClientCommands
 	 */
-	public static int executeClient(CommandContext<QuiltClientCommandSource> context, SwitchyClientCommandExecutor executor) {
+	public static int executeClient(CommandContext<FabricClientCommandSource> context, SwitchyClientCommandExecutor executor) {
 		ClientPlayerEntity player = context.getSource().getPlayer();
 		try {
 			executor.execute(context.getInput(), player);

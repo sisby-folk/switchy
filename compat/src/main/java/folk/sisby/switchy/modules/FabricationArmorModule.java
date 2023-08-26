@@ -4,7 +4,6 @@ import com.google.common.base.Enums;
 import com.mojang.datafixers.util.Pair;
 import com.unascribed.fabrication.features.FeatureHideArmor;
 import com.unascribed.fabrication.interfaces.GetSuppressedSlots;
-import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.SwitchyCompat;
 import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
@@ -21,7 +20,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
-import org.quiltmc.loader.api.QuiltLoader;
+import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.*;
 
@@ -35,6 +34,7 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  * @see SwitchyModule
  * @since 1.4.0
  */
+@SuppressWarnings("deprecation")
 public class FabricationArmorModule implements SwitchyModule {
 	/**
 	 * Identifier for this module.
@@ -55,7 +55,7 @@ public class FabricationArmorModule implements SwitchyModule {
 						.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.hidearmor.enabled"))
 						.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.hidearmor.disabled"))
 						.withDeletionWarning(translatable("switchy.modules.switchy.hidearmor.warning"))
-						.withApplyDependencies(QuiltLoader.isModLoaded("fabrictailor") ? Set.of(FabricTailorModule.ID) : Set.of())
+						.withApplyDependencies(FabricLoader.getInstance().isModLoaded("fabrictailor") ? Set.of(FabricTailorModule.ID) : Set.of())
 		);
 	}
 

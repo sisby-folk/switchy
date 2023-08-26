@@ -1,5 +1,6 @@
 package folk.sisby.switchy.modules;
 
+import folk.sisby.switchy.QuiltifiedFabricConfig;
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
@@ -10,7 +11,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
-import org.quiltmc.loader.api.config.QuiltConfig;
 import virtuoel.pehkui.api.ScaleRegistries;
 import virtuoel.pehkui.api.ScaleType;
 
@@ -34,7 +34,7 @@ public class PehkuiModule implements SwitchyModule {
 	/**
 	 * The config object for the pehkui module, containing the current state of {@code /config/switchy/pehkui.toml}.
 	 */
-	public static final PehkuiModuleConfig CONFIG = QuiltConfig.create(Switchy.ID, "pehkui", PehkuiModuleConfig.class);
+	public static final PehkuiModuleConfig CONFIG = QuiltifiedFabricConfig.create(Switchy.ID, "pehkui", PehkuiModuleConfig.class);
 
 	static {
 		SwitchyModuleRegistry.registerModule(ID, PehkuiModule::new, new SwitchyModuleInfo(

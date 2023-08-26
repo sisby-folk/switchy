@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "switchy-cardinal",
+  "version": "${switchy}",
+  "name": "Switchy Cardinal",
+  "description": "A switchy addon that adds data-driven CCA components, with an API.",
+  "authors": [
+    "Sisby folk"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/switchy",
+    "issues": "https://github.com/sisby-folk/switchy/issues",
+    "sources": "https://github.com/sisby-folk/switchy"
+  },
+  "icon": "assets/switchy/icon.png",
+  "license": "LGPL-3.0-only",
+  "environment": "*",
+  "entrypoints": {
+    "switchy": [
+      "folk.sisby.switchy.SwitchyCardinal"
+    ]
+  },
+  "depends": {
+    "minecraft": ">=${mc}",
+    "fabricloader": ">=0.14.9",
+    "fabric": ">=${fapi}",
+    "switchy-core": ">=${switchy}",
+    "switchy-client": ">=${switchy}"
+  },
+  "suggests": {
+    "cardinal-components-base": "*",
+    "cardinal-components-entity": "*"
+  },
+  "modmenu": {
+    "parent": "switchy"
+  }
+}
