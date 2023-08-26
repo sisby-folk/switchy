@@ -213,7 +213,7 @@ if (System.getenv("MODRINTH_TOKEN")) {
 		versionType = 'release'
 		uploadFile = remapJar
 		gameVersions = [mc]
-		loaders = ['quilt']
+		loaders = ['quilt', 'fabric']
 		detectLoaders = false
 		dependencies {
 			required.project "owo-lib"
