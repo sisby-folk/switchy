@@ -1,7 +1,6 @@
 package folk.sisby.switchy.modules;
 
 import com.unascribed.drogtor.DrogtorPlayer;
-import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.SwitchyCompat;
 import folk.sisby.switchy.api.module.*;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -20,22 +19,19 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  * @since 1.0.0
  */
 public class DrogtorModule extends DrogtorModuleData implements SwitchyModule, SwitchyModuleTransferable {
-	static {
-		SwitchyModuleRegistry.registerModule(ID, DrogtorModule::new, new SwitchyModuleInfo(
-						true,
-						SwitchyModuleEditable.ALWAYS_ALLOWED,
-						translatable("switchy.modules.switchy.drogtor.description")
-				)
-						.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.drogtor.enabled"))
-						.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.drogtor.disabled"))
-						.withDeletionWarning(translatable("switchy.modules.switchy.drogtor.warning"))
-		);
-	}
-
 	/**
-	 * Executes {@code static} the first time it's invoked.
+	 * Registers the module
 	 */
-	public static void touch() {
+	public static void register() {
+		SwitchyModuleRegistry.registerModule(ID, DrogtorModule::new, new SwitchyModuleInfo(
+				true,
+				SwitchyModuleEditable.ALWAYS_ALLOWED,
+				translatable("switchy.modules.switchy.drogtor.description")
+			)
+				.withDescriptionWhenEnabled(translatable("switchy.modules.switchy.drogtor.enabled"))
+				.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.drogtor.disabled"))
+				.withDeletionWarning(translatable("switchy.modules.switchy.drogtor.warning"))
+		);
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.JsonOps;
 import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
 import folk.sisby.switchy.client.api.modules.CardinalSerializerClientModule;
+import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -19,7 +20,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import org.jetbrains.annotations.NotNull;
-import org.quiltmc.qsl.resource.loader.api.reloader.IdentifiableResourceReloader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,8 @@ import java.util.function.Function;
  * @see CardinalSerializerClientModule
  * @since 2.6.0
  */
-public class CardinalClientModuleLoader extends JsonDataLoader implements IdentifiableResourceReloader {
+@SuppressWarnings("deprecation")
+public class CardinalClientModuleLoader extends JsonDataLoader implements IdentifiableResourceReloadListener {
 	/**
 	 * The global instance for this resource loader.
 	 */
@@ -135,7 +136,7 @@ public class CardinalClientModuleLoader extends JsonDataLoader implements Identi
 	}
 
 	@Override
-	public @NotNull Identifier getQuiltId() {
+	public @NotNull Identifier getFabricId() {
 		return ID;
 	}
 }

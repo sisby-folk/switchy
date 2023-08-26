@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "switchy-core",
+  "version": "${switchy}",
+  "name": "Switchy Core",
+  "description": "Switchy API and commands for server-side.",
+  "authors": [
+    "Sisby folk"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/switchy",
+    "issues": "https://github.com/sisby-folk/switchy/issues",
+    "sources": "https://github.com/sisby-folk/switchy"
+  },
+  "icon": "assets/switchy/icon.png",
+  "license": "LGPL-3.0-only",
+  "environment": "*",
+  "entrypoints": {
+    "server": ["folk.sisby.switchy.Switchy"],
+    "client": ["folk.sisby.switchy.Switchy"]
+  },
+  "depends": {
+    "minecraft": ">=${mc}",
+    "fabricloader": ">=0.14.9",
+    "fabric": ">=${fapi}",
+    "server_translations_api": ">=${serverTranslationsAPI}"
+  },
+  "mixins": [
+    "switchy-core.mixins.json"
+  ],
+  "modmenu": {
+    "parent": "switchy"
+  },
+  "jars": [
+    {
+      "file": "META-INF/jars/server-translations-api-${serverTranslationsAPI}.jar"
+    }
+  ]
+}

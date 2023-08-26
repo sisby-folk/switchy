@@ -5,6 +5,7 @@ import folk.sisby.switchy.api.exception.InvalidWordException;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPreset;
 import folk.sisby.switchy.client.api.module.SwitchyClientModule;
 import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import org.quiltmc.loader.api.minecraft.ClientOnly;
 
@@ -26,5 +27,10 @@ public class SwitchyClientPresetImpl extends SwitchyPresetDataImpl<SwitchyClient
 	 */
 	public SwitchyClientPresetImpl(String name, Map<Identifier, Boolean> modules) throws InvalidWordException {
 		super(name, modules, SwitchyClientModuleRegistry::supplyModule);
+	}
+
+	@Override
+	protected void savePuppies(NbtCompound nbt) {
+		// NOOP - Client presets are transient
 	}
 }

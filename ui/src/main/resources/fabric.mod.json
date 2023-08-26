@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "switchy-ui",
+  "version": "${switchy}",
+  "name": "Switchy UI",
+  "description": "The client-side UI addon for Switchy Client providing alternatives to server commands.",
+  "authors": [
+    "Sisby folk"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/switchy",
+    "issues": "https://github.com/sisby-folk/switchy/issues",
+    "sources": "https://github.com/sisby-folk/switchy"
+  },
+  "icon": "assets/switchy/icon.png",
+  "license": "LGPL-3.0-only",
+  "environment": "*",
+  "entrypoints": {
+    "switchy_client": [
+      "folk.sisby.switchy.ui.SwitchyUI"
+    ]
+  },
+  "depends": {
+    "minecraft": ">=${mc}",
+    "fabricloader": ">=0.14.9",
+    "fabric": ">=${fapi}",
+    "switchy-core": ">=${switchy}",
+    "switchy-client": ">=${switchy}"
+  },
+  "suggests": {
+    "owo-lib": ">=${owo}"
+  },
+  "mixins": [
+    "switchy-ui.mixins.json"
+  ],
+  "modmenu": {
+    "parent": "switchy"
+  }
+}

@@ -5,12 +5,12 @@ import folk.sisby.switchy.api.events.SwitchySwitchEvent;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
 import folk.sisby.switchy.presets.SwitchyClientPresetsImpl;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
-import org.quiltmc.qsl.networking.api.client.ClientPlayConnectionEvents;
-import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
 import java.util.HashMap;
 import java.util.function.BiConsumer;
@@ -26,7 +26,8 @@ import static folk.sisby.switchy.util.SwitchyCommand.consumeEventPacket;
  * @author Sisby folk
  * @since 1.9.1
  */
-public class SwitchyClientReceivers implements ClientPlayConnectionEvents.Disconnect {
+@SuppressWarnings("deprecation")
+public class SwitchyClientReceivers {
 	/**
 	 * Register client-side receivers for Switchy Client.
 	 */
@@ -34,6 +35,7 @@ public class SwitchyClientReceivers implements ClientPlayConnectionEvents.Discon
 		ClientPlayNetworking.registerGlobalReceiver(S2C_PRESETS, (client, handler, buf, sender) -> handleExportNbt(buf));
 		ClientPlayNetworking.registerGlobalReceiver(S2C_EVENT_SWITCH, (client, handler, buf, sender) -> consumeEventPacket(buf, SwitchySwitchEvent::fromNbt, SwitchyClientEvents.SWITCH.invoker()::onSwitch));
 		ClientPlayNetworking.registerGlobalReceiver(S2C_CLIENT_PRESETS, (client, handler, buf, sender) -> handleClientPresets(buf));
+		ClientPlayConnectionEvents.DISCONNECT.register(SwitchyClientReceivers::onPlayDisconnect);
 	}
 
 	private static void handleClientPresets(PacketByteBuf buf) {
@@ -68,8 +70,7 @@ public class SwitchyClientReceivers implements ClientPlayConnectionEvents.Discon
 		}
 	}
 
-	@Override
-	public void onPlayDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
+	public static void onPlayDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
 		SwitchySwitchEvent event = SwitchyClientEvents.PREVIOUS_SWITCH_EVENT;
 		if (event != null) {
 			SwitchyClientEvents.SWITCH.invoker().onSwitch(new SwitchySwitchEvent(event.player(), null, event.currentPreset(), event.enabledModules()));
