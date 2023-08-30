@@ -216,7 +216,6 @@ if (System.getenv("MODRINTH_TOKEN")) {
 		loaders = ['quilt', 'fabric']
 		detectLoaders = false
 		dependencies {
-			required.project "owo-lib"
 			optional.project "drogtor"
 			optional.project "fabrictailor"
 			optional.project "pehkui"
