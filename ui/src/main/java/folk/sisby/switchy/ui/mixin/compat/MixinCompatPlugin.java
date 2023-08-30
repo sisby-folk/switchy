@@ -1,5 +1,6 @@
 package folk.sisby.switchy.ui.mixin.compat;
 
+import folk.sisby.switchy.client.SwitchyClient;
 import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -27,6 +28,7 @@ public class MixinCompatPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+		SwitchyClient.LOGGER.info(mixinClassName);
 		if (mixinClassName.startsWith("folk.sisby.switchy.ui.mixin.compat.")) {
 			int startModID = mixinClassName.indexOf(".compat.") + ".compat.".length();
 			int endModID = mixinClassName.indexOf('.', startModID);
