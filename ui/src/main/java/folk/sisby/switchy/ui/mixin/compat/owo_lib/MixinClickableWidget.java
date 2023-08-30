@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinClickableWidget {
 	@Shadow protected boolean hovered;
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ClickableWidget;renderButton(Lnet/minecraft/client/util/math/MatrixStack;IIF)V"))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ClickableWidget;drawWidget(Lnet/minecraft/client/util/math/MatrixStack;IIF)V"))
 	public void dontHoverUnderOverlays(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
 		if (hovered) hovered = SwitchyOwoUtil.componentCanHover((Component) this);
 	}
