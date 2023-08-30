@@ -1,4 +1,4 @@
-package folk.sisby.switchy.ui.mixin;
+package folk.sisby.switchy.ui.mixin.compat.owo_lib;
 
 import folk.sisby.switchy.ui.util.SwitchyOwoUtil;
 import io.wispforest.owo.ui.core.Component;
