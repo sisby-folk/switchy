@@ -98,7 +98,7 @@ Clicking the modules button shows the *manage modules* screen, allowing enabling
 ![image](https://cdn.modrinth.com/data/ss0QuCRx/images/f9f3084ea5dd03721f436cb4680091c3010af256.png)<br/>
 *Hovering over toggle buttons will show detailed information on the effects of pressing them.*<br/>
 
-Clicking the data button shows the *manage data* screen, where you can import and export your presets to a file for use on other servers/worlds.
+Clicking the data button shows the *manage data* screen, where you can import and export your presets to a file for use on other servers/worlds.<br/>
 ![image](https://cdn.modrinth.com/data/ss0QuCRx/images/c54737c4f3eb943665561efd5650d18b3e2c893c.png)<br/>
 To save to a file, choose export, choose which modules to include in the file, and click export!<br/>
 To load from a file, choose import, choose which modules to import from the file, and click import!<br/>
