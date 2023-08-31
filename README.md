@@ -21,7 +21,7 @@ Switchy will load ***modules*** that tell presets what to store, which can be **
 
 When you ***switch*** presets, that data is saved to the old preset, then loaded from the new one.
 
-![switching preview](https://cdn.modrinth.com/data/ss0QuCRx/images/9558cbbc87398507ca6b73b15fc038771360b304.gif)
+<center><img alt="switching preview" src="https://cdn.modrinth.com/data/ss0QuCRx/images/9558cbbc87398507ca6b73b15fc038771360b304.gif" /></center>
 
 ## Modules
 
@@ -89,17 +89,17 @@ When a module is **Enabled**, it makes things "switch" (load and save) per-prese
 With Switchy also installed on the client, click `;` to open the UI.
 
 The Quick-Switcher allows you to preview and switch presets by clicking on them.<br/>
-![image](https://cdn.modrinth.com/data/ss0QuCRx/images/db47f2bb179d191494be7031919dcf0864c563a9.png)
+<center><img alt="switcher screen" src="https://cdn.modrinth.com/data/ss0QuCRx/images/db47f2bb179d191494be7031919dcf0864c563a9.png" /></center>
 
 Clicking the manage button shows the *manage presets* screen, allowing creating, renaming, and deleting presets.<br/>
-![image](https://cdn.modrinth.com/data/ss0QuCRx/images/85c342e320bb6cd319115fb449558aa4eab26557.png)
+<center><img alt="preset screen" src="https://cdn.modrinth.com/data/ss0QuCRx/images/85c342e320bb6cd319115fb449558aa4eab26557.png" /></center>
 
 Clicking the modules button shows the *manage modules* screen, allowing enabling and disabling modules.<br/>
-![image](https://cdn.modrinth.com/data/ss0QuCRx/images/f9f3084ea5dd03721f436cb4680091c3010af256.png)<br/>
+<center><img alt="module screen" src="https://cdn.modrinth.com/data/ss0QuCRx/images/f9f3084ea5dd03721f436cb4680091c3010af256.png" /></center><br/>
 *Hovering over toggle buttons will show detailed information on the effects of pressing them.*<br/>
 
 Clicking the data button shows the *manage data* screen, where you can import and export your presets to a file for use on other servers/worlds.<br/>
-![image](https://cdn.modrinth.com/data/ss0QuCRx/images/c54737c4f3eb943665561efd5650d18b3e2c893c.png)<br/>
+<center><img alt="data screen" src="https://cdn.modrinth.com/data/ss0QuCRx/images/c54737c4f3eb943665561efd5650d18b3e2c893c.png" /></center><br/>
 To save to a file, choose export, choose which modules to include in the file, and click export!<br/>
 To load from a file, choose import, choose which modules to import from the file, and click import!<br/>
 Files are saved to `.minecraft/config/switchy/`, and are safe to copy between instances.<br/>
@@ -273,7 +273,7 @@ This mod is primarily motivated by improving accessibility for [plural systems](
 
 All mods are built on the work of many others.
 
-![Created for ModFest: Singularity](https://user-images.githubusercontent.com/55819817/224468033-99e9fc9c-c2e2-4ed3-8a9e-ba1d9d52f3cd.svg)
+<center><img alt="Created for ModFest: Singularity" src="https://user-images.githubusercontent.com/55819817/224468033-99e9fc9c-c2e2-4ed3-8a9e-ba1d9d52f3cd.svg" /></center>
 
 We made this mod (up to v1.2.1) for Modfest: Singularity! However, we intend to maintain this mod into the future.
 
