@@ -86,27 +86,6 @@ dependencyResolutionManagement {
 			library('playerData', 'eu.pb4', 'player-data-api').versionRef('playerData')
 			library('luaj', 'com.github.Kingdom-of-The-Moon.luaj', 'luaj-core').versionRef('luaj')
 			library('figura', 'com.github.FiguraMC', 'Figura').versionRef('figura')
-
-			// // Local Debugging Convenience // //
-			version('lazydfu', "0.1.3")
-			version('fastload', "2.6.11")
-			version('smoothboot-fabric', "1.19-1.7.1")
-			version('sodium', "mc1.19.2-0.4.4")
-			version('modmenu', "4.2.0-beta.2")
-
-			library('lazydfu', 'maven.modrinth', 'lazydfu').versionRef('lazydfu')
-			library('fastload', 'maven.modrinth', 'fastload').versionRef('fastload')
-			library('smoothboot-fabric', 'maven.modrinth', 'smoothboot-fabric').versionRef('smoothboot-fabric')
-			library('sodium', 'com.github.CaffeineMC', 'sodium-fabric').versionRef('sodium')
-			library('modmenu', 'com.terraformersmc', 'modmenu').versionRef('modmenu')
-
-			bundle('local_conveniences', [
-					'lazydfu',
-					'fastload',
-					'smoothboot-fabric',
-					'sodium',
-					'modmenu'
-			])
 		}
 	}
 }
