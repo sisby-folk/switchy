@@ -1,5 +1,5 @@
 <!--suppress HtmlDeprecatedTag, XmlDeprecatedElement -->
-<center><img alt="switchy banner" src="https://user-images.githubusercontent.com/55819817/198210616-eb37be12-cd96-40c8-a941-68a96b2aadfc.png" /></center>
+<center><img alt="switchy banner" src="https://cdn.modrinth.com/data/ss0QuCRx/images/40414a1d366b71518d462814e1883c9ba1602a87.png" /></center>
 
 <center>An extensible preset system for player customizations provided by other mods.<br/>
 Works in singleplayer and on server-side.<br/>
@@ -17,9 +17,11 @@ Provides a client companion GUI when <a href="https://modrinth.com/mod/owo-lib">
 
 Switchy lets you use commands make ***presets*** that are stored with your player data.
 
-Switchy will load ***modules*** that tell presets what to store.
+Switchy will load ***modules*** that tell presets what to store, which can be **toggled** per-player.
 
 When you ***switch*** presets, that data is saved to the old preset, then loaded from the new one.
+
+![switching preview](https://cdn.modrinth.com/data/ss0QuCRx/images/9558cbbc87398507ca6b73b15fc038771360b304.gif)
 
 ## Modules
 
@@ -87,17 +89,17 @@ When a module is **Enabled**, it makes things "switch" (load and save) per-prese
 With Switchy also installed on the client, click `;` to open the UI.
 
 The Quick-Switcher allows you to preview and switch presets by clicking on them.<br/>
-![image](https://user-images.githubusercontent.com/55819817/224468718-55137a82-8269-4ce6-9bb5-0c5ce8322a68.png)
+![image](https://cdn.modrinth.com/data/ss0QuCRx/images/db47f2bb179d191494be7031919dcf0864c563a9.png)
 
 Clicking the manage button shows the *manage presets* screen, allowing creating, renaming, and deleting presets.<br/>
-![image](https://user-images.githubusercontent.com/55819817/224468651-95630575-72dd-4a8b-b59d-371d1f5ae86d.png)
+![image](https://cdn.modrinth.com/data/ss0QuCRx/images/85c342e320bb6cd319115fb449558aa4eab26557.png)
 
 Clicking the modules button shows the *manage modules* screen, allowing enabling and disabling modules.<br/>
-![image](https://user-images.githubusercontent.com/55819817/224468657-98da4200-3a7c-43fc-8ade-b39e4a96abc8.png)
+![image](https://cdn.modrinth.com/data/ss0QuCRx/images/f9f3084ea5dd03721f436cb4680091c3010af256.png)<br/>
 *Hovering over toggle buttons will show detailed information on the effects of pressing them.*<br/>
 
 Clicking the data button shows the *manage data* screen, where you can import and export your presets to a file for use on other servers/worlds.
-![image](https://user-images.githubusercontent.com/55819817/224468676-8d539912-6fee-4792-b578-544dc10849af.png)
+![image](https://cdn.modrinth.com/data/ss0QuCRx/images/c54737c4f3eb943665561efd5650d18b3e2c893c.png)<br/>
 To save to a file, choose export, choose which modules to include in the file, and click export!<br/>
 To load from a file, choose import, choose which modules to import from the file, and click import!<br/>
 Files are saved to `.minecraft/config/switchy/`, and are safe to copy between instances.<br/>
