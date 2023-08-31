@@ -18,6 +18,7 @@ import io.wispforest.owo.ui.core.Component;
 import io.wispforest.owo.ui.core.Sizing;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.util.Identifier;
 import org.quiltmc.loader.api.minecraft.ClientOnly;
 
@@ -57,6 +58,11 @@ public class FabricTailorClientModule extends FabricTailorModuleData implements 
 			@Override
 			public Identifier getSkinTexture() {
 				return skinId;
+			}
+
+			@Override
+			public boolean isPartVisible(PlayerModelPart modelPart) {
+				return true;
 			}
 		});
 
