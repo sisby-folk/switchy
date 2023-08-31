@@ -89,15 +89,12 @@ When a module is **Enabled**, it makes things "switch" (load and save) per-prese
 With Switchy also installed on the client, click `;` to open the UI.
 
 The Quick-Switcher allows you to preview and switch presets by clicking on them.<br/>
-<center><img alt="switcher screen" src="https://cdn.modrinth.com/data/ss0QuCRx/images/db47f2bb179d191494be7031919dcf0864c563a9.png" /></center>
-
+<center><img alt="switcher screen" src="https://cdn.modrinth.com/data/ss0QuCRx/images/db47f2bb179d191494be7031919dcf0864c563a9.png" /></center><br/>
 Clicking the manage button shows the *manage presets* screen, allowing creating, renaming, and deleting presets.<br/>
-<center><img alt="preset screen" src="https://cdn.modrinth.com/data/ss0QuCRx/images/85c342e320bb6cd319115fb449558aa4eab26557.png" /></center>
-
+<center><img alt="preset screen" src="https://cdn.modrinth.com/data/ss0QuCRx/images/85c342e320bb6cd319115fb449558aa4eab26557.png" /></center><br/>
 Clicking the modules button shows the *manage modules* screen, allowing enabling and disabling modules.<br/>
 <center><img alt="module screen" src="https://cdn.modrinth.com/data/ss0QuCRx/images/f9f3084ea5dd03721f436cb4680091c3010af256.png" /></center><br/>
 *Hovering over toggle buttons will show detailed information on the effects of pressing them.*<br/>
-
 Clicking the data button shows the *manage data* screen, where you can import and export your presets to a file for use on other servers/worlds.<br/>
 <center><img alt="data screen" src="https://cdn.modrinth.com/data/ss0QuCRx/images/c54737c4f3eb943665561efd5650d18b3e2c893c.png" /></center><br/>
 To save to a file, choose export, choose which modules to include in the file, and click export!<br/>
