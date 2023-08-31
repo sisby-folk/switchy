@@ -83,18 +83,6 @@ dependencyResolutionManagement {
 			library('playerData', 'eu.pb4', 'player-data-api').versionRef('playerData')
 			library('luaj', 'com.github.Kingdom-of-The-Moon.luaj', 'luaj-core').versionRef('luaj')
 			library('figura', 'com.github.FiguraMC', 'Figura').versionRef('figura')
-
-			// // Local Debugging Convenience // //
-			version('sodium', "mc${mc}-0.4.10")
-			version('modmenu', "6.2.3")
-
-			library('sodium', 'com.github.CaffeineMC', 'sodium-fabric').versionRef('sodium')
-			library('modmenu', 'com.terraformersmc', 'modmenu').versionRef('modmenu')
-
-			bundle('local_conveniences', [
-					'sodium',
-					'modmenu'
-			])
 		}
 	}
 }
