@@ -56,5 +56,6 @@
 	"minecraft": {
 		"environment": "client"
 	},
+	"mixin": "switchy-cardinal-ui.mixins.json",
 	"access_widener": "switchy-cardinal-ui.accesswidener"
 }
