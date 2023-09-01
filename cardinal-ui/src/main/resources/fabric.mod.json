@@ -35,5 +35,6 @@
   "modmenu": {
     "parent": "switchy"
   },
+  "mixins": ["switchy-cardinal-ui.mixins.json"],
   "accessWidener": "switchy-cardinal-ui.accesswidener"
 }
