@@ -1,6 +1,5 @@
 package folk.sisby.switchy.ui.mixin.compat;
 
-import folk.sisby.switchy.client.SwitchyClient;
 import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
