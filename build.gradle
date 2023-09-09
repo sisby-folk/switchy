@@ -211,7 +211,7 @@ if (System.getenv("MODRINTH_TOKEN")) {
 		versionType = 'release'
 		uploadFile = remapJar
 		gameVersions = [mc, '1.20.1']
-		loaders = ['quilt', 'fabric']
+		loaders = ['quilt', 'fabric', 'forge']
 		detectLoaders = false
 		dependencies {
 			optional.project "fabrictailor"
