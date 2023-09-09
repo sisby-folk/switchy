@@ -1,7 +1,9 @@
 package folk.sisby.switchy.modules;
 
+import eu.pb4.placeholders.api.Placeholders;
 import eu.pb4.placeholders.api.TextParserUtils;
 import eu.pb4.stylednicknames.NicknameHolder;
+import eu.pb4.stylednicknames.config.ConfigManager;
 import folk.sisby.switchy.SwitchyCompat;
 import folk.sisby.switchy.api.module.*;
 import net.minecraft.nbt.NbtCompound;
@@ -10,6 +12,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.Objects;
 
 import static folk.sisby.switchy.util.Feedback.translatable;
@@ -94,5 +97,13 @@ public class StyledNicknamesModule implements SwitchyModule, SwitchyModuleTransf
 	 */
 	public Text getText() {
 		return styled_nickname != null ? TextParserUtils.formatText(styled_nickname) : null;
+	}
+
+	/**
+	 * @return the formatted nickname as would be shown in chat.
+	 */
+	public Text getOutput() {
+		Text nickname = getText();
+		return styled_nickname != null ? Placeholders.parseText(ConfigManager.getConfig().nicknameFormat, Placeholders.PREDEFINED_PLACEHOLDER_PATTERN, Map.of("nickname", nickname, "name", nickname)) : null;
 	}
 }

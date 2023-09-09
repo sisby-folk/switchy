@@ -3,7 +3,8 @@
 
 <center>An extensible preset system for player customizations provided by other mods.<br/>
 Works in singleplayer and on server-side.<br/>
-Provides a client companion GUI when <a href="https://modrinth.com/mod/owo-lib">oωo</a> is installed.
+Provides a client companion GUI when <a href="https://modrinth.com/mod/owo-lib">oωo</a> is installed.<br/>
+Requires <a href="https://modrinth.com/mod/connector">Connector</a> and <a href="https://modrinth.com/mod/forgified-fabric-api">FFAPI</a> on forge.<br/>
 </center>
 
 ---
