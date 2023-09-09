@@ -28,7 +28,6 @@ public class MixinCompatPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		SwitchyClient.LOGGER.info(mixinClassName);
 		if (mixinClassName.startsWith("folk.sisby.switchy.ui.mixin.compat.")) {
 			int startModID = mixinClassName.indexOf(".compat.") + ".compat.".length();
 			int endModID = mixinClassName.indexOf('.', startModID);
