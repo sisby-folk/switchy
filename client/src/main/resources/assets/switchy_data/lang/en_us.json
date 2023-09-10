@@ -1,0 +1,11 @@
+{
+  "commands.switchy_client.export.command": "/switchy_client export",
+  "commands.switchy_client.export.help": "save presets to a file",
+  "commands.switchy_client.export.fail": "Sending to client failed! See log for details",
+  "commands.switchy_client.import.command": "/switchy_client import %s",
+  "commands.switchy_client.import.help": "load exported presets",
+  "commands.switchy_client.import.fail.parse": "Failed to parse imported NBT",
+  "commands.switchy_client.import.fail.construct": "Failed to construct Presets from NBT",
+  "commands.switchy_client.import.fail.permission": "You do not have permission to specify operator modules: %s",
+  "commands.switchy_client.placeholder.file": "[file]"
+}
