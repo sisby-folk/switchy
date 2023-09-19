@@ -1,0 +1,52 @@
+plugins {
+	id 'java'
+}
+
+archivesBaseName = project == rootProject ? project.name : rootProject.name + '-' + project.name
+
+java {
+	targetCompatibility = JavaVersion.VERSION_17
+	sourceCompatibility = JavaVersion.VERSION_17
+	withSourcesJar()
+	withJavadocJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = "UTF-8"
+}
+
+tasks.withType(Jar).configureEach {
+	archiveVersion = "${project.version}+${libs.versions.mc.get()}"
+
+	from("LICENSE.txt") {
+		rename { "${it}_${archivesBaseName}" }
+	}
+}
+
+processResources {
+	final Map<String, String> map = [
+		"switchy"              : version.toString(),
+		"mc"                   : libs.versions.mc.get(),
+		"serverTranslationsAPI": libs.versions.serverTranslationsApi.get(),
+		"kaleidoConfig"        : libs.versions.kaleidoConfig.get(),
+		"fapi"                 : libs.versions.fapi.get(),
+		"qfapi"                : libs.versions.qfapi.get(),
+		"owo"                  : libs.versions.owo.get(),
+		"drogtor"              : libs.versions.drogtor.get(),
+		"styledNicknames"      : libs.versions.styledNicknames.get(),
+		"fabrictailor"         : libs.versions.fabrictailor.get(),
+		"origins"              : libs.versions.origins.get().replaceFirst('v', ''),
+		"pehkui"               : libs.versions.pehkui.get(),
+		"fabrication"          : libs.versions.fabrication.get(),
+		"figura"               : libs.versions.figura.get(),
+	]
+
+	inputs.properties(map)
+	filesMatching('*.mod.json') { expand(map) }
+
+	if (project != rootProject) {
+		from("$rootDir/src/main/resources/assets/switchy/icon.png") {
+			rename { "assets/switchy/icon.png" }
+		}
+	}
+}

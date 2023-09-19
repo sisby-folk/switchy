@@ -1,19 +1,17 @@
+plugins {
+	id 'switchy.repositories'
+	id 'switchy.compilation'
+	id 'switchy.minecraft'
+	id 'switchy.publishing'
+}
+
 dependencies {
 	implementation project(path: ':core', configuration: 'namedElements')
 	implementation project(path: ':client', configuration: 'namedElements')
 	implementation libs.kaleidoConfig
 	modImplementation libs.qfapi
 
-	modCompileOnly libs.drogtor
-	modCompileOnly libs.fabrictailor
-	modCompileOnly libs.pehkui
-	modCompileOnly libs.fabrication
-	modCompileOnly libs.placeholder
-	modCompileOnly libs.styledNicknames
-	modCompileOnly libs.luaj
-	modCompileOnly libs.figura
-	modCompileOnly libs.cardinal
-	modCompileOnly libs.calio
+	modCompileOnly libs.bundles.compat
 	modCompileOnly(libs.apoli) {
 		exclude module: 'AdditionalEntityAttributes'
 		exclude module: 'calio'
