@@ -4,6 +4,7 @@ dependencies {
 	modImplementation libs.qfapi
 	modCompileOnly libs.calio
 	modCompileOnly(libs.origins) {
+		exclude group: 	'dev.onyxstudios.cardinal-components-api'
 		exclude module: 'apoli'
 	}
 }

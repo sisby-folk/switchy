@@ -17,8 +17,11 @@ dependencies {
 	modCompileOnly(libs.apoli) {
 		exclude module: 'AdditionalEntityAttributes'
 		exclude module: 'calio'
+		exclude group: 	'dev.onyxstudios.cardinal-components-api'
+		exclude group: 	'io.github.ladysnake'
 	}
 	modCompileOnly(libs.origins) {
+		exclude group: 	'dev.onyxstudios.cardinal-components-api'
 		exclude module: 'apoli'
 	}
 }

@@ -70,6 +70,7 @@ allprojects {
 	}
 
 	repositories {
+		mavenLocal()
 		// Modrinth
 		maven {
 			url "https://api.modrinth.com/maven"
