@@ -6,6 +6,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,8 @@ public class Switchy implements DedicatedServerModInitializer, ClientModInitiali
 	/**
 	 * The config object for switchy, containing the current state of {@code /config/switchy/config.toml}.
 	 */
-	public static final SwitchyConfig CONFIG = QuiltifiedFabricConfig.create(ID, "config", SwitchyConfig.class);
+	@SuppressWarnings("deprecation")
+	public static final SwitchyConfig CONFIG = SwitchyConfig.create(FabricLoader.getInstance().getConfigDir(), ID, "config", SwitchyConfig.class);
 
 	public void onInitialize() {
 		CommandRegistrationCallback.EVENT.register(SwitchyCommands::registerCommands);

@@ -1,9 +1,9 @@
 package folk.sisby.switchy;
 
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
-import org.quiltmc.config.api.WrappedConfig;
-import org.quiltmc.config.api.annotations.Comment;
-import org.quiltmc.config.api.values.ValueMap;
+import folk.sisby.kaleido.api.WrappedConfig;
+import folk.sisby.kaleido.lib.quiltconfig.api.annotations.Comment;
+import folk.sisby.kaleido.lib.quiltconfig.api.values.ValueList;
 
 /**
  * Handles module cold-editing permission configuration (including importing).

@@ -13,7 +13,6 @@ buildscript {
 plugins {
 	id 'maven-publish'
 	alias libs.plugins.loom
-	id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 if (System.getenv("MODRINTH_TOKEN")) {
@@ -40,12 +39,6 @@ dependencies {
 	runtimeOnly(include(project(path: ':cardinal-ui', configuration: 'namedElements')))
 	runtimeOnly(include(project(path: ':compat', configuration: 'namedElements')))
 	runtimeOnly(include(project(path: ':compat-ui', configuration: 'namedElements')))
-
-	// Run Compat Mods Locally //
-	modLocalRuntime libs.placeholder
-	modLocalRuntime libs.playerData
-	modLocalRuntime libs.styledNicknames
-	modLocalRuntime libs.pehkui
 }
 
 allprojects {
@@ -125,6 +118,8 @@ allprojects {
 				// Avoids sending everything through JitPack, which can be slow.
 				// Add any further using `includeGroup 'com.example'`
 				includeGroupByRegex 'com\\.github\\..*'
+				excludeGroup 'io.github.ladysnake'
+				excludeGroup 'io.github.ladysnake'
 			}
 		}
 	}
@@ -142,6 +137,7 @@ allprojects {
 			"mc"                   : libs.versions.mc.get(),
 			"ql"                   : libs.versions.ql.get(),
 			"serverTranslationsAPI": libs.versions.serverTranslationsApi.get(),
+			"kaleidoConfig"        : libs.versions.kaleidoConfig.get(),
 			"fapi"                 : libs.versions.fapi.get(),
 			"qfapi"                : libs.versions.qfapi.get(),
 			"owo"                  : libs.versions.owo.get(),

@@ -1,9 +1,6 @@
-plugins {
-	id 'com.github.johnrengelman.shadow' version '8.1.1'
-}
-
 dependencies {
 	api project(path: ':client', configuration: 'namedElements')
+	implementation libs.kaleidoConfig
 
 	modImplementation libs.qfapi
 
@@ -24,17 +21,4 @@ dependencies {
 	modCompileOnly(libs.origins) {
 		exclude module: 'apoli'
 	}
-}
-
-shadowJar {
-	relocate 'org.quiltmc.config', 'folk.sisby.switchy.repackage.quiltconfig'
-	dependencies {
-		include dependency(libs.quiltConfig.get()) // idk how to make it not include this
-	}
-	minimize()
-}
-
-remapJar {
-	dependsOn(shadowJar)
-	input.set(shadowJar.archivePath)
 }

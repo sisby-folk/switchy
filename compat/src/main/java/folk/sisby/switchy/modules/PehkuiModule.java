@@ -1,12 +1,12 @@
 package folk.sisby.switchy.modules;
 
-import folk.sisby.switchy.QuiltifiedFabricConfig;
 import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.config.PehkuiModuleConfig;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -34,7 +34,8 @@ public class PehkuiModule implements SwitchyModule {
 	/**
 	 * The config object for the pehkui module, containing the current state of {@code /config/switchy/pehkui.toml}.
 	 */
-	public static final PehkuiModuleConfig CONFIG = QuiltifiedFabricConfig.create(Switchy.ID, "pehkui", PehkuiModuleConfig.class);
+	@SuppressWarnings("deprecation")
+	public static final PehkuiModuleConfig CONFIG = PehkuiModuleConfig.create(FabricLoader.getInstance().getConfigDir(), Switchy.ID, "pehkui", PehkuiModuleConfig.class);
 
 	/**
 	 * Registers the module
