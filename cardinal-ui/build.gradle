@@ -1,9 +1,11 @@
 dependencies {
-	api project(path: ':cardinal', configuration: 'namedElements')
-	api project(path: ':ui', configuration: 'namedElements')
-	loom {
-		accessWidenerPath = file("src/main/resources/switchy-cardinal-ui.accesswidener")
-	}
-
+	implementation project(path: ':core', configuration: 'namedElements')
+	implementation project(path: ':client', configuration: 'namedElements')
+	implementation project(path: ':cardinal', configuration: 'namedElements')
+	implementation project(path: ':ui', configuration: 'namedElements')
 	modImplementation libs.qfapi
+}
+
+loom {
+	accessWidenerPath = file("src/main/resources/switchy-cardinal-ui.accesswidener")
 }

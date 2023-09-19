@@ -34,6 +34,9 @@
   "jars": [
     {
       "file": "META-INF/jars/server-translations-api-${serverTranslationsAPI}.jar"
+    },
+    {
+      "file": "META-INF/jars/kaleido-config-${kaleidoConfig}.jar"
     }
   ]
 }
