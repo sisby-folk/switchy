@@ -1,8 +1,8 @@
 package folk.sisby.switchy.config;
 
-import org.quiltmc.config.api.WrappedConfig;
-import org.quiltmc.config.api.annotations.Comment;
-import org.quiltmc.config.api.values.ValueList;
+import folk.sisby.kaleido.api.WrappedConfig;
+import folk.sisby.kaleido.lib.quiltconfig.api.annotations.Comment;
+import folk.sisby.kaleido.lib.quiltconfig.api.values.ValueList;
 import virtuoel.pehkui.api.ScaleRegistries;
 import virtuoel.pehkui.api.ScaleTypes;
 

@@ -3,7 +3,6 @@ package folk.sisby.switchy.client.api.modules;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import folk.sisby.switchy.api.modules.CardinalSerializerData;
-import folk.sisby.switchy.client.SwitchyCardinalClient;
 import folk.sisby.switchy.client.api.PrettyElementVisitor;
 import folk.sisby.switchy.client.api.module.SwitchyClientModule;
 import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;

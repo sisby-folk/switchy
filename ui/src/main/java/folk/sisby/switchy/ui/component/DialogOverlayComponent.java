@@ -11,8 +11,8 @@ import java.util.Collection;
 import java.util.function.Consumer;
 
 public class DialogOverlayComponent extends OverlayComponent<FlowLayout> {
-	public FlowLayout messageFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
-	public FlowLayout actionsFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
+	public final FlowLayout messageFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
+	public final FlowLayout actionsFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 
 	public DialogOverlayComponent(Text leftButtonText, Text rightButtonText, Consumer<ButtonComponent> leftButtonAction, Consumer<ButtonComponent> rightButtonAction, Collection<Text> messages) {
 		super(HorizontalAlignment.CENTER, VerticalAlignment.CENTER, Containers.verticalFlow(Sizing.fixed(200), Sizing.content()));

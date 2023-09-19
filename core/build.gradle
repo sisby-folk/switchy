@@ -1,33 +1,8 @@
-plugins {
-	id 'com.github.johnrengelman.shadow' version '8.1.1'
-}
-
 dependencies {
-	api libs.quiltConfig
-	implementation libs.nightConfig
-	implementation libs.nightConfigToml
-
-	shadow libs.quiltConfig
-	shadow libs.nightConfig
-	shadow libs.nightConfigToml
-
+	implementation libs.kaleidoConfig
 	modImplementation libs.qfapi
-	modImplementation libs.serverTranslationsApi // Implementation for ModuleInfo
+	modImplementation libs.serverTranslationsApi
+
+	include libs.kaleidoConfig
 	include libs.serverTranslationsApi
-}
-
-shadowJar {
-	relocate 'org.quiltmc.config', 'folk.sisby.switchy.repackage.quiltconfig'
-	relocate 'com.electronwill.nightconfig', 'folk.sisby.switchy.repackage.nightconfig'
-	dependencies {
-		include dependency(libs.nightConfig.get())
-		include dependency(libs.nightConfigToml.get())
-		include dependency(libs.quiltConfig.get())
-	}
-	minimize()
-}
-
-remapJar {
-	dependsOn(shadowJar)
-	input.set(shadowJar.archivePath)
 }
