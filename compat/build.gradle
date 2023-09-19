@@ -1,10 +1,7 @@
-plugins {
-	id 'com.github.johnrengelman.shadow' version '8.1.1'
-}
-
 dependencies {
-	api project(path: ':client', configuration: 'namedElements')
-
+	implementation project(path: ':core', configuration: 'namedElements')
+	implementation project(path: ':client', configuration: 'namedElements')
+	implementation libs.kaleidoConfig
 	modImplementation libs.qfapi
 
 	modCompileOnly libs.fabrictailor
@@ -19,21 +16,11 @@ dependencies {
 	modCompileOnly(libs.apoli) {
 		exclude module: 'AdditionalEntityAttributes'
 		exclude module: 'calio'
+		exclude group: 	'dev.onyxstudios.cardinal-components-api'
+		exclude group: 	'io.github.ladysnake'
 	}
 	modCompileOnly(libs.origins) {
+		exclude group: 	'dev.onyxstudios.cardinal-components-api'
 		exclude module: 'apoli'
 	}
-}
-
-shadowJar {
-	relocate 'org.quiltmc.config', 'folk.sisby.switchy.repackage.quiltconfig'
-	dependencies {
-		include dependency(libs.quiltConfig.get()) // idk how to make it not include this
-	}
-	minimize()
-}
-
-remapJar {
-	dependsOn(shadowJar)
-	input.set(shadowJar.archivePath)
 }

@@ -59,7 +59,7 @@ public class SwitchyClientPresetsImpl extends SwitchyPresetsDataImpl<SwitchyClie
 
 	@Override
 	void toggleModulesFromNbt(NbtList list, Boolean enabled, Boolean silent) {
-		// Don't Log. Don't check for existence. `modules` is expected to be desync'd from the actual modules..
+		// Don't Log. Don't check for existence. `modules` is expected to be desync'd from the actual modules.
 		list.forEach((e) -> {
 			Identifier id;
 			if ((id = Identifier.tryParse(e.asString())) != null) {

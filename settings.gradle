@@ -32,19 +32,14 @@ dependencyResolutionManagement {
 			version('fapi', "${fapi}-${mc}")
 			version('qfapi', "7.0.1+${fapi}-${mc}")
 			version('serverTranslationsApi', "2.0.0+${mc}")
-			version('nightConfig', "3.6.6")
-			version('quiltConfig', "1.0.0-beta.6")
+			version('kaleidoConfig', "0.1.0+1.1.0-beta.3")
 
 			library('mc', 'mojang', 'minecraft').versionRef('mc')
 			library('ql', 'org.quiltmc', 'quilt-loader').versionRef('ql')
 			library('qm', 'org.quiltmc', 'quilt-mappings').versionRef('qm')
 			library('qfapi', 'org.quiltmc.quilted-fabric-api', 'quilted-fabric-api').versionRef('qfapi')
 			library('serverTranslationsApi', 'xyz.nucleoid', 'server-translations-api').versionRef('serverTranslationsApi')
-			library('nightConfig', 'com.electronwill.night-config', 'core').versionRef('nightConfig')
-			library('nightConfigToml', 'com.electronwill.night-config', 'toml').versionRef('nightConfig')
-			library('quiltConfig', 'org.quiltmc', 'quilt-config').versionRef('quiltConfig')
-
-			// // Client // //
+			library('kaleidoConfig', 'folk.sisby', 'kaleido-config').versionRef('kaleidoConfig')
 
 			// // UI // //
 			version('owo', "0.11.0+${mc}")
@@ -55,7 +50,6 @@ dependencyResolutionManagement {
 			version('cardinal', "5.2.1")
 
 			library('cardinal', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-base').versionRef('cardinal')
-			library('cardinalEntity', 'dev.onyxstudios.cardinal-components-api', 'cardinal-components-entity').versionRef('cardinal')
 
 			// // Compat // //
 			version('fabrictailor', "2.1.2")

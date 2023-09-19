@@ -44,11 +44,10 @@ More functionality can be added with these Addons:
   trinkets (all disabled by default)
 - [Switchy Teleport](https://modrinth.com/mod/switchy-teleport) - separate player position and spawn points (all
   disabled by default)
-- [SwitchyKit](https://modrinth.com/mod/switchykit) - import presets with nicknames (as above) with colours, pronouns
-  and system tags - directly from Pluralkit or Tupperbox.
+- [Switchy Proxy](https://modrinth.com/mod/switchy-proxy) - match message patterns (proxies) to switch nicknames per-chat-message.
+- [SwitchyKit](https://modrinth.com/mod/switchykit) - import presets with names, proxies, colors, pronouns, and tags - directly from Pluralkit or Tupperbox.
 - [Switchy Resource Packs](https://modrinth.com/mod/switchy-resource-packs) - separate enabled resource packs per
   preset.
-- [Switchy Proxy](https://modrinth.com/mod/switchy-proxy) - match message patterns (proxies) to switch nicknames per-chat-message.
 
 These mods have Switchy support built-in (or built in to switchy):
 
@@ -152,40 +151,40 @@ As an example, [Origins Minus](https://modrinth.com/mod/origins-minus) uses `peh
 
 The apoli module will by default only restore data for powers that the preset already has (e.g. from switching in an origin).
 
-This can be expanded to include powers granted using `/power grant` (i.e powers with the `apoli:command` source) in `/config/switchy/apoli.toml` - with whitelist and blacklist modes.
+This can be expanded to include powers granted using `/power grant` (i.e. powers with the `apoli:command` source) in `/config/switchy/apoli.toml` - with whitelist and blacklist modes.
 
 This allows, for example, adding an extra power to one preset to give it a 'hybrid origin'.
 
 ## Developers
 
-Switchy can be added to your project using `modCompileOnly "folk.sisby:switchy-core:x.x.x"` and these repos:
+### Example
 
 ```
-maven { // Switchy
-    url = 'https://maven.proxyfox.dev/'
-    content {
-        includeGroup 'folk.sisby'
-    }
+repositories {
+    maven { url 'https://maven.proxyfox.dev/' } // Switchy
+    maven { url 'https://repo.sleeping.town/' } // Keleido
+    maven { url "https://maven.nucleoid.xyz/" } // Server Trans
+    maven { url 'https://maven.wispforest.io' } // owo lib
 }
-maven { // Server Translations API
-    url "https://maven.nucleoid.xyz/"
-}
-maven { // owo-lib
-    url 'https://maven.wispforest.io'
+dependencies {
+    modCompileOnly "folk.sisby:switchy-core:2.8.2"
 }
 ```
 
-If you want to test with switchy locally, add `modLocalRuntime`.<br/>
-if you're making an addon, just use `modImplementation`.<br/>
+### Submodules
 
-### Subprojects
+All modules use a unified version number. Depend on each required submodule manually.
 
-`switchy-core` includes commands and the API. <br/>
-`switchy-client` enables import/export commands and a client API. <br/>
-`switchy-ui` provides the client-side switch and manage screens, and module-displaying API. <br/>
-`switchy-cardinal` provides data-driven CCA switchy modules and an API. <br/>
-`switchy-compat` provides the built-in modules for styled nicknames etc. <br/>
-`switchy-compat-ui` adds ui support to compat. <br/>
+`switchy-core` - Server-side preset/module API and commands. <br/>
+
+[core addon] `switchy-client` - Client API, preset import/export. Required to define client-sendable modules.<br/>
+
+[client addon] `switchy-cardinal` - CCA Module API. Dependency unneeded for JSON modules.<br/>
+[client addon] `switchy-ui` - Depends on owo for screens. Module previewing API.<br/>
+[client addon] `switchy-compat` - Module definitions for built-in compatibility like Styled Nicknames.<br/>
+
+[compat + ui addon] `switchy-compat-ui` - Preview module definitions for built-in compatibility.<br/>
+[compat + cardinal addon] `switchy-cardinal-ui` - CCA Preview Modules. Dependency unneeded for JSON modules.<br/>
 
 ### API
 
@@ -215,7 +214,7 @@ Adding new Modules allows more data to be switched per-preset. They only need to
 - Load their data to the player
 
 Just implement `SwitchyModule` and register it with `SwitchyModuleRegistry` using `SwitchyEvents.Init` -
-See [Switchy Inventories](https://github.com/sisby-folk/switchy-inventories) for an example. (Remember to add the `events` entrypoint in your QMJ)
+See [Switchy Inventories](https://github.com/sisby-folk/switchy-inventories) for an example. (Remember to add the `switchy` entrypoint in your QMJ)
 
 
 #### Module Configuration & Commands

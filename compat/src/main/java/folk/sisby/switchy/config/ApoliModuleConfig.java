@@ -1,9 +1,9 @@
 package folk.sisby.switchy.config;
 
 import io.github.apace100.apoli.power.PowerType;
-import org.quiltmc.config.api.WrappedConfig;
-import org.quiltmc.config.api.annotations.Comment;
-import org.quiltmc.config.api.values.ValueList;
+import folk.sisby.kaleido.api.WrappedConfig;
+import folk.sisby.kaleido.lib.quiltconfig.api.annotations.Comment;
+import folk.sisby.kaleido.lib.quiltconfig.api.values.ValueList;
 
 /**
  * Handles module cold-editing permission configuration (including importing).
