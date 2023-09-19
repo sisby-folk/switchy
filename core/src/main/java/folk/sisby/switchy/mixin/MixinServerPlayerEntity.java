@@ -6,6 +6,7 @@ import folk.sisby.switchy.presets.SwitchyPresetsImpl;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -18,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(ServerPlayerEntity.class)
 public abstract class MixinServerPlayerEntity implements SwitchyPlayer {
-	private SwitchyPresets switchy$switchyPresets;
+	@Unique private SwitchyPresets switchy$switchyPresets;
 
 	@SuppressWarnings({"unused", "DataFlowIssue"})
 	@Inject(at = @At("TAIL"), method = "writeCustomDataToNbt(Lnet/minecraft/nbt/NbtCompound;)V")

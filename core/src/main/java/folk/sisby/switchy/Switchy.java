@@ -35,7 +35,7 @@ public class Switchy implements DedicatedServerModInitializer, ClientModInitiali
 	 * The config object for switchy, containing the current state of {@code /config/switchy/config.toml}.
 	 */
 	@SuppressWarnings("deprecation")
-	public static final SwitchyConfig CONFIG = SwitchyConfig.create(FabricLoader.getInstance().getConfigDir(), ID, "config", SwitchyConfig.class);
+	public static final SwitchyConfig CONFIG = SwitchyConfig.createToml(FabricLoader.getInstance().getConfigDir(), ID, "config", SwitchyConfig.class);
 
 	public void onInitialize() {
 		CommandRegistrationCallback.EVENT.register(SwitchyCommands::registerCommands);

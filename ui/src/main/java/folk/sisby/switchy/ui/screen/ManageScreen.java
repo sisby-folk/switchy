@@ -106,7 +106,7 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		presetsTab.child().refresh();
 		modulesTab.refresh();
 		dataTab.refresh();
-		this.uiAdapter.rootComponent.unlock();;
+		this.uiAdapter.rootComponent.unlock();
 	}
 
 	public static class ManageTabLayout extends TabLayout {
@@ -306,8 +306,8 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 	}
 
 	public class DataTabTabLayout extends TabLayout {
-		public DataTabImportFlow importFlow;
-		public DataTabExportFlow exportFlow;
+		public final DataTabImportFlow importFlow;
+		public final DataTabExportFlow exportFlow;
 
 		private DataTabTabLayout(DataTabImportFlow importFlow, DataTabExportFlow exportFlow) {
 			super(List.of(),
@@ -404,10 +404,10 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 	}
 
 	public abstract class DataTabModeFlow extends VerticalFlowLayout {
-		public DataTabComboField<String> methodDropdown = new DataTabComboField<>(ManageScreen.this.uiAdapter.rootComponent, Text.translatable("screen.switchy.manage.data.method"), this::updateDataMethod);
-		public DataTabComboField<NbtCompound> fileDropdown = new DataTabComboField<>(ManageScreen.this.uiAdapter.rootComponent, Text.translatable("screen.switchy.manage.data.file"), this::onNbtSourceChange);
-		public ModuleSelectorFlow moduleSelector = new ModuleSelectorFlow(80, Text.translatable("screen.switchy.manage.data.available"), Text.translatable("screen.switchy.manage.data.included"));
-		public ButtonComponent actionButton;
+		public final DataTabComboField<String> methodDropdown = new DataTabComboField<>(ManageScreen.this.uiAdapter.rootComponent, Text.translatable("screen.switchy.manage.data.method"), this::updateDataMethod);
+		public final DataTabComboField<NbtCompound> fileDropdown = new DataTabComboField<>(ManageScreen.this.uiAdapter.rootComponent, Text.translatable("screen.switchy.manage.data.file"), this::onNbtSourceChange);
+		public final ModuleSelectorFlow moduleSelector = new ModuleSelectorFlow(80, Text.translatable("screen.switchy.manage.data.available"), Text.translatable("screen.switchy.manage.data.included"));
+		public final ButtonComponent actionButton;
 
 		protected List<Identifier> includedModules = new ArrayList<>();
 		protected List<Identifier> availableModules = new ArrayList<>();

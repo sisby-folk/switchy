@@ -1,7 +1,10 @@
 dependencies {
-	api project(path: ':compat', configuration: 'namedElements')
-	api project(path: ':ui', configuration: 'namedElements')
+	implementation project(path: ':core', configuration: 'namedElements')
+	implementation project(path: ':client', configuration: 'namedElements')
+	implementation project(path: ':compat', configuration: 'namedElements')
+	implementation project(path: ':ui', configuration: 'namedElements')
 	modImplementation libs.qfapi
+
 	modCompileOnly libs.calio
 	modCompileOnly(libs.origins) {
 		exclude group: 	'dev.onyxstudios.cardinal-components-api'

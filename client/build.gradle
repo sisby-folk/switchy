@@ -1,4 +1,4 @@
 dependencies {
-	api project(path: ':core', configuration: 'namedElements')
+	implementation project(path: ':core', configuration: 'namedElements')
 	modImplementation libs.qfapi
 }

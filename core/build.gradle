@@ -1,8 +1,8 @@
 dependencies {
 	implementation libs.kaleidoConfig
-	include libs.kaleidoConfig
-
 	modImplementation libs.qfapi
-	modImplementation libs.serverTranslationsApi // Implementation for ModuleInfo
+	modImplementation libs.serverTranslationsApi
+
+	include libs.kaleidoConfig
 	include libs.serverTranslationsApi
 }

@@ -12,9 +12,9 @@ import java.util.Collection;
 import java.util.List;
 
 public class TabLayout extends VerticalFlowLayout {
-	protected List<TabButton> tabButtons = new ArrayList<>();
-	protected List<Component> tabContents = new ArrayList<>();
-	protected TabContentPanel contentPanel = new TabContentPanel();
+	protected final List<TabButton> tabButtons = new ArrayList<>();
+	protected final List<Component> tabContents = new ArrayList<>();
+	protected final TabContentPanel contentPanel = new TabContentPanel();
 
 	public TabLayout(Collection<Component> leftComponents, Tab... tabs) {
 		super(Sizing.content(), Sizing.content());

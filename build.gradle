@@ -1,9 +1,6 @@
 //file:noinspection GroovyAssignabilityCheck
 //file:noinspection GroovyAccessibility
 buildscript {
-	repositories {
-		gradlePluginPortal()
-	}
 	dependencies {
 		classpath 'com.modrinth.minotaur:Minotaur:2.6.0'
 		classpath "com.github.breadmoirai:github-release:2.4.1"
@@ -15,13 +12,6 @@ plugins {
 	alias libs.plugins.loom
 }
 
-if (System.getenv("MODRINTH_TOKEN")) {
-	apply plugin: "com.modrinth.minotaur"
-}
-if (System.getenv("GITHUB_TOKEN")) {
-	apply plugin: "com.github.breadmoirai.github-release"
-}
-
 archivesBaseName = project.archives_base_name
 
 def mc_major = '1.19'
@@ -31,7 +21,6 @@ def default_branch = '1.19'
 def origVersion = project.version
 
 dependencies {
-	// Subprojects //
 	runtimeOnly(include(project(path: ':core', configuration: 'namedElements')))
 	runtimeOnly(include(project(path: ':client', configuration: 'namedElements')))
 	runtimeOnly(include(project(path: ':ui', configuration: 'namedElements')))
@@ -45,98 +34,51 @@ allprojects {
 	apply plugin: 'org.quiltmc.loom'
 	apply plugin: 'maven-publish'
 
-
 	project.version = project.version + "+" + mc_major
 	group = project.maven_group
 
-	loom {
-		runs {
-			client {
-				client()
-				ideConfigGenerated(true)
-			}
-			server {
-				server()
-				ideConfigGenerated(true)
-			}
-		}
-	}
-
 	java {
-		sourceCompatibility = JavaVersion.VERSION_17
-		targetCompatibility = JavaVersion.VERSION_17
+		sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 		withSourcesJar()
 		withJavadocJar()
 	}
 
 	repositories {
 		mavenLocal()
-		// Modrinth
+		maven { url 'https://repo.sleeping.town/' }
+		maven { url 'https://maven.nucleoid.xyz/' }
+		maven { url 'https://maven.wispforest.io' }
+		maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+		maven { url 'https://maven.ladysnake.org/releases' }
+		maven { url 'https://maven.cafeteria.dev' }
+		maven { url 'https://maven.jamieswhiteshirt.com/libs-release' }
+		maven { url 'https://maven.shedaniel.me/' }
+		maven { url 'https://maven.terraformersmc.com/' }
+
 		maven {
 			url "https://api.modrinth.com/maven"
 			content {
 				includeGroup "maven.modrinth"
 			}
 		}
-		maven { // Server Translations API
-			url "https://maven.nucleoid.xyz/"
-		}
-		maven { // owo-lib
-			url 'https://maven.wispforest.io'
-		}
-
-		// Fabric Tailor
-		maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-
-		// Origins
-		maven {
-			url 'https://maven.ladysnake.org/releases'
-		}
-		maven {
-			url 'https://maven.cafeteria.dev'
-			content {
-				includeGroup 'net.adriantodt.fabricmc'
-			}
-		}
-		maven {
-			url "https://maven.jamieswhiteshirt.com/libs-release"
-			content {
-				includeGroup "com.jamieswhiteshirt"
-			}
-		}
-
-		maven { // Cloth Config
-			url "https://maven.shedaniel.me/"
-		}
-		maven { // ModMenu
-			url "https://maven.terraformersmc.com/"
-		}
-
-		// Jitpack
 		maven {
 			url 'https://jitpack.io'
 			content {
-				// Avoids sending everything through JitPack, which can be slow.
-				// Add any further using `includeGroup 'com.example'`
 				includeGroupByRegex 'com\\.github\\..*'
-				excludeGroup 'io.github.ladysnake'
-				excludeGroup 'io.github.ladysnake'
 			}
 		}
 	}
 
 	dependencies {
-		// // Base // //
 		minecraft libs.mc
 		mappings variantOf(libs.qm) { classifier "intermediary-v2" }
-		modImplementation libs.ql
+		modCompileOnly libs.ql
 	}
 
 	processResources {
 		final Map<String, String> map = [
 			"switchy"              : version.toString(),
 			"mc"                   : libs.versions.mc.get(),
-			"ql"                   : libs.versions.ql.get(),
 			"serverTranslationsAPI": libs.versions.serverTranslationsApi.get(),
 			"kaleidoConfig"        : libs.versions.kaleidoConfig.get(),
 			"fapi"                 : libs.versions.fapi.get(),
@@ -176,23 +118,21 @@ subprojects {
 		}
 	}
 
-	// Configure the maven publication
 	publishing {
 		publications {
 			mavenJava(MavenPublication) {
 				from components.java
-
-				artifactId = project.archives_base_name + '-' + project.name
+				artifactId project.archives_base_name + '-' + project.name
 			}
 		}
 
 		repositories {
 			if (System.getenv("SWITCHY_MAVEN_URL")) {
 				maven {
-					url = System.getenv("SWITCHY_MAVEN_URL")
+					url System.getenv("SWITCHY_MAVEN_URL")
 					credentials {
-						username = System.getenv("SWITCHY_MAVEN_USERNAME")
-						password = System.getenv("SWITCHY_MAVEN_PASSWORD")
+						username System.getenv("SWITCHY_MAVEN_USERNAME")
+						password System.getenv("SWITCHY_MAVEN_PASSWORD")
 					}
 				}
 			}
@@ -200,34 +140,8 @@ subprojects {
 	}
 }
 
-if (System.getenv("MODRINTH_TOKEN")) {
-	modrinth {
-		token = System.getenv("MODRINTH_TOKEN")
-		projectId = 'switchy'
-		versionNumber = project.version
-		versionName = origVersion
-		versionType = 'release'
-		uploadFile = remapJar
-		gameVersions = [mc]
-		loaders = ['quilt', 'fabric']
-		detectLoaders = false
-		dependencies {
-			optional.project "drogtor"
-			optional.project "fabrictailor"
-			optional.project "pehkui"
-			optional.project "origins"
-			optional.project "fabrication"
-			optional.project "styled-nicknames"
-			optional.project "arcpocalypse"
-			optional.project "lanyard"
-			optional.project "figura"
-		}
-		changelog = "Changelog: https://github.com/sisby-folk/switchy/releases/tag/v" + origVersion
-		syncBodyFrom = rootProject.file("README.md").text
-	}
-}
-
 if (System.getenv("GITHUB_TOKEN")) {
+	apply plugin: "com.github.breadmoirai.github-release"
 	githubRelease {
 		token System.getenv("GITHUB_TOKEN")
 		owner "sisby-folk"
@@ -242,6 +156,35 @@ if (System.getenv("GITHUB_TOKEN")) {
 		generateReleaseNotes true
 	}
 	tasks.githubRelease.dependsOn remapJar
+}
+
+if (System.getenv("MODRINTH_TOKEN")) {
+	apply plugin: "com.modrinth.minotaur"
+	modrinth {
+		token = System.getenv("MODRINTH_TOKEN")
+		projectId = 'switchy'
+		versionNumber = project.version
+		versionName = origVersion
+		versionType = 'release'
+		uploadFile = remapJar
+		gameVersions = [mc]
+		loaders = ['quilt', 'fabric']
+		detectLoaders = false
+		dependencies {
+			optional.project "owo-lib"
+			optional.project "drogtor"
+			optional.project "fabrictailor"
+			optional.project "pehkui"
+			optional.project "origins"
+			optional.project "fabrication"
+			optional.project "styled-nicknames"
+			optional.project "arcpocalypse"
+			optional.project "lanyard"
+			optional.project "figura"
+		}
+		changelog = "Changelog: https://github.com/sisby-folk/switchy/releases/tag/v" + origVersion
+		syncBodyFrom = rootProject.file("README.md").text
+	}
 }
 
 if (System.getenv("SWITCHY_MAVEN_URL") && System.getenv("MODRINTH_TOKEN") && System.getenv("GITHUB_TOKEN")) {
