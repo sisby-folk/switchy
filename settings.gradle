@@ -13,4 +13,12 @@ pluginManagement {
 	}
 }
 
+dependencyResolutionManagement {
+	versionCatalogs {
+		create("libs") {
+			from(files("libs.versions.toml"))
+		}
+	}
+}
+
 include('core', 'client', 'ui', 'cardinal', 'cardinal-ui', 'compat', 'compat-ui')
