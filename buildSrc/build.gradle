@@ -1,0 +1,32 @@
+plugins {
+	id 'groovy-gradle-plugin'
+}
+
+repositories {
+	maven {
+		name = 'Quilt'
+		url = 'https://maven.quiltmc.org/repository/release'
+	}
+	// Currently needed for Intermediary and other temporary dependencies
+	maven {
+		name = 'Fabric'
+		url = 'https://maven.fabricmc.net/'
+	}
+	gradlePluginPortal()
+}
+
+
+dependencies {
+	implementation(gradlePlugin(libs.plugins.loom))
+	implementation(gradlePlugin(libs.plugins.minotaur))
+	implementation(gradlePlugin(libs.plugins.githubRelease))
+
+	// https://github.com/gradle/gradle/issues/15383
+	implementation(files(libs.getClass().superclass.protectionDomain.codeSource.location))
+}
+
+static String gradlePlugin(Provider<PluginDependency> id) {
+	var pluginId = id.get().pluginId
+	var version = id.get().version
+	return "${pluginId}:${pluginId}.gradle.plugin:${version}"
+}

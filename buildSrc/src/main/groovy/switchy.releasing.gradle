@@ -1,0 +1,58 @@
+plugins {
+	id 'maven-publish'
+	id 'com.github.breadmoirai.github-release'
+	id 'com.modrinth.minotaur'
+//	alias(libs.plugins.minotaur)
+//	alias(libs.plugins.githubRelease)
+}
+
+githubRelease {
+	token = project.findProperty("github.token") ?: System.getenv("GITHUB_TOKEN") ?: ""
+	owner "sisby-folk"
+	repo "switchy"
+	tagName "v$version"
+	releaseName "v$version"
+	targetCommitish project.default_release_branch
+	draft false
+	prerelease false
+	releaseAssets remapJar.archiveFile
+	allowUploadToExisting true
+	generateReleaseNotes true
+}
+
+tasks.githubRelease {
+	dependsOn remapJar
+}
+
+modrinth {
+	token = project.findProperty("modrinth.token") ?: System.getenv("MODRINTH_TOKEN")
+	projectId = 'switchy'
+	versionNumber = project.version
+	versionName = "$project.version+${libs.versions.mc.get()}"
+	versionType = 'release'
+	uploadFile = remapJar
+	gameVersions = [libs.versions.mc]
+	loaders = ['quilt', 'fabric']
+	detectLoaders = false
+	dependencies {
+		optional.project "owo-lib"
+		optional.project "drogtor"
+		optional.project "fabrictailor"
+		optional.project "pehkui"
+		optional.project "origins"
+		optional.project "fabrication"
+		optional.project "styled-nicknames"
+		optional.project "arcpocalypse"
+		optional.project "lanyard"
+		optional.project "figura"
+	}
+	changelog = "Changelog: https://github.com/sisby-folk/switchy/releases/tag/v$version"
+	syncBodyFrom = rootProject.file("README.md").text
+}
+
+tasks.register("fullRelease") {
+	group "publishing"
+	dependsOn "githubRelease"
+	dependsOn "modrinth"
+	dependsOn "publish"
+}
