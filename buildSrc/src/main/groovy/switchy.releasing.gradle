@@ -8,8 +8,8 @@ githubRelease {
 	token = project.findProperty("github.token") ?: System.getenv("GITHUB_TOKEN") ?: ""
 	owner "sisby-folk"
 	repo "switchy"
-	tagName "v$version"
-	releaseName "v$version"
+	tagName "v$baseVersion"
+	releaseName "v$baseVersion"
 	targetCommitish project.default_release_branch
 	draft false
 	prerelease false
@@ -25,11 +25,11 @@ tasks.githubRelease {
 modrinth {
 	token = project.findProperty("modrinth.token") ?: System.getenv("MODRINTH_TOKEN")
 	projectId = 'switchy'
-	versionNumber = project.version
-	versionName = "$project.version+${libs.versions.mc.get()}"
+	versionName = project.baseVersion
+	versionNumber = "$project.baseVersion+$project.branch"
 	versionType = 'release'
 	uploadFile = remapJar
-	gameVersions = [libs.versions.mc]
+	gameVersions = [libs.versions.mc.get()]
 	loaders = ['quilt', 'fabric']
 	detectLoaders = false
 	dependencies {
@@ -44,7 +44,7 @@ modrinth {
 		optional.project "lanyard"
 		optional.project "figura"
 	}
-	changelog = "Changelog: https://github.com/sisby-folk/switchy/releases/tag/v$version"
+	changelog = "Changelog: https://github.com/sisby-folk/switchy/releases/tag/v$baseVersion"
 	syncBodyFrom = rootProject.file("README.md").text
 }
 

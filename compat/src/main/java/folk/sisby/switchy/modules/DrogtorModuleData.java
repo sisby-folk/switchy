@@ -1,6 +1,7 @@
 package folk.sisby.switchy.modules;
 
 import folk.sisby.switchy.api.SwitchySerializable;
+import folk.sisby.switchy.util.Feedback;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
@@ -72,8 +73,8 @@ public class DrogtorModuleData implements SwitchySerializable {
 		if (nickname == null) return null;
 		Style style = Style.EMPTY;
 		if (nameColor != null) style = style.withColor(nameColor);
-		if (bio != null) style = style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(bio)));
-		return Text.literal(nickname).setStyle(style);
+		if (bio != null) style = style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Feedback.literal(bio)));
+		return Feedback.literal(nickname).setStyle(style);
 	}
 
 }
