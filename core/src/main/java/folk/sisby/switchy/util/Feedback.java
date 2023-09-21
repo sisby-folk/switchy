@@ -161,7 +161,7 @@ public class Feedback {
 	 * @return the resultant translatable text.
 	 */
 	public static MutableText helpText(String keyHelp, String keyCommand, String... keyArgs) {
-		return translatable("commands.switchy.help.line", translatableWithStyle(keyCommand, FORMAT_COMMAND, (MutableText[]) Arrays.stream(keyArgs).map(Feedback::translatable).toArray()), translatableWithStyle(keyHelp, FORMAT_HELP));
+		return translatable("commands.switchy.help.line", translatableWithStyle(keyCommand, FORMAT_COMMAND, Arrays.stream(keyArgs).map(Feedback::translatable).toArray(MutableText[]::new)), translatableWithStyle(keyHelp, FORMAT_HELP));
 	}
 
 	/**
