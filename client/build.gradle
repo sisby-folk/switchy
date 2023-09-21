@@ -1,3 +1,10 @@
+plugins {
+	id 'switchy.repositories'
+	id 'switchy.compilation'
+	id 'switchy.minecraft'
+	id 'switchy.publishing'
+}
+
 dependencies {
 	implementation project(path: ':core', configuration: 'namedElements')
 	modImplementation libs.qfapi
