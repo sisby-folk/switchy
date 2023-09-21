@@ -7,7 +7,7 @@ publishing {
 		mavenJava(MavenPublication) {
 			from components.java
 			artifactId "switchy" + '-' + project.name
-			version "${project.version}+${libs.versions.mc.get()}"
+			version "$project.baseVersion+$project.branch"
 		}
 	}
 

@@ -78,8 +78,8 @@ public class SwitchyApi {
 	public static SwitchyFeedbackStatus displayModuleHelp(SwitchyPresets presets, Consumer<Text> feedback, Identifier id) {
 		try {
 			feedback.accept(info("commands.switchy.module.help.description", literal(id.getPath()), literal(presets.isModuleEnabled(id) ? "enabled" : "disabled"), SwitchyModuleRegistry.getDescription(id)));
-			feedback.accept(translatableWithArgs("commands.switchy.module.help.enabled", presets.isModuleEnabled(id) ? FORMAT_SUCCESS : FORMAT_INFO, SwitchyModuleRegistry.getDescriptionWhenEnabled(id)));
-			feedback.accept(translatableWithArgs("commands.switchy.module.help.disabled", presets.isModuleEnabled(id) ? FORMAT_INFO : FORMAT_SUCCESS, SwitchyModuleRegistry.getDescriptionWhenDisabled(id)));
+			feedback.accept(translatableWithStyle("commands.switchy.module.help.enabled", presets.isModuleEnabled(id) ? FORMAT_SUCCESS : FORMAT_INFO, SwitchyModuleRegistry.getDescriptionWhenEnabled(id)));
+			feedback.accept(translatableWithStyle("commands.switchy.module.help.disabled", presets.isModuleEnabled(id) ? FORMAT_INFO : FORMAT_SUCCESS, SwitchyModuleRegistry.getDescriptionWhenDisabled(id)));
 			return SwitchyFeedbackStatus.SUCCESS;
 		} catch (ModuleNotFoundException ignored) {
 			invalid("commands.switchy.module.help.fail.missing", literal(id.toString()));

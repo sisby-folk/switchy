@@ -3,6 +3,8 @@ package folk.sisby.switchy.util;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
+import net.minecraft.text.component.LiteralComponent;
+import net.minecraft.text.component.TranslatableComponent;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
@@ -63,17 +65,18 @@ public class Feedback {
 	 * @return the resultant translatable text.
 	 */
 	public static MutableText translatable(String key) {
-		return translatableWithArgs(key);
+		return MutableText.create(new TranslatableComponent(key, null, new Object[0]));
 	}
 
 	/**
-	 * Creates an array of translatable text from many keys.
+	 * Creates translatable text from a key with arguments.
 	 *
-	 * @param keys an arbitrary amount of translation keys.
-	 * @return an array of the resultant translatable text.
+	 * @param key  a translation key.
+	 * @param args the literal arguments to pass to the translatable text.
+	 * @return the resultant translatable text.
 	 */
-	public static MutableText[] translatable(String... keys) {
-		return Arrays.stream(keys).map(Feedback::translatable).toArray(MutableText[]::new);
+	public static MutableText translatable(String key, Object... args) {
+		return MutableText.create(new TranslatableComponent(key, null, args));
 	}
 
 	/**
@@ -84,19 +87,8 @@ public class Feedback {
 	 * @param args        the literal arguments to pass to the translatable text.
 	 * @return the resultant translatable text.
 	 */
-	public static MutableText translatableWithArgs(String key, Pair<Style, Style> formatStyle, MutableText... args) {
-		return translatableWithArgs(key, Arrays.stream(args).map(text -> (text.setStyle(formatStyle.getRight()))).toArray(MutableText[]::new)).setStyle(formatStyle.getLeft());
-	}
-
-	/**
-	 * Creates translatable text from a key with arguments.
-	 *
-	 * @param key  a translation key.
-	 * @param args the literal arguments to pass to the translatable text.
-	 * @return the resultant translatable text.
-	 */
-	public static MutableText translatableWithArgs(String key, MutableText... args) {
-		return Text.translatable(key, (Object[]) args);
+	public static MutableText translatableWithStyle(String key, Pair<Style, Style> formatStyle, MutableText... args) {
+		return translatable(key, Arrays.stream(args).map(text -> (text.setStyle(formatStyle.getRight()))).toArray(Object[]::new)).setStyle(formatStyle.getLeft());
 	}
 
 	/**
@@ -106,7 +98,7 @@ public class Feedback {
 	 * @return a literal text instance of the string.
 	 */
 	public static MutableText literal(String string) {
-		return Text.literal(string);
+		return MutableText.create(new LiteralComponent(string));
 	}
 
 	/**
@@ -157,7 +149,7 @@ public class Feedback {
 	 * @return the resultant translatable text.
 	 */
 	public static MutableText info(String key, MutableText... args) {
-		return translatableWithArgs(key, FORMAT_INFO, args);
+		return translatableWithStyle(key, FORMAT_INFO, args);
 	}
 
 	/**
@@ -169,7 +161,7 @@ public class Feedback {
 	 * @return the resultant translatable text.
 	 */
 	public static MutableText helpText(String keyHelp, String keyCommand, String... keyArgs) {
-		return translatableWithArgs("commands.switchy.help.line", translatableWithArgs(keyCommand, FORMAT_COMMAND, translatable(keyArgs)), translatableWithArgs(keyHelp, FORMAT_HELP));
+		return translatable("commands.switchy.help.line", translatableWithStyle(keyCommand, FORMAT_COMMAND, Arrays.stream(keyArgs).map(Feedback::translatable).toArray(MutableText[]::new)), translatableWithStyle(keyHelp, FORMAT_HELP));
 	}
 
 	/**
@@ -181,7 +173,7 @@ public class Feedback {
 	 * @return the resultant translatable text.
 	 */
 	public static MutableText invalidTry(String keyFail, String keyCommand, MutableText... commandArgs) {
-		return translatableWithArgs(keyFail, FORMAT_INVALID, translatableWithArgs(keyCommand, commandArgs));
+		return translatableWithStyle(keyFail, FORMAT_INVALID, translatable(keyCommand, (Object[]) commandArgs));
 	}
 
 	/**
@@ -192,7 +184,7 @@ public class Feedback {
 	 * @return the resultant translatable text.
 	 */
 	public static MutableText invalid(String key, MutableText... args) {
-		return translatableWithArgs(key, FORMAT_INVALID, args);
+		return translatableWithStyle(key, FORMAT_INVALID, args);
 	}
 
 
@@ -204,7 +196,7 @@ public class Feedback {
 	 * @return the resultant translatable text.
 	 */
 	public static MutableText success(String key, MutableText... args) {
-		return translatableWithArgs(key, FORMAT_SUCCESS, args);
+		return translatableWithStyle(key, FORMAT_SUCCESS, args);
 	}
 
 	/**
@@ -215,7 +207,7 @@ public class Feedback {
 	 * @return the resultant translatable text.
 	 */
 	public static MutableText warn(String key, MutableText... args) {
-		return translatableWithArgs(key, FORMAT_WARN, args);
+		return translatableWithStyle(key, FORMAT_WARN, args);
 	}
 
 	/**

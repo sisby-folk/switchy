@@ -8,6 +8,7 @@ import folk.sisby.switchy.client.api.SwitchyClientEvents;
 import folk.sisby.switchy.ui.api.SwitchyUIPosition;
 import folk.sisby.switchy.ui.api.module.SwitchyUIModule;
 import folk.sisby.switchy.ui.component.LockableFlowLayout;
+import folk.sisby.switchy.util.Feedback;
 import io.wispforest.owo.ui.base.BaseOwoScreen;
 import io.wispforest.owo.ui.component.ButtonComponent;
 import io.wispforest.owo.ui.component.Components;
@@ -22,7 +23,6 @@ import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owo.ui.core.Surface;
 import io.wispforest.owo.ui.core.VerticalAlignment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ public class SwitchScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		});
 
 		// Add Preset Name
-		registerBasicPresetComponent(clientPreset -> Pair.of(Components.label(Text.literal(clientPreset.getName())), SwitchyUIPosition.SIDE_LEFT));
+		registerBasicPresetComponent(clientPreset -> Pair.of(Components.label(Feedback.literal(clientPreset.getName())), SwitchyUIPosition.SIDE_LEFT));
 	}
 
 	private SwitcherScrollContainer presetsScroll;
@@ -138,9 +138,9 @@ public class SwitchScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 			this.verticalAlignment(VerticalAlignment.CENTER);
 			this.gap(10);
 
-			LabelComponent screenLabel = Components.label(Text.translatable("screen.switchy.switch.title"));
+			LabelComponent screenLabel = Components.label(Feedback.translatable("screen.switchy.switch.title"));
 
-			ButtonComponent manageButton = Components.button(Text.translatable("screen.switchy.switch.manage"), b -> {
+			ButtonComponent manageButton = Components.button(Feedback.translatable("screen.switchy.switch.manage"), b -> {
 				ManageScreen managementScreen = new ManageScreen();
 				if (client != null) client.setScreen(managementScreen);
 				managementScreen.updatePresets(presets);
