@@ -13,6 +13,7 @@ publishing {
 
 	repositories {
 		maven {
+			name "ProxyFox"
 			url "https://maven.proxyfox.dev/"
 			credentials(PasswordCredentials)
 		}

@@ -2,8 +2,6 @@ plugins {
 	id 'maven-publish'
 	id 'com.github.breadmoirai.github-release'
 	id 'com.modrinth.minotaur'
-//	alias(libs.plugins.minotaur)
-//	alias(libs.plugins.githubRelease)
 }
 
 githubRelease {

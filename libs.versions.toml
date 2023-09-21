@@ -28,14 +28,12 @@ playerData = "0.2.2+1.19.2"
 luaj = "3.0.6-figura"
 figura = "0.1.2"
 
-
 [plugins]
 loom = { id = "org.quiltmc.loom", version.ref = "loom" }
 githubRelease = { id = "com.github.breadmoirai.github-release", version.ref = "githubRelease" }
 minotaur = { id = "com.modrinth.minotaur", version.ref = "minotaur" }
 
 [libraries]
-# Base
 mc = { group = "mojang", name = "minecraft", version.ref = "mc" }
 ql = { group = "org.quiltmc", name = "quilt-loader", version.ref = "ql" }
 qm = { group = "org.quiltmc", name = "quilt-mappings", version.ref = "qm" }
@@ -43,13 +41,10 @@ qfapi = { group = "org.quiltmc.quilted-fabric-api", name = "quilted-fabric-api",
 serverTranslationsApi = { group = "fr.catcore", name = "server-translations-api", version.ref = "serverTranslationsApi" }
 kaleidoConfig = { group = "folk.sisby", name = "kaleido-config", version.ref = "kaleidoConfig" }
 
-# UI
 owo = { group = "io.wispforest", name = "owo-lib", version.ref = "owo" }
 
-# Cardinal
 cardinal = { group = "dev.onyxstudios.cardinal-components-api", name = "cardinal-components-base", version.ref = "cardinal" }
 
-# Compat
 drogtor = { group = "maven.modrinth", name = "drogtor", version.ref = "drogtor" }
 fabrictailor = { group = "maven.modrinth", name = "fabrictailor", version.ref = "fabrictailor" }
 origins = { group = "com.github.apace100", name = "origins-fabric", version.ref = "origins" }
@@ -62,17 +57,3 @@ placeholder = { group = "eu.pb4", name = "placeholder-api", version.ref = "place
 playerData = { group = "eu.pb4", name = "player-data-api", version.ref = "playerData" }
 luaj = { group = "com.github.Kingdom-of-The-Moon.luaj", name = "luaj-core", version.ref = "luaj" }
 figura = { group = "com.github.FiguraMC", name = "Figura", version.ref = "figura" }
-
-[bundles]
-compat = [
-	"drogtor",
-	"fabrictailor",
-	"calio",
-	"pehkui",
-	"fabrication",
-	"styledNicknames",
-	"placeholder",
-	"luaj",
-	"figura",
-	"cardinal",
-]

@@ -12,7 +12,6 @@ for (name in ["api", "implementation", "runtimeOnly", "modApi", "modImplementati
 	baseConfiguration.extendsFrom(baseIncludeConfiguration)
 }
 
-
 dependencies {
 	minecraft libs.mc
 	mappings variantOf(libs.qm) { classifier "intermediary-v2" }

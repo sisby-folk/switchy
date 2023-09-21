@@ -11,7 +11,16 @@ dependencies {
 	implementation libs.kaleidoConfig
 	modImplementation libs.qfapi
 
-	modCompileOnly libs.bundles.compat
+	modCompileOnly libs.drogtor
+	modCompileOnly libs.fabrictailor
+	modCompileOnly libs.pehkui
+	modCompileOnly libs.fabrication
+	modCompileOnly libs.placeholder
+	modCompileOnly libs.styledNicknames
+	modCompileOnly libs.luaj
+	modCompileOnly libs.figura
+	modCompileOnly libs.cardinal
+	modCompileOnly libs.calio
 	modCompileOnly(libs.apoli) {
 		exclude module: 'AdditionalEntityAttributes'
 		exclude module: 'calio'

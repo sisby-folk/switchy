@@ -5,8 +5,7 @@ plugins {
 archivesBaseName = project == rootProject ? project.name : rootProject.name + '-' + project.name
 
 java {
-	targetCompatibility = JavaVersion.VERSION_17
-	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = sourceCompatibility = JavaVersion.VERSION_17
 	withSourcesJar()
 	withJavadocJar()
 }
