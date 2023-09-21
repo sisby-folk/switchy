@@ -125,7 +125,11 @@ public class ApoliModule implements SwitchyModule {
 
 	@Override
 	public void onDelete(ServerPlayerEntity player, boolean fromDisable) {
-		PowerHolderComponent.getPowers(player, InventoryPower.class).forEach(InventoryPower::dropItemsOnLost);
+		PowerHolderComponent.getPowers(player, InventoryPower.class).forEach(p -> {
+			for (int i = 0; i < p.size(); ++i) {
+				player.getInventory().offerOrDrop(p.getStack(i));
+			}
+		});
 	}
 
 	@Override

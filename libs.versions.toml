@@ -1,30 +1,30 @@
 [versions]
-loom = "1.2.+"
+loom = "1.3.+"
 githubRelease = "2.4.1"
 minotaur = "2.6.0"
 
-mc = "1.19.2"
+mc = "1.18.2"
 ql = "0.19.0"
-qm = "1.19.2+build.22"
-fapi = "0.76.0-1.19.2"
-qfapi = "4.0.0-beta.30+0.76.0-1.19.2"
-serverTranslationsApi = "1.4.18+1.19.2"
+qm = "1.18.2+build.26"
+fapi = "0.67.0-1.18.2"
+qfapi = "1.0.0-beta.28+0.67.0-1.18.2"
+serverTranslationsApi = "1.4.12+1.18.2"
 kaleidoConfig = "0.1.0+1.1.0-beta.3"
 
 owo = "0.9.3+1.19"
 
-cardinal = "5.0.2"
+cardinal = "4.2.0"
 
-drogtor = "1.1.3+1.19"
-fabrictailor = "2.0.1"
-origins = "v1.7.1"
-apoli = "v2.6.0"
-calio = "1.9.0"
+drogtor = "1.1.3"
+fabrictailor = "1.9.0"
+origins = "v1.4.1"
+apoli = "v2.3.3"
+calio = "-SNAPSHOT"
 pehkui = "3.4.2"
-fabrication = "3.0.2+1.19"
-styledNicknames = "1.1.2+1.19"
-placeholder = "2.0.0-beta.7+1.19"
-playerData = "0.2.2+1.19.2"
+fabrication = "3.0.2+1.18"
+styledNicknames = "1.0.4+1.18.1"
+placeholder = "1.1.3+1.17.1"
+playerData = "0.1.0+1.18"
 luaj = "3.0.6-figura"
 figura = "0.1.2"
 
@@ -49,7 +49,7 @@ drogtor = { group = "maven.modrinth", name = "drogtor", version.ref = "drogtor" 
 fabrictailor = { group = "maven.modrinth", name = "fabrictailor", version.ref = "fabrictailor" }
 origins = { group = "com.github.apace100", name = "origins-fabric", version.ref = "origins" }
 apoli = { group = "com.github.apace100", name = "apoli", version.ref = "apoli" }
-calio = { group = "com.github.apace100", name = "calio", version.ref = "calio" }
+calio = { group = "com.github.LambdAurora", name = "calio-test", version.ref = "calio" }
 pehkui = { group = "com.github.Virtuoel", name = "Pehkui", version.ref = "pehkui" }
 fabrication = { group = "maven.modrinth", name = "fabrication", version.ref = "fabrication" }
 styledNicknames = { group = "maven.modrinth", name = "styled-nicknames", version.ref = "styledNicknames" }

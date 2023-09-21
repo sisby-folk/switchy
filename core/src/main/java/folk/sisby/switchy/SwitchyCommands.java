@@ -8,7 +8,6 @@ import folk.sisby.switchy.api.SwitchyApi;
 import folk.sisby.switchy.api.SwitchyEvents;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.util.SwitchyCommand;
-import net.minecraft.command.CommandBuildContext;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
@@ -92,7 +91,7 @@ public class SwitchyCommands {
 		});
 	}
 
-	public static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandBuildContext buildContext, CommandManager.RegistrationEnvironment environment) {
+	public static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedodated) {
 		SwitchyEvents.COMMAND_INIT_IMPORT.invoker().registerCommands(ARG_IMPORT, HELP_TEXT::put);
 		if (IMPORT_ENABLED) {
 			ARG_ROOT.then(ARG_IMPORT);

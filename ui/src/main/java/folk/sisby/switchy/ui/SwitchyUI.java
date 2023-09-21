@@ -13,7 +13,7 @@ import net.fabricmc.loader.api.FabricLoader;
 public class SwitchyUI implements SwitchyClientEvents.Init {
 	@Override
 	public void onInitialize() {
-		if (FabricLoader.getInstance().isModLoaded("owo")) {
+		if (FabricLoader.getInstance().isModLoaded("owo-ui")) {
 			SwitchyKeybindings.initializeKeybindings();
 		}
 	}

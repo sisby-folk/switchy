@@ -8,10 +8,9 @@ import folk.sisby.switchy.client.argument.IdentifiersArgumentType;
 import folk.sisby.switchy.client.argument.IdentifiersFromNbtArgArgumentType;
 import folk.sisby.switchy.client.argument.NbtFileArgumentType;
 import folk.sisby.switchy.util.Feedback;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.command.CommandBuildContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 
@@ -63,7 +62,9 @@ public class SwitchyClientCommands {
 		sendClientMessage(player, Feedback.success("commands.switchy_client.export.sent"));
 	}
 
-	public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext buildContext) {
+	public static void register() {
+		CommandDispatcher<FabricClientCommandSource> dispatcher = ClientCommandManager.DISPATCHER;
+
 		LiteralArgumentBuilder<FabricClientCommandSource> rootArgument = ClientCommandManager.literal("switchy_client");
 		LiteralArgumentBuilder<FabricClientCommandSource> importArgument = ClientCommandManager.literal("import");
 		rootArgument.requires(source -> SwitchyClientApi.isSwitchyServer());

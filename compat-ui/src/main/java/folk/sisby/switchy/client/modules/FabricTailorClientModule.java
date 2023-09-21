@@ -54,7 +54,7 @@ public class FabricTailorClientModule extends FabricTailorModuleData implements 
 
 		Identifier skinId = client.getSkinProvider().loadSkin(skinTexture, MinecraftProfileTexture.Type.SKIN);
 
-		EntityComponent<AbstractClientPlayerEntity> skinPreview = Components.entity(Sizing.fixed(60), new AbstractClientPlayerEntity(client.world, client.getSession().getProfile(), null) {
+		EntityComponent<AbstractClientPlayerEntity> skinPreview = Components.entity(Sizing.fixed(60), new AbstractClientPlayerEntity(client.world, client.getSession().getProfile()) {
 			@Override
 			public Identifier getSkinTexture() {
 				return skinId;

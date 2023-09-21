@@ -20,7 +20,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtByte;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import org.jetbrains.annotations.Nullable;
@@ -74,7 +73,7 @@ public class CardinalSerializerClientModule extends CardinalSerializerData imple
 		public List<MutableText> getValues(NbtCompound nbt) {
 			return valuePaths.stream().map(v -> {
 				try {
-					MutableText text = Text.empty();
+					MutableText text = Feedback.literal("");
 					v.get(nbt).stream().map(new PrettyElementVisitor()::apply).forEach(text::append);
 					if (text.getString().isEmpty()) text = Feedback.literal("???");
 					return text;

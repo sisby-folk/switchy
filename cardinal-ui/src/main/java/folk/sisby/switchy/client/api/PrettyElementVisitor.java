@@ -63,7 +63,7 @@ public class PrettyElementVisitor extends NbtTextFormatter implements NbtElement
 	public void visitCompound(NbtCompound compound) {
 		try {
 			ItemStack stack = ItemStack.fromNbt(compound);
-			MutableText text = Text.empty();
+			MutableText text = Feedback.literal("");
 			if (stack.getCount() > 1) text.append(Feedback.literal(stack.getCount() + " "));
 			text.append(stack.getName());
 			text.formatted(Formatting.AQUA);

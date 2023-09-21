@@ -1,7 +1,6 @@
 package folk.sisby.switchy.modules;
 
-import eu.pb4.placeholders.api.Placeholders;
-import eu.pb4.placeholders.api.TextParserUtils;
+import eu.pb4.placeholders.TextParser;
 import eu.pb4.stylednicknames.NicknameHolder;
 import eu.pb4.stylednicknames.config.ConfigManager;
 import folk.sisby.switchy.SwitchyCompat;
@@ -12,7 +11,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
 import java.util.Objects;
 
 import static folk.sisby.switchy.util.Feedback.translatable;
@@ -82,7 +80,7 @@ public class StyledNicknamesModule implements SwitchyModule, SwitchyModuleTransf
 	public NbtCompound toClientNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		if (styled_nickname != null) {
-			outNbt.putString(KEY_NICKNAME, Text.Serializer.toJsonTree(TextParserUtils.formatText(styled_nickname)).toString());
+			outNbt.putString(KEY_NICKNAME, Text.Serializer.toJsonTree(TextParser.parse(styled_nickname)).toString());
 		}
 		return outNbt;
 	}
@@ -96,7 +94,7 @@ public class StyledNicknamesModule implements SwitchyModule, SwitchyModuleTransf
 	 * @return a text representation of the stored nickname.
 	 */
 	public Text getText() {
-		return styled_nickname != null ? TextParserUtils.formatText(styled_nickname) : null;
+		return styled_nickname != null ? TextParser.parse(styled_nickname) : null;
 	}
 
 	/**
@@ -104,6 +102,6 @@ public class StyledNicknamesModule implements SwitchyModule, SwitchyModuleTransf
 	 */
 	public Text getOutput() {
 		Text nickname = getText();
-		return styled_nickname != null ? Placeholders.parseText(ConfigManager.getConfig().nicknameFormat, Placeholders.PREDEFINED_PLACEHOLDER_PATTERN, Map.of("nickname", nickname, "name", nickname)) : null;
+		return styled_nickname != null ? ConfigManager.getConfig().defaultPrefix.shallowCopy().append(nickname) : null;
 	}
 }

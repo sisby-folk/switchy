@@ -4,7 +4,6 @@ import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.client.api.SwitchyClientEvents;
 import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +31,7 @@ public class SwitchyClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		SwitchyClientReceivers.InitializeReceivers();
-		ClientCommandRegistrationCallback.EVENT.register(SwitchyClientCommands::register);
+		SwitchyClientCommands.register();
 		SwitchyClientEvents.registerEntrypointListeners();
 		SwitchyClientEvents.INIT.invoker().onInitialize();
 		LOGGER.info("[Switchy Client] Initialized! Registered Modules: " + SwitchyClientModuleRegistry.getModules());

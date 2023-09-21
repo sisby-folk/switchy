@@ -2,7 +2,7 @@ package folk.sisby.switchy.client.util;
 
 import com.mojang.brigadier.context.CommandContext;
 import folk.sisby.switchy.util.Feedback;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.client.network.ClientPlayerEntity;
 
 import static folk.sisby.switchy.Switchy.LOGGER;

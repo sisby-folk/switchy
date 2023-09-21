@@ -48,7 +48,7 @@ public class SwitchScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		// Close Screen on Switch
 		SwitchyClientEvents.SWITCH.register(event -> {
 			MinecraftClient client = MinecraftClient.getInstance();
-			if (Objects.equals(client.getSession().getPlayerUuid(), event.player()))
+			if (Objects.equals(client.getSession().getUuid(), event.player().toString()))
 				client.execute(() -> {
 					if (client.currentScreen instanceof SwitchScreen) client.setScreen(null);
 				});

@@ -3,8 +3,6 @@ package folk.sisby.switchy.util;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
-import net.minecraft.text.component.LiteralComponent;
-import net.minecraft.text.component.TranslatableComponent;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
@@ -65,7 +63,7 @@ public class Feedback {
 	 * @return the resultant translatable text.
 	 */
 	public static MutableText translatable(String key) {
-		return MutableText.create(new TranslatableComponent(key));
+		return new TranslatableText(key);
 	}
 
 	/**
@@ -76,7 +74,7 @@ public class Feedback {
 	 * @return the resultant translatable text.
 	 */
 	public static MutableText translatable(String key, Object... args) {
-		return MutableText.create(new TranslatableComponent(key, args));
+		return new TranslatableText(key, args);
 	}
 
 	/**
@@ -98,7 +96,7 @@ public class Feedback {
 	 * @return a literal text instance of the string.
 	 */
 	public static MutableText literal(String string) {
-		return MutableText.create(new LiteralComponent(string));
+		return new LiteralText(string);
 	}
 
 	/**
@@ -138,7 +136,7 @@ public class Feedback {
 	 * @return a command as might be returned by context.getInput(). Identical in 1.19+.
 	 */
 	public static String command(String string) {
-		return string;
+		return "/" + string;
 	}
 
 	/**

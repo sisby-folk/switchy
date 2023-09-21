@@ -29,7 +29,7 @@ public class SwitchyCompatClient implements SwitchyClientEvents.Init {
 	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
 	@Override
 	public void onInitialize() {
-		if (FabricLoader.getInstance().isModLoaded("owo")) {
+		if (FabricLoader.getInstance().isModLoaded("owo-ui")) {
 			DrogtorClientModule.register();
 			FabricTailorClientModule.register();
 			StyledNicknamesClientModule.register();
