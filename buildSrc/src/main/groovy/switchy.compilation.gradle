@@ -31,7 +31,6 @@ processResources {
 		"fapi"                 : libs.versions.fapi.get(),
 		"qfapi"                : libs.versions.qfapi.get(),
 		"owo"                  : libs.versions.owo.get(),
-		"drogtor"              : libs.versions.drogtor.get(),
 		"styledNicknames"      : libs.versions.styledNicknames.get(),
 		"fabrictailor"         : libs.versions.fabrictailor.get(),
 		"origins"              : libs.versions.origins.get().replaceFirst('v', ''),
