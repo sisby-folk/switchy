@@ -10,5 +10,5 @@ dependencies {
 	implementation project(path: ':client', configuration: 'namedElements')
 	modImplementation libs.qfapi
 
-	modImplementation libs.cardinal
+	modApi libs.cardinal
 }
