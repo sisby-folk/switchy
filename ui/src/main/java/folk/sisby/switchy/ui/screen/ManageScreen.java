@@ -29,7 +29,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.Flow;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -155,7 +154,7 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 			TextBoxComponent nameEntry = Components.textBox(Sizing.fill(53), (presetName != null) ? presetName : "newPreset");
 			nameEntry.setTextPredicate(s -> s.chars().mapToObj(i -> (char) i).allMatch(StringReader::isAllowedInUnquotedString));
 			nameEntry.onChanged();
-			ManageScreen.this.setInitialFocus(nameEntry);
+			ManageScreen.this.setFocusedChild(nameEntry);
 			renamePresetFlow.child((Component) nameEntry);
 			ButtonComponent confirmButton = Components.button(Feedback.translatable("screen.switchy.manage.presets.confirm"), (presetName != null) ? b -> {
 				if (!presetName.equals(nameEntry.getText())) {
