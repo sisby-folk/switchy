@@ -2,6 +2,7 @@ package folk.sisby.switchy.ui.util;
 
 import folk.sisby.switchy.api.SwitchyFeedback;
 import folk.sisby.switchy.api.SwitchyFeedbackStatus;
+import folk.sisby.switchy.util.Feedback;
 import io.wispforest.owo.ops.TextOps;
 import io.wispforest.owo.ui.util.Drawer;
 import net.minecraft.client.MinecraftClient;
@@ -84,7 +85,7 @@ public class SwitchyFeedbackToast implements Toast {
 
 	private List<Text> initText(SwitchyFeedback feedback) {
 		List<Text> texts = new ArrayList<>();
-		texts.add(Text.literal("----Switchy----").formatted(Formatting.BOLD, Formatting.AQUA));
+		texts.add(Feedback.literal("----Switchy----").formatted(Formatting.BOLD, Formatting.AQUA));
 
 		texts.addAll(feedback.messages());
 		return texts;
