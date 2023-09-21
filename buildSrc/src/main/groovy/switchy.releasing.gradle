@@ -25,8 +25,8 @@ tasks.githubRelease {
 modrinth {
 	token = project.findProperty("modrinth.token") ?: System.getenv("MODRINTH_TOKEN")
 	projectId = 'switchy'
-	versionNumber = project.version
-	versionName = "$project.version+${libs.versions.mc.get()}"
+	versionName = project.version
+	versionNumber = "$project.version+$project.branch"
 	versionType = 'release'
 	uploadFile = remapJar
 	gameVersions = [libs.versions.mc]
