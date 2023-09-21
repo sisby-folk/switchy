@@ -8,6 +8,7 @@ import folk.sisby.switchy.client.api.module.SwitchyClientModule;
 import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
 import folk.sisby.switchy.ui.api.SwitchyUIPosition;
 import folk.sisby.switchy.ui.api.module.SwitchyUIModule;
+import folk.sisby.switchy.util.Feedback;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.component.ItemComponent;
 import io.wispforest.owo.ui.core.Component;
@@ -62,7 +63,7 @@ public class CardinalSerializerClientModule extends CardinalSerializerData imple
 		if (values.isEmpty() && items.isEmpty() && config.conditionPath == null && !config.icon.apply(null).isOf(Items.DIRT)) return null;
 
 		ItemComponent component = Components.item(stack);
-		List<TooltipComponent> tooltips = new ArrayList<>(List.of(TooltipComponent.of(Text.translatable("switchy.modules.%s.%s.preview.tooltip".formatted(id.getNamespace(), id.getPath()), values.toArray()).asOrderedText())));
+		List<TooltipComponent> tooltips = new ArrayList<>(List.of(TooltipComponent.of(Feedback.translatable("switchy.modules.%s.%s.preview.tooltip".formatted(id.getNamespace(), id.getPath()), values.toArray()).asOrderedText())));
 		if (!items.isEmpty()) tooltips.add(TooltipComponent.of(new BundleTooltipData(items, 0)));
 
 		component.tooltip(tooltips);
@@ -75,10 +76,10 @@ public class CardinalSerializerClientModule extends CardinalSerializerData imple
 				try {
 					MutableText text = Text.empty();
 					v.get(nbt).stream().map(new PrettyElementVisitor()::apply).forEach(text::append);
-					if (text.getString().isEmpty()) text = Text.literal("???");
+					if (text.getString().isEmpty()) text = Feedback.literal("???");
 					return text;
 				} catch (CommandSyntaxException e) {
-					return Text.literal("???");
+					return Feedback.literal("???");
 				}
 			}).toList();
 		}

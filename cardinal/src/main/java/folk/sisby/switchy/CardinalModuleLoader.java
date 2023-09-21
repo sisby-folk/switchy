@@ -8,10 +8,10 @@ import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.api.modules.CardinalSerializerModule;
+import folk.sisby.switchy.util.Feedback;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import org.jetbrains.annotations.NotNull;
@@ -84,10 +84,10 @@ public class CardinalModuleLoader extends JsonDataLoader implements Identifiable
 				}
 				if (!componentIds.isEmpty()) {
 					try {
-						SwitchyModuleInfo info = new SwitchyModuleInfo(moduleDefault, moduleEditable, Text.translatable("switchy.modules.%s.%s.description".formatted(moduleId.getNamespace(), moduleId.getPath())));
-						info.withDescriptionWhenEnabled(Text.translatable("switchy.modules.%s.%s.enabled".formatted(moduleId.getNamespace(), moduleId.getPath())));
-						info.withDescriptionWhenDisabled(Text.translatable("switchy.modules.%s.%s.disabled".formatted(moduleId.getNamespace(), moduleId.getPath())));
-						info.withDeletionWarning(Text.translatable("switchy.modules.%s.%s.warning".formatted(moduleId.getNamespace(), moduleId.getPath())));
+						SwitchyModuleInfo info = new SwitchyModuleInfo(moduleDefault, moduleEditable, Feedback.translatable("switchy.modules.%s.%s.description".formatted(moduleId.getNamespace(), moduleId.getPath())));
+						info.withDescriptionWhenEnabled(Feedback.translatable("switchy.modules.%s.%s.enabled".formatted(moduleId.getNamespace(), moduleId.getPath())));
+						info.withDescriptionWhenDisabled(Feedback.translatable("switchy.modules.%s.%s.disabled".formatted(moduleId.getNamespace(), moduleId.getPath())));
+						info.withDeletionWarning(Feedback.translatable("switchy.modules.%s.%s.warning".formatted(moduleId.getNamespace(), moduleId.getPath())));
 						CardinalSerializerModule.register(moduleId, componentIds, info);
 					} catch (IllegalStateException ignoredRegistrationEx) {
 						SwitchyCardinal.LOGGER.warn("[Switchy Cardinal] module {} tried to register a component that already has a module!, skipping...", moduleId);

@@ -6,6 +6,7 @@ import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
 import folk.sisby.switchy.modules.OriginsModule;
 import folk.sisby.switchy.ui.api.SwitchyUIPosition;
 import folk.sisby.switchy.ui.api.module.SwitchyUIModule;
+import folk.sisby.switchy.util.Feedback;
 import io.github.apace100.origins.origin.Origin;
 import io.github.apace100.origins.origin.OriginLayer;
 import io.github.apace100.origins.origin.OriginLayers;
@@ -83,7 +84,7 @@ public class OriginsClientModule implements SwitchyClientModule, SwitchyUIModule
 		originsFlow.child(Components.item(ORB_OF_ORIGIN.getDefaultStack()).margins(Insets.right(2)));
 		List<String> names = new ArrayList<>(origins.values().stream().map(Origin::getName).map(Text::getString).toList());
 		Collections.reverse(names);
-		originsFlow.child(Components.label(Text.literal(String.join(" | ", names)).setStyle(Style.EMPTY.withColor(Formatting.GRAY))));
+		originsFlow.child(Components.label(Feedback.literal(String.join(" | ", names)).setStyle(Style.EMPTY.withColor(Formatting.GRAY))));
 
 		return Pair.of(originsFlow, SwitchyUIPosition.LEFT);
 	}

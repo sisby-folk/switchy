@@ -85,7 +85,7 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		dataTab = new DataTabTabLayout();
 
 		// Tab Setup & Back Button
-		ButtonComponent backButton = Components.button(Text.translatable("screen.switchy.manage.back"), buttonComponent -> {
+		ButtonComponent backButton = Components.button(Feedback.translatable("screen.switchy.manage.back"), buttonComponent -> {
 			SwitchScreen switchScreen = new SwitchScreen();
 			if (client != null) client.setScreen(switchScreen);
 			switchScreen.updatePresets(presets);
@@ -93,9 +93,9 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		backButton.margins(Insets.right(10));
 
 		root.child(new ManageTabLayout(List.of((Component) backButton),
-			new TabLayout.Tab(Text.translatable("screen.switchy.manage.presets.button"), presetsTab),
-			new TabLayout.Tab(Text.translatable("screen.switchy.manage.modules.button"), modulesTab),
-			new TabLayout.Tab(Text.translatable("screen.switchy.manage.data.button"), dataTab)
+			new TabLayout.Tab(Feedback.translatable("screen.switchy.manage.presets.button"), presetsTab),
+			new TabLayout.Tab(Feedback.translatable("screen.switchy.manage.modules.button"), modulesTab),
+			new TabLayout.Tab(Feedback.translatable("screen.switchy.manage.data.button"), dataTab)
 		));
 		root.lock();
 	}
@@ -121,7 +121,7 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		private String focusedPresetName;
 
 		public final VerticalFlowLayout presetsFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
-		public final ButtonComponent newPresetButton = Components.button(Text.translatable("screen.switchy.manage.presets.new"), b -> {
+		public final ButtonComponent newPresetButton = Components.button(Feedback.translatable("screen.switchy.manage.presets.new"), b -> {
 			focusedPresetName = "";
 			refresh();
 		});
@@ -156,7 +156,7 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 			nameEntry.onChanged();
 			ManageScreen.this.setInitialFocus(nameEntry);
 			renamePresetFlow.child((Component) nameEntry);
-			ButtonComponent confirmButton = Components.button(Text.translatable("screen.switchy.manage.presets.confirm"), (presetName != null) ? b -> {
+			ButtonComponent confirmButton = Components.button(Feedback.translatable("screen.switchy.manage.presets.confirm"), (presetName != null) ? b -> {
 				if (!presetName.equals(nameEntry.getText())) {
 					if (presets.getPresetNames().stream().noneMatch(s -> s.equalsIgnoreCase(nameEntry.getText()))) {
 						presets.renamePreset(presetName, nameEntry.getText());
@@ -181,7 +181,7 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 			});
 			confirmButton.horizontalSizing(Sizing.fill(22));
 			confirmButton.margins(Insets.vertical(1));
-			ButtonComponent cancelButton = Components.button(Text.translatable("screen.switchy.manage.presets.cancel"), b -> {
+			ButtonComponent cancelButton = Components.button(Feedback.translatable("screen.switchy.manage.presets.cancel"), b -> {
 				focusedPresetName = null;
 				refresh();
 			});
@@ -195,21 +195,21 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 
 		private HorizontalFlowLayout getPresetFlow(@Nullable String name) {
 			HorizontalFlowLayout presetFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
-			LabelComponent presetLabel = Components.label(Text.literal(name));
+			LabelComponent presetLabel = Components.label(Feedback.literal(name));
 			presetLabel.horizontalSizing(Sizing.fill(54));
-			ButtonComponent renameButton = Components.button(Text.translatable("screen.switchy.manage.presets.rename"), b -> {
+			ButtonComponent renameButton = Components.button(Feedback.translatable("screen.switchy.manage.presets.rename"), b -> {
 				focusedPresetName = name;
 				refresh();
 			});
 			renameButton.horizontalSizing(Sizing.fill(22));
-			Consumer<ButtonComponent> deleteAction = b -> ManageScreen.this.uiAdapter.rootComponent.addOverlay(new DialogOverlayComponent(Text.translatable("screen.switchy.manage.dialog.confirm"), Text.translatable("screen.switchy.manage.dialog.cancel"), okButton -> {
+			Consumer<ButtonComponent> deleteAction = b -> ManageScreen.this.uiAdapter.rootComponent.addOverlay(new DialogOverlayComponent(Feedback.translatable("screen.switchy.manage.dialog.confirm"), Feedback.translatable("screen.switchy.manage.dialog.cancel"), okButton -> {
 				presets.deletePreset(name);
 				refresh();
 				ManageScreen.this.uiAdapter.rootComponent.lock();
 				SwitchyClientApi.deletePreset(name, SwitchyScreen::updatePresetScreens);
 			}, cancel -> {
-			}, List.of(Text.translatable("commands.switchy_client.delete.confirm", name), Text.translatable("screen.switchy.manage.messages.delete.warn"), Text.translatable("screen.switchy.manage.dialog.modules", presets.getEnabledModuleText()))));
-			ButtonComponent deleteButton = Components.button(Text.translatable("screen.switchy.manage.presets.delete"), deleteAction);
+			}, List.of(Feedback.translatable("commands.switchy_client.delete.confirm", name), Feedback.translatable("screen.switchy.manage.messages.delete.warn"), Feedback.translatable("screen.switchy.manage.dialog.modules", presets.getEnabledModuleText()))));
+			ButtonComponent deleteButton = Components.button(Feedback.translatable("screen.switchy.manage.presets.delete"), deleteAction);
 			deleteButton.margins(Insets.vertical(1));
 			deleteButton.horizontalSizing(Sizing.fill(22));
 			deleteButton.active(!presets.getCurrentPresetName().equals(name));
@@ -227,7 +227,7 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 
 	public class ModulesTab extends ModuleSelectorFlow {
 		public ModulesTab() {
-			super(160, Text.translatable("screen.switchy.manage.modules.disabled"), Text.translatable("screen.switchy.manage.modules.enabled"));
+			super(160, Feedback.translatable("screen.switchy.manage.modules.disabled"), Feedback.translatable("screen.switchy.manage.modules.enabled"));
 			this.margins(Insets.of(10));
 		}
 
@@ -235,10 +235,10 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 			leftModulesFlow.clearChildren();
 			rightModulesFlow.clearChildren();
 			int labelSize = 100;
-			leftModulesFlow.child(getModuleFlow(new Identifier("placeholder", "placeholder"), Text.literal(""), (b, i) -> {
-			}, true, Text.translatable("screen.switchy.manage.modules.disable"), Text.literal(""), labelSize).verticalSizing(Sizing.fixed(0)));
-			rightModulesFlow.child(getModuleFlow(new Identifier("placeholder", "placeholder"), Text.literal(""), (b, i) -> {
-			}, true, Text.translatable("screen.switchy.manage.modules.disable"), Text.literal(""), labelSize).verticalSizing(Sizing.fixed(0)));
+			leftModulesFlow.child(getModuleFlow(new Identifier("placeholder", "placeholder"), Feedback.literal(""), (b, i) -> {
+			}, true, Feedback.translatable("screen.switchy.manage.modules.disable"), Feedback.literal(""), labelSize).verticalSizing(Sizing.fixed(0)));
+			rightModulesFlow.child(getModuleFlow(new Identifier("placeholder", "placeholder"), Feedback.literal(""), (b, i) -> {
+			}, true, Feedback.translatable("screen.switchy.manage.modules.disable"), Feedback.literal(""), labelSize).verticalSizing(Sizing.fixed(0)));
 
 			// Disabled Modules
 			presets.getDisabledModules().forEach(module -> leftModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
@@ -246,15 +246,15 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 				refresh();
 				ManageScreen.this.uiAdapter.rootComponent.lock();
 				SwitchyClientApi.enableModule(id, SwitchyScreen::updatePresetScreens);
-			}, true, Text.translatable("screen.switchy.manage.modules.enable"), presets.getModuleInfo().get(module).descriptionWhenEnabled(), labelSize)));
+			}, true, Feedback.translatable("screen.switchy.manage.modules.enable"), presets.getModuleInfo().get(module).descriptionWhenEnabled(), labelSize)));
 			// Enabled Modules
-			presets.getEnabledModules().forEach(module -> rightModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> ManageScreen.this.uiAdapter.rootComponent.addOverlay(new DialogOverlayComponent(Text.translatable("screen.switchy.manage.dialog.confirm"), Text.translatable("screen.switchy.manage.dialog.cancel"), okButton -> {
+			presets.getEnabledModules().forEach(module -> rightModulesFlow.child(getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> ManageScreen.this.uiAdapter.rootComponent.addOverlay(new DialogOverlayComponent(Feedback.translatable("screen.switchy.manage.dialog.confirm"), Feedback.translatable("screen.switchy.manage.dialog.cancel"), okButton -> {
 				presets.disableModule(id);
 				refresh();
 				ManageScreen.this.uiAdapter.rootComponent.lock();
 				SwitchyClientApi.disableModule(id, SwitchyScreen::updatePresetScreens);
 			}, cancel -> {
-			}, List.of(Text.translatable("commands.switchy_client.disable.confirm", id.getPath()), Text.translatable("screen.switchy.manage.modules.disable.warn", presets.getModuleInfo().get(id).deletionWarning())))), true, Text.translatable("screen.switchy.manage.modules.disable"), presets.getModuleInfo().get(module).descriptionWhenDisabled(), labelSize)));
+			}, List.of(Feedback.translatable("commands.switchy_client.disable.confirm", id.getPath()), Feedback.translatable("screen.switchy.manage.modules.disable.warn", presets.getModuleInfo().get(id).deletionWarning())))), true, Feedback.translatable("screen.switchy.manage.modules.disable"), presets.getModuleInfo().get(module).descriptionWhenDisabled(), labelSize)));
 		}
 	}
 
@@ -273,8 +273,8 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 
 		public static HorizontalFlowLayout getModuleFlow(Identifier id, @Nullable Text labelTooltip, BiConsumer<ButtonComponent, Identifier> buttonAction, boolean enabled, Text buttonText, @Nullable Text buttonTooltip, int labelSize) {
 			HorizontalFlowLayout moduleFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
-			LabelComponent moduleName = Components.label(Text.literal(id.getPath()));
-			Text namespaceText = Text.literal(Feedback.guessModTitle(id.getNamespace())).setStyle(Feedback.FORMAT_INFO.getLeft());
+			LabelComponent moduleName = Components.label(Feedback.literal(id.getPath()));
+			Text namespaceText = Feedback.literal(Feedback.guessModTitle(id.getNamespace())).setStyle(Feedback.FORMAT_INFO.getLeft());
 			moduleName.tooltip(labelTooltip != null ? List.of(namespaceText, labelTooltip) : List.of(namespaceText));
 			moduleName.horizontalSizing(Sizing.fixed(labelSize));
 			ButtonComponent enableButton = Components.button(buttonText, b -> buttonAction.accept(b, id));
@@ -311,8 +311,8 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 
 		private DataTabTabLayout(DataTabImportFlow importFlow, DataTabExportFlow exportFlow) {
 			super(List.of(),
-				new TabLayout.Tab(Text.translatable("screen.switchy.manage.data.import"), importFlow),
-				new TabLayout.Tab(Text.translatable("screen.switchy.manage.data.export"), exportFlow)
+				new TabLayout.Tab(Feedback.translatable("screen.switchy.manage.data.import"), importFlow),
+				new TabLayout.Tab(Feedback.translatable("screen.switchy.manage.data.export"), exportFlow)
 			);
 			this.margins(Insets.top(6));
 			this.contentPanel.verticalSizing(Sizing.fixed(174));
@@ -348,17 +348,17 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 
 		@Override
 		protected void onAction() {
-			ManageScreen.this.uiAdapter.rootComponent.addOverlay(new DialogOverlayComponent(Text.translatable("screen.switchy.manage.dialog.confirm"), Text.translatable("screen.switchy.manage.dialog.cancel"), confirmButton -> {
+			ManageScreen.this.uiAdapter.rootComponent.addOverlay(new DialogOverlayComponent(Feedback.translatable("screen.switchy.manage.dialog.confirm"), Feedback.translatable("screen.switchy.manage.dialog.cancel"), confirmButton -> {
 				ManageScreen.this.uiAdapter.rootComponent.lock();
 				SwitchyClientApi.importPresets(selectedFileNbt, availableModules, includedModules, SwitchyScreen::updatePresetScreens);
 			}, cancelButton -> {
 			}, List.of(
-				Text.translatable("screen.switchy.manage.data.import.info",
+				Feedback.translatable("screen.switchy.manage.data.import.info",
 					Feedback.literal(String.valueOf(selectedFileNbt.getCompound(SwitchyPresetsData.KEY_PRESETS).getKeys().size())),
-					Feedback.literal(String.valueOf(includedModules.size()))), Text.translatable("screen.switchy.manage.dialog.presets",
+					Feedback.literal(String.valueOf(includedModules.size()))), Feedback.translatable("screen.switchy.manage.dialog.presets",
 					Feedback.getHighlightedListText(selectedFileNbt.getCompound(SwitchyPresetsData.KEY_PRESETS).getKeys().stream().sorted().toList(), List.of(new Pair<>(presets.getPresetNames()::contains, Formatting.DARK_RED)))),
-				Text.translatable("screen.switchy.manage.data.import.collision"),
-				Text.translatable("screen.switchy.manage.dialog.modules", Feedback.getIdListText(includedModules))
+				Feedback.translatable("screen.switchy.manage.data.import.collision"),
+				Feedback.translatable("screen.switchy.manage.dialog.modules", Feedback.getIdListText(includedModules))
 			)));
 		}
 
@@ -387,11 +387,11 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 
 		@Override
 		protected void onAction() {
-			ManageScreen.this.uiAdapter.rootComponent.addOverlay(new DialogOverlayComponent(Text.translatable("screen.switchy.manage.dialog.confirm"), Text.translatable("screen.switchy.manage.dialog.cancel"), confirmButton -> {
+			ManageScreen.this.uiAdapter.rootComponent.addOverlay(new DialogOverlayComponent(Feedback.translatable("screen.switchy.manage.dialog.confirm"), Feedback.translatable("screen.switchy.manage.dialog.cancel"), confirmButton -> {
 				ManageScreen.this.uiAdapter.rootComponent.lock();
 				SwitchyClientApi.exportPresetsToFile(availableModules, null, (feedback, file) -> SwitchyScreen.updatePresetScreens(feedback, presets));
 			}, cancelButton -> {
-			}, List.of(Text.translatable("commands.switchy_client.export.confirm", String.valueOf(includedModules.size())))));
+			}, List.of(Feedback.translatable("commands.switchy_client.export.confirm", String.valueOf(includedModules.size())))));
 		}
 
 		@Override
@@ -404,9 +404,9 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 	}
 
 	public abstract class DataTabModeFlow extends VerticalFlowLayout {
-		public final DataTabComboField<String> methodDropdown = new DataTabComboField<>(ManageScreen.this.uiAdapter.rootComponent, Text.translatable("screen.switchy.manage.data.method"), this::updateDataMethod);
-		public final DataTabComboField<NbtCompound> fileDropdown = new DataTabComboField<>(ManageScreen.this.uiAdapter.rootComponent, Text.translatable("screen.switchy.manage.data.file"), this::onNbtSourceChange);
-		public final ModuleSelectorFlow moduleSelector = new ModuleSelectorFlow(80, Text.translatable("screen.switchy.manage.data.available"), Text.translatable("screen.switchy.manage.data.included"));
+		public final DataTabComboField<String> methodDropdown = new DataTabComboField<>(ManageScreen.this.uiAdapter.rootComponent, Feedback.translatable("screen.switchy.manage.data.method"), this::updateDataMethod);
+		public final DataTabComboField<NbtCompound> fileDropdown = new DataTabComboField<>(ManageScreen.this.uiAdapter.rootComponent, Feedback.translatable("screen.switchy.manage.data.file"), this::onNbtSourceChange);
+		public final ModuleSelectorFlow moduleSelector = new ModuleSelectorFlow(80, Feedback.translatable("screen.switchy.manage.data.available"), Feedback.translatable("screen.switchy.manage.data.included"));
 		public final ButtonComponent actionButton;
 
 		protected List<Identifier> includedModules = new ArrayList<>();
@@ -420,9 +420,9 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 			this.gap(6);
 			moduleSelector.margins(Insets.vertical(4));
 			this.isImporting = isImporting;
-			Text fileText = Text.translatable("screen.switchy.manage.data.method.file");
+			Text fileText = Feedback.translatable("screen.switchy.manage.data.method.file");
 			this.methodDropdown.comboBox.setOptions(Map.of(fileText, "file"), fileText);
-			this.actionButton = Components.button(isImporting ? Text.translatable("screen.switchy.manage.data.import.action") : Text.translatable("screen.switchy.manage.data.export.action"), b -> this.onAction());
+			this.actionButton = Components.button(isImporting ? Feedback.translatable("screen.switchy.manage.data.import.action") : Feedback.translatable("screen.switchy.manage.data.export.action"), b -> this.onAction());
 			this.child(methodDropdown);
 			this.child(fileDropdown);
 			this.child(moduleSelector);
@@ -438,8 +438,8 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		public void updateDataMethod(String method) {
 			Map<Text, NbtCompound> fileOptions = new HashMap<>();
 
-			Text exportPrompt = Text.translatable("screen.switchy.manage.data.export.file.prompt");
-			Text importPrompt = Text.translatable("screen.switchy.manage.data.import.file.prompt");
+			Text exportPrompt = Feedback.translatable("screen.switchy.manage.data.export.file.prompt");
+			Text importPrompt = Feedback.translatable("screen.switchy.manage.data.import.file.prompt");
 
 			if (isImporting) {
 				SwitchyClientApi.getImportableFiles().forEach(file -> {
@@ -468,10 +468,10 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 			moduleSelector.leftModulesFlow.clearChildren();
 			moduleSelector.rightModulesFlow.clearChildren();
 			int labelSize = 100;
-			moduleSelector.leftModulesFlow.child(ModuleSelectorFlow.getModuleFlow(new Identifier("placeholder", "placeholder"), Text.literal(""), (b, i) -> {
-			}, false, Text.translatable("screen.switchy.manage.data.add"), Text.literal(""), labelSize).verticalSizing(Sizing.fixed(0)));
-			moduleSelector.rightModulesFlow.child(ModuleSelectorFlow.getModuleFlow(new Identifier("placeholder", "placeholder"), Text.literal(""), (b, i) -> {
-			}, false, Text.translatable("screen.switchy.manage.data.remove"), Text.literal(""), labelSize).verticalSizing(Sizing.fixed(0)));
+			moduleSelector.leftModulesFlow.child(ModuleSelectorFlow.getModuleFlow(new Identifier("placeholder", "placeholder"), Feedback.literal(""), (b, i) -> {
+			}, false, Feedback.translatable("screen.switchy.manage.data.add"), Feedback.literal(""), labelSize).verticalSizing(Sizing.fixed(0)));
+			moduleSelector.rightModulesFlow.child(ModuleSelectorFlow.getModuleFlow(new Identifier("placeholder", "placeholder"), Feedback.literal(""), (b, i) -> {
+			}, false, Feedback.translatable("screen.switchy.manage.data.remove"), Feedback.literal(""), labelSize).verticalSizing(Sizing.fixed(0)));
 
 			if (isImporting) {
 				// Available Modules
@@ -484,39 +484,39 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 					includedModules.add(module);
 					availableModules.remove(module);
 					refreshDataModulesFlow();
-				}, true, Text.translatable("screen.switchy.manage.data.add"), Text.translatable("screen.switchy.manage.data.import.add.includable"), labelSize)));
+				}, true, Feedback.translatable("screen.switchy.manage.data.add"), Feedback.translatable("screen.switchy.manage.data.import.add.includable"), labelSize)));
 				noPermissionModules.forEach(module -> moduleSelector.leftModulesFlow.child(ModuleSelectorFlow.getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
 					includedModules.add(module);
 					availableModules.remove(module);
 					refreshDataModulesFlow();
-				}, false, Text.translatable("screen.switchy.manage.data.add"), Text.translatable("screen.switchy.manage.data.import.add.permission"), labelSize)));
+				}, false, Feedback.translatable("screen.switchy.manage.data.add"), Feedback.translatable("screen.switchy.manage.data.import.add.permission"), labelSize)));
 				neverModules.forEach(module -> moduleSelector.leftModulesFlow.child(ModuleSelectorFlow.getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
 					includedModules.add(module);
 					availableModules.remove(module);
 					refreshDataModulesFlow();
-				}, false, Text.translatable("screen.switchy.manage.data.add"), Text.translatable("screen.switchy.manage.data.import.add.never"), labelSize)));
+				}, false, Feedback.translatable("screen.switchy.manage.data.add"), Feedback.translatable("screen.switchy.manage.data.import.add.never"), labelSize)));
 				notInstalledModules.forEach(module -> moduleSelector.leftModulesFlow.child(ModuleSelectorFlow.getModuleFlow(module, null, (b, id) -> {
 					includedModules.add(module);
 					availableModules.remove(module);
 					refreshDataModulesFlow();
-				}, false, Text.translatable("screen.switchy.manage.data.add"), Text.translatable("screen.switchy.manage.data.import.add.missing"), labelSize)));
+				}, false, Feedback.translatable("screen.switchy.manage.data.add"), Feedback.translatable("screen.switchy.manage.data.import.add.missing"), labelSize)));
 				// Included Modules
 				includedModules.forEach(module -> moduleSelector.rightModulesFlow.child(ModuleSelectorFlow.getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
 					availableModules.add(module);
 					includedModules.remove(module);
 					refreshDataModulesFlow();
-				}, true, Text.translatable("screen.switchy.manage.data.remove"), Text.translatable("screen.switchy.manage.data.import.remove"), labelSize)));
+				}, true, Feedback.translatable("screen.switchy.manage.data.remove"), Feedback.translatable("screen.switchy.manage.data.import.remove"), labelSize)));
 			} else {
 				availableModules.forEach(module -> moduleSelector.leftModulesFlow.child(ModuleSelectorFlow.getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
 					includedModules.add(module);
 					availableModules.remove(module);
 					refreshDataModulesFlow();
-				}, true, Text.translatable("screen.switchy.manage.data.add"), Text.translatable("screen.switchy.manage.data.export.add"), labelSize)));
+				}, true, Feedback.translatable("screen.switchy.manage.data.add"), Feedback.translatable("screen.switchy.manage.data.export.add"), labelSize)));
 				includedModules.forEach(module -> moduleSelector.rightModulesFlow.child(ModuleSelectorFlow.getModuleFlow(module, presets.getModuleInfo().get(module).description(), (b, id) -> {
 					availableModules.add(module);
 					includedModules.remove(module);
 					refreshDataModulesFlow();
-				}, true, Text.translatable("screen.switchy.manage.data.remove"), Text.translatable("screen.switchy.manage.data.export.remove"), labelSize)));
+				}, true, Feedback.translatable("screen.switchy.manage.data.remove"), Feedback.translatable("screen.switchy.manage.data.export.remove"), labelSize)));
 			}
 			actionButton.active(!includedModules.isEmpty());
 		}
