@@ -65,7 +65,7 @@ public class Feedback {
 	 * @return the resultant translatable text.
 	 */
 	public static MutableText translatable(String key) {
-		return MutableText.create(new TranslatableComponent(key));
+		return MutableText.create(new TranslatableComponent(key, null, new Object[0]));
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class Feedback {
 	 * @return the resultant translatable text.
 	 */
 	public static MutableText translatable(String key, Object... args) {
-		return MutableText.create(new TranslatableComponent(key, args));
+		return MutableText.create(new TranslatableComponent(key, null, args));
 	}
 
 	/**
