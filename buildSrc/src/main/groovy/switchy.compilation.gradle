@@ -3,7 +3,7 @@ plugins {
 }
 
 archivesBaseName = project == rootProject ? project.name : rootProject.name + '-' + project.name
-version = "$project.version+$project.branch"
+version = "$project.baseVersion+$project.branch"
 
 java {
 	targetCompatibility = sourceCompatibility = JavaVersion.VERSION_17
