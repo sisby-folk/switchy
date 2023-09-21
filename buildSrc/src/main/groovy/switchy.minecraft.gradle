@@ -1,0 +1,19 @@
+plugins {
+	id 'org.quiltmc.loom'
+}
+
+group = "folk.sisby"
+
+var includeConfiguration = configurations.include
+for (name in ["api", "implementation", "runtimeOnly", "modApi", "modImplementation", "modRuntimeOnly"]) {
+	var baseConfiguration = configurations.getByName(name)
+	var baseIncludeConfiguration = configurations.create("${name}Include")
+	includeConfiguration.extendsFrom(baseIncludeConfiguration)
+	baseConfiguration.extendsFrom(baseIncludeConfiguration)
+}
+
+dependencies {
+	minecraft libs.mc
+	mappings variantOf(libs.qm) { classifier "intermediary-v2" }
+	modCompileOnly libs.ql
+}

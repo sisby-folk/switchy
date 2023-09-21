@@ -1,8 +1,12 @@
-dependencies {
-	implementation libs.kaleidoConfig
-	modImplementation libs.qfapi
-	modImplementation libs.serverTranslationsApi
+plugins {
+	id 'switchy.repositories'
+	id 'switchy.compilation'
+	id 'switchy.minecraft'
+	id 'switchy.publishing'
+}
 
-	include libs.kaleidoConfig
-	include libs.serverTranslationsApi
+dependencies {
+	implementationInclude libs.kaleidoConfig
+	modImplementation libs.qfapi
+	modImplementationInclude libs.serverTranslationsApi
 }
