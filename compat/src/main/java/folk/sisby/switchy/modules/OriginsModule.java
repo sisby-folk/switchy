@@ -1,13 +1,19 @@
 package folk.sisby.switchy.modules;
 
 import folk.sisby.switchy.SwitchyCompat;
-import folk.sisby.switchy.api.module.*;
+import folk.sisby.switchy.api.module.SwitchyModule;
+import folk.sisby.switchy.api.module.SwitchyModuleEditable;
+import folk.sisby.switchy.api.module.SwitchyModuleInfo;
+import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
+import folk.sisby.switchy.api.module.SwitchyModuleTransferable;
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.origin.Origin;
 import io.github.apace100.origins.origin.OriginLayer;
 import io.github.apace100.origins.origin.OriginLayers;
 import io.github.apace100.origins.origin.OriginRegistry;
 import io.github.apace100.origins.registry.ModComponents;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -15,6 +21,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,8 +73,28 @@ public class OriginsModule implements SwitchyModule, SwitchyModuleTransferable {
 	 */
 	@Nullable public Map<OriginLayer, Origin> origins;
 
+	private static OriginComponent getForgeComponent(ServerPlayerEntity player) {
+		try {
+			Class<?> containerClass = Class.forName("io.github.edwinmindcraft.origins.api.capabilities.IOriginContainer");
+			Class<?> lazyClass = Class.forName("net.minecraftforge.common.util.LazyOptional");
+			Method getMethod = containerClass.getDeclaredMethod("get", Entity.class);
+			Method legacyMethod = containerClass.getDeclaredMethod("asLegacyComponent");
+			Method elseMethod = lazyClass.getDeclaredMethod("orElse", Object.class);
+			Object optionalInstance = getMethod.invoke(null, player);
+			Object containerInstance = elseMethod.invoke(optionalInstance, (Object) null);
+			return (OriginComponent) legacyMethod.invoke(containerInstance);
+		} catch (Exception e) {
+			throw new IllegalStateException("Switchy tried and failed to provide origins forge compatibility", e);
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	private static OriginComponent getComponent(ServerPlayerEntity player) {
+		return FabricLoader.getInstance().isModLoaded("connectormod") ? getForgeComponent(player) : ModComponents.ORIGIN.get(player);
+	}
+
 	private static void setOrigin(ServerPlayerEntity player, OriginLayer layer, Origin origin) {
-		OriginComponent component = ModComponents.ORIGIN.get(player);
+		OriginComponent component = getComponent(player);
 		component.setOrigin(layer, origin);
 		OriginComponent.sync(player);
 		boolean hadOriginBefore = component.hadOriginBefore();
@@ -76,8 +103,8 @@ public class OriginsModule implements SwitchyModule, SwitchyModuleTransferable {
 
 	@Override
 	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
-		OriginComponent originComponent = ModComponents.ORIGIN.get(player);
-		origins = new HashMap<>(originComponent.getOrigins());
+		OriginComponent component = getComponent(player);
+		origins = new HashMap<>(component.getOrigins());
 	}
 
 	@Override
@@ -114,6 +141,7 @@ public class OriginsModule implements SwitchyModule, SwitchyModuleTransferable {
 					try {
 						OriginLayer layer = OriginLayers.getLayer(Identifier.tryParse(layerId));
 						Origin origin = OriginRegistry.get(Identifier.tryParse(originId));
+						if (layer == null || origin == null) throw new IllegalArgumentException("A layer or origin was null!");
 						origins.put(layer, origin);
 					} catch (IllegalArgumentException originGetEx) {
 						SwitchyCompat.LOGGER.warn("[Switchy Compat] Failed to load preset origin with layer {} and origin {}. Exception: {}", layerId, originId, originGetEx);

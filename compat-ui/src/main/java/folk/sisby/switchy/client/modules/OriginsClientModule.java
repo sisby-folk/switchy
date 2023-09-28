@@ -18,6 +18,7 @@ import io.wispforest.owo.ui.core.Component;
 import io.wispforest.owo.ui.core.Insets;
 import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owo.ui.core.VerticalAlignment;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -27,7 +28,11 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.quiltmc.loader.api.minecraft.ClientOnly;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static io.github.apace100.origins.registry.ModItems.ORB_OF_ORIGIN;
 
@@ -75,14 +80,23 @@ public class OriginsClientModule implements SwitchyClientModule, SwitchyUIModule
 	 */
 	public Map<OriginLayer, Origin> origins;
 
+	private static Text safeGetName(Origin origin) {
+		try {
+			return (Text) Origin.class.getDeclaredMethod("getName").invoke(origin);
+		} catch (Exception e) {
+			throw new IllegalStateException("Switchy tried and failed to provide origins forge compatibility", e);
+		}
+	}
+
+	@SuppressWarnings("deprecation")
 	@Override
 	public Pair<Component, SwitchyUIPosition> getPreviewComponent(String presetName) {
 		if (origins == null || origins.isEmpty()) return null;
 
 		FlowLayout originsFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 		originsFlow.verticalAlignment(VerticalAlignment.CENTER);
-		originsFlow.child(Components.item(ORB_OF_ORIGIN.getDefaultStack()).margins(Insets.right(2)));
-		List<String> names = new ArrayList<>(origins.values().stream().map(Origin::getName).map(Text::getString).toList());
+		if (!FabricLoader.getInstance().isModLoaded("connectormod")) originsFlow.child(Components.item(ORB_OF_ORIGIN.getDefaultStack()).margins(Insets.right(2)));
+		List<String> names = new ArrayList<>(origins.values().stream().map(OriginsClientModule::safeGetName).map(Text::getString).toList());
 		Collections.reverse(names);
 		originsFlow.child(Components.label(Feedback.literal(String.join(" | ", names)).setStyle(Style.EMPTY.withColor(Formatting.GRAY))));
 
