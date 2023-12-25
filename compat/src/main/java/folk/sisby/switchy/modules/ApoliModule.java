@@ -40,8 +40,7 @@ public class ApoliModule implements SwitchyModule {
 	/**
 	 * The config object for the apoli module, containing the current state of {@code /config/switchy/apoli.toml}.
 	 */
-	@SuppressWarnings("deprecation")
-	public static final ApoliModuleConfig CONFIG = ApoliModuleConfig.createToml(FabricLoader.getInstance().getConfigDir(), Switchy.ID, "apoli", ApoliModuleConfig.class);
+		public static final ApoliModuleConfig CONFIG = ApoliModuleConfig.createToml(FabricLoader.getInstance().getConfigDir(), Switchy.ID, "apoli", ApoliModuleConfig.class);
 	private static final Identifier COMMAND_SOURCE = new Identifier("apoli", "command");
 	/**
 	 * The NBT key where the list of serialized apoli:command powers are stored.

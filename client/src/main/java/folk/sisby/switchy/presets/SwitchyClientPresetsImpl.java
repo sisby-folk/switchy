@@ -14,7 +14,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
-import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +23,6 @@ import java.util.Map;
  * @see SwitchyClientPresets
  * @since 1.9.1
  */
-@ClientOnly
 public class SwitchyClientPresetsImpl extends SwitchyPresetsDataImpl<SwitchyClientModule, SwitchyClientPreset> implements SwitchyClientPresets {
 	final Map<Identifier, SwitchyModuleInfo> moduleInfo;
 

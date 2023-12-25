@@ -1,5 +1,6 @@
+//file:noinspection ConfigurationAvoidance
 plugins {
-	id 'org.quiltmc.loom'
+	id 'fabric-loom'
 }
 
 group = "folk.sisby"
@@ -14,6 +15,6 @@ for (name in ["api", "implementation", "runtimeOnly", "modApi", "modImplementati
 
 dependencies {
 	minecraft libs.mc
-	mappings variantOf(libs.qm) { classifier "intermediary-v2" }
-	modCompileOnly libs.ql
+	mappings libs.yarn
+	modCompileOnly libs.fl
 }

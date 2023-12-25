@@ -11,7 +11,7 @@ import folk.sisby.switchy.util.Feedback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.command.CommandBuildContext;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 
@@ -26,7 +26,7 @@ import static folk.sisby.switchy.client.util.FeedbackClient.sendClientMessage;
  * @author Sisby folk
  * @since 1.7.0
  */
-@SuppressWarnings({"unchecked", "deprecation"})
+@SuppressWarnings({"unchecked"})
 public class SwitchyClientCommands {
 	/**
 	 * A map of the previously executed command, per player UUID.
@@ -63,7 +63,7 @@ public class SwitchyClientCommands {
 		sendClientMessage(player, Feedback.success("commands.switchy_client.export.sent"));
 	}
 
-	public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext buildContext) {
+	public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess buildContext) {
 		LiteralArgumentBuilder<FabricClientCommandSource> rootArgument = ClientCommandManager.literal("switchy_client");
 		LiteralArgumentBuilder<FabricClientCommandSource> importArgument = ClientCommandManager.literal("import");
 		rootArgument.requires(source -> SwitchyClientApi.isSwitchyServer());

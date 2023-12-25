@@ -8,7 +8,7 @@ plugins {
 dependencies {
 	implementation project(path: ':core', configuration: 'namedElements')
 	implementation project(path: ':client', configuration: 'namedElements')
-	modImplementation libs.qfapi
+	modImplementation libs.fapi
 
 	modApi libs.cardinal
 }

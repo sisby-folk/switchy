@@ -3,7 +3,6 @@ package folk.sisby.switchy.util;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import folk.sisby.switchy.api.SwitchyFeedbackStatus;
@@ -20,7 +19,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiPredicate;
@@ -39,7 +37,7 @@ import static folk.sisby.switchy.util.Feedback.sendMessage;
  */
 public class SwitchyCommand {
 	private static CompletableFuture<Suggestions> suggestPresets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, BiPredicate<SwitchyPresets, SwitchyPreset> suggestionPredicate) {
-		if (serverPlayerOrNull(context.getSource()) instanceof SwitchyPlayer switchyPlayer) {
+		if (context.getSource().getPlayer() instanceof SwitchyPlayer switchyPlayer) {
 			SwitchyPresets presets = switchyPlayer.switchy$getPresets();
 			CommandSource.suggestMatching(presets.getPresets().values().stream().filter(p -> suggestionPredicate.test(presets, p)).map(SwitchyPresetData::getName), builder);
 		}
@@ -47,7 +45,7 @@ public class SwitchyCommand {
 	}
 
 	private static CompletableFuture<Suggestions> suggestModules(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder, BiPredicate<SwitchyPresets, Identifier> suggestionPredicate) {
-		if (serverPlayerOrNull(context.getSource()) instanceof SwitchyPlayer switchyPlayer) {
+		if (context.getSource().getPlayer() instanceof SwitchyPlayer switchyPlayer) {
 			SwitchyPresets presets = switchyPlayer.switchy$getPresets();
 			CommandSource.suggestIdentifiers(presets.getModules().keySet().stream().filter(id -> suggestionPredicate.test(presets, id)), builder);
 		}
@@ -98,21 +96,6 @@ public class SwitchyCommand {
 		return CommandManager.argument("module", IdentifierArgumentType.identifier()).suggests((c, b) -> SwitchyCommand.suggestModules(c, b, enabled));
 	}
 
-
-	/**
-	 * Tries to get the command source as a {@link ServerPlayerEntity}.
-	 *
-	 * @param source the command context to retrieve the player from.
-	 * @return {@link ServerPlayerEntity} if possible, null otherwise.
-	 */
-	public static @Nullable ServerPlayerEntity serverPlayerOrNull(ServerCommandSource source) {
-		try {
-			return source.getPlayer();
-		} catch (CommandSyntaxException e) {
-			return null;
-		}
-	}
-
 	/**
 	 * Simplifies receiving serialized packets and parsing them into objects.
 	 *
@@ -138,7 +121,7 @@ public class SwitchyCommand {
 	 * @see folk.sisby.switchy.SwitchyCommands
 	 */
 	public static int execute(CommandContext<ServerCommandSource> context, SwitchyServerCommandExecutor executor) {
-		ServerPlayerEntity player = serverPlayerOrNull(context.getSource());
+		ServerPlayerEntity player = context.getSource().getPlayer();
 		if (player == null) {
 			LOGGER.error("[Switchy] Commands cannot be invoked by a non-player");
 			return 0;

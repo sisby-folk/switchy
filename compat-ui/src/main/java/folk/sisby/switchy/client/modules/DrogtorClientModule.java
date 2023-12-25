@@ -10,7 +10,6 @@ import folk.sisby.switchy.ui.api.module.SwitchyUIModule;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.core.Component;
 import net.minecraft.text.Text;
-import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 /**
  * The client-displayable variant of a module that switches nicknames from unascribed's Drogtor The Nickinator.
@@ -20,7 +19,6 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
  * @see DrogtorModule
  * @since 2.0.0
  */
-@ClientOnly
 public class DrogtorClientModule extends DrogtorModuleData implements SwitchyClientModule, SwitchyUIModule {
 	/**
 	 * Registers the module

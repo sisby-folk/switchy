@@ -20,7 +20,6 @@ import java.util.function.Predicate;
  * @author Ami
  * @since 1.8.2
  */
-@SuppressWarnings("deprecation")
 public final class SwitchyEvents {
 	/**
 	 * @see Init
@@ -122,6 +121,6 @@ public final class SwitchyEvents {
 	}
 
 	public static void registerEntrypointListeners() {
-		FabricLoader.getInstance().getEntrypoints("switchy", SwitchyEvents.Init.class).forEach(INIT::register);
+		FabricLoader.getInstance().getEntrypoints("switchy", Init.class).forEach(INIT::register);
 	}
 }

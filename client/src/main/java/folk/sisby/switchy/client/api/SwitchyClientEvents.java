@@ -9,7 +9,6 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
-import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 import java.util.function.Consumer;
 
@@ -21,8 +20,6 @@ import java.util.function.Consumer;
  * @author Ami
  * @since 1.8.2
  */
-@SuppressWarnings("deprecation")
-@ClientOnly
 public class SwitchyClientEvents {
 	/**
 	 * A cached copy of the most recent switch event for use in case of disconnects.
@@ -126,6 +123,6 @@ public class SwitchyClientEvents {
 	}
 
 	public static void registerEntrypointListeners() {
-		FabricLoader.getInstance().getEntrypoints("switchy_client", SwitchyClientEvents.Init.class).forEach(INIT::register);
+		FabricLoader.getInstance().getEntrypoints("switchy_client", Init.class).forEach(INIT::register);
 	}
 }

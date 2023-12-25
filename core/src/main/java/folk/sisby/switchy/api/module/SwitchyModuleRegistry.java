@@ -5,7 +5,6 @@ import folk.sisby.switchy.Switchy;
 import folk.sisby.switchy.api.SwitchyPlayer;
 import folk.sisby.switchy.api.SwitchySerializable;
 import folk.sisby.switchy.api.exception.ModuleNotFoundException;
-import folk.sisby.switchy.util.SwitchyCommand;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -221,7 +220,7 @@ public class SwitchyModuleRegistry {
 		INFO.forEach((id, info) -> {
 			LiteralArgumentBuilder<ServerCommandSource> idArgument = LiteralArgumentBuilder.literal(id.toString());
 			if (info.configCommands(idArgument)) {
-				idArgument.requires(src -> SwitchyCommand.serverPlayerOrNull(src) instanceof SwitchyPlayer sp && sp.switchy$getPresets().isModuleEnabled(id));
+				idArgument.requires(src -> src.getPlayer() instanceof SwitchyPlayer sp && sp.switchy$getPresets().isModuleEnabled(id));
 				configArgument.then(idArgument);
 			}
 		});

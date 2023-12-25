@@ -40,7 +40,6 @@ import java.util.function.Function;
  * @see CardinalSerializerClientModule
  * @since 2.6.0
  */
-@SuppressWarnings("deprecation")
 public class CardinalClientModuleLoader extends JsonDataLoader implements IdentifiableResourceReloadListener {
 	/**
 	 * The global instance for this resource loader.

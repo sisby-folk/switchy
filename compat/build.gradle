@@ -9,7 +9,7 @@ dependencies {
 	implementation project(path: ':core', configuration: 'namedElements')
 	implementation project(path: ':client', configuration: 'namedElements')
 	implementation libs.kaleidoConfig
-	modImplementation libs.qfapi
+	modImplementation libs.fapi
 
 	modCompileOnly libs.drogtor
 	modCompileOnly libs.fabrictailor

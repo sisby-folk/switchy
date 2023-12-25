@@ -14,7 +14,6 @@ import java.util.Set;
  * @author SilverAndro
  * @since 1.7.2
  */
-@SuppressWarnings("deprecation")
 public class MixinCompatPlugin implements IMixinConfigPlugin {
 	@Override
 	public void onLoad(String mixinPackage) {

@@ -19,7 +19,6 @@ import static folk.sisby.switchy.util.Feedback.helpText;
  * @author Sisby folk
  * @since 2.0.0
  */
-@SuppressWarnings("deprecation")
 public class SwitchyClientServer implements SwitchyEvents.Init {
 	@Override
 	public void onInitialize() {
