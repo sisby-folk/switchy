@@ -34,8 +34,7 @@ public class PehkuiModule implements SwitchyModule {
 	/**
 	 * The config object for the pehkui module, containing the current state of {@code /config/switchy/pehkui.toml}.
 	 */
-	@SuppressWarnings("deprecation")
-	public static final PehkuiModuleConfig CONFIG = PehkuiModuleConfig.createToml(FabricLoader.getInstance().getConfigDir(), Switchy.ID, "pehkui", PehkuiModuleConfig.class);
+		public static final PehkuiModuleConfig CONFIG = PehkuiModuleConfig.createToml(FabricLoader.getInstance().getConfigDir(), Switchy.ID, "pehkui", PehkuiModuleConfig.class);
 
 	/**
 	 * Registers the module

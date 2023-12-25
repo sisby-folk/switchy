@@ -9,7 +9,6 @@ import net.fabricmc.loader.api.FabricLoader;
  * @author Sisby folk
  * @since 2.4.2
  */
-@SuppressWarnings("deprecation")
 public class SwitchyUI implements SwitchyClientEvents.Init {
 	@Override
 	public void onInitialize() {

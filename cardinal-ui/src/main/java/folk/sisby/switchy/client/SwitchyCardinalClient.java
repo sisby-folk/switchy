@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
  * @see SwitchyClientEvents
  * @since 2.6.0
  */
-@SuppressWarnings("deprecation")
 public class SwitchyCardinalClient implements SwitchyClientEvents.Init {
 	/**
 	 * The switchy cardinal ui namespace.

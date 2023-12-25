@@ -7,6 +7,6 @@ plugins {
 
 dependencies {
 	implementationInclude libs.kaleidoConfig
-	modImplementation libs.qfapi
+	modImplementation libs.fapi
 	modImplementationInclude libs.serverTranslationsApi
 }

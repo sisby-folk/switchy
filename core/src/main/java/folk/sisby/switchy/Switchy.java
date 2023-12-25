@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
  * @see SwitchyPlayConnectionListener
  * @since 1.0.0
  */
-@SuppressWarnings("deprecation")
 public class Switchy implements DedicatedServerModInitializer, ClientModInitializer {
 	/**
 	 * The switchy namespace.
@@ -34,8 +33,7 @@ public class Switchy implements DedicatedServerModInitializer, ClientModInitiali
 	/**
 	 * The config object for switchy, containing the current state of {@code /config/switchy/config.toml}.
 	 */
-	@SuppressWarnings("deprecation")
-	public static final SwitchyConfig CONFIG = SwitchyConfig.createToml(FabricLoader.getInstance().getConfigDir(), ID, "config", SwitchyConfig.class);
+		public static final SwitchyConfig CONFIG = SwitchyConfig.createToml(FabricLoader.getInstance().getConfigDir(), ID, "config", SwitchyConfig.class);
 
 	public void onInitialize() {
 		CommandRegistrationCallback.EVENT.register(SwitchyCommands::registerCommands);

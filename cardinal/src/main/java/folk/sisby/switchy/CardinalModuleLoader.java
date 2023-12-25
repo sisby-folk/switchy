@@ -39,7 +39,6 @@ import java.util.stream.StreamSupport;
  * @see CardinalSerializerModule
  * @since 1.8.0
  */
-@SuppressWarnings("deprecation")
 public class CardinalModuleLoader extends JsonDataLoader implements IdentifiableResourceReloadListener {
 	/**
 	 * The global instance for this resource loader.

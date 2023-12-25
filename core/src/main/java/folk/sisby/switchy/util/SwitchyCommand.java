@@ -98,7 +98,6 @@ public class SwitchyCommand {
 		return CommandManager.argument("module", IdentifierArgumentType.identifier()).suggests((c, b) -> SwitchyCommand.suggestModules(c, b, enabled));
 	}
 
-
 	/**
 	 * Tries to get the command source as a {@link ServerPlayerEntity}.
 	 *

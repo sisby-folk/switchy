@@ -26,7 +26,6 @@ import static folk.sisby.switchy.util.SwitchyCommand.consumeEventPacket;
  * @author Sisby folk
  * @since 1.9.1
  */
-@SuppressWarnings("deprecation")
 public class SwitchyClientReceivers {
 	/**
 	 * Register client-side receivers for Switchy Client.

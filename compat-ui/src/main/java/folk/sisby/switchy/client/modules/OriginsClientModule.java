@@ -25,7 +25,6 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 import java.util.*;
 
@@ -39,7 +38,6 @@ import static io.github.apace100.origins.registry.ModItems.ORB_OF_ORIGIN;
  * @see OriginsModule
  * @since 2.0.0
  */
-@ClientOnly
 public class OriginsClientModule implements SwitchyClientModule, SwitchyUIModule {
 	/**
 	 * Identifier for this module.

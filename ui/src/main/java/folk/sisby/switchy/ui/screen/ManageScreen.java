@@ -311,8 +311,8 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 
 		private DataTabTabLayout(DataTabImportFlow importFlow, DataTabExportFlow exportFlow) {
 			super(List.of(),
-				new TabLayout.Tab(Feedback.translatable("screen.switchy.manage.data.import"), importFlow),
-				new TabLayout.Tab(Feedback.translatable("screen.switchy.manage.data.export"), exportFlow)
+				new Tab(Feedback.translatable("screen.switchy.manage.data.import"), importFlow),
+				new Tab(Feedback.translatable("screen.switchy.manage.data.export"), exportFlow)
 			);
 			this.margins(Insets.top(6));
 			this.contentPanel.verticalSizing(Sizing.fixed(174));

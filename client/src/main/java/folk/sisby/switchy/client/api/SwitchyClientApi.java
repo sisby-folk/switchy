@@ -35,7 +35,6 @@ import static folk.sisby.switchy.SwitchyClientServerNetworking.*;
  * @author Sisby folk
  * @since 1.9.1
  */
-@SuppressWarnings("deprecation")
 public class SwitchyClientApi {
 	/**
 	 * Map of listeners for API calls waiting for client preset returns.
@@ -98,7 +97,7 @@ public class SwitchyClientApi {
 	 *
 	 * @param responseCallback the callback for the response from the server.
 	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
-	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#switchCurrentPreset(net.minecraft.server.network.ServerPlayerEntity, String)
+	 * @see SwitchyPresets#switchCurrentPreset(ServerPlayerEntity, String)
 	 */
 	public static void getClientPresets(BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
 		if (!ClientPlayNetworking.canSend(C2S_REQUEST_CLIENT_PRESETS))
@@ -113,7 +112,7 @@ public class SwitchyClientApi {
 	 * @param name             the case-insensitive name of a preset.
 	 * @param responseCallback the callback for the response from the server.
 	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
-	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#switchCurrentPreset(net.minecraft.server.network.ServerPlayerEntity, String)
+	 * @see SwitchyPresets#switchCurrentPreset(ServerPlayerEntity, String)
 	 */
 	public static void switchCurrentPreset(String name, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
 		if (!ClientPlayNetworking.canSend(C2S_SWITCH))
@@ -130,7 +129,7 @@ public class SwitchyClientApi {
 	 * @param responseCallback the callback for the response from the server.
 	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
 	 * @throws InvalidWordException          when the specified preset name is not a word ({@link StringReader#isAllowedInUnquotedString(char)}).
-	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#newPreset(String)
+	 * @see SwitchyPresets#newPreset(String)
 	 */
 	public static void newPreset(String name, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException, InvalidWordException {
 		if (!ClientPlayNetworking.canSend(C2S_PRESETS_NEW))
@@ -149,7 +148,7 @@ public class SwitchyClientApi {
 	 * @param name             the case-insensitive name of a preset.
 	 * @param responseCallback the callback for the response from the server.
 	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
-	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#deletePreset(String)
+	 * @see SwitchyPresets#deletePreset(String)
 	 */
 	public static void deletePreset(String name, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
 		if (!ClientPlayNetworking.canSend(C2S_PRESETS_DELETE))
@@ -166,7 +165,7 @@ public class SwitchyClientApi {
 	 * @param newName          the new name for the specified preset. a single word matching {@code azAZ09_-.+}.
 	 * @param responseCallback the callback for the response from the server.
 	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
-	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#renamePreset(String, String)
+	 * @see SwitchyPresets#renamePreset(String, String)
 	 */
 	public static void renamePreset(String name, String newName, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
 		if (!ClientPlayNetworking.canSend(C2S_PRESETS_RENAME))
@@ -184,7 +183,7 @@ public class SwitchyClientApi {
 	 * @param id               a module identifier.
 	 * @param responseCallback the callback for the response from the server.
 	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
-	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#disableModule(Identifier)
+	 * @see SwitchyPresets#disableModule(Identifier)
 	 */
 	public static void disableModule(Identifier id, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
 		if (!ClientPlayNetworking.canSend(C2S_PRESETS_MODULE_DISABLE))
@@ -200,7 +199,7 @@ public class SwitchyClientApi {
 	 * @param id               a module identifier.
 	 * @param responseCallback the callback for the response from the server.
 	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
-	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#enableModule(Identifier)
+	 * @see SwitchyPresets#enableModule(Identifier)
 	 */
 	public static void enableModule(Identifier id, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
 		if (!ClientPlayNetworking.canSend(C2S_PRESETS_MODULE_ENABLE))
@@ -240,7 +239,7 @@ public class SwitchyClientApi {
 	 * @param includeModules   A collection of modules to always import from the NBT, even if they require operator.
 	 * @param responseCallback the callback for the response from the server.
 	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
-	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#importFromOther(ServerPlayerEntity, SwitchyPresets)
+	 * @see SwitchyPresets#importFromOther(ServerPlayerEntity, SwitchyPresets)
 	 */
 	public static void importPresets(NbtCompound presetsNbt, Collection<Identifier> excludeModules, Collection<Identifier> includeModules, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
 		doImport(presetsNbt, excludeModules, includeModules, null, responseCallback);
@@ -256,7 +255,7 @@ public class SwitchyClientApi {
 	 * @param responseCallback    the callback for the response from the server.
 	 * @param confirmationCommand the command to prompt the player to re-enter to confirm.
 	 * @throws UnsupportedOperationException when the channel ID is not recognized by the server (Switchy Client is not installed).
-	 * @see folk.sisby.switchy.api.presets.SwitchyPresets#importFromOther(ServerPlayerEntity, SwitchyPresets)
+	 * @see SwitchyPresets#importFromOther(ServerPlayerEntity, SwitchyPresets)
 	 */
 	public static void importPresets(NbtCompound presetsNbt, Collection<Identifier> excludeModules, Collection<Identifier> includeModules, String confirmationCommand, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
 		doImport(presetsNbt, excludeModules, includeModules, confirmationCommand, responseCallback);

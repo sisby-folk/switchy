@@ -19,7 +19,6 @@ import java.util.function.Predicate;
  * @author Sisby folk
  * @since 1.6.1
  */
-@SuppressWarnings("deprecation")
 public class Feedback {
 	/**
 	 * Green text with white italic arguments.

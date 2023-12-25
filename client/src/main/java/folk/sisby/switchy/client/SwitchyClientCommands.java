@@ -25,7 +25,7 @@ import static folk.sisby.switchy.client.util.FeedbackClient.sendClientMessage;
  * @author Sisby folk
  * @since 1.7.0
  */
-@SuppressWarnings({"unchecked", "deprecation"})
+@SuppressWarnings({"unchecked"})
 public class SwitchyClientCommands {
 	/**
 	 * A map of the previously executed command, per player UUID.

@@ -23,7 +23,6 @@ import net.minecraft.text.MutableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import org.jetbrains.annotations.Nullable;
-import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +36,6 @@ import java.util.function.Function;
  * @see folk.sisby.switchy.api.modules.CardinalSerializerModule
  * @since 2.6.0
  */
-@ClientOnly
 public class CardinalSerializerClientModule extends CardinalSerializerData implements SwitchyClientModule, SwitchyUIModule {
 	private final Identifier id;
 	private final PreviewConfig config;
