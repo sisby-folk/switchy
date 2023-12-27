@@ -13,6 +13,7 @@ dependencies {
 	runtimeOnly(include(project(path: ':cardinal-ui', configuration: 'namedElements')))
 	runtimeOnly(include(project(path: ':compat', configuration: 'namedElements')))
 	runtimeOnly(include(project(path: ':compat-ui', configuration: 'namedElements')))
+	modLocalRuntime libs.fapi
 	modLocalRuntime libs.kaleidoConfig
 	modLocalRuntime libs.serverTranslationsApi
 }
