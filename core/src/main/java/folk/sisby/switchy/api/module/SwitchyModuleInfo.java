@@ -12,8 +12,8 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.server.translations.api.Localization;
 import xyz.nucleoid.server.translations.api.LocalizationTarget;
-import xyz.nucleoid.server.translations.impl.LocalizableText;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -76,13 +76,13 @@ public final class SwitchyModuleInfo {
 		return new SwitchyModuleInfo(
 				nbt.getBoolean(KEY_DEFAULT),
 				SwitchyModuleEditable.valueOf(nbt.getString(KEY_EDITABLE)),
-				MutableText.Serializer.fromJson(nbt.getString(KEY_DESCRIPTION))
+				MutableText.Serialization.fromJson(nbt.getString(KEY_DESCRIPTION))
 		)
-				.withDescriptionWhenEnabled(MutableText.Serializer.fromJson(nbt.getString(KEY_WHEN_ENABLED)))
-				.withDescriptionWhenDisabled(MutableText.Serializer.fromJson(nbt.getString(KEY_WHEN_DISABLED)))
+				.withDescriptionWhenEnabled(MutableText.Serialization.fromJson(nbt.getString(KEY_WHEN_ENABLED)))
+				.withDescriptionWhenDisabled(MutableText.Serialization.fromJson(nbt.getString(KEY_WHEN_DISABLED)))
 				.withApplyDependencies(nbt.getList(KEY_APPLY_DEPENDENCIES, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).collect(Collectors.toSet()))
 				.withUniqueIds(nbt.getList(KEY_UNIQUE_IDS, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).collect(Collectors.toSet()))
-				.withDeletionWarning(MutableText.Serializer.fromJson(nbt.getString(KEY_DELETION_WARNING)));
+				.withDeletionWarning(MutableText.Serialization.fromJson(nbt.getString(KEY_DELETION_WARNING)));
 	}
 
 	/**
@@ -95,10 +95,10 @@ public final class SwitchyModuleInfo {
 		NbtCompound nbt = new NbtCompound();
 		nbt.putBoolean(KEY_DEFAULT, isDefault);
 		nbt.putString(KEY_EDITABLE, editable.name());
-		nbt.putString(KEY_DESCRIPTION, Text.Serializer.toJson(player == null ? description : LocalizableText.asLocalizedFor(description, ((LocalizationTarget) player).getLanguage(), true)));
-		nbt.putString(KEY_WHEN_ENABLED, Text.Serializer.toJson(player == null ? descriptionWhenEnabled : LocalizableText.asLocalizedFor(descriptionWhenEnabled, ((LocalizationTarget) player).getLanguage(), true)));
-		nbt.putString(KEY_WHEN_DISABLED, Text.Serializer.toJson(player == null ? descriptionWhenDisabled : LocalizableText.asLocalizedFor(descriptionWhenDisabled, ((LocalizationTarget) player).getLanguage(), true)));
-		nbt.putString(KEY_DELETION_WARNING, Text.Serializer.toJson(player == null ? deletionWarning : LocalizableText.asLocalizedFor(deletionWarning, ((LocalizationTarget) player).getLanguage(), true)));
+		nbt.putString(KEY_DESCRIPTION, Text.Serialization.toJsonString(player == null ? description : Localization.text(description, LocalizationTarget.of(player), true)));
+		nbt.putString(KEY_WHEN_ENABLED, Text.Serialization.toJsonString(player == null ? descriptionWhenEnabled : Localization.text(descriptionWhenEnabled, LocalizationTarget.of(player), true)));
+		nbt.putString(KEY_WHEN_DISABLED, Text.Serialization.toJsonString(player == null ? descriptionWhenDisabled : Localization.text(descriptionWhenDisabled, LocalizationTarget.of(player), true)));
+		nbt.putString(KEY_DELETION_WARNING, Text.Serialization.toJsonString(player == null ? deletionWarning : Localization.text(deletionWarning, LocalizationTarget.of(player), true)));
 		NbtList nbtDependencies = new NbtList();
 		nbtDependencies.addAll(applyDependencies.stream().map(Identifier::toString).map(NbtString::of).toList());
 		nbt.put(KEY_APPLY_DEPENDENCIES, nbtDependencies);

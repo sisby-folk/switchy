@@ -8,8 +8,8 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.util.UUIDTypeAdapter;
 import folk.sisby.switchy.client.api.module.SwitchyClientModule;
 import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
-import folk.sisby.switchy.modules.FabricTailorModuleData;
 import folk.sisby.switchy.modules.FabricTailorModule;
+import folk.sisby.switchy.modules.FabricTailorModuleData;
 import folk.sisby.switchy.ui.api.SwitchyUIPosition;
 import folk.sisby.switchy.ui.api.module.SwitchyUIModule;
 import io.wispforest.owo.ui.component.Components;
@@ -19,6 +19,7 @@ import io.wispforest.owo.ui.core.Sizing;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.entity.PlayerModelPart;
+import net.minecraft.client.util.SkinTextures;
 import net.minecraft.util.Identifier;
 
 import java.util.Base64;
@@ -48,14 +49,16 @@ public class FabricTailorClientModule extends FabricTailorModuleData implements 
 
 		Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
 		MinecraftTexturesPayload payload = gson.fromJson(new String(Base64.getDecoder().decode(skinValue)), MinecraftTexturesPayload.class);
-		MinecraftProfileTexture skinTexture = payload.getTextures().get(MinecraftProfileTexture.Type.SKIN);
+		MinecraftProfileTexture skinTexture = payload.textures().get(MinecraftProfileTexture.Type.SKIN);
 
-		Identifier skinId = client.getSkinProvider().loadSkin(skinTexture, MinecraftProfileTexture.Type.SKIN);
+		Identifier skinId = client.getSkinProvider().skinCache.get(skinTexture).getNow(null);
 
-		EntityComponent<AbstractClientPlayerEntity> skinPreview = Components.entity(Sizing.fixed(60), new AbstractClientPlayerEntity(client.world, client.getSession().getProfile()) {
+		SkinTextures textures = skinId != null ? new SkinTextures(skinId, null, null, null, SkinTextures.Model.fromName(skinTexture.getMetadata("model")), true) : null;
+
+		EntityComponent<AbstractClientPlayerEntity> skinPreview = Components.entity(Sizing.fixed(60), new AbstractClientPlayerEntity(client.world, client.getGameProfile()) {
 			@Override
-			public Identifier getSkinTexture() {
-				return skinId;
+			public SkinTextures getSkinTextures() {
+				return textures != null ? textures : super.getSkinTextures();
 			}
 
 			@Override

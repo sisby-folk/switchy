@@ -9,6 +9,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtSizeTracker;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -46,7 +47,7 @@ public class NbtFileArgumentType implements ArgumentType<NbtCompound> {
 	public NbtCompound parse(StringReader reader) throws CommandSyntaxException {
 		File file = fileArgumentType.parse(reader);
 		try {
-			NbtCompound nbt = NbtIo.readCompressed(file);
+			NbtCompound nbt = NbtIo.readCompressed(file.toPath(), NbtSizeTracker.ofUnlimitedBytes());
 			nbt.putString("filename", FilenameUtils.getBaseName(file.getName()));
 			return nbt;
 		} catch (IOException e) {

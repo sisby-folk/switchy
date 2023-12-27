@@ -55,13 +55,13 @@ public class StyledNicknamesClientModule implements SwitchyClientModule, Switchy
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		if (styled_nickname != null) {
-			outNbt.putString(KEY_NICKNAME, Text.Serializer.toJsonTree(styled_nickname).toString());
+			outNbt.putString(KEY_NICKNAME, Text.Serialization.toJsonTree(styled_nickname).toString());
 		}
 		return outNbt;
 	}
 
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
-		if (nbt.contains(KEY_NICKNAME)) styled_nickname = Text.Serializer.fromJson(nbt.getString(KEY_NICKNAME));
+		if (nbt.contains(KEY_NICKNAME)) styled_nickname = Text.Serialization.fromJson(nbt.getString(KEY_NICKNAME));
 	}
 }

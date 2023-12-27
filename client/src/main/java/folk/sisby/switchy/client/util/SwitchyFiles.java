@@ -48,7 +48,7 @@ public class SwitchyFiles {
 			File exportFile = new File(SwitchyClient.EXPORT_PATH + "/" + filename + ".dat");
 			boolean ignored = exportFile.getParentFile().mkdirs();
 			try {
-				NbtIo.writeCompressed(nbt, exportFile);
+				NbtIo.writeCompressed(nbt, exportFile.toPath());
 				feedback.accept(success("commands.switchy_client.export.success", literal("config/switchy/" + filename + ".dat")));
 				return exportFile;
 			} catch (IOException e) {

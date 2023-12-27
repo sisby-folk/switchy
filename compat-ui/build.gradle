@@ -18,3 +18,7 @@ dependencies {
 		exclude module: 'apoli'
 	}
 }
+
+loom {
+	accessWidenerPath = file("src/main/resources/switchy-compat-ui.accesswidener")
+}

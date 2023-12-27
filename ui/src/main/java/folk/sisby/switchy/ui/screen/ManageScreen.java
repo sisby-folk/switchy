@@ -18,6 +18,7 @@ import io.wispforest.owo.ui.core.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtSizeTracker;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -444,7 +445,7 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 			if (isImporting) {
 				SwitchyClientApi.getImportableFiles().forEach(file -> {
 					try {
-						NbtCompound nbt = NbtIo.readCompressed(file);
+						NbtCompound nbt = NbtIo.readCompressed(file.toPath(), NbtSizeTracker.ofUnlimitedBytes());
 						nbt.putString("filename", FilenameUtils.getBaseName(file.getName()));
 
 						String name = file.getName();

@@ -20,7 +20,7 @@ public class PrettyElementVisitor extends NbtTextFormatter implements NbtElement
 	@Override
 	public void visitString(NbtString element) {
 		try {
-			this.result = Text.Serializer.fromJson(element.asString()).formatted(Formatting.GREEN);
+			this.result = Text.Serialization.fromJson(element.asString()).formatted(Formatting.GREEN);
 			return;
 		} catch (Exception ignored) {}
 		Registries.ITEM.getOrEmpty(Identifier.tryParse(element.asString())).ifPresentOrElse(

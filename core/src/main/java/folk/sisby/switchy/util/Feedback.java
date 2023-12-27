@@ -95,7 +95,7 @@ public class Feedback {
 	 * @return a literal text instance of the string.
 	 */
 	public static MutableText literal(String string) {
-		return MutableText.of(new LiteralTextContent(string));
+		return MutableText.of(new PlainTextContent.Literal(string));
 	}
 
 	/**

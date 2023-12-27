@@ -20,6 +20,7 @@
       "folk.sisby.switchy.client.SwitchyCompatClient"
     ]
   },
+  "accessWidener": "switchy-compat-ui.accesswidener",
   "depends": {
     "minecraft": ">=${mc}",
     "fabricloader": ">=0.14.9",
