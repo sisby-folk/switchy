@@ -28,7 +28,6 @@ processResources {
 		"serverTranslationsAPI": libs.versions.serverTranslationsApi.get(),
 		"kaleidoConfig"        : libs.versions.kaleidoConfig.get(),
 		"fapi"                 : libs.versions.fapi.get(),
-		"qfapi"                : libs.versions.qfapi.get(),
 		"owo"                  : libs.versions.owo.get(),
 		"styledNicknames"      : libs.versions.styledNicknames.get(),
 		"fabrictailor"         : libs.versions.fabrictailor.get(),

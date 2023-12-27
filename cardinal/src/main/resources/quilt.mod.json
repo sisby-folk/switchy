@@ -29,8 +29,8 @@
 				"versions": ">=${mc}"
 			},
 			{
-				"id": "quilted_fabric_api",
-				"versions": ">=${qfapi}"
+				"id": "fabric-api",
+				"versions": ">=${fapi}"
 			},
 			{
 				"id": "switchy-core",

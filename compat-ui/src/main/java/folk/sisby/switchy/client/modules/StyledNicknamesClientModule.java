@@ -12,7 +12,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
-import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 /**
  * The client-displayable variant of a module that switches nicknames from Patbox's Styled Nicknames.
@@ -22,7 +21,6 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
  * @see StyledNicknamesModule
  * @since 2.0.0
  */
-@ClientOnly
 public class StyledNicknamesClientModule implements SwitchyClientModule, SwitchyUIModule {
 	/**
 	 * Identifier for this module.

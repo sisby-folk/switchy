@@ -154,7 +154,7 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 			TextBoxComponent nameEntry = Components.textBox(Sizing.fill(53), (presetName != null) ? presetName : "newPreset");
 			nameEntry.setTextPredicate(s -> s.chars().mapToObj(i -> (char) i).allMatch(StringReader::isAllowedInUnquotedString));
 			nameEntry.onChanged();
-			ManageScreen.this.setFocusedChild(nameEntry);
+			ManageScreen.this.setFocused(nameEntry);
 			renamePresetFlow.child((Component) nameEntry);
 			ButtonComponent confirmButton = Components.button(Feedback.translatable("screen.switchy.manage.presets.confirm"), (presetName != null) ? b -> {
 				if (!presetName.equals(nameEntry.getText())) {
@@ -311,8 +311,8 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 
 		private DataTabTabLayout(DataTabImportFlow importFlow, DataTabExportFlow exportFlow) {
 			super(List.of(),
-				new TabLayout.Tab(Feedback.translatable("screen.switchy.manage.data.import"), importFlow),
-				new TabLayout.Tab(Feedback.translatable("screen.switchy.manage.data.export"), exportFlow)
+				new Tab(Feedback.translatable("screen.switchy.manage.data.import"), importFlow),
+				new Tab(Feedback.translatable("screen.switchy.manage.data.export"), exportFlow)
 			);
 			this.margins(Insets.top(6));
 			this.contentPanel.verticalSizing(Sizing.fixed(174));

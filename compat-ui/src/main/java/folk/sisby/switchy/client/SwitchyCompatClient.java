@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
  * @see SwitchyClientEvents
  * @since 2.0.0
  */
-@SuppressWarnings("deprecation")
 public class SwitchyCompatClient implements SwitchyClientEvents.Init {
 	/**
 	 * The switchy compat ui namespace.

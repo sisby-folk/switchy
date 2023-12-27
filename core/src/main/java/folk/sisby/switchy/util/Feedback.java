@@ -3,8 +3,6 @@ package folk.sisby.switchy.util;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
-import net.minecraft.text.component.LiteralComponent;
-import net.minecraft.text.component.TranslatableComponent;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
@@ -21,7 +19,6 @@ import java.util.function.Predicate;
  * @author Sisby folk
  * @since 1.6.1
  */
-@SuppressWarnings("deprecation")
 public class Feedback {
 	/**
 	 * Green text with white italic arguments.
@@ -65,7 +62,7 @@ public class Feedback {
 	 * @return the resultant translatable text.
 	 */
 	public static MutableText translatable(String key) {
-		return MutableText.create(new TranslatableComponent(key, null, new Object[0]));
+		return MutableText.of(new TranslatableTextContent(key, null, new Object[0]));
 	}
 
 	/**
@@ -76,7 +73,7 @@ public class Feedback {
 	 * @return the resultant translatable text.
 	 */
 	public static MutableText translatable(String key, Object... args) {
-		return MutableText.create(new TranslatableComponent(key, null, args));
+		return MutableText.of(new TranslatableTextContent(key, null, args));
 	}
 
 	/**
@@ -98,7 +95,7 @@ public class Feedback {
 	 * @return a literal text instance of the string.
 	 */
 	public static MutableText literal(String string) {
-		return MutableText.create(new LiteralComponent(string));
+		return MutableText.of(new LiteralTextContent(string));
 	}
 
 	/**

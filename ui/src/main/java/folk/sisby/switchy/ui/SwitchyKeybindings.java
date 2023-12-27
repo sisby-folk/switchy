@@ -1,6 +1,5 @@
 package folk.sisby.switchy.ui;
 
-import com.mojang.blaze3d.platform.InputUtil;
 import folk.sisby.switchy.SwitchyClientServerNetworking;
 import folk.sisby.switchy.client.api.SwitchyClientApi;
 import folk.sisby.switchy.ui.screen.SwitchScreen;
@@ -8,7 +7,8 @@ import folk.sisby.switchy.ui.screen.SwitchyScreen;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.option.KeyBind;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -17,13 +17,12 @@ import org.lwjgl.glfw.GLFW;
  * @author Sisby folk
  * @since 1.9.0
  */
-@SuppressWarnings("deprecation")
 public class SwitchyKeybindings {
 	/**
 	 * registers all keybindings for Switchy UI.
 	 */
 	public static void initializeKeybindings() {
-		KeyBind switchKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBind(
+		KeyBinding switchKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 				"key.switchy.open",
 				InputUtil.Type.KEYSYM,
 				GLFW.GLFW_KEY_SEMICOLON,

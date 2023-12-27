@@ -1,6 +1,5 @@
 package folk.sisby.switchy.ui.api;
 
-import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 /**
  * Defines the placement of a component in the preset preview.
@@ -10,7 +9,6 @@ import org.quiltmc.loader.api.minecraft.ClientOnly;
  * @see folk.sisby.switchy.ui.screen.SwitchScreen
  * @since 1.9.0
  */
-@ClientOnly
 public enum SwitchyUIPosition {
 	/**
 	 * On the left side of the overall horizontal flow.

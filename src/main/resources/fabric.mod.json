@@ -32,28 +32,5 @@
     "switchy-compat-ui": "${switchy}",
     "switchy-cardinal": "${switchy}",
     "switchy-cardinal-ui": "${switchy}"
-  },
-  "jars": [
-    {
-      "file": "META-INF/jars/switchy-core-${switchy}.jar"
-    },
-    {
-      "file": "META-INF/jars/switchy-client-${switchy}.jar"
-    },
-    {
-      "file": "META-INF/jars/switchy-ui-${switchy}.jar"
-    },
-    {
-      "file": "META-INF/jars/switchy-cardinal-${switchy}.jar"
-    },
-    {
-      "file": "META-INF/jars/switchy-cardinal-ui-${switchy}.jar"
-    },
-    {
-      "file": "META-INF/jars/switchy-compat-${switchy}.jar"
-    },
-    {
-      "file": "META-INF/jars/switchy-compat-ui-${switchy}.jar"
-    }
-  ]
+  }
 }

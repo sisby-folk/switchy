@@ -32,7 +32,6 @@ import static folk.sisby.switchy.util.Feedback.*;
  * @author Sisby folk
  * @since 2.0.0
  */
-@SuppressWarnings("deprecation")
 public class SwitchyClientServerNetworking {
 	// Data Requests
 	/**

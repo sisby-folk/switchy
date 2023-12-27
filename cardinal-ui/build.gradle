@@ -10,7 +10,7 @@ dependencies {
 	implementation project(path: ':client', configuration: 'namedElements')
 	implementation project(path: ':cardinal', configuration: 'namedElements')
 	implementation project(path: ':ui', configuration: 'namedElements')
-	modImplementation libs.qfapi
+	modImplementation libs.fapi
 }
 
 loom {

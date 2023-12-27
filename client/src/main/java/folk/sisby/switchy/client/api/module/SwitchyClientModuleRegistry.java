@@ -3,7 +3,6 @@ package folk.sisby.switchy.client.api.module;
 import folk.sisby.switchy.client.SwitchyClient;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
-import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,7 +17,6 @@ import java.util.function.Supplier;
  * @see SwitchyClientModule
  * @since 2.0.0
  */
-@ClientOnly
 public class SwitchyClientModuleRegistry {
 	private static final Map<Identifier, Supplier<SwitchyClientModule>> SUPPLIERS = new HashMap<>();
 

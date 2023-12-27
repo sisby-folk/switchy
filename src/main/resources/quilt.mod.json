@@ -30,8 +30,8 @@
 				"versions": ">=${mc}"
 			},
 			{
-				"id": "quilted_fabric_api",
-				"versions": ">=${qfapi}"
+				"id": "fabric-api",
+				"versions": ">=${fapi}"
 			},
 			{
 				"id": "switchy-core",
@@ -61,6 +61,15 @@
 				"id": "switchy-cardinal-ui",
 				"versions": "${switchy}"
 			}
+		],
+		"jars": [
+				"META-INF/jars/switchy-core-${switchy}.jar",
+				"META-INF/jars/switchy-client-${switchy}.jar",
+				"META-INF/jars/switchy-ui-${switchy}.jar",
+				"META-INF/jars/switchy-cardinal-${switchy}.jar",
+				"META-INF/jars/switchy-cardinal-ui-${switchy}.jar",
+				"META-INF/jars/switchy-compat-${switchy}.jar",
+				"META-INF/jars/switchy-compat-ui-${switchy}.jar"
 		]
 	}
 }

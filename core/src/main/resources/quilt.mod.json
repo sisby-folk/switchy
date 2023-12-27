@@ -28,17 +28,21 @@
 				"versions": ">=${mc}"
 			},
 			{
-				"id": "quilted_fabric_api",
-				"versions": ">=${qfapi}"
+				"id": "fabric-api",
+				"versions": ">=${fapi}"
 			},
 			{
-				"id": "quilted_fabric_api",
-				"versions": ">=${qfapi}"
+				"id": "fabric-api",
+				"versions": ">=${fapi}"
 			},
 			{
 				"id": "server_translations_api",
 				"versions": ">=${serverTranslationsAPI}"
 			}
+		],
+		"jars": [
+			"META-INF/jars/kaleido-config-${kaleidoConfig}.jar",
+			"META-INF/jars/server-translations-api-${serverTranslationsAPI}.jar"
 		]
 	},
 	"mixin": "switchy-core.mixins.json",

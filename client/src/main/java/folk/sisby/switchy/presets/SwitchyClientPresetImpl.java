@@ -7,7 +7,6 @@ import folk.sisby.switchy.client.api.module.SwitchyClientModule;
 import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
-import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 import java.util.Map;
 
@@ -16,7 +15,6 @@ import java.util.Map;
  * @see SwitchyClientPreset
  * @since 1.9.1
  */
-@ClientOnly
 public class SwitchyClientPresetImpl extends SwitchyPresetDataImpl<SwitchyClientModule> implements SwitchyClientPreset {
 	/**
 	 * Constructs an instance of the object.

@@ -34,7 +34,6 @@ import static folk.sisby.switchy.util.Feedback.translatable;
  * @see SwitchyModule
  * @since 1.4.0
  */
-@SuppressWarnings("deprecation")
 public class FabricationArmorModule implements SwitchyModule {
 	/**
 	 * Identifier for this module.

@@ -14,7 +14,6 @@ import static folk.sisby.switchy.client.util.FeedbackClient.sendClientMessage;
  * @author Sisby folk
  * @since 1.8.13
  */
-@SuppressWarnings("deprecation")
 public class CommandClient {
 	/**
 	 * Executes a given Switchy Client command method using context.

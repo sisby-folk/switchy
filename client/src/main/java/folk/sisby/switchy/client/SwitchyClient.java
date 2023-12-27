@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
  * @author Sisby folk
  * @since 1.7.0
  */
-@SuppressWarnings("deprecation")
 public class SwitchyClient implements ClientModInitializer {
 	/**
 	 * the Switchy Client namespace.

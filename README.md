@@ -214,7 +214,7 @@ Adding new Modules allows more data to be switched per-preset. They only need to
 - Load their data to the player
 
 Just implement `SwitchyModule` and register it with `SwitchyModuleRegistry` using `SwitchyEvents.Init` -
-See [Switchy Inventories](https://github.com/sisby-folk/switchy-inventories) for an example. (Remember to add the `switchy` entrypoint in your QMJ)
+See [Switchy Inventories](https://github.com/sisby-folk/switchy-inventories) for an example. (Remember to add the `switchy` entrypoint in your metafile)
 
 
 #### Module Configuration & Commands

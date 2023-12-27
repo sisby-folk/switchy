@@ -20,7 +20,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.util.Identifier;
-import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 import java.util.Base64;
 import java.util.UUID;
@@ -33,7 +32,6 @@ import java.util.UUID;
  * @see FabricTailorModule
  * @since 2.0.0
  */
-@ClientOnly
 public class FabricTailorClientModule extends FabricTailorModuleData implements SwitchyClientModule, SwitchyUIModule {
 	/**
 	 * Registers the module

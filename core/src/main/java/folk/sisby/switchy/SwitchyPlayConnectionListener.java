@@ -18,7 +18,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
  * @author Sisby folk
  * @since 2.0.0
  */
-@SuppressWarnings("deprecation")
 public class SwitchyPlayConnectionListener {
 	public static void onPlayReady(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
 		ServerPlayerEntity player = handler.getPlayer();

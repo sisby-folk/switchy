@@ -6,7 +6,7 @@ import folk.sisby.switchy.util.Feedback;
 import io.wispforest.owo.ops.TextOps;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.text.OrderedText;
@@ -57,23 +57,23 @@ public class SwitchyFeedbackToast implements Toast {
 		}
 	}
 
-	private static void outline(GuiGraphics graphics, int x, int y, int width, int height, int color) {
-		graphics.fill(x, y, x + width, y + 1, color);
-		graphics.fill(x, y + height - 1, x + width, y + height, color);
-		graphics.fill(x, y + 1, x + 1, y + height - 1, color);
-		graphics.fill(x + width - 1, y + 1, x + width, y + height - 1, color);
+	private static void outline(DrawContext context, int x, int y, int width, int height, int color) {
+		context.fill(x, y, x + width, y + 1, color);
+		context.fill(x, y + height - 1, x + width, y + height, color);
+		context.fill(x, y + 1, x + 1, y + height - 1, color);
+		context.fill(x + width - 1, y + 1, x + width, y + height - 1, color);
 	}
 
 	@Override
-	public Visibility draw(GuiGraphics graphics, ToastManager manager, long startTime) {
-		graphics.fill(0, 0, getWidth(), getHeight(), 0x77000000);
-		outline(graphics, 0, 0, getWidth(), getHeight(), colours.get(status));
+	public Visibility draw(DrawContext context, ToastManager manager, long startTime) {
+		context.fill(0, 0, getWidth(), getHeight(), 0x77000000);
+		outline(context, 0, 0, getWidth(), getHeight(), colours.get(status));
 
 		OrderedText header = textLines.get(0);
-		graphics.drawText(textRenderer, header, ((width - textRenderer.getWidth(header)) >> 1) - 7, 4, 0xFFFFFF, true);
+		context.drawText(textRenderer, header, ((width - textRenderer.getWidth(header)) >> 1) - 7, 4, 0xFFFFFF, true);
 
 		for (int i = 1; i < textLines.size(); i++) {
-			graphics.drawText(textRenderer, textLines.get(i), 4, 4 + i * 11, 0xFFFFFF, false);
+			context.drawText(textRenderer, textLines.get(i), 4, 4 + i * 11, 0xFFFFFF, false);
 		}
 
 		return startTime > duration ? Visibility.HIDE : Visibility.SHOW;
