@@ -16,5 +16,5 @@ for (name in ["api", "implementation", "runtimeOnly", "modApi", "modImplementati
 dependencies {
 	minecraft libs.mc
 	mappings libs.yarn
-	modCompileOnly libs.fl
+	modImplementation libs.fl
 }
