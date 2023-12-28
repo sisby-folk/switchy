@@ -32,10 +32,6 @@
 				"versions": ">=${fapi}"
 			},
 			{
-				"id": "fabric-api",
-				"versions": ">=${fapi}"
-			},
-			{
 				"id": "server_translations_api",
 				"versions": ">=${serverTranslationsAPI}"
 			}
