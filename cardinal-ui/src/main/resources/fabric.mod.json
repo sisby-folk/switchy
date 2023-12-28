@@ -22,7 +22,7 @@
   },
   "depends": {
     "minecraft": ">=${mc}",
-    "fabricloader": ">=0.14.9",
+    "fabricloader": ">=${fl}",
     "fabric-api": ">=${fapi}",
     "switchy-core": ">=${switchy}",
     "switchy-client": ">=${switchy}",
