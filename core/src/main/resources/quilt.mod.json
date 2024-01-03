@@ -28,8 +28,8 @@
 				"versions": ">=${mc}"
 			},
 			{
-				"id": "fabric-api",
-				"versions": ">=${fapi}"
+				"id": "fabricloader",
+				"versions": ">=${fl}"
 			},
 			{
 				"id": "fabric-api",
