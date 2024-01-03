@@ -15,6 +15,6 @@ for (name in ["api", "implementation", "runtimeOnly", "modApi", "modImplementati
 
 dependencies {
 	minecraft libs.mc
-	mappings libs.yarn
+	mappings variantOf(libs.yarn) { classifier "v2" }
 	modImplementation libs.fl
 }
