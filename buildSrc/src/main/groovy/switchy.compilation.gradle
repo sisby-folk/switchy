@@ -25,6 +25,7 @@ processResources {
 	final Map<String, String> map = [
 		"switchy"              : version.toString(),
 		"mc"                   : libs.versions.mc.get(),
+		"fl"                   : libs.versions.fl.get(),
 		"serverTranslationsAPI": libs.versions.serverTranslationsApi.get(),
 		"kaleidoConfig"        : libs.versions.kaleidoConfig.get(),
 		"fapi"                 : libs.versions.fapi.get(),

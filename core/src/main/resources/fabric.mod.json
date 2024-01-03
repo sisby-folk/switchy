@@ -21,8 +21,8 @@
   },
   "depends": {
     "minecraft": ">=${mc}",
-    "fabricloader": ">=0.14.9",
-    "fabric": ">=${fapi}",
+    "fabricloader": ">=${fl}",
+    "fabric-api": ">=${fapi}",
     "server_translations_api": ">=${serverTranslationsAPI}"
   },
   "mixins": [

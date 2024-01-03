@@ -22,8 +22,8 @@
   },
   "depends": {
     "minecraft": ">=${mc}",
-    "fabricloader": ">=0.14.9",
-    "fabric": ">=${fapi}",
+    "fabricloader": ">=${fl}",
+    "fabric-api": ">=${fapi}",
     "switchy-core": ">=${switchy}",
     "switchy-client": ">=${switchy}",
     "switchy-ui": ">=${switchy}"
