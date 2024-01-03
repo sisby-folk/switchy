@@ -29,7 +29,7 @@ modrinth {
 	versionNumber = "$project.baseVersion+$project.branch"
 	versionType = 'release'
 	uploadFile = remapJar
-	gameVersions = ['1.20', libs.versions.mc.get()]
+	gameVersions = [libs.versions.mc.get()]
 	loaders = ['quilt', 'fabric', 'forge']
 	detectLoaders = false
 	dependencies {
