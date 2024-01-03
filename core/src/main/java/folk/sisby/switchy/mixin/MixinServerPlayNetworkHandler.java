@@ -20,6 +20,6 @@ public abstract class MixinServerPlayNetworkHandler {
 	@SuppressWarnings("DataFlowIssue")
 	@Inject(at = @At(value = "TAIL"), method = "handleCommandExecution")
 	void onChatCommand(CommandExecutionC2SPacket packet, CallbackInfo ci) {
-		SwitchyCommands.HISTORY.put(((ServerPlayNetworkHandler) (Object) this).player.getUuid(), packet.comp_808());
+		SwitchyCommands.HISTORY.put(((ServerPlayNetworkHandler) (Object) this).player.getUuid(), packet.command());
 	}
 }
