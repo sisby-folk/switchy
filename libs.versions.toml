@@ -4,7 +4,7 @@ githubRelease = "2.4.1"
 minotaur = "2.6.0"
 
 mc = "1.19.2"
-fl = "0.15.1"
+fl = "0.15.0"
 yarn = "1.19.2+build.28"
 fapi = "0.76.0+1.19.2"
 kaleidoConfig = "0.1.1+1.1.0-beta.3"
