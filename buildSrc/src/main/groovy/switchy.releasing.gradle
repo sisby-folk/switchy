@@ -16,6 +16,7 @@ githubRelease {
 	releaseAssets remapJar.archiveFile
 	allowUploadToExisting true
 	generateReleaseNotes true
+	body rootProject.file("CHANGELOG.md").text
 }
 
 tasks.githubRelease {
@@ -43,7 +44,7 @@ modrinth {
 		optional.project "lanyard"
 		optional.project "figura"
 	}
-	changelog = "Changelog: https://github.com/sisby-folk/switchy/releases/tag/v$baseVersion"
+	changelog = rootProject.file("CHANGELOG.md").text + "<br/>\nChangelog: https://github.com/sisby-folk/inventory-tabs/releases/tag/v$baseVersion"
 	syncBodyFrom = rootProject.file("README.md").text
 }
 
