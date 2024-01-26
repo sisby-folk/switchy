@@ -182,7 +182,7 @@ public abstract class SwitchyPresetsDataImpl<Module extends SwitchySerializable,
 				modules.put(id, enabled);
 			} else if (!silent) {
 				logger.warn("[Switchy] Unable to toggle a module - Was a module unloaded?");
-				logger.warn("[Switchy] Key: " + e.asString());
+				logger.warn("[Switchy] Key: {}", e.asString());
 				if (id != null) {
 					logger.warn("[Switchy] Saved as lost puppy {} module.", enabled ? "enabled" : "disabled");
 					backup.put(id, enabled);

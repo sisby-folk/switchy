@@ -61,7 +61,7 @@ public class SwitchyModuleRegistry {
 		} else {
 			Switchy.CONFIG.moduleEditableReadOnly.put(id.toString(), moduleInfo.editable());
 		}
-		Switchy.LOGGER.info("[Switchy] Registered module " + id);
+		Switchy.LOGGER.info("[Switchy] Registered module {}", id);
 	}
 
 	/**

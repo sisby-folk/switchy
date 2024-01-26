@@ -68,7 +68,7 @@ public class StyledNicknamesModule implements SwitchyModule, SwitchyModuleTransf
 		if (styled_nickname != null) holder.sn_set(styled_nickname, false);
 		String newName = player.getDisplayName().getString();
 		if (!Objects.equals(oldName, newName))
-			SwitchyCompat.LOGGER.info("[Switchy] Player Nickname Change: '" + oldName + "' -> '" + newName + "' [" + player.getGameProfile().getName() + "]");
+			SwitchyCompat.LOGGER.info("[Switchy Compat] Player Nickname Change: '{}' -> '{}' [{}]", oldName, newName, player.getGameProfile().getName());
 	}
 
 	@Override

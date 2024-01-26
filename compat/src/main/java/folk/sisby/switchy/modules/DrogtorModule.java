@@ -49,7 +49,7 @@ public class DrogtorModule extends DrogtorModuleData implements SwitchyModule, S
 		drogtorPlayer.drogtor$setNickname(nickname);
 		String newName = player.getDisplayName().getString();
 		if (!Objects.equals(oldName, newName))
-			SwitchyCompat.LOGGER.info("[Switchy Compat] Player Nickname Change: '" + oldName + "' -> '" + newName + "' [" + player.getGameProfile().getName() + "]");
+			SwitchyCompat.LOGGER.info("[Switchy Compat] Player Nickname Change: '{}' -> '{}' [{}]", oldName, newName, player.getGameProfile().getName());
 		drogtorPlayer.drogtor$setNameColor(nameColor);
 		drogtorPlayer.drogtor$setBio(bio);
 	}
