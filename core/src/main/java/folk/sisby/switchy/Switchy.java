@@ -41,7 +41,7 @@ public class Switchy implements DedicatedServerModInitializer, ClientModInitiali
 		ServerPlayConnectionEvents.DISCONNECT.register(SwitchyPlayConnectionListener::onPlayDisconnect);
 		SwitchyEvents.registerEntrypointListeners();
 		SwitchyEvents.INIT.invoker().onInitialize();
-		Switchy.LOGGER.info("[Switchy] Initialized! Registered Modules: " + SwitchyModuleRegistry.getModules());
+		Switchy.LOGGER.info("[Switchy] Initialized! Registered Modules: {}", SwitchyModuleRegistry.getModules());
 	}
 
 	@Override
