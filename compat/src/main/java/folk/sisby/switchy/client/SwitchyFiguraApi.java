@@ -28,14 +28,21 @@ public class SwitchyFiguraApi implements FiguraAPI {
 	public @NotNull Avatar forAvatar;
 
 	static {
-		SwitchyClientEvents.SWITCH.register((event) -> AVATAR_LISTENERS.forEach((avatar, function) -> function.invoke(
-			LuaValue.varargsOf(new LuaValue[]{
-				LuaValue.valueOf(event.player().toString()),
-				event.currentPreset() != null ? LuaValue.valueOf(event.currentPreset()) : LuaValue.NIL,
-				event.previousPreset() != null ? LuaValue.valueOf(event.previousPreset()) : LuaValue.NIL,
-				LuaValue.listOf(event.enabledModules().stream().map(LuaValue::valueOf).toArray(LuaValue[]::new))
-			})
-		)));
+		SwitchyClientEvents.SWITCH.register((event) -> AVATAR_LISTENERS.forEach((avatar, function) -> {
+			if (avatar.scriptError) return;
+			try {
+				function.invoke(
+					LuaValue.varargsOf(new LuaValue[]{
+						LuaValue.valueOf(event.player().toString()),
+						event.currentPreset() != null ? LuaValue.valueOf(event.currentPreset()) : LuaValue.NIL,
+						event.previousPreset() != null ? LuaValue.valueOf(event.previousPreset()) : LuaValue.NIL,
+						LuaValue.listOf(event.enabledModules().stream().map(LuaValue::valueOf).toArray(LuaValue[]::new))
+					})
+				);
+			} catch (LuaError e) {
+				avatar.luaRuntime.error(e);
+			}
+		}));
 	}
 
 	public SwitchyFiguraApi() {}
