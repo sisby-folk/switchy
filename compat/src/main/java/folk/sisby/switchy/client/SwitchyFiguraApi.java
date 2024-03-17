@@ -25,7 +25,7 @@ import java.util.Map;
 @LuaWhitelist
 public class SwitchyFiguraApi implements FiguraAPI {
 	public static Map<Avatar, LuaFunction> AVATAR_LISTENERS = new HashMap<>();
-	public final @NotNull Avatar forAvatar;
+	public @NotNull Avatar forAvatar;
 
 	static {
 		SwitchyClientEvents.SWITCH.register((event) -> AVATAR_LISTENERS.forEach((avatar, function) -> function.invoke(
@@ -37,6 +37,8 @@ public class SwitchyFiguraApi implements FiguraAPI {
 			})
 		)));
 	}
+
+	public SwitchyFiguraApi() {}
 
 	private SwitchyFiguraApi(@NotNull Avatar avatar) {
 		forAvatar = avatar;
