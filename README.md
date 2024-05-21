@@ -16,7 +16,7 @@ Requires <a href="https://modrinth.com/mod/connector">Connector</a> and <a href=
 
 ## What is Switchy?
 
-Switchy lets you use commands make ***presets*** that are stored with your player data.
+Switchy lets you use commands to make ***presets*** that are stored with your player data.
 
 Switchy will load ***modules*** that tell presets what to store, which can be **toggled** per-player.
 
