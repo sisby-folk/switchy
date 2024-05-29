@@ -1,5 +1,5 @@
 [versions]
-loom = "1.4.+"
+loom = "1.6.+"
 githubRelease = "2.4.1"
 minotaur = "2.6.0"
 
@@ -20,13 +20,13 @@ fabrictailor = "1.9.0"
 origins = "v1.4.1"
 apoli = "v2.3.3"
 calio = "v1.5.1"
-pehkui = "3.4.2"
+pehkui = "3.8.1"
 fabrication = "3.0.2+1.18"
 styledNicknames = "1.0.4+1.18.1"
 placeholder = "1.1.3+1.17.1"
 playerData = "0.1.0+1.18"
-luaj = "3.0.6-figura"
-figura = "0.1.2"
+luaj = "3.0.8-figura"
+figura = "0.1.4"
 
 [plugins]
 loom = { id = "fabric-loom", version.ref = "loom" }
@@ -56,5 +56,5 @@ fabrication = { group = "maven.modrinth", name = "fabrication", version.ref = "f
 styledNicknames = { group = "maven.modrinth", name = "styled-nicknames", version.ref = "styledNicknames" }
 placeholder = { group = "eu.pb4", name = "placeholder-api", version.ref = "placeholder" }
 playerData = { group = "eu.pb4", name = "player-data-api", version.ref = "playerData" }
-luaj = { group = "com.github.Kingdom-of-The-Moon.luaj", name = "luaj-core", version.ref = "luaj" }
+luaj = { group = "com.github.FiguraMC.luaj", name = "luaj-core", version.ref = "luaj" }
 figura = { group = "com.github.FiguraMC", name = "Figura", version.ref = "figura" }

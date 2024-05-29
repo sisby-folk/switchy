@@ -32,7 +32,7 @@ public class SwitchyClientModuleRegistry {
 			throw new IllegalArgumentException("Specified id is already registered");
 		}
 		SUPPLIERS.put(id, moduleConstructor);
-		SwitchyClient.LOGGER.info("[Switchy Client] Registered client module " + id);
+		SwitchyClient.LOGGER.info("[Switchy Client] Registered client module {}", id);
 	}
 
 	/**

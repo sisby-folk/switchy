@@ -9,14 +9,9 @@ Requires <a href="https://modrinth.com/mod/connector">Connector</a> and <a href=
 
 ---
 
-<center><b>Packs:</b> <a href="https://modrinth.com/modpack/tinkerers-quilt">Tinkerer's Quilt</a> (<a href="https://modrinth.com/modpack/tinkerers-silk">Silk</a>) - <a href="https://modrinth.com/modpack/switchy-pack">Switchy Pack</a></center>
-<center><b>Mods:</b> <i>Switchy</i> - <a href="https://modrinth.com/mod/origins-minus">Origins Minus</a> (<a href="https://modrinth.com/mod/tinkerers-statures">Statures</a>) - <a href="https://modrinth.com/mod/tinkerers-smithing">Tinkerer's Smithing</a></center>
-
----
-
 ## What is Switchy?
 
-Switchy lets you use commands make ***presets*** that are stored with your player data.
+Switchy lets you use commands to make ***presets*** that are stored with your player data.
 
 Switchy will load ***modules*** that tell presets what to store, which can be **toggled** per-player.
 
@@ -194,11 +189,11 @@ Try `SwitchyPresets` (via `SwitchyPlayer.getPresets()`) covers most mod function
 
 #### Figura Lua API
 
-Listen to switches by passing a function to `switchy:registerSwitchListener`, e.g.
+Listen to switches by subscribing to `"switchy.SWITCH"` and `"switchy.WORLD_SWITCH"`
 
 ```
-switchy:registerSwitchListener(function(playerId, newPreset, oldPreset, enabledModules)
-  log("New Switch: " .. oldPreset .. " > " .. newPreset)
+events["switchy.SWITCH"]:register(function(newpreset, oldpreset, enabledmodules)
+  -- blah blah
 end)
 ```
 
@@ -280,3 +275,10 @@ play and self-expression.
 
 We're open to suggestions for how to implement stuff better - if you see something wonky and have an idea - let us know.
 
+---
+
+<center>
+<b>Tinkerer's:</b> <a href="https://modrinth.com/modpack/tinkerers-quilt">Quilt</a> - <a href="https://modrinth.com/mod/tinkerers-smithing">Smithing</a> - <a href="https://modrinth.com/mod/origins-minus">Origins</a> - <a href="https://modrinth.com/mod/tinkerers-statures">Statures</a> - <a href="https://modrinth.com/mod/picohud">HUD</a><br/>
+<b>Loveletters:</b> <a href="https://modrinth.com/mod/inventory-tabs">Tabs</a> - <a href="https://modrinth.com/mod/antique-atlas-4">Atlas</a> - <a href="https://modrinth.com/mod/portable-crafting">Portable Crafting</a> - <a href="https://modrinth.com/mod/drogstyle">Drogstyle</a><br/>
+<b>Others:</b> <i>Switchy</i> - <a href="https://modrinth.com/mod/crunchy-crunchy-advancements">Crunchy</a> - <a href="https://modrinth.com/mod/starcaller">Starcaller</a><br/>
+</center>

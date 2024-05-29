@@ -33,6 +33,6 @@ public class SwitchyClient implements ClientModInitializer {
 		SwitchyClientCommands.register();
 		SwitchyClientEvents.registerEntrypointListeners();
 		SwitchyClientEvents.INIT.invoker().onInitialize();
-		LOGGER.info("[Switchy Client] Initialized! Registered Modules: " + SwitchyClientModuleRegistry.getModules());
+		LOGGER.info("[Switchy Client] Initialized! Registered Modules: {}", SwitchyClientModuleRegistry.getModules());
 	}
 }

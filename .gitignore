@@ -28,3 +28,6 @@ workspace/
 
 # macOS
 *.DS_Store
+
+# Changelog
+CHANGELOG.md
