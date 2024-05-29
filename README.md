@@ -189,11 +189,11 @@ Try `SwitchyPresets` (via `SwitchyPlayer.getPresets()`) covers most mod function
 
 #### Figura Lua API
 
-Listen to switches by passing a function to `switchy:registerSwitchListener`, e.g.
+Listen to switches by subscribing to `"switchy.SWITCH"` and `"switchy.WORLD_SWITCH"`
 
 ```
-switchy:registerSwitchListener(function(playerId, newPreset, oldPreset, enabledModules)
-  log("New Switch: " .. oldPreset .. " > " .. newPreset)
+events["switchy.SWITCH"]:register(function(newpreset, oldpreset, enabledmodules)
+  -- blah blah
 end)
 ```
 

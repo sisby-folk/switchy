@@ -19,8 +19,8 @@
     "switchy": [
       "folk.sisby.switchy.SwitchyCompat"
     ],
-    "figura_api": [
-      "folk.sisby.switchy.client.SwitchyFiguraApi"
+    "figura_event": [
+      "folk.sisby.switchy.client.SwitchyFiguraEvents"
     ]
   },
   "depends": {
