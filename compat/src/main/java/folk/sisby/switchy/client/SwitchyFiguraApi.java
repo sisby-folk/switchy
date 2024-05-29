@@ -6,6 +6,7 @@ import org.figuramc.figura.entries.FiguraAPI;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.jetbrains.annotations.NotNull;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
 
