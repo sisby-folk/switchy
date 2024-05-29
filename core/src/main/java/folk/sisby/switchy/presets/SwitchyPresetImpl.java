@@ -37,8 +37,7 @@ public class SwitchyPresetImpl extends SwitchyPresetDataImpl<SwitchyModule> impl
 				SwitchyModuleRegistry.getApplyDependencies(id).forEach((depId) -> tryApplyModule(modules, depId, player, registeredModules));
 				module.applyToPlayer(player);
 			} catch (Exception ex) {
-				Switchy.LOGGER.error("[Switchy] Module " + id + " failed to apply! Error:");
-				Switchy.LOGGER.error(ex.toString());
+				Switchy.LOGGER.error("[Switchy] Module {} failed to update! Error:", id, ex);
 			}
 			registeredModules.add(id);
 		}
@@ -50,8 +49,7 @@ public class SwitchyPresetImpl extends SwitchyPresetDataImpl<SwitchyModule> impl
 			try {
 				module.updateFromPlayer(player, nextPreset);
 			} catch (Exception ex) {
-				Switchy.LOGGER.error("[Switchy] Module " + id + " failed to update! Error:");
-				Switchy.LOGGER.error(ex.toString());
+				Switchy.LOGGER.error("[Switchy] Module {} failed to update! Error:", id, ex);
 			}
 		});
 	}

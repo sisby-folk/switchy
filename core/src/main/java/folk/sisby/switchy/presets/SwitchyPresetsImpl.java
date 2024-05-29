@@ -130,7 +130,7 @@ public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, Sw
 		);
 		setCurrentPreset(nextPreset.getName());
 		SwitchyEvents.SWITCH.invoker().onSwitch(player, switchEvent);
-		LOGGER.info("[Switchy] Player switch: '" + oldPreset.getName() + "' -> '" + getCurrentPresetName() + "' [" + player.getGameProfile().getName() + "]");
+		LOGGER.info("[Switchy] Player switch: '{}' -> '{}' [{}]", oldPreset.getName(), getCurrentPresetName(), player.getGameProfile().getName());
 
 		return getCurrentPresetName();
 	}
