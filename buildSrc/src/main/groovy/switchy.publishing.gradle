@@ -1,21 +1,19 @@
 plugins {
-	id 'maven-publish'
+	id "maven-publish"
 }
 
 publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-			artifactId "switchy" + '-' + project.name
-			version "$project.baseVersion+$project.branch"
+	repositories {
+		maven {
+			name "SleepingTown"
+			url "https://repo-api.sleeping.town/"
+			credentials(PasswordCredentials)
 		}
 	}
 
-	repositories {
-		maven {
-			name "ProxyFox"
-			url "https://maven.proxyfox.dev/"
-			credentials(PasswordCredentials)
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
 		}
 	}
 }

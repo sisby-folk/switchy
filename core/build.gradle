@@ -1,12 +1,15 @@
 plugins {
-	id 'switchy.repositories'
-	id 'switchy.compilation'
-	id 'switchy.minecraft'
-	id 'switchy.publishing'
+	id "switchy.repositories"
+	id "switchy.compilation"
+	id "switchy.minecraft"
+	id "switchy.publishing"
 }
 
 dependencies {
-	implementationInclude libs.kaleidoConfig
+	implementation libs.kaleidoConfig
+	include libs.kaleidoConfig
+
 	modImplementation libs.fapi
-	modImplementationInclude libs.serverTranslationsApi
+	modImplementation libs.serverTranslationsApi
+	include libs.serverTranslationsApi
 }

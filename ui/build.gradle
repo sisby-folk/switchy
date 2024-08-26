@@ -1,13 +1,13 @@
 plugins {
-	id 'switchy.repositories'
-	id 'switchy.compilation'
-	id 'switchy.minecraft'
-	id 'switchy.publishing'
+	id "switchy.repositories"
+	id "switchy.compilation"
+	id "switchy.minecraft"
+	id "switchy.publishing"
 }
 
 dependencies {
-	implementation project(path: ':core', configuration: 'namedElements')
-	implementation project(path: ':client', configuration: 'namedElements')
+	implementation project(path: ":core", configuration: "namedElements")
+	implementation project(path: ":client", configuration: "namedElements")
 	modImplementation libs.fapi
 
 	modApi libs.owo

@@ -1,40 +1,43 @@
 {
-  "schemaVersion": 1,
-  "id": "switchy-compat-ui",
-  "version": "${switchy}",
-  "name": "Switchy Compat UI",
-  "description": "UI compatibility for built-in switchy modules like drogtor, styled nicknames, fabric tailor, and origins.",
-  "authors": [
-    "Sisby folk"
-  ],
-  "contact": {
-    "homepage": "https://modrinth.com/mod/switchy",
-    "issues": "https://github.com/sisby-folk/switchy/issues",
-    "sources": "https://github.com/sisby-folk/switchy"
-  },
-  "icon": "assets/switchy/icon.png",
-  "license": "LGPL-3.0-only",
-  "environment": "client",
-  "entrypoints": {
-    "switchy_client": [
-      "folk.sisby.switchy.client.SwitchyCompatClient"
-    ]
-  },
-  "depends": {
-    "minecraft": ">=${mc}",
-    "fabricloader": ">=${fl}",
-    "fabric-api": ">=${fapi}",
-    "switchy-core": ">=${switchy}",
-    "switchy-client": ">=${switchy}",
-    "switchy-ui": ">=${switchy}"
-  },
-  "suggests": {
-    "drogtor": ">=${drogtor}",
-    "styled-nicknames": ">=${styledNicknames}",
-    "fabrictailor": ">=${fabrictailor}",
-    "origins": ">=${origins}"
-  },
-  "modmenu": {
-    "parent": "switchy"
-  }
+	"schemaVersion": 1,
+	"id": "${compatUiId}",
+	"version": "${version}",
+	"name": "${compatUiName}",
+	"description": "${compatUiDescription}",
+	"authors": [
+		"${authors}"
+	],
+	"contributors": [
+		"${contributors}"
+	],
+	"contact": {
+		"homepage": "${homepage}",
+		"issues": "${issues}",
+		"sources": "${sources}"
+	},
+	"license": "${license}",
+	"icon": "assets/${modId}/icon.png",
+	"modmenu": {
+		"parent": "${modId}"
+	},
+	"environment": "client",
+	"depends": {
+		"minecraft": ">=${mc}",
+		"fabricloader": ">=${fl}",
+		"fabric-api": ">=${fapi}",
+		"${coreId}": ">=${version}",
+		"${clientId}": ">=${version}",
+		"${uiId}": ">=${version}"
+	},
+	"suggests": {
+		"drogtor": ">=${drogtor}",
+		"styled-nicknames": ">=${styledNicknames}",
+		"fabrictailor": ">=${fabrictailor}",
+		"origins": ">=${origins}"
+	},
+	"entrypoints": {
+		"switchy_client": [
+			"folk.sisby.switchy.client.SwitchyCompatClient"
+		]
+	}
 }

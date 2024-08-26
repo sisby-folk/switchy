@@ -1,52 +1,42 @@
 plugins {
-	id 'maven-publish'
-	id 'com.github.breadmoirai.github-release'
-	id 'com.modrinth.minotaur'
+	id "maven-publish"
+	alias libs.plugins.githubRelease
+	alias libs.plugins.minotaur
 }
 
 githubRelease {
-	token = project.findProperty("github.token") ?: System.getenv("GITHUB_TOKEN") ?: ""
-	owner "sisby-folk"
-	repo "switchy"
-	tagName "v$baseVersion"
-	releaseName "v$baseVersion"
-	targetCommitish project.default_release_branch
-	draft false
-	prerelease false
-	releaseAssets remapJar.archiveFile
-	allowUploadToExisting true
-	generateReleaseNotes true
-	body rootProject.file("CHANGELOG.md").text
-}
-
-tasks.githubRelease {
-	dependsOn remapJar
+	token = "$System.env.GITHUB_TOKEN"
+	owner = project.user
+	repo = slug
+	tagName = "v${baseVersion}+${tagBranch}"
+	targetCommitish = tagBranch
+	releaseAssets = remapJar
+	releaseName = "v${baseVersion}"
+	allowUploadToExisting = true
+	generateReleaseNotes = true
+	body = !file("CHANGELOG.md").exists() ? "" : rootProject.file("CHANGELOG.md").text
 }
 
 modrinth {
-	token = project.findProperty("modrinth.token") ?: System.getenv("MODRINTH_TOKEN")
-	projectId = 'switchy'
-	versionName = project.baseVersion
-	versionNumber = "$project.baseVersion+$project.branch"
-	versionType = 'release'
+	token = "$System.env.MODRINTH_TOKEN"
+	projectId = slug
+	versionNumber = project.version
 	uploadFile = remapJar
-	gameVersions = [libs.versions.mc.get()]
-	loaders = ['quilt', 'fabric']
-	detectLoaders = false
-	dependencies {
-		optional.project "owo-lib"
-		optional.project "drogtor"
-		optional.project "fabrictailor"
-		optional.project "pehkui"
-		optional.project "origins"
-		optional.project "fabrication"
-		optional.project "styled-nicknames"
-		optional.project "arcpocalypse"
-		optional.project "lanyard"
-		optional.project "figura"
-	}
-	changelog = rootProject.file("CHANGELOG.md").text + "<br/>\nChangelog: https://github.com/sisby-folk/switchy/releases/tag/v$baseVersion"
+	gameVersions = compatibleVersions.split(", ").toList()
+	loaders = compatibleLoaders.split(", ").toList()
+	changelog = !file("CHANGELOG.md").exists() ? "" : rootProject.file("CHANGELOG.md").text + "\n\nChangelog: https://github.com/${user}/${slug}/releases/tag/v${baseVersion}+${tagBranch}"
 	syncBodyFrom = rootProject.file("README.md").text
+	dependencies {
+		required.version libs.fapi.get().getName(), libs.versions.fapi.get()
+		optional.version libs.owo.get().getName(), libs.versions.owo.get()
+		optional.version libs.drogtor.get().getName(), libs.versions.drogtor.get()
+		optional.version libs.fabrictailor.get().getName(), libs.versions.fabrictailor.get()
+		optional.version libs.pehkui.get().getName(), libs.versions.pehkui.get()
+		optional.version libs.origins.get().getName(), libs.versions.origins.get()
+		optional.version libs.fabrication.get().getName(), libs.versions.fabrication.get()
+		optional.version libs.styledNicknames.get().getName(), libs.versions.styledNicknames.get()
+		optional.version libs.figura.get().getName(), libs.versions.figura.get()
+	}
 }
 
 tasks.register("fullRelease") {
@@ -55,3 +45,4 @@ tasks.register("fullRelease") {
 	dependsOn "modrinth"
 	dependsOn "publish"
 }
+

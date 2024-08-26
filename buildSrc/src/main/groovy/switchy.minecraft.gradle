@@ -1,16 +1,6 @@
 //file:noinspection ConfigurationAvoidance
 plugins {
-	id 'fabric-loom'
-}
-
-group = "folk.sisby"
-
-var includeConfiguration = configurations.include
-for (name in ["api", "implementation", "runtimeOnly", "modApi", "modImplementation", "modRuntimeOnly"]) {
-	var baseConfiguration = configurations.getByName(name)
-	var baseIncludeConfiguration = configurations.create("${name}Include")
-	includeConfiguration.extendsFrom(baseIncludeConfiguration)
-	baseConfiguration.extendsFrom(baseIncludeConfiguration)
+	alias libs.plugins.loom
 }
 
 dependencies {
