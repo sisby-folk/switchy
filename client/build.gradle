@@ -1,10 +1,5 @@
-plugins {
-	id "switchy.repositories"
-	id "switchy.compilation"
-	id "switchy.minecraft"
-	id "switchy.publishing"
-}
-
+//file:noinspection GroovyAssignabilityCheck
+//file:noinspection DependencyNotationArgument
 dependencies {
 	implementation project(path: ":core", configuration: "namedElements")
 	modImplementation libs.fapi
