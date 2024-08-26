@@ -81,7 +81,6 @@ allprojects {
 			serverTranslationsApi: libs.versions.serverTranslationsApi.get(),
 			owo                  : libs.versions.owo.get(),
 			cardinal             : libs.versions.cardinal.get(),
-			drogtor              : libs.versions.drogtor.get(),
 			styledNicknames      : libs.versions.styledNicknames.get(),
 			fabrictailor         : libs.versions.fabrictailor.get(),
 			origins              : libs.versions.origins.get().replaceFirst("v", ""),
@@ -176,7 +175,6 @@ modrinth {
 	dependencies {
 		required.version libs.fapi.get().getName(), libs.versions.fapi.get()
 		optional.version libs.owo.get().getName(), libs.versions.owo.get()
-		optional.version libs.drogtor.get().getName(), libs.versions.drogtor.get()
 		optional.version libs.fabrictailor.get().getName(), libs.versions.fabrictailor.get()
 		optional.version libs.pehkui.get().getName(), libs.versions.pehkui.get()
 		optional.version libs.origins.get().getName(), libs.versions.origins.get()

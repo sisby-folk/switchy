@@ -30,7 +30,6 @@
 		"${uiId}": ">=${version}"
 	},
 	"suggests": {
-		"drogtor": ">=${drogtor}",
 		"styled-nicknames": ">=${styledNicknames}",
 		"fabrictailor": ">=${fabrictailor}",
 		"origins": ">=${origins}"
