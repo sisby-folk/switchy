@@ -4,7 +4,7 @@
 <center>An extensible preset system for player customizations provided by other mods.<br/>
 Works in singleplayer and on server-side.<br/>
 Provides a client companion GUI when <a href="https://modrinth.com/mod/owo-lib">oωo</a> is installed.<br/>
-Requires <a href="https://modrinth.com/mod/connector">Connector</a> and <a href="https://modrinth.com/mod/forgified-fabric-api">FFAPI</a> on forge.<br/>
+Requires <a href="https://modrinth.com/mod/connector">Connector</a> and <a href="https://modrinth.com/mod/forgified-fabric-api">FFAPI</a> on (neo)forge.<br/>
 </center>
 
 ---
@@ -266,14 +266,11 @@ This mod is primarily motivated by improving accessibility for [plural systems](
 
 All mods are built on the work of many others.
 
-<center><img alt="Created for ModFest: Singularity" src="https://user-images.githubusercontent.com/55819817/224468033-99e9fc9c-c2e2-4ed3-8a9e-ba1d9d52f3cd.svg" /></center>
+This mod is included in [Tinkerer's Quilt](https://modrinth.com/modpack/tinkerers-quilt) - our modpack about ease of play and self-expression.
 
-We made this mod (up to v1.2.1) for Modfest: Singularity! However, we intend to maintain this mod into the future.
+We're open to better ways to implement our mods. If you see something odd and have an idea, let us know!
 
-This mod is included in [Tinkerer's Quilt](https://modrinth.com/modpack/tinkerers-quilt) - our modpack about ease of
-play and self-expression.
-
-We're open to suggestions for how to implement stuff better - if you see something wonky and have an idea - let us know.
+<center><a href="https://modrinth.com/modpack/modfest-singularity"><img alt="Created for ModFest: Singularity" src="https://user-images.githubusercontent.com/55819817/224468033-99e9fc9c-c2e2-4ed3-8a9e-ba1d9d52f3cd.svg" /></a></center>
 
 ---
 

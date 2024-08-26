@@ -1,39 +1,42 @@
 {
-  "schemaVersion": 1,
-  "id": "switchy-ui",
-  "version": "${switchy}",
-  "name": "Switchy UI",
-  "description": "The client-side UI addon for Switchy Client providing alternatives to server commands.",
-  "authors": [
-    "Sisby folk"
-  ],
-  "contact": {
-    "homepage": "https://modrinth.com/mod/switchy",
-    "issues": "https://github.com/sisby-folk/switchy/issues",
-    "sources": "https://github.com/sisby-folk/switchy"
-  },
-  "icon": "assets/switchy/icon.png",
-  "license": "LGPL-3.0-only",
-  "environment": "*",
-  "entrypoints": {
-    "switchy_client": [
-      "folk.sisby.switchy.ui.SwitchyUI"
-    ]
-  },
-  "depends": {
-    "minecraft": ">=${mc}",
-    "fabricloader": ">=${fl}",
-    "fabric-api": ">=${fapi}",
-    "switchy-core": ">=${switchy}",
-    "switchy-client": ">=${switchy}"
-  },
-  "suggests": {
-    "owo-lib": ">=${owo}"
-  },
-  "mixins": [
-    "switchy-ui.mixins.json"
-  ],
-  "modmenu": {
-    "parent": "switchy"
-  }
+	"schemaVersion": 1,
+	"id": "${uiId}",
+	"version": "${version}",
+	"name": "${uiName}",
+	"description": "${uiDescription}",
+	"authors": [
+		"${authors}"
+	],
+	"contributors": [
+		"${contributors}"
+	],
+	"contact": {
+		"homepage": "${homepage}",
+		"issues": "${issues}",
+		"sources": "${sources}"
+	},
+	"license": "${license}",
+	"icon": "assets/${modId}/icon.png",
+	"modmenu": {
+		"parent": "${modId}"
+	},
+	"environment": "client",
+	"mixins": [
+		"${uiId}.mixins.json"
+	],
+	"depends": {
+		"minecraft": ">=${mc}",
+		"fabricloader": ">=${fl}",
+		"fabric-api": ">=${fapi}",
+		"${coreId}": ">=${version}",
+		"${clientId}": ">=${version}"
+	},
+	"suggests": {
+		"owo-lib": ">=${owo}"
+	},
+	"entrypoints": {
+		"switchy_client": [
+			"folk.sisby.switchy.ui.SwitchyUI"
+		]
+	}
 }
