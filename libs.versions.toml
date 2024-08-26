@@ -5,23 +5,23 @@ minotaur = "2.+"
 
 kaleidoConfig = "0.3.1+1.3.2"
 
-mc = "1.20.1"
+mc = "1.21"
 fl = "0.15.11"
-yarn = "1.20.1+build.10"
-fapi = "0.83.0+1.20.1"
+yarn = "1.21+build.9"
+fapi = "0.101.2+1.21"
 
-serverTranslationsApi = "2.2.0+1.20.3-rc1"
+serverTranslationsApi = "2.3.1+1.21-pre2"
 
 owo = "0.12.11+1.21"
 
 cardinal = "6.1.0"
 
 fabrictailor = "2.5.0"
-origins = "v1.13.0-alpha.5+mc.1.21.x"
-apoli = "v2.12.0-alpha.9+mc.1.21.x"
-calio = "1.14.0-alpha.5+mc.1.21.x"
+origins = "v1.12.10"
+apoli = "v2.11.11"
+calio = "v1.13.3"
 pehkui = "3.8.3"
-fabrication = "3.4.18+1.20.4"
+fabrication = "3.4.9+1.20.4"
 styledNicknames = "1.6.0+1.21"
 placeholder = "2.4.0-pre.2+1.21"
 playerData = "0.6.0+1.21"
