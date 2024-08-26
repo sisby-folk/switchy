@@ -1,31 +1,32 @@
 [versions]
-loom = "1.6.+"
+loom = "1.7.+"
 githubRelease = "2.4.1"
-minotaur = "2.6.0"
+minotaur = "2.+"
 
-mc = "1.20.4"
-fl = "0.15.2"
-yarn = "1.20.4+build.3"
-fapi = "0.91.3+1.20.4"
-kaleidoConfig = "0.1.1+1.1.0-beta.3"
+kaleidoConfig = "0.3.1+1.3.2"
+
+mc = "1.20.1"
+fl = "0.15.11"
+yarn = "1.20.1+build.10"
+fapi = "0.83.0+1.20.1"
 
 serverTranslationsApi = "2.2.0+1.20.3-rc1"
 
-owo = "0.12.0+1.20.3"
+owo = "0.12.11+1.21"
 
-cardinal = "5.4.0"
+cardinal = "6.1.0"
 
-fabrictailor = "2.3.0"
-origins = "v1.12.0"
-apoli = "v2.11.0"
-calio = "1.13.0"
-pehkui = "3.8.1"
-fabrication = "3.4.0+1.20.2"
-styledNicknames = "1.4.0+1.20.3"
-placeholder = "2.3.0+1.20.3"
-playerData = "0.4.0+1.20.3"
+fabrictailor = "2.5.0"
+origins = "v1.13.0-alpha.5+mc.1.21.x"
+apoli = "v2.12.0-alpha.9+mc.1.21.x"
+calio = "1.14.0-alpha.5+mc.1.21.x"
+pehkui = "3.8.3"
+fabrication = "3.4.18+1.20.4"
+styledNicknames = "1.6.0+1.21"
+placeholder = "2.4.0-pre.2+1.21"
+playerData = "0.6.0+1.21"
 luaj = "3.0.8-figura"
-figura = "0.1.4"
+figura = "0.1.5-rc.1"
 
 [plugins]
 loom = { id = "fabric-loom", version.ref = "loom" }
@@ -33,11 +34,12 @@ githubRelease = { id = "com.github.breadmoirai.github-release", version.ref = "g
 minotaur = { id = "com.modrinth.minotaur", version.ref = "minotaur" }
 
 [libraries]
+kaleidoConfig = { group = "folk.sisby", name = "kaleido-config", version.ref = "kaleidoConfig" }
+
 mc = { group = "mojang", name = "minecraft", version.ref = "mc" }
 fl = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fl" }
 yarn = { group = "net.fabricmc", name = "yarn", version.ref = "yarn" }
 fapi = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fapi" }
-kaleidoConfig = { group = "folk.sisby", name = "kaleido-config", version.ref = "kaleidoConfig" }
 
 serverTranslationsApi = { group = "xyz.nucleoid", name = "server-translations-api", version.ref = "serverTranslationsApi" }
 

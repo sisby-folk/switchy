@@ -1,47 +1,49 @@
 {
-  "schemaVersion": 1,
-  "id": "switchy-compat",
-  "version": "${switchy}",
-  "name": "Switchy Compat",
-  "description": "Built-in switchy modules like styled nicknames, fabric tailor, and origins.",
-  "authors": [
-    "Sisby folk"
-  ],
-  "contact": {
-    "homepage": "https://modrinth.com/mod/switchy",
-    "issues": "https://github.com/sisby-folk/switchy/issues",
-    "sources": "https://github.com/sisby-folk/switchy"
-  },
-  "icon": "assets/switchy/icon.png",
-  "license": "LGPL-3.0-only",
-  "environment": "*",
-  "entrypoints": {
-    "switchy": [
-      "folk.sisby.switchy.SwitchyCompat"
-    ],
-    "figura_event": [
-      "folk.sisby.switchy.client.SwitchyFiguraEvents"
-    ]
-  },
-  "depends": {
-    "minecraft": ">=${mc}",
-    "fabricloader": ">=${fl}",
-    "fabric-api": ">=${fapi}",
-    "switchy-core": ">=${switchy}",
-    "switchy-client": ">=${switchy}"
-  },
-  "suggests": {
-    "styled-nicknames": ">=${styledNicknames}",
-    "fabrictailor": ">=${fabrictailor}",
-    "origins": ">=${origins}",
-    "pehkui": ">=${pehkui}",
-    "fabrication": ">=${fabrication}",
-    "figura": ">=${figura}"
-  },
-  "mixins": [
-    "switchy-compat.mixins.json"
-  ],
-  "modmenu": {
-    "parent": "switchy"
-  }
+	"schemaVersion": 1,
+	"id": "${compatId}",
+	"version": "${version}",
+	"name": "${compatName}",
+	"description": "${compatDescription}",
+	"authors": [
+		"${authors}"
+	],
+	"contributors": [
+		"${contributors}"
+	],
+	"contact": {
+		"homepage": "${homepage}",
+		"issues": "${issues}",
+		"sources": "${sources}"
+	},
+	"license": "${license}",
+	"icon": "assets/${modId}/icon.png",
+	"modmenu": {
+		"parent": "${modId}"
+	},
+	"mixins": [
+		"${compatId}.mixins.json"
+	],
+	"depends": {
+		"minecraft": ">=${mc}",
+		"fabricloader": ">=${fl}",
+		"fabric-api": ">=${fapi}",
+		"${coreId}": ">=${version}",
+		"${clientId}": ">=${version}"
+	},
+	"suggests": {
+		"styled-nicknames": ">=${styledNicknames}",
+		"fabrictailor": ">=${fabrictailor}",
+		"origins": ">=${origins}",
+		"pehkui": ">=${pehkui}",
+		"fabrication": ">=${fabrication}",
+		"figura": ">=${figura}"
+	},
+	"entrypoints": {
+		"switchy": [
+			"folk.sisby.switchy.SwitchyCompat"
+		],
+		"figura_event": [
+			"folk.sisby.switchy.client.SwitchyFiguraEvents"
+		]
+	}
 }
