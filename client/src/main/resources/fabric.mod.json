@@ -1,9 +1,9 @@
 {
 	"schemaVersion": 1,
-	"id": "${cardinalId}",
+	"id": "${clientId}",
 	"version": "${version}",
-	"name": "${cardinalName}",
-	"description": "${cardinalDescription}",
+	"name": "${clientName}",
+	"description": "${clientDescription}",
 	"authors": [
 		"${authors}"
 	],
@@ -21,7 +21,7 @@
 		"parent": "${modId}"
 	},
 	"mixins": [
-		"${cardinalId}.mixins.json"
+		"${clientId}.mixins.json"
 	],
 	"depends": {
 		"minecraft": ">=${mc}",
