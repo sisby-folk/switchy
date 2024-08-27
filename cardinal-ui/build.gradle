@@ -9,5 +9,5 @@ dependencies {
 }
 
 loom {
-	accessWidenerPath = file("src/main/resources/${cardinalUiId}.accesswidener")
+	accessWidenerPath = file("src/main/resources/switchy-cardinal-ui.accesswidener")
 }

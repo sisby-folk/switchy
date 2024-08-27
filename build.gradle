@@ -139,18 +139,16 @@ allprojects {
 }
 
 dependencies {
-	runtimeOnly(include(project(path: ":core", configuration: "namedElements")))
-	runtimeOnly(include(project(path: ":client", configuration: "namedElements")))
-	runtimeOnly(include(project(path: ":ui", configuration: "namedElements")))
-	runtimeOnly(include(project(path: ":cardinal", configuration: "namedElements")))
-	runtimeOnly(include(project(path: ":cardinal-ui", configuration: "namedElements")))
-	runtimeOnly(include(project(path: ":compat", configuration: "namedElements")))
-	runtimeOnly(include(project(path: ":compat-ui", configuration: "namedElements")))
+	include project(":core")
+	include project(":client")
+	include project(":ui")
+	include project(":cardinal")
+	include project(":cardinal-ui")
+	include project(":compat")
+	include project(":compat-ui")
 	modLocalRuntime libs.fapi
 	modLocalRuntime libs.kaleidoConfig
 	modLocalRuntime libs.serverTranslationsApi
-	include libs.kaleidoConfig
-	include libs.serverTranslationsApi
 }
 
 
