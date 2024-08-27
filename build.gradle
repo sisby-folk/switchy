@@ -114,7 +114,7 @@ allprojects {
 	}
 
 	tasks.withType(Jar).configureEach {
-		from("LICENSE.txt") {
+		from("LICENSE") {
 			rename { "${it}_${archivesBaseName}" }
 		}
 	}
@@ -149,6 +149,8 @@ dependencies {
 	modLocalRuntime libs.fapi
 	modLocalRuntime libs.kaleidoConfig
 	modLocalRuntime libs.serverTranslationsApi
+	include libs.kaleidoConfig
+	include libs.serverTranslationsApi
 }
 
 
