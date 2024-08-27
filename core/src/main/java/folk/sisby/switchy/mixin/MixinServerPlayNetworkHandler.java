@@ -2,7 +2,7 @@ package folk.sisby.switchy.mixin;
 
 import folk.sisby.switchy.SwitchyCommands;
 import net.minecraft.network.message.LastSeenMessageList;
-import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
+import net.minecraft.network.packet.c2s.play.ChatCommandSignedC2SPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinServerPlayNetworkHandler {
 	@SuppressWarnings("DataFlowIssue")
 	@Inject(at = @At(value = "TAIL"), method = "handleCommandExecution")
-	void onChatCommand(CommandExecutionC2SPacket packet, LastSeenMessageList lastSeenMessageList, CallbackInfo ci) {
+	void onChatCommand(ChatCommandSignedC2SPacket packet, LastSeenMessageList lastSeenMessages, CallbackInfo ci) {
 		SwitchyCommands.HISTORY.put(((ServerPlayNetworkHandler) (Object) this).player.getUuid(), packet.command());
 	}
 }

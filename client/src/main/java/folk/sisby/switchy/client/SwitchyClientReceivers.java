@@ -1,5 +1,6 @@
 package folk.sisby.switchy.client;
 
+import folk.sisby.switchy.SwitchyClientServerNetworking;
 import folk.sisby.switchy.api.SwitchyFeedback;
 import folk.sisby.switchy.api.events.SwitchySwitchEvent;
 import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
@@ -31,6 +32,7 @@ public class SwitchyClientReceivers {
 	 * Register client-side receivers for Switchy Client.
 	 */
 	public static void InitializeReceivers() {
+		SwitchyClientServerNetworking.touch();
 		ClientPlayNetworking.registerGlobalReceiver(S2CExportPresets.ID, (packet, context) -> handleExportNbt(packet));
 		ClientPlayNetworking.registerGlobalReceiver(S2CSwitchEvent.ID, (packet, context) -> SwitchyClientEvents.SWITCH.invoker().onSwitch(SwitchySwitchEvent.fromNbt(packet.eventNbt())));
 		ClientPlayNetworking.registerGlobalReceiver(S2CPreviewPresets.ID, (packet, context) -> handleClientPresets(packet));

@@ -18,13 +18,11 @@ import folk.sisby.switchy.packet.S2CSwitchEvent;
 import folk.sisby.switchy.presets.SwitchyPresetsImpl;
 import folk.sisby.switchy.util.PresetConverter;
 import folk.sisby.switchy.util.SwitchyCommand;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -59,6 +57,21 @@ public class SwitchyClientServerNetworking {
 	 * The NBT key where the explicitly included module IDs are stored in import NBT.
 	 */
 	public static final String KEY_IMPORT_INCLUDE = "includeModules";
+
+	static {
+		PayloadTypeRegistry.playC2S().register(C2SDeletePreset.ID, C2SDeletePreset.CODEC);
+		PayloadTypeRegistry.playC2S().register(C2SDisableModule.ID, C2SDisableModule.CODEC);
+		PayloadTypeRegistry.playC2S().register(C2SEnableModule.ID, C2SEnableModule.CODEC);
+		PayloadTypeRegistry.playC2S().register(C2SExportPresets.ID, C2SExportPresets.CODEC);
+		PayloadTypeRegistry.playC2S().register(C2SImportPresets.ID, C2SImportPresets.CODEC);
+		PayloadTypeRegistry.playC2S().register(C2SNewPreset.ID, C2SNewPreset.CODEC);
+		PayloadTypeRegistry.playC2S().register(C2SPreviewPresets.ID, C2SPreviewPresets.CODEC);
+		PayloadTypeRegistry.playC2S().register(C2SRenamePreset.ID, C2SRenamePreset.CODEC);
+		PayloadTypeRegistry.playC2S().register(C2SSwitchPreset.ID, C2SSwitchPreset.CODEC);
+		PayloadTypeRegistry.playS2C().register(S2CExportPresets.ID, S2CExportPresets.CODEC);
+		PayloadTypeRegistry.playS2C().register(S2CPreviewPresets.ID, S2CPreviewPresets.CODEC);
+		PayloadTypeRegistry.playS2C().register(S2CSwitchEvent.ID, S2CSwitchEvent.CODEC);
+	}
 
 	/**
 	 * Register server-side receivers for Switchy Client.
@@ -182,5 +195,8 @@ public class SwitchyClientServerNetworking {
 		String command = presetNbt.getString(KEY_IMPORT_COMMAND);
 
 		return SwitchyApi.confirmAndImportPresets(player, importedPresets.getPresets(), importedPresets.getEnabledModules(), command, feedback);
+	}
+
+	public static void touch() {
 	}
 }
