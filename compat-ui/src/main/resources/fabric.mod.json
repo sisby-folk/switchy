@@ -21,6 +21,7 @@
 		"parent": "${modId}"
 	},
 	"environment": "client",
+	"accessWidener": "switchy-compat-ui.accesswidener",
 	"depends": {
 		"minecraft": ">=${mc}",
 		"fabricloader": ">=${fl}",
