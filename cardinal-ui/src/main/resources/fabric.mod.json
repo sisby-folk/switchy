@@ -24,7 +24,7 @@
 	"mixins": [
 		"${cardinalUiId}.mixins.json"
 	],
-	"accessWidener": "${cardinalUiId}.accesswidener",
+	"accessWidener": "switchy-cardinal-ui.accesswidener",
 	"depends": {
 		"minecraft": ">=${mc}",
 		"fabricloader": ">=${fl}",

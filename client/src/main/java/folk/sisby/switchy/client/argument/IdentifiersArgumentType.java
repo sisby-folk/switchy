@@ -76,7 +76,7 @@ public class IdentifiersArgumentType implements ArgumentType<List<Identifier>> {
 			while (reader.canRead() && isPathCharacterValid(reader.peek())) {
 				reader.skip();
 			}
-			outList.add(new Identifier(reader.getString().substring(start, reader.getCursor())));
+			outList.add(Identifier.tryParse(reader.getString().substring(start, reader.getCursor())));
 			if (reader.canRead() && reader.peek() == ',') {
 				reader.skip();
 				if (!reader.canRead() || reader.peek() == ' ') {

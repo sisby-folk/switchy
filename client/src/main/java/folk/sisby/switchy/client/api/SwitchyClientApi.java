@@ -7,8 +7,16 @@ import folk.sisby.switchy.api.module.presets.SwitchyClientPresets;
 import folk.sisby.switchy.api.presets.SwitchyPresets;
 import folk.sisby.switchy.client.SwitchyClient;
 import folk.sisby.switchy.client.util.SwitchyFiles;
+import folk.sisby.switchy.packet.C2SDeletePreset;
+import folk.sisby.switchy.packet.C2SDisableModule;
+import folk.sisby.switchy.packet.C2SEnableModule;
+import folk.sisby.switchy.packet.C2SExportPresets;
+import folk.sisby.switchy.packet.C2SImportPresets;
+import folk.sisby.switchy.packet.C2SNewPreset;
+import folk.sisby.switchy.packet.C2SPreviewPresets;
+import folk.sisby.switchy.packet.C2SRenamePreset;
+import folk.sisby.switchy.packet.C2SSwitchPreset;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -49,20 +57,16 @@ public class SwitchyClientApi {
 	private static int nextId = 0;
 	private static int nextExportId = 0;
 
-	private static PacketByteBuf createSwitchyByteBuf(BiConsumer<SwitchyFeedback, SwitchyClientPresets> listener) {
+	private static int getPreviewListener(BiConsumer<SwitchyFeedback, SwitchyClientPresets> listener) {
 		int id = nextId++;
-		PacketByteBuf buf = PacketByteBufs.create();
-		buf.writeInt(id);
 		API_RESPONSE_LISTENERS.put(id, listener);
-		return buf;
+		return id;
 	}
 
-	private static PacketByteBuf createSwitchyExportByteBuf(BiConsumer<SwitchyFeedback, NbtCompound> listener) {
+	private static int getExportListener(BiConsumer<SwitchyFeedback, NbtCompound> listener) {
 		int id = nextExportId++;
-		PacketByteBuf buf = PacketByteBufs.create();
-		buf.writeInt(id);
 		API_EXPORT_LISTENERS.put(id, listener);
-		return buf;
+		return id;
 	}
 
 	/**
@@ -71,7 +75,7 @@ public class SwitchyClientApi {
 	 * @return true if connected to a server with Switchy installed, false otherwise.
 	 */
 	public static boolean isSwitchyServer() {
-		return ClientPlayNetworking.canSend(C2S_REQUEST_CLIENT_PRESETS);
+		return ClientPlayNetworking.canSend(C2SPreviewPresets.ID);
 	}
 
 	/**
@@ -100,10 +104,9 @@ public class SwitchyClientApi {
 	 * @see SwitchyPresets#switchCurrentPreset(ServerPlayerEntity, String)
 	 */
 	public static void getClientPresets(BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
-		if (!ClientPlayNetworking.canSend(C2S_REQUEST_CLIENT_PRESETS))
+		if (!ClientPlayNetworking.canSend(C2SPreviewPresets.ID))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
-		PacketByteBuf buf = createSwitchyByteBuf(responseCallback);
-		ClientPlayNetworking.send(C2S_REQUEST_CLIENT_PRESETS, buf);
+		ClientPlayNetworking.send(new C2SPreviewPresets(getPreviewListener(responseCallback)));
 	}
 
 	/**
@@ -115,11 +118,9 @@ public class SwitchyClientApi {
 	 * @see SwitchyPresets#switchCurrentPreset(ServerPlayerEntity, String)
 	 */
 	public static void switchCurrentPreset(String name, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
-		if (!ClientPlayNetworking.canSend(C2S_SWITCH))
+		if (!ClientPlayNetworking.canSend(C2SSwitchPreset.ID))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
-		PacketByteBuf buf = createSwitchyByteBuf(responseCallback);
-		buf.writeString(name);
-		ClientPlayNetworking.send(C2S_SWITCH, buf);
+		ClientPlayNetworking.send(new C2SSwitchPreset(getPreviewListener(responseCallback), name));
 	}
 
 	/**
@@ -132,13 +133,11 @@ public class SwitchyClientApi {
 	 * @see SwitchyPresets#newPreset(String)
 	 */
 	public static void newPreset(String name, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException, InvalidWordException {
-		if (!ClientPlayNetworking.canSend(C2S_PRESETS_NEW))
+		if (!ClientPlayNetworking.canSend(C2SNewPreset.ID))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
 		if (!name.chars().mapToObj(i -> (char) i).allMatch(StringReader::isAllowedInUnquotedString))
 			throw new InvalidWordException();
-		PacketByteBuf buf = createSwitchyByteBuf(responseCallback);
-		buf.writeString(name);
-		ClientPlayNetworking.send(C2S_PRESETS_NEW, buf);
+		ClientPlayNetworking.send(new C2SNewPreset(getPreviewListener(responseCallback), name));
 	}
 
 	/**
@@ -151,11 +150,9 @@ public class SwitchyClientApi {
 	 * @see SwitchyPresets#deletePreset(String)
 	 */
 	public static void deletePreset(String name, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
-		if (!ClientPlayNetworking.canSend(C2S_PRESETS_DELETE))
+		if (!ClientPlayNetworking.canSend(C2SDeletePreset.ID))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
-		PacketByteBuf buf = createSwitchyByteBuf(responseCallback);
-		buf.writeString(name);
-		ClientPlayNetworking.send(C2S_PRESETS_DELETE, buf);
+		ClientPlayNetworking.send(new C2SDeletePreset(getPreviewListener(responseCallback), name));
 	}
 
 	/**
@@ -168,12 +165,9 @@ public class SwitchyClientApi {
 	 * @see SwitchyPresets#renamePreset(String, String)
 	 */
 	public static void renamePreset(String name, String newName, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
-		if (!ClientPlayNetworking.canSend(C2S_PRESETS_RENAME))
+		if (!ClientPlayNetworking.canSend(C2SRenamePreset.ID))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
-		PacketByteBuf buf = createSwitchyByteBuf(responseCallback);
-		buf.writeString(name);
-		buf.writeString(newName);
-		ClientPlayNetworking.send(C2S_PRESETS_RENAME, buf);
+		ClientPlayNetworking.send(new C2SRenamePreset(getPreviewListener(responseCallback), name, newName));
 	}
 
 	/**
@@ -186,11 +180,9 @@ public class SwitchyClientApi {
 	 * @see SwitchyPresets#disableModule(Identifier)
 	 */
 	public static void disableModule(Identifier id, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
-		if (!ClientPlayNetworking.canSend(C2S_PRESETS_MODULE_DISABLE))
+		if (!ClientPlayNetworking.canSend(C2SDisableModule.ID))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
-		PacketByteBuf buf = createSwitchyByteBuf(responseCallback);
-		buf.writeString(id.toString());
-		ClientPlayNetworking.send(C2S_PRESETS_MODULE_DISABLE, buf);
+		ClientPlayNetworking.send(new C2SDisableModule(getPreviewListener(responseCallback), id));
 	}
 
 	/**
@@ -202,11 +194,9 @@ public class SwitchyClientApi {
 	 * @see SwitchyPresets#enableModule(Identifier)
 	 */
 	public static void enableModule(Identifier id, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
-		if (!ClientPlayNetworking.canSend(C2S_PRESETS_MODULE_ENABLE))
+		if (!ClientPlayNetworking.canSend(C2SEnableModule.ID))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
-		PacketByteBuf buf = createSwitchyByteBuf(responseCallback);
-		buf.writeString(id.toString());
-		ClientPlayNetworking.send(C2S_PRESETS_MODULE_ENABLE, buf);
+		ClientPlayNetworking.send(new C2SEnableModule(getPreviewListener(responseCallback), id));
 	}
 
 	private static void writeModuleSpecifiers(NbtCompound presetsNbt, Collection<Identifier> excludeModules, Collection<Identifier> includeModules) {
@@ -223,12 +213,11 @@ public class SwitchyClientApi {
 	}
 
 	private static void doImport(NbtCompound presetsNbt, Collection<Identifier> excludeModules, Collection<Identifier> includeModules, @Nullable String command, BiConsumer<SwitchyFeedback, SwitchyClientPresets> responseCallback) throws UnsupportedOperationException {
-		if (!ClientPlayNetworking.canSend(command != null ? C2S_IMPORT_CONFIRM : C2S_IMPORT))
+		if (!ClientPlayNetworking.canSend(C2SImportPresets.ID))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
 		writeModuleSpecifiers(presetsNbt, excludeModules, includeModules);
 		if (command != null) presetsNbt.putString(KEY_IMPORT_COMMAND, command);
-		PacketByteBuf buf = createSwitchyByteBuf(responseCallback);
-		ClientPlayNetworking.send(command != null ? C2S_IMPORT_CONFIRM : C2S_IMPORT, buf.writeNbt(presetsNbt));
+		ClientPlayNetworking.send(new C2SImportPresets(getPreviewListener(responseCallback), command != null, presetsNbt));
 	}
 
 	/**
@@ -269,12 +258,11 @@ public class SwitchyClientApi {
 	 * @see folk.sisby.switchy.client.SwitchyClientReceivers
 	 */
 	public static void exportPresets(Collection<Identifier> excludeModules, BiConsumer<SwitchyFeedback, NbtCompound> responseCallback) throws UnsupportedOperationException {
-		if (!ClientPlayNetworking.canSend(C2S_REQUEST_PRESETS))
+		if (!ClientPlayNetworking.canSend(C2SExportPresets.ID))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
 		NbtCompound nbt = new NbtCompound();
 		writeModuleSpecifiers(nbt, excludeModules, List.of());
-		PacketByteBuf buf = createSwitchyExportByteBuf(responseCallback);
-		ClientPlayNetworking.send(C2S_REQUEST_PRESETS, buf.writeNbt(nbt));
+		ClientPlayNetworking.send(new C2SExportPresets(getExportListener(responseCallback), nbt));
 	}
 
 	/**
@@ -287,11 +275,10 @@ public class SwitchyClientApi {
 	 * @see folk.sisby.switchy.client.SwitchyClientReceivers
 	 */
 	public static void exportPresetsToFile(Collection<Identifier> excludeModules, @Nullable String filename, BiConsumer<SwitchyFeedback, File> responseCallback) throws UnsupportedOperationException {
-		if (!ClientPlayNetworking.canSend(C2S_REQUEST_PRESETS))
+		if (!ClientPlayNetworking.canSend(C2SExportPresets.ID))
 			throw new UnsupportedOperationException("Server does not have Switchy Client installed");
 		NbtCompound nbt = new NbtCompound();
 		writeModuleSpecifiers(nbt, excludeModules, List.of());
-		PacketByteBuf buf = createSwitchyExportByteBuf((f, n) -> responseCallback.accept(f, SwitchyFiles.exportNbtToFile(filename != null ? filename : (MinecraftClient.getInstance().isInSingleplayer() ? "Singleplayer_" : "Multiplayer_") + new SimpleDateFormat("MMM-dd_HH-mm-ss").format(new java.util.Date()), n, f.messages()::add)));
-		ClientPlayNetworking.send(C2S_REQUEST_PRESETS, buf.writeNbt(nbt));
+		ClientPlayNetworking.send(new C2SExportPresets(getExportListener((f, n) -> responseCallback.accept(f, SwitchyFiles.exportNbtToFile(filename != null ? filename : (MinecraftClient.getInstance().isInSingleplayer() ? "Singleplayer_" : "Multiplayer_") + new SimpleDateFormat("MMM-dd_HH-mm-ss").format(new java.util.Date()), n, f.messages()::add))), nbt));
 	}
 }

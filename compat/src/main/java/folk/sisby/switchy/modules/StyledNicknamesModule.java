@@ -7,8 +7,10 @@ import eu.pb4.stylednicknames.config.ConfigManager;
 import folk.sisby.switchy.SwitchyCompat;
 import folk.sisby.switchy.api.module.*;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +30,7 @@ public class StyledNicknamesModule implements SwitchyModule, SwitchyModuleTransf
 	/**
 	 * Identifier for this module.
 	 */
-	public static final Identifier ID = new Identifier("switchy", "styled_nicknames");
+	public static final Identifier ID = Identifier.of("switchy", "styled_nicknames");
 
 	/**
 	 * The NBT key where the nickname is stored.
@@ -82,7 +84,7 @@ public class StyledNicknamesModule implements SwitchyModule, SwitchyModuleTransf
 	public NbtCompound toClientNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		if (styled_nickname != null) {
-			outNbt.putString(KEY_NICKNAME, Text.Serialization.toJsonTree(getText()).toString());
+			outNbt.put(KEY_NICKNAME, TextCodecs.STRINGIFIED_CODEC.encodeStart(NbtOps.INSTANCE, getText()).getOrThrow());
 		}
 		return outNbt;
 	}

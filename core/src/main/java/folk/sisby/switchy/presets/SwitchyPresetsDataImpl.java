@@ -86,7 +86,7 @@ public abstract class SwitchyPresetsDataImpl<Module extends SwitchySerializable,
 		NbtCompound configCompound = nbt.getCompound(KEY_MODULE_CONFIGS);
 		for (String key : configCompound.getKeys()) {
 			try {
-				SwitchySerializable config = setConfig(new Identifier(key));
+				SwitchySerializable config = setConfig(Identifier.tryParse(key));
 				if (config != null) {
 					config.fillFromNbt(configCompound.getCompound(key));
 				}

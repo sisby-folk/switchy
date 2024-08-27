@@ -45,7 +45,7 @@ serverTranslationsApi = { group = "xyz.nucleoid", name = "server-translations-ap
 
 owo = { group = "io.wispforest", name = "owo-lib", version.ref = "owo" }
 
-cardinal = { group = "dev.onyxstudios.cardinal-components-api", name = "cardinal-components-base", version.ref = "cardinal" }
+cardinal = { group = "org.ladysnake.cardinal-components-api", name = "cardinal-components-base", version.ref = "cardinal" }
 
 fabrictailor = { group = "maven.modrinth", name = "fabrictailor", version.ref = "fabrictailor" }
 origins = { group = "com.github.apace100", name = "origins-fabric", version.ref = "origins" }

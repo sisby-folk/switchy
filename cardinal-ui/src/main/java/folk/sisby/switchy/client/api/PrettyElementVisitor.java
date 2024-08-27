@@ -8,19 +8,20 @@ import net.minecraft.nbt.visitor.NbtTextFormatter;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 public class PrettyElementVisitor extends NbtTextFormatter implements NbtElementVisitor {
 	public PrettyElementVisitor() {
-		super("", 0);
+		super("");
 	}
 
 	@SuppressWarnings("DataFlowIssue")
 	@Override
 	public void visitString(NbtString element) {
 		try {
-			this.result = Text.Serialization.fromJson(element.asString()).formatted(Formatting.GREEN);
+			this.result = TextCodecs.STRINGIFIED_CODEC.decode(NbtOps.INSTANCE, element).getOrThrow().getFirst().copy().formatted(Formatting.GREEN);
 			return;
 		} catch (Exception ignored) {}
 		Registries.ITEM.getOrEmpty(Identifier.tryParse(element.asString())).ifPresentOrElse(
@@ -62,7 +63,7 @@ public class PrettyElementVisitor extends NbtTextFormatter implements NbtElement
 	@Override
 	public void visitCompound(NbtCompound compound) {
 		try {
-			ItemStack stack = ItemStack.fromNbt(compound);
+			ItemStack stack = ItemStack.CODEC.decode(NbtOps.INSTANCE, compound).getOrThrow().getFirst();
 			MutableText text = Text.empty();
 			if (stack.getCount() > 1) text.append(Feedback.literal(stack.getCount() + " "));
 			text.append(stack.getName());

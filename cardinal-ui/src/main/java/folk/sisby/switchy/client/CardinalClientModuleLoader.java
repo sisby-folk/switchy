@@ -45,7 +45,7 @@ public class CardinalClientModuleLoader extends JsonDataLoader implements Identi
 	 * The global instance for this resource loader.
 	 */
 	public static final CardinalClientModuleLoader INSTANCE = new CardinalClientModuleLoader(new Gson());
-	private static final Identifier ID = new Identifier(SwitchyCardinalClient.ID, "module_loader");
+	private static final Identifier ID = Identifier.of(SwitchyCardinalClient.ID, "module_loader");
 	private static final String KEY_CONDITION = "condition";
 	private static final String KEY_ICON = "icon";
 	private static final String KEY_ICON_PATH = "path";
@@ -77,7 +77,7 @@ public class CardinalClientModuleLoader extends JsonDataLoader implements Identi
 						NbtPathArgumentType.NbtPath path = pathAtg.parse(new StringReader(icon.get(KEY_ICON_PATH).getAsString()));
 						iconStackSupplier = nbt -> {
 							try {
-								return ItemStack.fromNbt((NbtCompound) path.get(nbt).get(0));
+								return ItemStack.CODEC.decode(NbtOps.INSTANCE, path.get(nbt).get(0)).getOrThrow().getFirst();
 							} catch (Exception e) {
 								return Items.DIRT.getDefaultStack();
 							}
@@ -87,7 +87,7 @@ public class CardinalClientModuleLoader extends JsonDataLoader implements Identi
 						return;
 					}
 				} else {
-					ItemStack stack = ItemStack.fromNbt((NbtCompound) JsonOps.INSTANCE.convertTo(NbtOps.INSTANCE, icon));
+					ItemStack stack = ItemStack.CODEC.decode(JsonOps.INSTANCE, icon).getOrThrow().getFirst();
 					if (stack.getCount() == 0) stack.setCount(1);
 					iconStackSupplier = nbt -> stack;
 				}

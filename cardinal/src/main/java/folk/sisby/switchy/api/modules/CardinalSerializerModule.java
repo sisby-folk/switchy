@@ -1,8 +1,9 @@
 package folk.sisby.switchy.api.modules;
 
-import dev.onyxstudios.cca.api.v3.component.Component;
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import net.minecraft.registry.RegistryWrapper;
+import org.ladysnake.cca.api.v3.component.Component;
+import org.ladysnake.cca.api.v3.component.ComponentKey;
+import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import folk.sisby.switchy.SwitchyCardinal;
 import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
@@ -19,7 +20,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 /**
- * A generic module for switching cardinal entity component data using {@link Component#readFromNbt(NbtCompound)} and {@link Component#writeToNbt(NbtCompound)}.
+ * A generic module for switching cardinal entity component data using {@link Component#readFromNbt(NbtCompound, RegistryWrapper.WrapperLookup)} and {@link Component#writeToNbt(NbtCompound, RegistryWrapper.WrapperLookup)}.
  *
  * @author Sisby folk
  * @see SwitchyModule
@@ -80,7 +81,7 @@ public class CardinalSerializerModule extends CardinalSerializerData implements 
 		componentConfigs.forEach((id, componentConfig) -> {
 			NbtCompound componentCompound = new NbtCompound();
 			Component component = componentConfig.registryKey.get(player);
-			component.writeToNbt(componentCompound);
+			component.writeToNbt(componentCompound, player.getServer().getRegistryManager());
 			moduleNbt.put(id.toString(), componentCompound);
 		});
 	}
@@ -89,7 +90,7 @@ public class CardinalSerializerModule extends CardinalSerializerData implements 
 	public void applyToPlayer(ServerPlayerEntity player) {
 		componentConfigs.forEach((id, componentConfig) -> {
 			componentConfig.invokePreApplyClear(player);
-			componentConfig.registryKey.get(player).readFromNbt(moduleNbt.getCompound(id.toString()));
+			componentConfig.registryKey.get(player).readFromNbt(moduleNbt.getCompound(id.toString()), player.getServer().getRegistryManager());
 			componentConfig.invokePostApplySync(player);
 			componentConfig.registryKey.sync(player);
 		});

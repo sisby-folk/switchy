@@ -97,21 +97,6 @@ public class SwitchyCommand {
 	}
 
 	/**
-	 * Simplifies receiving serialized packets and parsing them into objects.
-	 *
-	 * @param buf          the received packet.
-	 * @param parser       a function that parses NBT into an event object.
-	 * @param eventHandler a handler for the parsed event object.
-	 * @param <EventType>  the type of event.
-	 */
-	public static <EventType> void consumeEventPacket(PacketByteBuf buf, Function<NbtCompound, EventType> parser, Consumer<EventType> eventHandler) {
-		NbtCompound eventNbt = buf.readNbt();
-		if (eventNbt != null) {
-			eventHandler.accept(parser.apply(eventNbt));
-		}
-	}
-
-	/**
 	 * Executes a given Switchy command method using context.
 	 * Catches and logs errors, and unwraps the presets object from context.
 	 *

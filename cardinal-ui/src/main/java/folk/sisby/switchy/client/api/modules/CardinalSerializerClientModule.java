@@ -13,12 +13,14 @@ import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.component.ItemComponent;
 import io.wispforest.owo.ui.core.Component;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.item.BundleTooltipData;
 import net.minecraft.command.argument.NbtPathArgumentType;
+import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.tooltip.BundleTooltipData;
 import net.minecraft.nbt.NbtByte;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -62,7 +64,7 @@ public class CardinalSerializerClientModule extends CardinalSerializerData imple
 
 		ItemComponent component = Components.item(stack);
 		List<TooltipComponent> tooltips = new ArrayList<>(List.of(TooltipComponent.of(Feedback.translatable("switchy.modules.%s.%s.preview.tooltip".formatted(id.getNamespace(), id.getPath()), values.toArray()).asOrderedText())));
-		if (!items.isEmpty()) tooltips.add(TooltipComponent.of(new BundleTooltipData(items, 0)));
+		if (!items.isEmpty()) tooltips.add(TooltipComponent.of(new BundleTooltipData(new BundleContentsComponent(items))));
 
 		component.tooltip(tooltips);
 		return Pair.of(component, SwitchyUIPosition.GRID_RIGHT);
@@ -89,7 +91,7 @@ public class CardinalSerializerClientModule extends CardinalSerializerData imple
 					v.get(nbt).forEach(e1 -> {
 						if (e1 instanceof NbtCompound c1) {
 							c1.getList("Items", 10).forEach(e2 -> {
-								ItemStack stack = ItemStack.fromNbt((NbtCompound) e2);
+								ItemStack stack = ItemStack.CODEC.decode(NbtOps.INSTANCE, e2).getOrThrow().getFirst();
 								if (!stack.isEmpty()) items.add(stack);
 							});
 						}

@@ -38,7 +38,7 @@ public class FabricationArmorModule implements SwitchyModule {
 	/**
 	 * Identifier for this module.
 	 */
-	public static final Identifier ID = new Identifier("switchy", "hidearmor");
+	public static final Identifier ID = Identifier.of("switchy", "hidearmor");
 
 	/**
 	 * The NBT key where the list of EquipmentSlots to hide is stored.

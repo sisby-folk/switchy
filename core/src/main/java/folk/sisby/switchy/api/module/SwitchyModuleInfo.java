@@ -5,11 +5,13 @@ import folk.sisby.switchy.api.SwitchySerializable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.server.translations.api.Localization;
@@ -74,15 +76,15 @@ public final class SwitchyModuleInfo {
 	 */
 	public static SwitchyModuleInfo fromNbt(NbtCompound nbt) {
 		return new SwitchyModuleInfo(
-				nbt.getBoolean(KEY_DEFAULT),
-				SwitchyModuleEditable.valueOf(nbt.getString(KEY_EDITABLE)),
-				MutableText.Serialization.fromJson(nbt.getString(KEY_DESCRIPTION))
+			nbt.getBoolean(KEY_DEFAULT),
+			SwitchyModuleEditable.valueOf(nbt.getString(KEY_EDITABLE)),
+			TextCodecs.STRINGIFIED_CODEC.decode(NbtOps.INSTANCE, nbt.get(KEY_DESCRIPTION)).getOrThrow().getFirst().copy()
 		)
-				.withDescriptionWhenEnabled(MutableText.Serialization.fromJson(nbt.getString(KEY_WHEN_ENABLED)))
-				.withDescriptionWhenDisabled(MutableText.Serialization.fromJson(nbt.getString(KEY_WHEN_DISABLED)))
-				.withApplyDependencies(nbt.getList(KEY_APPLY_DEPENDENCIES, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).collect(Collectors.toSet()))
-				.withUniqueIds(nbt.getList(KEY_UNIQUE_IDS, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).collect(Collectors.toSet()))
-				.withDeletionWarning(MutableText.Serialization.fromJson(nbt.getString(KEY_DELETION_WARNING)));
+			.withDescriptionWhenEnabled(TextCodecs.STRINGIFIED_CODEC.decode(NbtOps.INSTANCE, nbt.get(KEY_WHEN_ENABLED)).getOrThrow().getFirst().copy())
+			.withDescriptionWhenDisabled(TextCodecs.STRINGIFIED_CODEC.decode(NbtOps.INSTANCE, nbt.get(KEY_WHEN_DISABLED)).getOrThrow().getFirst().copy())
+			.withApplyDependencies(nbt.getList(KEY_APPLY_DEPENDENCIES, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).collect(Collectors.toSet()))
+			.withUniqueIds(nbt.getList(KEY_UNIQUE_IDS, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).collect(Collectors.toSet()))
+			.withDeletionWarning(TextCodecs.STRINGIFIED_CODEC.decode(NbtOps.INSTANCE, nbt.get(KEY_DELETION_WARNING)).getOrThrow().getFirst().copy());
 	}
 
 	/**
@@ -95,10 +97,10 @@ public final class SwitchyModuleInfo {
 		NbtCompound nbt = new NbtCompound();
 		nbt.putBoolean(KEY_DEFAULT, isDefault);
 		nbt.putString(KEY_EDITABLE, editable.name());
-		nbt.putString(KEY_DESCRIPTION, Text.Serialization.toJsonString(player == null ? description : Localization.text(description, LocalizationTarget.of(player), true)));
-		nbt.putString(KEY_WHEN_ENABLED, Text.Serialization.toJsonString(player == null ? descriptionWhenEnabled : Localization.text(descriptionWhenEnabled, LocalizationTarget.of(player), true)));
-		nbt.putString(KEY_WHEN_DISABLED, Text.Serialization.toJsonString(player == null ? descriptionWhenDisabled : Localization.text(descriptionWhenDisabled, LocalizationTarget.of(player), true)));
-		nbt.putString(KEY_DELETION_WARNING, Text.Serialization.toJsonString(player == null ? deletionWarning : Localization.text(deletionWarning, LocalizationTarget.of(player), true)));
+		nbt.put(KEY_DESCRIPTION, TextCodecs.STRINGIFIED_CODEC.encodeStart(NbtOps.INSTANCE, player == null ? description : Localization.text(description, LocalizationTarget.of(player))).result().orElseThrow());
+		nbt.put(KEY_WHEN_ENABLED, TextCodecs.STRINGIFIED_CODEC.encodeStart(NbtOps.INSTANCE, player == null ? descriptionWhenEnabled : Localization.text(descriptionWhenEnabled, LocalizationTarget.of(player))).result().orElseThrow());
+		nbt.put(KEY_WHEN_DISABLED, TextCodecs.STRINGIFIED_CODEC.encodeStart(NbtOps.INSTANCE, player == null ? descriptionWhenDisabled : Localization.text(descriptionWhenDisabled, LocalizationTarget.of(player))).result().orElseThrow());
+		nbt.put(KEY_DELETION_WARNING, TextCodecs.STRINGIFIED_CODEC.encodeStart(NbtOps.INSTANCE, player == null ? deletionWarning : Localization.text(deletionWarning, LocalizationTarget.of(player))).result().orElseThrow());
 		NbtList nbtDependencies = new NbtList();
 		nbtDependencies.addAll(applyDependencies.stream().map(Identifier::toString).map(NbtString::of).toList());
 		nbt.put(KEY_APPLY_DEPENDENCIES, nbtDependencies);
@@ -302,6 +304,7 @@ public final class SwitchyModuleInfo {
 
 	/**
 	 * Gets the configuration object that can be used to store player-level data for the module, like settings.
+	 *
 	 * @return a supplier for a player-scoped configuration object
 	 */
 	public Supplier<SwitchySerializable> moduleConfig() {

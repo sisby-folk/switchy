@@ -3,9 +3,10 @@ package folk.sisby.switchy.api;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.server.translations.api.Localization;
 import xyz.nucleoid.server.translations.api.LocalizationTarget;
@@ -34,7 +35,7 @@ public record SwitchyFeedback(SwitchyFeedbackStatus status, Collection<Text> mes
 	 */
 	public static SwitchyFeedback fromNbt(NbtCompound nbt) {
 		List<Text> msgs = new ArrayList<>();
-		nbt.getList(KEY_MESSAGES_LIST, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Text.Serialization::fromJson).forEach(msgs::add);
+		nbt.getList(KEY_MESSAGES_LIST, NbtElement.STRING_TYPE).stream().map(n -> TextCodecs.CODEC.decode(NbtOps.INSTANCE, n).getOrThrow().getFirst()).forEach(msgs::add);
 		return new SwitchyFeedback(SwitchyFeedbackStatus.valueOf(nbt.getString(KEY_STATUS)), msgs);
 	}
 
@@ -48,7 +49,7 @@ public record SwitchyFeedback(SwitchyFeedbackStatus status, Collection<Text> mes
 		NbtCompound nbt = new NbtCompound();
 		nbt.putString(KEY_STATUS, status.name());
 		NbtList nbtMessages = new NbtList();
-		nbtMessages.addAll(messages.stream().map(text -> Text.Serialization.toJsonString(player == null ? text : Localization.text(text, LocalizationTarget.of(player).getLanguage(), true))).map(NbtString::of).toList());
+		nbtMessages.addAll(messages.stream().map(text -> TextCodecs.CODEC.encodeStart(NbtOps.INSTANCE, player == null ? text : Localization.text(text, LocalizationTarget.of(player).getLanguage())).getOrThrow()).toList());
 		nbt.put(KEY_MESSAGES_LIST, nbtMessages);
 		return nbt;
 	}

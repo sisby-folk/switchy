@@ -36,12 +36,12 @@ public class ApoliModule implements SwitchyModule {
 	/**
 	 * Identifier for this module.
 	 */
-	public static final Identifier ID = new Identifier("switchy", "apoli");
+	public static final Identifier ID = Identifier.of("switchy", "apoli");
 	/**
 	 * The config object for the apoli module, containing the current state of {@code /config/switchy/apoli.toml}.
 	 */
 		public static final ApoliModuleConfig CONFIG = ApoliModuleConfig.createToml(FabricLoader.getInstance().getConfigDir(), Switchy.ID, "apoli", ApoliModuleConfig.class);
-	private static final Identifier COMMAND_SOURCE = new Identifier("apoli", "command");
+	private static final Identifier COMMAND_SOURCE = Identifier.of("apoli", "command");
 	/**
 	 * The NBT key where the list of serialized apoli:command powers are stored.
 	 */

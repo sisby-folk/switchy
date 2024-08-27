@@ -9,11 +9,11 @@ dependencies {
 
 	modCompileOnly libs.calio
 	modCompileOnly(libs.origins) {
-		exclude group: 	"dev.onyxstudios.cardinal-components-api"
+		exclude group: 	"org.ladysnake.cardinal-components-api"
 		exclude module: "apoli"
 	}
 }
 
 loom {
-	accessWidenerPath = file("src/main/resources/switchy-compat-ui.accesswidener")
+	accessWidenerPath = file("src/main/resources/${compatUiId}.accesswidener")
 }

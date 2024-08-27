@@ -38,7 +38,7 @@ public class OriginsModule implements SwitchyModule, SwitchyModuleTransferable {
 	/**
 	 * Identifier for this module.
 	 */
-	public static final Identifier ID = new Identifier("switchy", "origins");
+	public static final Identifier ID = Identifier.of("switchy", "origins");
 
 	/**
 	 * The NBT key where the list of origins is stored.

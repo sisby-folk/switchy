@@ -2,6 +2,7 @@ package folk.sisby.switchy.ui;
 
 import folk.sisby.switchy.SwitchyClientServerNetworking;
 import folk.sisby.switchy.client.api.SwitchyClientApi;
+import folk.sisby.switchy.packet.C2SPreviewPresets;
 import folk.sisby.switchy.ui.screen.SwitchScreen;
 import folk.sisby.switchy.ui.screen.SwitchyScreen;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -31,7 +32,7 @@ public class SwitchyKeybindings {
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (switchKeyBinding.wasPressed()) {
-				if (client.player != null && ClientPlayNetworking.canSend(SwitchyClientServerNetworking.C2S_REQUEST_CLIENT_PRESETS)) {
+				if (client.player != null && ClientPlayNetworking.canSend(C2SPreviewPresets.ID)) {
 					client.execute(() -> client.setScreen(new SwitchScreen()));
 					SwitchyClientApi.getClientPresets(SwitchyScreen::updatePresetScreens);
 				}

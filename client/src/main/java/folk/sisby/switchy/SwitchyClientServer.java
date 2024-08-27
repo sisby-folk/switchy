@@ -2,6 +2,7 @@ package folk.sisby.switchy;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import folk.sisby.switchy.api.SwitchyEvents;
+import folk.sisby.switchy.packet.S2CExportPresets;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -31,6 +32,6 @@ public class SwitchyClientServer implements SwitchyEvents.Init {
 		List.of(
 				helpText("commands.switchy_client.export.help", "commands.switchy_client.export.command"),
 				helpText("commands.switchy_client.import.help", "commands.switchy_client.import.command", "commands.switchy_client.placeholder.file")
-		).forEach(t -> helpTextRegistry.accept(t, p -> ServerPlayNetworking.canSend(p, SwitchyClientServerNetworking.S2C_PRESETS)));
+		).forEach(t -> helpTextRegistry.accept(t, p -> ServerPlayNetworking.canSend(p, S2CExportPresets.ID)));
 	}
 }

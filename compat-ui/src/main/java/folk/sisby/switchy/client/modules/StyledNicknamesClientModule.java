@@ -9,7 +9,9 @@ import folk.sisby.switchy.ui.api.module.SwitchyUIModule;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.core.Component;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +28,7 @@ public class StyledNicknamesClientModule implements SwitchyClientModule, Switchy
 	 * Identifier for this module.
 	 * Must match {@link StyledNicknamesModule}.
 	 */
-	public static final Identifier ID = new Identifier("switchy", "styled_nicknames");
+	public static final Identifier ID = Identifier.of("switchy", "styled_nicknames");
 	/**
 	 * The NBT key where the nickname (in serialized text format) is stored.
 	 * Must match {@link StyledNicknamesModule#toClientNbt()}.
@@ -55,13 +57,13 @@ public class StyledNicknamesClientModule implements SwitchyClientModule, Switchy
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		if (styled_nickname != null) {
-			outNbt.putString(KEY_NICKNAME, Text.Serialization.toJsonTree(styled_nickname).toString());
+			outNbt.put(KEY_NICKNAME, TextCodecs.STRINGIFIED_CODEC.encodeStart(NbtOps.INSTANCE, styled_nickname).getOrThrow());
 		}
 		return outNbt;
 	}
 
 	@Override
 	public void fillFromNbt(NbtCompound nbt) {
-		if (nbt.contains(KEY_NICKNAME)) styled_nickname = Text.Serialization.fromJson(nbt.getString(KEY_NICKNAME));
+		if (nbt.contains(KEY_NICKNAME)) styled_nickname = TextCodecs.STRINGIFIED_CODEC.decode(NbtOps.INSTANCE, nbt.get(KEY_NICKNAME)).getOrThrow().getFirst();
 	}
 }
