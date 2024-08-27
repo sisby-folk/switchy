@@ -161,7 +161,7 @@ githubRelease {
 	releaseName = "v${baseVersion}"
 	allowUploadToExisting = true
 	generateReleaseNotes = true
-	body = !file("CHANGELOG.md").exists() ? "" : rootProject.file("CHANGELOG.md").text
+	body = !rootProject.file("CHANGELOG.md").exists() ? "" : rootProject.file("CHANGELOG.md").text
 }
 
 modrinth {
@@ -171,7 +171,7 @@ modrinth {
 	uploadFile = remapJar
 	gameVersions = compatibleVersions.split(", ").toList()
 	loaders = compatibleLoaders.split(", ").toList()
-	changelog = !file("CHANGELOG.md").exists() ? "" : rootProject.file("CHANGELOG.md").text + "\n\nChangelog: https://github.com/${user}/${slug}/releases/tag/v${baseVersion}+${tagBranch}"
+	changelog = !rootProject.file("CHANGELOG.md").exists() ? "" : rootProject.file("CHANGELOG.md").text + "\n\nChangelog: https://github.com/${user}/${slug}/releases/tag/v${baseVersion}+${tagBranch}"
 	syncBodyFrom = rootProject.file("README.md").text
 	dependencies {
 		required.version libs.fapi.get().getName(), libs.versions.fapi.get()
@@ -179,7 +179,7 @@ modrinth {
 		optional.version libs.drogtor.get().getName(), libs.versions.drogtor.get()
 		optional.version libs.fabrictailor.get().getName(), libs.versions.fabrictailor.get()
 		optional.version libs.pehkui.get().getName(), libs.versions.pehkui.get()
-		optional.version libs.origins.get().getName(), libs.versions.origins.get()
+		optional.version libs.origins.get().getName().replace("-fabric", ""), libs.versions.origins.get()
 		optional.version libs.fabrication.get().getName(), libs.versions.fabrication.get()
 		optional.version libs.styledNicknames.get().getName(), libs.versions.styledNicknames.get()
 		optional.version libs.figura.get().getName(), libs.versions.figura.get()
