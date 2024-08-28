@@ -96,8 +96,8 @@ public class CardinalSerializerModule extends CardinalSerializerData implements 
 	}
 
 	private record ComponentConfig<T1 extends Component>(ComponentKey<T1> registryKey,
-														 BiConsumer<ComponentKey<T1>, ServerPlayerEntity> preApplyClear,
-														 BiConsumer<ComponentKey<T1>, ServerPlayerEntity> postApplySync) {
+	                                                     BiConsumer<ComponentKey<T1>, ServerPlayerEntity> preApplyClear,
+	                                                     BiConsumer<ComponentKey<T1>, ServerPlayerEntity> postApplySync) {
 		void invokePreApplyClear(ServerPlayerEntity player) {
 			preApplyClear.accept(registryKey, player);
 		}

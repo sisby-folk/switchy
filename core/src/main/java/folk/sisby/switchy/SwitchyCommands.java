@@ -34,59 +34,57 @@ public class SwitchyCommands {
 	 * If the command in here matches the one being executed, that's a confirmation.
 	 */
 	public static final Map<UUID, String> HISTORY = new HashMap<>();
+	// Shared Arguments
+	private static final LiteralArgumentBuilder<ServerCommandSource> ARG_ROOT = CommandManager.literal("switchy");
+	private static final LiteralArgumentBuilder<ServerCommandSource> ARG_IMPORT = CommandManager.literal("import");
+	private static final LiteralArgumentBuilder<ServerCommandSource> ARG_MODULE = CommandManager.literal("module");
+	private static final LiteralArgumentBuilder<ServerCommandSource> ARG_MODULE_CONFIG = CommandManager.literal("config");
+	// Aliased Arguments
+	private static final RequiredArgumentBuilder<ServerCommandSource, String> ARG_SWITCH_SET_PRESET = SwitchyCommand.presetArgument(false)
+		.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.switchPreset(pl, pr, f, c.getArgument("preset", String.class))));
 	/**
 	 * Whether to register the import literal.
 	 * Internal.
 	 */
 	public static boolean IMPORT_ENABLED = false;
 
-	// Shared Arguments
-	private static final LiteralArgumentBuilder<ServerCommandSource> ARG_ROOT = CommandManager.literal("switchy");
-	private static final LiteralArgumentBuilder<ServerCommandSource> ARG_IMPORT = CommandManager.literal("import");
-	private static final LiteralArgumentBuilder<ServerCommandSource> ARG_MODULE = CommandManager.literal("module");
-	private static final LiteralArgumentBuilder<ServerCommandSource> ARG_MODULE_CONFIG = CommandManager.literal("config");
-
-	// Aliased Arguments
-	private static final RequiredArgumentBuilder<ServerCommandSource, String> ARG_SWITCH_SET_PRESET = SwitchyCommand.presetArgument(false)
-		.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.switchPreset(pl, pr, f, c.getArgument("preset", String.class))));
-
 	static {
 		SwitchyEvents.COMMAND_INIT.register((switchyRoot, helpTextRegistry) -> {
 			switchyRoot.then(CommandManager.literal("help").executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.displayHelp(pl, f))));
 			switchyRoot.then(CommandManager.literal("list").executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.listPresets(pr, f))));
 			switchyRoot.then(CommandManager.literal("new")
-					.then(CommandManager.argument("name", StringArgumentType.word())
-							.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.newPreset(pr, f, c.getArgument("name", String.class))))));
+				.then(CommandManager.argument("name", StringArgumentType.word())
+					.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.newPreset(pr, f, c.getArgument("name", String.class))))));
 			switchyRoot.then(CommandManager.literal("set")
-					.then(ARG_SWITCH_SET_PRESET));
+				.then(ARG_SWITCH_SET_PRESET));
 			switchyRoot.then(CommandManager.literal("delete")
-					.then(SwitchyCommand.presetArgument(false)
-							.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.deletePreset(pl, pr, f, c.getArgument("preset", String.class))))));
+				.then(SwitchyCommand.presetArgument(false)
+					.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.deletePreset(pl, pr, f, c.getArgument("preset", String.class))))));
 			switchyRoot.then(CommandManager.literal("rename")
-					.then(SwitchyCommand.presetArgument(true)
-							.then(CommandManager.argument("name", StringArgumentType.word())
-									.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.renamePreset(pr, f, c.getArgument("preset", String.class), c.getArgument("name", String.class)))))));
+				.then(SwitchyCommand.presetArgument(true)
+					.then(CommandManager.argument("name", StringArgumentType.word())
+						.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.renamePreset(pr, f, c.getArgument("preset", String.class), c.getArgument("name", String.class)))))));
 			switchyRoot.then(ARG_MODULE
-					.then(CommandManager.literal("help")
-							.then(SwitchyCommand.moduleArgument(null)
-									.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.displayModuleHelp(pr, f, c.getArgument("module", Identifier.class))))))
-					.then(CommandManager.literal("enable")
-							.then(SwitchyCommand.moduleArgument(false)
-									.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.enableModule(pl, pr, f, c.getArgument("module", Identifier.class))))))
-					.then(CommandManager.literal("disable")
-							.then(SwitchyCommand.moduleArgument(true)
-									.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.disableModule(pl, pr, f, c.getArgument("module", Identifier.class)))))));
+				.then(CommandManager.literal("help")
+					.then(SwitchyCommand.moduleArgument(null)
+						.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.displayModuleHelp(pr, f, c.getArgument("module", Identifier.class))))))
+				.then(CommandManager.literal("enable")
+					.then(SwitchyCommand.moduleArgument(false)
+						.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.enableModule(pl, pr, f, c.getArgument("module", Identifier.class))))))
+				.then(CommandManager.literal("disable")
+					.then(SwitchyCommand.moduleArgument(true)
+						.executes(c -> execute(c, (pl, pr, f) -> SwitchyApi.disableModule(pl, pr, f, c.getArgument("module", Identifier.class)))))));
 
 			List.of(helpText("commands.switchy.help.help", "commands.switchy.help.command"),
-					helpText("commands.switchy.list.help", "commands.switchy.list.command"),
-					helpText("commands.switchy.new.help", "commands.switchy.new.command", "commands.switchy.help.placeholder.preset"),
-					helpText("commands.switchy.set.help", "commands.switchy.set.command", "commands.switchy.help.placeholder.preset"),
-					helpText("commands.switch.help", "commands.switch.command", "commands.switchy.help.placeholder.preset"),
-					helpText("commands.switchy.delete.help", "commands.switchy.delete.command", "commands.switchy.help.placeholder.preset"),
-					helpText("commands.switchy.rename.help", "commands.switchy.rename.command", "commands.switchy.help.placeholder.preset", "commands.switchy.help.placeholder.preset"),
-					helpText("commands.switchy.module.help.help", "commands.switchy.module.help.command", "commands.switchy.help.placeholder.module"),
-					helpText("commands.switchy.module.enable.help", "commands.switchy.module.enable.command", "commands.switchy.help.placeholder.module"),
-					helpText("commands.switchy.module.disable.help", "commands.switchy.module.disable.command", "commands.switchy.help.placeholder.module")
+				helpText("commands.switchy.list.help", "commands.switchy.list.command"),
+				helpText("commands.switchy.new.help", "commands.switchy.new.command", "commands.switchy.help.placeholder.preset"),
+				helpText("commands.switchy.set.help", "commands.switchy.set.command", "commands.switchy.help.placeholder.preset"),
+				helpText("commands.switch.help", "commands.switch.command", "commands.switchy.help.placeholder.preset"),
+				helpText("commands.switchy.delete.help", "commands.switchy.delete.command", "commands.switchy.help.placeholder.preset"),
+				helpText("commands.switchy.rename.help", "commands.switchy.rename.command", "commands.switchy.help.placeholder.preset", "commands.switchy.help.placeholder.preset"),
+				helpText("commands.switchy.module.help.help", "commands.switchy.module.help.command", "commands.switchy.help.placeholder.module"),
+				helpText("commands.switchy.module.enable.help", "commands.switchy.module.enable.command", "commands.switchy.help.placeholder.module"),
+				helpText("commands.switchy.module.disable.help", "commands.switchy.module.disable.command", "commands.switchy.help.placeholder.module")
 			).forEach(t -> helpTextRegistry.accept(t, (p) -> true));
 		});
 	}

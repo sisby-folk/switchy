@@ -31,11 +31,13 @@ public class FabricTailorModuleData implements SwitchySerializable {
 	/**
 	 * The base64 encoded json skin value.
 	 */
-	@Nullable public String skinValue;
+	@Nullable
+	public String skinValue;
 	/**
 	 * The skin signature.
 	 */
-	@Nullable public String skinSignature;
+	@Nullable
+	public String skinSignature;
 
 	@Override
 	public NbtCompound toNbt() {

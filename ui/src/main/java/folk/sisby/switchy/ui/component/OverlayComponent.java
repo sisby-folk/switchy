@@ -1,13 +1,18 @@
 package folk.sisby.switchy.ui.component;
 
 import io.wispforest.owo.ui.container.VerticalFlowLayout;
-import io.wispforest.owo.ui.core.*;
+import io.wispforest.owo.ui.core.Component;
+import io.wispforest.owo.ui.core.HorizontalAlignment;
+import io.wispforest.owo.ui.core.Positioning;
+import io.wispforest.owo.ui.core.Sizing;
+import io.wispforest.owo.ui.core.Surface;
+import io.wispforest.owo.ui.core.VerticalAlignment;
 
 import java.util.function.Consumer;
 
 public class OverlayComponent<T extends Component> extends VerticalFlowLayout {
-	public Consumer<Component> dismiss;
 	public final T child;
+	public Consumer<Component> dismiss;
 
 	public OverlayComponent(HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment, T child) {
 		super(Sizing.fill(100), Sizing.fill(100));

@@ -14,7 +14,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static folk.sisby.switchy.util.Feedback.*;
+import static folk.sisby.switchy.util.Feedback.invalid;
+import static folk.sisby.switchy.util.Feedback.literal;
+import static folk.sisby.switchy.util.Feedback.success;
 
 /**
  * Utilities for interacting with the file system on the client.

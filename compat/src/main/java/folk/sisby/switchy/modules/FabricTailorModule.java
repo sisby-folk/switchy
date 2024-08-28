@@ -1,6 +1,10 @@
 package folk.sisby.switchy.modules;
 
-import folk.sisby.switchy.api.module.*;
+import folk.sisby.switchy.api.module.SwitchyModule;
+import folk.sisby.switchy.api.module.SwitchyModuleEditable;
+import folk.sisby.switchy.api.module.SwitchyModuleInfo;
+import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
+import folk.sisby.switchy.api.module.SwitchyModuleTransferable;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
 import org.samo_lego.fabrictailor.casts.TailoredPlayer;

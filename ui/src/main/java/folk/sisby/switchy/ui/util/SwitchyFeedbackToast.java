@@ -27,9 +27,9 @@ import java.util.Map;
  */
 public class SwitchyFeedbackToast implements Toast {
 	private static final Map<SwitchyFeedbackStatus, Integer> colours = Map.of(
-			SwitchyFeedbackStatus.SUCCESS, 0xA700FF00,
-			SwitchyFeedbackStatus.INVALID, 0xA7AAAA00,
-			SwitchyFeedbackStatus.FAIL, 0xA7FF0000
+		SwitchyFeedbackStatus.SUCCESS, 0xA700FF00,
+		SwitchyFeedbackStatus.INVALID, 0xA7AAAA00,
+		SwitchyFeedbackStatus.FAIL, 0xA7FF0000
 	);
 	private final SwitchyFeedbackStatus status;
 	private final List<OrderedText> textLines;

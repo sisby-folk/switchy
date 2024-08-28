@@ -20,17 +20,17 @@ import static folk.sisby.switchy.util.Feedback.helpText;
  * @since 2.0.0
  */
 public class SwitchyClientServer implements SwitchyEvents.Init {
+	public static void registerCommands(LiteralArgumentBuilder<ServerCommandSource> switchyArgument, BiConsumer<Text, Predicate<ServerPlayerEntity>> helpTextRegistry) {
+		List.of(
+			helpText("commands.switchy_client.export.help", "commands.switchy_client.export.command"),
+			helpText("commands.switchy_client.import.help", "commands.switchy_client.import.command", "commands.switchy_client.placeholder.file")
+		).forEach(t -> helpTextRegistry.accept(t, p -> ServerPlayNetworking.canSend(p, SwitchyClientServerNetworking.S2C_PRESETS)));
+	}
+
 	@Override
 	public void onInitialize() {
 		SwitchyClientServerNetworking.InitializeReceivers();
 		SwitchyClientServerNetworking.InitializeRelays();
 		SwitchyEvents.COMMAND_INIT.register(SwitchyClientServer::registerCommands);
-	}
-
-	public static void registerCommands(LiteralArgumentBuilder<ServerCommandSource> switchyArgument, BiConsumer<Text, Predicate<ServerPlayerEntity>> helpTextRegistry) {
-		List.of(
-				helpText("commands.switchy_client.export.help", "commands.switchy_client.export.command"),
-				helpText("commands.switchy_client.import.help", "commands.switchy_client.import.command", "commands.switchy_client.placeholder.file")
-		).forEach(t -> helpTextRegistry.accept(t, p -> ServerPlayNetworking.canSend(p, SwitchyClientServerNetworking.S2C_PRESETS)));
 	}
 }

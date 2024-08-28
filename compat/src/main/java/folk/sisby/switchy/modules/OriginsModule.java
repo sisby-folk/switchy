@@ -1,7 +1,11 @@
 package folk.sisby.switchy.modules;
 
 import folk.sisby.switchy.SwitchyCompat;
-import folk.sisby.switchy.api.module.*;
+import folk.sisby.switchy.api.module.SwitchyModule;
+import folk.sisby.switchy.api.module.SwitchyModuleEditable;
+import folk.sisby.switchy.api.module.SwitchyModuleInfo;
+import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
+import folk.sisby.switchy.api.module.SwitchyModuleTransferable;
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.origin.Origin;
 import io.github.apace100.origins.origin.OriginLayer;
@@ -45,6 +49,11 @@ public class OriginsModule implements SwitchyModule, SwitchyModuleTransferable {
 	 * The NBT key where the origin ID is stored in each list item.
 	 */
 	public static final String KEY_ORIGIN = "Origin";
+	/**
+	 * The origins per layer.
+	 */
+	@Nullable
+	public Map<OriginLayer, Origin> origins;
 
 	/**
 	 * Registers the module
@@ -60,11 +69,6 @@ public class OriginsModule implements SwitchyModule, SwitchyModuleTransferable {
 				.withDeletionWarning(translatable("switchy.modules.switchy.origins.warning"))
 		);
 	}
-
-	/**
-	 * The origins per layer.
-	 */
-	@Nullable public Map<OriginLayer, Origin> origins;
 
 	private static void setOrigin(ServerPlayerEntity player, OriginLayer layer, Origin origin) {
 		OriginComponent component = ModComponents.ORIGIN.get(player);

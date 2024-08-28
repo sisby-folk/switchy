@@ -1,14 +1,14 @@
 package folk.sisby.switchy.client;
 
-import folk.sisby.switchy.client.api.SwitchyClientEvents;
 import com.mojang.datafixers.util.Pair;
+import folk.sisby.switchy.client.api.SwitchyClientEvents;
+import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.entries.FiguraEvent;
 import org.figuramc.figura.entries.annotations.FiguraEventPlugin;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.event.LuaEvent;
 import org.figuramc.figura.lua.docs.LuaFieldDoc;
-import org.figuramc.figura.avatar.AvatarManager;
-import org.figuramc.figura.avatar.Avatar;
 
 import java.util.Collection;
 import java.util.List;
@@ -21,11 +21,6 @@ public class SwitchyFiguraEvents implements FiguraEvent {
 	@LuaWhitelist
 	@LuaFieldDoc("events.switchy.switch")
 	public static LuaEvent SWITCH = new LuaEvent();
-
-	@Override
-	public String getID() {
-		return "switchy";
-	}
 
 	static {
 		SwitchyClientEvents.SWITCH.register((event) -> {
@@ -42,6 +37,11 @@ public class SwitchyFiguraEvents implements FiguraEvent {
 					avatar.run(SWITCH, avatar.tick, newPreset, oldPreset, enabledModules);
 			}
 		});
+	}
+
+	@Override
+	public String getID() {
+		return "switchy";
 	}
 
 	@Override

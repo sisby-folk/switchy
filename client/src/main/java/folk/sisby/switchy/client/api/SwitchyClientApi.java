@@ -27,7 +27,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import static folk.sisby.switchy.SwitchyClientServerNetworking.*;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_IMPORT;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_IMPORT_CONFIRM;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_PRESETS_DELETE;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_PRESETS_MODULE_DISABLE;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_PRESETS_MODULE_ENABLE;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_PRESETS_NEW;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_PRESETS_RENAME;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_REQUEST_CLIENT_PRESETS;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_REQUEST_PRESETS;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.C2S_SWITCH;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.KEY_IMPORT_COMMAND;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.KEY_IMPORT_EXCLUDE;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.KEY_IMPORT_INCLUDE;
 
 /**
  * Client-side API for interacting with the client player's presets on the server.

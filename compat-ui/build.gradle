@@ -9,7 +9,7 @@ dependencies {
 
 	modCompileOnly libs.calio
 	modCompileOnly(libs.origins) {
-		exclude group: 	"dev.onyxstudios.cardinal-components-api"
+		exclude group: "dev.onyxstudios.cardinal-components-api"
 		exclude module: "apoli"
 	}
 }

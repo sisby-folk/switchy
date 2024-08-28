@@ -22,11 +22,6 @@ import java.util.function.Consumer;
  */
 public class SwitchyClientEvents {
 	/**
-	 * A cached copy of the most recent switch event for use in case of disconnects.
-	 */
-	public static @Nullable SwitchySwitchEvent PREVIOUS_SWITCH_EVENT = null;
-
-	/**
 	 * @see Init
 	 */
 	public static final Event<Init> INIT = EventFactory.createArrayBacked(Init.class, callbacks -> () -> {
@@ -34,7 +29,26 @@ public class SwitchyClientEvents {
 			callback.onInitialize();
 		}
 	});
-
+	/**
+	 * @see CommandInit
+	 */
+	public static final Event<CommandInit> COMMAND_INIT = EventFactory.createArrayBacked(CommandInit.class, callbacks -> (switchyArgument, helpTextRegistry) -> {
+		for (CommandInit callback : callbacks) {
+			callback.registerCommands(switchyArgument, helpTextRegistry);
+		}
+	});
+	/**
+	 * @see CommandInitImport
+	 */
+	public static final Event<CommandInitImport> COMMAND_INIT_IMPORT = EventFactory.createArrayBacked(CommandInitImport.class, callbacks -> (importArgument, helpTextRegistry) -> {
+		for (CommandInitImport callback : callbacks) {
+			callback.registerCommands(importArgument, helpTextRegistry);
+		}
+	});
+	/**
+	 * A cached copy of the most recent switch event for use in case of disconnects.
+	 */
+	public static @Nullable SwitchySwitchEvent PREVIOUS_SWITCH_EVENT = null;
 	/**
 	 * @see Switch
 	 */
@@ -45,23 +59,9 @@ public class SwitchyClientEvents {
 		PREVIOUS_SWITCH_EVENT = event;
 	});
 
-	/**
-	 * @see CommandInit
-	 */
-	public static final Event<CommandInit> COMMAND_INIT = EventFactory.createArrayBacked(CommandInit.class, callbacks -> (switchyArgument, helpTextRegistry) -> {
-		for (CommandInit callback : callbacks) {
-			callback.registerCommands(switchyArgument, helpTextRegistry);
-		}
-	});
-
-	/**
-	 * @see CommandInitImport
-	 */
-	public static final Event<CommandInitImport> COMMAND_INIT_IMPORT = EventFactory.createArrayBacked(CommandInitImport.class, callbacks -> (importArgument, helpTextRegistry) -> {
-		for (CommandInitImport callback : callbacks) {
-			callback.registerCommands(importArgument, helpTextRegistry);
-		}
-	});
+	public static void registerEntrypointListeners() {
+		FabricLoader.getInstance().getEntrypoints("switchy_client", Init.class).forEach(INIT::register);
+	}
 
 	/**
 	 * Occurs when Switchy Client initializes.
@@ -120,9 +120,5 @@ public class SwitchyClientEvents {
 		 * @param event The switch event that has occurred.
 		 */
 		void onSwitch(SwitchySwitchEvent event);
-	}
-
-	public static void registerEntrypointListeners() {
-		FabricLoader.getInstance().getEntrypoints("switchy_client", Init.class).forEach(INIT::register);
 	}
 }

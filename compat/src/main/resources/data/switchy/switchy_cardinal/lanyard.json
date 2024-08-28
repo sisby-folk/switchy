@@ -1,10 +1,10 @@
 {
-  "default": true,
-  "editable": "ALLOWED",
-  "ifModsLoaded": [
-    "lanyard"
-  ],
-  "components": [
-    "lanyard:profiles"
-  ]
+	"default": true,
+	"editable": "ALLOWED",
+	"ifModsLoaded": [
+		"lanyard"
+	],
+	"components": [
+		"lanyard:profiles"
+	]
 }

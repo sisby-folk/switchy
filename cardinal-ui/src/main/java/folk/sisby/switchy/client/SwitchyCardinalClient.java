@@ -24,6 +24,7 @@ public class SwitchyCardinalClient implements SwitchyClientEvents.Init {
 	 * The switchy cardinal ui logger.
 	 */
 	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
+
 	@Override
 	public void onInitialize() {
 		if (FabricLoader.getInstance().isModLoaded("cardinal-components-base") && FabricLoader.getInstance().isModLoaded("cardinal-components-entity")) {
