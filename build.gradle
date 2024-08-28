@@ -11,8 +11,6 @@ plugins {
 allprojects {
 	apply plugin: "maven-publish"
 	apply plugin: "fabric-loom"
-	apply plugin: "com.github.breadmoirai.github-release"
-	apply plugin: "com.modrinth.minotaur"
 
 	version = "$baseVersion+$branch"
 	archivesBaseName = project == rootProject ? slug : "${slug}-${project.name}"
@@ -150,7 +148,6 @@ dependencies {
 	modLocalRuntime libs.serverTranslationsApi
 }
 
-
 githubRelease {
 	token = "$System.env.GITHUB_TOKEN"
 	owner = project.user
@@ -177,12 +174,11 @@ modrinth {
 		required.version libs.fapi.get().getName(), libs.versions.fapi.get()
 		optional.version libs.owo.get().getName(), libs.versions.owo.get()
 		optional.version libs.drogtor.get().getName(), libs.versions.drogtor.get()
-		optional.version libs.fabrictailor.get().getName(), libs.versions.fabrictailor.get()
-		optional.version libs.pehkui.get().getName(), libs.versions.pehkui.get()
-		optional.version libs.origins.get().getName().replace("-fabric", ""), libs.versions.origins.get()
-		optional.version libs.fabrication.get().getName(), libs.versions.fabrication.get()
 		optional.version libs.styledNicknames.get().getName(), libs.versions.styledNicknames.get()
-		optional.version libs.figura.get().getName(), libs.versions.figura.get()
+		optional.version libs.fabrictailor.get().getName(), libs.versions.fabrictailor.get()
+		optional.version libs.origins.get().getName().replace("-fabric", ""), libs.versions.origins.get().replace("v", "")
+		optional.project libs.pehkui.get().getName()
+		optional.project libs.figura.get().getName()
 	}
 }
 
