@@ -11,8 +11,6 @@ plugins {
 allprojects {
 	apply plugin: "maven-publish"
 	apply plugin: "fabric-loom"
-	apply plugin: "com.github.breadmoirai.github-release"
-	apply plugin: "com.modrinth.minotaur"
 
 	version = "$baseVersion+$branch"
 	archivesBaseName = project == rootProject ? slug : "${slug}-${project.name}"
@@ -129,8 +127,8 @@ allprojects {
 		publications {
 			mavenJava(MavenPublication) {
 				from components.java
-				artifactId "switchy" + '-' + project.name
-				version "$project.baseVersion+$project.branch"
+				artifactId "${rootProject.slug}-${project.name}"
+				version "${rootProject.baseVersion}+${rootProject.branch}"
 			}
 		}
 	}
@@ -149,7 +147,6 @@ dependencies {
 	modLocalRuntime libs.serverTranslationsApi
 }
 
-
 githubRelease {
 	token = "$System.env.GITHUB_TOKEN"
 	owner = project.user
@@ -160,7 +157,7 @@ githubRelease {
 	releaseName = "v${baseVersion}"
 	allowUploadToExisting = true
 	generateReleaseNotes = true
-	body = !file("CHANGELOG.md").exists() ? "" : rootProject.file("CHANGELOG.md").text
+	body = !rootProject.file("CHANGELOG.md").exists() ? "" : rootProject.file("CHANGELOG.md").text
 }
 
 modrinth {
@@ -170,17 +167,16 @@ modrinth {
 	uploadFile = remapJar
 	gameVersions = compatibleVersions.split(", ").toList()
 	loaders = compatibleLoaders.split(", ").toList()
-	changelog = !file("CHANGELOG.md").exists() ? "" : rootProject.file("CHANGELOG.md").text + "\n\nChangelog: https://github.com/${user}/${slug}/releases/tag/v${baseVersion}+${tagBranch}"
+	changelog = !rootProject.file("CHANGELOG.md").exists() ? "" : rootProject.file("CHANGELOG.md").text + "\n\nChangelog: https://github.com/${user}/${slug}/releases/tag/v${baseVersion}+${tagBranch}"
 	syncBodyFrom = rootProject.file("README.md").text
 	dependencies {
 		required.version libs.fapi.get().getName(), libs.versions.fapi.get()
 		optional.version libs.owo.get().getName(), libs.versions.owo.get()
-		optional.version libs.fabrictailor.get().getName(), libs.versions.fabrictailor.get()
-		optional.version libs.pehkui.get().getName(), libs.versions.pehkui.get()
-		optional.version libs.origins.get().getName(), libs.versions.origins.get()
-		optional.version libs.fabrication.get().getName(), libs.versions.fabrication.get()
 		optional.version libs.styledNicknames.get().getName(), libs.versions.styledNicknames.get()
-		optional.version libs.figura.get().getName(), libs.versions.figura.get()
+		optional.version libs.fabrictailor.get().getName(), libs.versions.fabrictailor.get()
+		optional.version libs.origins.get().getName().replace("-fabric", ""), libs.versions.origins.get().replace("v", "")
+		optional.project libs.pehkui.get().getName()
+		optional.project libs.figura.get().getName()
 	}
 }
 
