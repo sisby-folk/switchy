@@ -19,7 +19,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(ServerPlayerEntity.class)
 public abstract class MixinServerPlayerEntity implements SwitchyPlayer {
-	@Unique private SwitchyPresets switchy$switchyPresets;
+	@Unique
+	private SwitchyPresets switchy$switchyPresets;
 
 	@SuppressWarnings({"unused", "DataFlowIssue"})
 	@Inject(at = @At("TAIL"), method = "writeCustomDataToNbt(Lnet/minecraft/nbt/NbtCompound;)V")

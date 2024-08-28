@@ -1,18 +1,18 @@
 package folk.sisby.switchy.api.modules;
 
-import net.minecraft.registry.RegistryWrapper;
-import org.ladysnake.cca.api.v3.component.Component;
-import org.ladysnake.cca.api.v3.component.ComponentKey;
-import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import folk.sisby.switchy.SwitchyCardinal;
 import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.api.module.SwitchyModuleTransferable;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
+import org.ladysnake.cca.api.v3.component.Component;
+import org.ladysnake.cca.api.v3.component.ComponentKey;
+import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -97,8 +97,8 @@ public class CardinalSerializerModule extends CardinalSerializerData implements 
 	}
 
 	private record ComponentConfig<T1 extends Component>(ComponentKey<T1> registryKey,
-														 BiConsumer<ComponentKey<T1>, ServerPlayerEntity> preApplyClear,
-														 BiConsumer<ComponentKey<T1>, ServerPlayerEntity> postApplySync) {
+	                                                     BiConsumer<ComponentKey<T1>, ServerPlayerEntity> preApplyClear,
+	                                                     BiConsumer<ComponentKey<T1>, ServerPlayerEntity> postApplySync) {
 		void invokePreApplyClear(ServerPlayerEntity player) {
 			preApplyClear.accept(registryKey, player);
 		}

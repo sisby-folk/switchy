@@ -34,7 +34,15 @@ public class PehkuiModule implements SwitchyModule {
 	/**
 	 * The config object for the pehkui module, containing the current state of {@code /config/switchy/pehkui.toml}.
 	 */
-		public static final PehkuiModuleConfig CONFIG = PehkuiModuleConfig.createToml(FabricLoader.getInstance().getConfigDir(), Switchy.ID, "pehkui", PehkuiModuleConfig.class);
+	public static final PehkuiModuleConfig CONFIG = PehkuiModuleConfig.createToml(FabricLoader.getInstance().getConfigDir(), Switchy.ID, "pehkui", PehkuiModuleConfig.class);
+	/**
+	 * The value of each ScaleType.
+	 */
+	public final Map<ScaleType, @Nullable Float> scaleValues = new HashMap<>();
+
+	PehkuiModule() {
+		CONFIG.scaleTypes.forEach(id -> scaleValues.put(ScaleRegistries.SCALE_TYPES.get(Identifier.tryParse(id)), null));
+	}
 
 	/**
 	 * Registers the module
@@ -49,15 +57,6 @@ public class PehkuiModule implements SwitchyModule {
 				.withDescriptionWhenDisabled(translatable("switchy.modules.switchy.pehkui.disabled"))
 				.withDeletionWarning(translatable("switchy.modules.switchy.pehkui.warning"))
 		);
-	}
-
-	/**
-	 * The value of each ScaleType.
-	 */
-	public final Map<ScaleType, @Nullable Float> scaleValues = new HashMap<>();
-
-	PehkuiModule() {
-		CONFIG.scaleTypes.forEach(id -> scaleValues.put(ScaleRegistries.SCALE_TYPES.get(Identifier.tryParse(id)), null));
 	}
 
 	@Override

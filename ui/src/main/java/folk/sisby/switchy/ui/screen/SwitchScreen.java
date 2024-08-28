@@ -13,7 +13,9 @@ import io.wispforest.owo.ui.base.BaseOwoScreen;
 import io.wispforest.owo.ui.component.ButtonComponent;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.component.LabelComponent;
-import io.wispforest.owo.ui.container.*;
+import io.wispforest.owo.ui.container.FlowLayout;
+import io.wispforest.owo.ui.container.GridLayout;
+import io.wispforest.owo.ui.container.ScrollContainer;
 import io.wispforest.owo.ui.core.Color;
 import io.wispforest.owo.ui.core.Component;
 import io.wispforest.owo.ui.core.HorizontalAlignment;
@@ -132,25 +134,6 @@ public class SwitchScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		this.uiAdapter.rootComponent.unlock();
 	}
 
-	public class SwitcherTitleFlow extends FlowLayout {
-		protected SwitcherTitleFlow() {
-			super(Sizing.content(), Sizing.content(), Algorithm.HORIZONTAL);
-			this.verticalAlignment(VerticalAlignment.CENTER);
-			this.gap(10);
-
-			LabelComponent screenLabel = Components.label(Feedback.translatable("screen.switchy.switch.title"));
-
-			ButtonComponent manageButton = Components.button(Feedback.translatable("screen.switchy.switch.manage"), b -> {
-				ManageScreen managementScreen = new ManageScreen();
-				if (client != null) client.setScreen(managementScreen);
-				managementScreen.updatePresets(presets);
-			});
-
-			this.child(screenLabel);
-			this.child((Component) manageButton);
-		}
-	}
-
 	public static class SwitcherScrollContainer extends ScrollContainer<SwitcherFlow> {
 		protected SwitcherScrollContainer() {
 			super(ScrollDirection.VERTICAL, Sizing.content(), Sizing.fill(80), new SwitcherFlow());
@@ -207,6 +190,25 @@ public class SwitchScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 				this.child(child, i % rows, i / rows);
 				i++;
 			}
+		}
+	}
+
+	public class SwitcherTitleFlow extends FlowLayout {
+		protected SwitcherTitleFlow() {
+			super(Sizing.content(), Sizing.content(), Algorithm.HORIZONTAL);
+			this.verticalAlignment(VerticalAlignment.CENTER);
+			this.gap(10);
+
+			LabelComponent screenLabel = Components.label(Feedback.translatable("screen.switchy.switch.title"));
+
+			ButtonComponent manageButton = Components.button(Feedback.translatable("screen.switchy.switch.manage"), b -> {
+				ManageScreen managementScreen = new ManageScreen();
+				if (client != null) client.setScreen(managementScreen);
+				managementScreen.updatePresets(presets);
+			});
+
+			this.child(screenLabel);
+			this.child((Component) manageButton);
 		}
 	}
 }

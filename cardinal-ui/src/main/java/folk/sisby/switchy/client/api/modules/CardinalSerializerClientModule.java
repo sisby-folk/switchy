@@ -96,7 +96,8 @@ public class CardinalSerializerClientModule extends CardinalSerializerData imple
 							});
 						}
 					});
-				} catch (CommandSyntaxException | ClassCastException ignored) {}
+				} catch (CommandSyntaxException | ClassCastException ignored) {
+				}
 			});
 			return items;
 		}
@@ -104,7 +105,7 @@ public class CardinalSerializerClientModule extends CardinalSerializerData imple
 		public boolean failsCondition(NbtCompound nbt) {
 			if (conditionPath != null) {
 				try {
-					return conditionPath.get(nbt).get(0) instanceof NbtByte nb && nb.byteValue() == 0;
+					return conditionPath.get(nbt).getFirst() instanceof NbtByte nb && nb.byteValue() == 0;
 				} catch (CommandSyntaxException | IndexOutOfBoundsException ignored) {
 				}
 			}

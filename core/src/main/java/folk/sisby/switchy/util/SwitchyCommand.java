@@ -12,8 +12,6 @@ import folk.sisby.switchy.api.presets.SwitchyPresetData;
 import folk.sisby.switchy.api.presets.SwitchyPresets;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.IdentifierArgumentType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -23,7 +21,6 @@ import net.minecraft.util.Identifier;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static folk.sisby.switchy.Switchy.LOGGER;
 import static folk.sisby.switchy.util.Feedback.invalid;

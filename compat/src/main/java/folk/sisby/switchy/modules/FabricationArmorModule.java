@@ -9,6 +9,7 @@ import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -20,9 +21,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
-import net.fabricmc.loader.api.FabricLoader;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 
 import static folk.sisby.switchy.util.Feedback.translatable;
 
@@ -44,6 +48,10 @@ public class FabricationArmorModule implements SwitchyModule {
 	 * The NBT key where the list of EquipmentSlots to hide is stored.
 	 */
 	public static final String KEY_SUPPRESSED_SLOTS = "suppressedSlots";
+	/**
+	 * The NBT key where the list of EquipmentSlots to hide is stored.
+	 */
+	private @Nullable Set<EquipmentSlot> suppressedSlots;
 
 	/**
 	 * Registers the module
@@ -60,11 +68,6 @@ public class FabricationArmorModule implements SwitchyModule {
 				.withApplyDependencies(FabricLoader.getInstance().isModLoaded("fabrictailor") ? Set.of(FabricTailorModule.ID) : Set.of())
 		);
 	}
-
-	/**
-	 * The NBT key where the list of EquipmentSlots to hide is stored.
-	 */
-	private @Nullable Set<EquipmentSlot> suppressedSlots;
 
 	@Override
 	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {

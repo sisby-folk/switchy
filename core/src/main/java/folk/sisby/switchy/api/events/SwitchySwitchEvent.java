@@ -22,7 +22,7 @@ import java.util.UUID;
  * @since 1.8.2
  */
 public record SwitchySwitchEvent(UUID player, @Nullable String currentPreset, @Nullable String previousPreset,
-								 List<String> enabledModules) {
+                                 List<String> enabledModules) {
 	private static final String KEY_PLAYER = "player";
 	private static final String KEY_CURRENT_PRESET = "currentName";
 	private static final String KEY_PREVIOUS_PRESET = "previousName";

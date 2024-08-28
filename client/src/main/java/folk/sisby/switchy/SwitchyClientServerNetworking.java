@@ -1,6 +1,10 @@
 package folk.sisby.switchy;
 
-import folk.sisby.switchy.api.*;
+import folk.sisby.switchy.api.SwitchyApi;
+import folk.sisby.switchy.api.SwitchyEvents;
+import folk.sisby.switchy.api.SwitchyFeedback;
+import folk.sisby.switchy.api.SwitchyFeedbackStatus;
+import folk.sisby.switchy.api.SwitchyPlayer;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.presets.SwitchyPresets;
 import folk.sisby.switchy.packet.C2SDeletePreset;
@@ -35,7 +39,10 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static folk.sisby.switchy.api.module.SwitchyModuleRegistry.getEditable;
-import static folk.sisby.switchy.util.Feedback.*;
+import static folk.sisby.switchy.util.Feedback.command;
+import static folk.sisby.switchy.util.Feedback.getIdListText;
+import static folk.sisby.switchy.util.Feedback.invalid;
+import static folk.sisby.switchy.util.Feedback.warn;
 
 /**
  * Server-side network handling for client interactions with Switchy.

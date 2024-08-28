@@ -1,7 +1,12 @@
 package folk.sisby.switchy;
 
 import folk.sisby.switchy.api.SwitchyEvents;
-import folk.sisby.switchy.modules.*;
+import folk.sisby.switchy.modules.ApoliModule;
+import folk.sisby.switchy.modules.FabricTailorModule;
+import folk.sisby.switchy.modules.FabricationArmorModule;
+import folk.sisby.switchy.modules.OriginsModule;
+import folk.sisby.switchy.modules.PehkuiModule;
+import folk.sisby.switchy.modules.StyledNicknamesModule;
 import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

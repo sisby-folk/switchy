@@ -26,9 +26,9 @@ import java.util.Map;
  */
 public class SwitchyFeedbackToast implements Toast {
 	private static final Map<SwitchyFeedbackStatus, Integer> colours = Map.of(
-			SwitchyFeedbackStatus.SUCCESS, 0xA700FF00,
-			SwitchyFeedbackStatus.INVALID, 0xA7AAAA00,
-			SwitchyFeedbackStatus.FAIL, 0xA7FF0000
+		SwitchyFeedbackStatus.SUCCESS, 0xA700FF00,
+		SwitchyFeedbackStatus.INVALID, 0xA7AAAA00,
+		SwitchyFeedbackStatus.FAIL, 0xA7FF0000
 	);
 	private final SwitchyFeedbackStatus status;
 	private final List<OrderedText> textLines;
@@ -69,7 +69,7 @@ public class SwitchyFeedbackToast implements Toast {
 		context.fill(0, 0, getWidth(), getHeight(), 0x77000000);
 		outline(context, 0, 0, getWidth(), getHeight(), colours.get(status));
 
-		OrderedText header = textLines.get(0);
+		OrderedText header = textLines.getFirst();
 		context.drawText(textRenderer, header, ((width - textRenderer.getWidth(header)) >> 1) - 7, 4, 0xFFFFFF, true);
 
 		for (int i = 1; i < textLines.size(); i++) {

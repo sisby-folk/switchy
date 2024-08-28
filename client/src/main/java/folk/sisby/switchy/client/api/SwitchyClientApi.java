@@ -21,7 +21,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus;
@@ -35,7 +34,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import static folk.sisby.switchy.SwitchyClientServerNetworking.*;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.KEY_IMPORT_COMMAND;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.KEY_IMPORT_EXCLUDE;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.KEY_IMPORT_INCLUDE;
 
 /**
  * Client-side API for interacting with the client player's presets on the server.

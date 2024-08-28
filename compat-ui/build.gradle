@@ -9,7 +9,7 @@ dependencies {
 
 	modCompileOnly libs.calio
 	modCompileOnly(libs.origins) {
-		exclude group: 	"org.ladysnake.cardinal-components-api"
+		exclude group: "org.ladysnake.cardinal-components-api"
 		exclude module: "apoli"
 	}
 }

@@ -37,19 +37,19 @@ public class SwitchyClientCommands {
 
 	static {
 		SwitchyClientEvents.COMMAND_INIT_IMPORT.register(((importArgument, helpTextRegistry) -> importArgument.then(ClientCommandManager.argument("file", NbtFileArgumentType.create(SwitchyClientApi.getExportFolder()))
-				.executes(c -> executeClient(c, (command, player) -> importPresets(command, player, c.getArgument("file", NbtCompound.class), List.of(), List.of())))
-				.then(ClientCommandManager.argument("excludeModules", IdentifiersFromNbtArgArgumentType.create("file", null, "enabled"))
-						.executes(c -> executeClient(c, (command, player) -> importPresets(command, player, c.getArgument("file", NbtCompound.class), c.getArgument("excludeModules", List.class), List.of())))
-						.then(ClientCommandManager.argument("opModules", IdentifiersFromNbtArgArgumentType.create("file", "excludeModules", "enabled"))
-								.executes(c -> executeClient(c, (command, player) -> importPresets(command, player, c.getArgument("file", NbtCompound.class), c.getArgument("excludeModules", List.class), c.getArgument("opModules", List.class))))
-						)
+			.executes(c -> executeClient(c, (command, player) -> importPresets(command, player, c.getArgument("file", NbtCompound.class), List.of(), List.of())))
+			.then(ClientCommandManager.argument("excludeModules", IdentifiersFromNbtArgArgumentType.create("file", null, "enabled"))
+				.executes(c -> executeClient(c, (command, player) -> importPresets(command, player, c.getArgument("file", NbtCompound.class), c.getArgument("excludeModules", List.class), List.of())))
+				.then(ClientCommandManager.argument("opModules", IdentifiersFromNbtArgArgumentType.create("file", "excludeModules", "enabled"))
+					.executes(c -> executeClient(c, (command, player) -> importPresets(command, player, c.getArgument("file", NbtCompound.class), c.getArgument("excludeModules", List.class), c.getArgument("opModules", List.class))))
 				)
+			)
 		)));
 		SwitchyClientEvents.COMMAND_INIT.register(((rootArgument, helpTextRegistry) -> rootArgument.then(ClientCommandManager.literal("export")
-				.executes(c -> executeClient(c, (command, player) -> exportPresets(player, List.of())))
-				.then(ClientCommandManager.argument("excludeModules", IdentifiersArgumentType.create())
-						.executes(c -> executeClient(c, (command, player) -> exportPresets(player, c.getArgument("excludeModules", List.class))))
-				)
+			.executes(c -> executeClient(c, (command, player) -> exportPresets(player, List.of())))
+			.then(ClientCommandManager.argument("excludeModules", IdentifiersArgumentType.create())
+				.executes(c -> executeClient(c, (command, player) -> exportPresets(player, c.getArgument("excludeModules", List.class))))
+			)
 		)));
 	}
 

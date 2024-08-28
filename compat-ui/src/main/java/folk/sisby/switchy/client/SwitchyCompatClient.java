@@ -25,6 +25,7 @@ public class SwitchyCompatClient implements SwitchyClientEvents.Init {
 	 * The switchy compat ui logger.
 	 */
 	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
+
 	@Override
 	public void onInitialize() {
 		if (FabricLoader.getInstance().isModLoaded("owo")) {

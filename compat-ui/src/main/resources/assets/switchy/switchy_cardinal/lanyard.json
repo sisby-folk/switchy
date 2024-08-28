@@ -1,8 +1,9 @@
 {
-  "icon": {
-    "id": "lanyard:lanyard_item"
-  },
-  "values": [
-    "lanyard:profiles.Lanyard_Profiles[0].Name", "lanyard:profiles.Lanyard_Profiles[0].Pronouns"
-  ]
+	"icon": {
+		"id": "lanyard:lanyard_item"
+	},
+	"values": [
+		"lanyard:profiles.Lanyard_Profiles[0].Name",
+		"lanyard:profiles.Lanyard_Profiles[0].Pronouns"
+	]
 }

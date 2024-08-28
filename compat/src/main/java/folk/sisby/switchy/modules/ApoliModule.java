@@ -21,7 +21,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static folk.sisby.switchy.util.Feedback.translatable;
 
@@ -40,8 +44,7 @@ public class ApoliModule implements SwitchyModule {
 	/**
 	 * The config object for the apoli module, containing the current state of {@code /config/switchy/apoli.toml}.
 	 */
-		public static final ApoliModuleConfig CONFIG = ApoliModuleConfig.createToml(FabricLoader.getInstance().getConfigDir(), Switchy.ID, "apoli", ApoliModuleConfig.class);
-	private static final Identifier COMMAND_SOURCE = Identifier.of("apoli", "command");
+	public static final ApoliModuleConfig CONFIG = ApoliModuleConfig.createToml(FabricLoader.getInstance().getConfigDir(), Switchy.ID, "apoli", ApoliModuleConfig.class);
 	/**
 	 * The NBT key where the list of serialized apoli:command powers are stored.
 	 */
@@ -50,6 +53,15 @@ public class ApoliModule implements SwitchyModule {
 	 * The NBT key where the list of power data is stored.
 	 */
 	public static final String KEY_POWER_DATA_LIST = "PowerData";
+	private static final Identifier COMMAND_SOURCE = Identifier.of("apoli", "command");
+	/**
+	 * The NBT data for each power.
+	 */
+	public final Map<PowerType<?>, NbtElement> powerNbt = new HashMap<>();
+	/**
+	 * Powers added by commands allowed to be switched
+	 */
+	public List<PowerType<?>> commandPowers = null;
 
 	/**
 	 * Registers the module
@@ -65,15 +77,6 @@ public class ApoliModule implements SwitchyModule {
 			.withDeletionWarning(translatable("switchy.modules.switchy.apoli.warning"))
 			.withApplyDependencies(Set.of(OriginsModule.ID)));
 	}
-
-	/**
-	 * Powers added by commands allowed to be switched
-	 */
-	public List<PowerType<?>> commandPowers = null;
-	/**
-	 * The NBT data for each power.
-	 */
-	public final Map<PowerType<?>, NbtElement> powerNbt = new HashMap<>();
 
 	private static void clearInventories(List<InventoryPower> powers) {
 		powers.forEach(InventoryPower::clear);

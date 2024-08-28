@@ -10,12 +10,12 @@ import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.api.modules.CardinalSerializerModule;
 import folk.sisby.switchy.util.Feedback;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import org.jetbrains.annotations.NotNull;
-import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.HashSet;
 import java.util.Map;

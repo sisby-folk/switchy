@@ -20,7 +20,18 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static folk.sisby.switchy.SwitchyCommands.HISTORY;
-import static folk.sisby.switchy.util.Feedback.*;
+import static folk.sisby.switchy.util.Feedback.FORMAT_INFO;
+import static folk.sisby.switchy.util.Feedback.FORMAT_SUCCESS;
+import static folk.sisby.switchy.util.Feedback.command;
+import static folk.sisby.switchy.util.Feedback.getHighlightedListText;
+import static folk.sisby.switchy.util.Feedback.getIdListText;
+import static folk.sisby.switchy.util.Feedback.info;
+import static folk.sisby.switchy.util.Feedback.invalid;
+import static folk.sisby.switchy.util.Feedback.invalidTry;
+import static folk.sisby.switchy.util.Feedback.literal;
+import static folk.sisby.switchy.util.Feedback.success;
+import static folk.sisby.switchy.util.Feedback.translatableWithStyle;
+import static folk.sisby.switchy.util.Feedback.warn;
 
 /**
  * API for interacting with player presets.
