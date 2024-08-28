@@ -74,15 +74,15 @@ public final class SwitchyModuleInfo {
 	 */
 	public static SwitchyModuleInfo fromNbt(NbtCompound nbt) {
 		return new SwitchyModuleInfo(
-				nbt.getBoolean(KEY_DEFAULT),
-				SwitchyModuleEditable.valueOf(nbt.getString(KEY_EDITABLE)),
-				MutableText.Serializer.fromJson(nbt.getString(KEY_DESCRIPTION))
+			nbt.getBoolean(KEY_DEFAULT),
+			SwitchyModuleEditable.valueOf(nbt.getString(KEY_EDITABLE)),
+			MutableText.Serializer.fromJson(nbt.getString(KEY_DESCRIPTION))
 		)
-				.withDescriptionWhenEnabled(MutableText.Serializer.fromJson(nbt.getString(KEY_WHEN_ENABLED)))
-				.withDescriptionWhenDisabled(MutableText.Serializer.fromJson(nbt.getString(KEY_WHEN_DISABLED)))
-				.withApplyDependencies(nbt.getList(KEY_APPLY_DEPENDENCIES, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).collect(Collectors.toSet()))
-				.withUniqueIds(nbt.getList(KEY_UNIQUE_IDS, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).collect(Collectors.toSet()))
-				.withDeletionWarning(MutableText.Serializer.fromJson(nbt.getString(KEY_DELETION_WARNING)));
+			.withDescriptionWhenEnabled(MutableText.Serializer.fromJson(nbt.getString(KEY_WHEN_ENABLED)))
+			.withDescriptionWhenDisabled(MutableText.Serializer.fromJson(nbt.getString(KEY_WHEN_DISABLED)))
+			.withApplyDependencies(nbt.getList(KEY_APPLY_DEPENDENCIES, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).collect(Collectors.toSet()))
+			.withUniqueIds(nbt.getList(KEY_UNIQUE_IDS, NbtElement.STRING_TYPE).stream().map(NbtElement::asString).map(Identifier::tryParse).collect(Collectors.toSet()))
+			.withDeletionWarning(MutableText.Serializer.fromJson(nbt.getString(KEY_DELETION_WARNING)));
 	}
 
 	/**
@@ -302,6 +302,7 @@ public final class SwitchyModuleInfo {
 
 	/**
 	 * Gets the configuration object that can be used to store player-level data for the module, like settings.
+	 *
 	 * @return a supplier for a player-scoped configuration object
 	 */
 	public Supplier<SwitchySerializable> moduleConfig() {

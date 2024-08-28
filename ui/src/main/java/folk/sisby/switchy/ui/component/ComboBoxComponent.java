@@ -13,11 +13,10 @@ import java.util.function.Consumer;
 
 public class ComboBoxComponent<T> extends DropdownComponent {
 	public final Map<Text, T> options = new HashMap<>();
-	private final Consumer<T> onUpdate;
-	private final FlowLayout contextParent;
-
 	public final DropdownComponent contextMenu;
 	public final Button openMenuButton;
+	private final Consumer<T> onUpdate;
+	private final FlowLayout contextParent;
 
 	public ComboBoxComponent(Sizing horizontalSizing, FlowLayout contextParent, Consumer<T> onUpdate) {
 		super(horizontalSizing);

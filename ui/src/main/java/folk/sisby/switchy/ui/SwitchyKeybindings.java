@@ -23,10 +23,10 @@ public class SwitchyKeybindings {
 	 */
 	public static void initializeKeybindings() {
 		KeyBinding switchKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-				"key.switchy.open",
-				InputUtil.Type.KEYSYM,
-				GLFW.GLFW_KEY_SEMICOLON,
-				"category.switchy.switchy"
+			"key.switchy.open",
+			InputUtil.Type.KEYSYM,
+			GLFW.GLFW_KEY_SEMICOLON,
+			"category.switchy.switchy"
 		));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {

@@ -34,9 +34,9 @@ public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, Sw
 	 */
 	public SwitchyPresetsImpl(boolean forPlayer) {
 		super(
-				SwitchyModuleRegistry.getModuleDefaults(),
-				forPlayer,
-				Switchy.LOGGER
+			SwitchyModuleRegistry.getModuleDefaults(),
+			forPlayer,
+			Switchy.LOGGER
 		);
 	}
 
@@ -126,7 +126,7 @@ public class SwitchyPresetsImpl extends SwitchyPresetsDataImpl<SwitchyModule, Sw
 		nextPreset.applyToPlayer(player);
 
 		SwitchySwitchEvent switchEvent = new SwitchySwitchEvent(
-				player.getUuid(), nextPreset.getName(), getCurrentPresetName(), getEnabledModuleNames()
+			player.getUuid(), nextPreset.getName(), getCurrentPresetName(), getEnabledModuleNames()
 		);
 		setCurrentPreset(nextPreset.getName());
 		SwitchyEvents.SWITCH.invoker().onSwitch(player, switchEvent);

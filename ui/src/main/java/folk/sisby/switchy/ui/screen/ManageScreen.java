@@ -12,9 +12,20 @@ import folk.sisby.switchy.ui.component.LockableFlowLayout;
 import folk.sisby.switchy.ui.component.TabLayout;
 import folk.sisby.switchy.util.Feedback;
 import io.wispforest.owo.ui.base.BaseOwoScreen;
-import io.wispforest.owo.ui.component.*;
-import io.wispforest.owo.ui.container.*;
-import io.wispforest.owo.ui.core.*;
+import io.wispforest.owo.ui.component.ButtonComponent;
+import io.wispforest.owo.ui.component.Components;
+import io.wispforest.owo.ui.component.LabelComponent;
+import io.wispforest.owo.ui.component.TextBoxComponent;
+import io.wispforest.owo.ui.container.Containers;
+import io.wispforest.owo.ui.container.FlowLayout;
+import io.wispforest.owo.ui.container.ScrollContainer;
+import io.wispforest.owo.ui.core.Component;
+import io.wispforest.owo.ui.core.HorizontalAlignment;
+import io.wispforest.owo.ui.core.Insets;
+import io.wispforest.owo.ui.core.OwoUIAdapter;
+import io.wispforest.owo.ui.core.Sizing;
+import io.wispforest.owo.ui.core.Surface;
+import io.wispforest.owo.ui.core.VerticalAlignment;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
@@ -28,7 +39,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -58,19 +73,6 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 	@Override
 	protected @NotNull OwoUIAdapter<LockableFlowLayout> createAdapter() {
 		return OwoUIAdapter.create(this, LockableFlowLayout::new);
-	}
-
-	public class PresetsTabScroll extends ScrollContainer<FlowLayout> {
-		public PresetsTabScroll() {
-			super(ScrollDirection.VERTICAL, Sizing.content(), Sizing.fixed(180), new PresetsTabFlow());
-			this.surface(Surface.flat(0xFF141414).and(Surface.outline(0xFF202020)));
-			this.margins(Insets.of(10));
-		}
-
-		@Override
-		public PresetsTabFlow child() {
-			return (PresetsTabFlow) child;
-		}
 	}
 
 	@Override
@@ -117,10 +119,82 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		}
 	}
 
-	public class PresetsTabFlow extends FlowLayout {
-		private String focusedPresetName;
+	public static class ModuleSelectorFlow extends FlowLayout {
+		public final ModulesFlow leftModulesFlow;
+		public final ModulesFlow rightModulesFlow;
 
+		public ModuleSelectorFlow(int vSize, Text leftText, Text rightText) {
+			super(Sizing.content(), Sizing.content(), Algorithm.HORIZONTAL);
+			this.gap(2);
+			leftModulesFlow = new ModulesFlow();
+			rightModulesFlow = new ModulesFlow();
+			this.child(Containers.verticalFlow(Sizing.content(), Sizing.content()).child(Components.label(leftText)).child(new ModulesScroll(vSize, leftModulesFlow)).horizontalAlignment(HorizontalAlignment.CENTER));
+			this.child(Containers.verticalFlow(Sizing.content(), Sizing.content()).child(Components.label(rightText)).child(new ModulesScroll(vSize, rightModulesFlow)).horizontalAlignment(HorizontalAlignment.CENTER));
+		}
+
+		public static FlowLayout getModuleFlow(Identifier id, @Nullable Text labelTooltip, BiConsumer<ButtonComponent, Identifier> buttonAction, boolean enabled, Text buttonText, @Nullable Text buttonTooltip, int labelSize) {
+			FlowLayout moduleFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
+			LabelComponent moduleName = Components.label(Feedback.literal(id.getPath()));
+			Text namespaceText = Feedback.literal(Feedback.guessModTitle(id.getNamespace())).setStyle(Feedback.FORMAT_INFO.getLeft());
+			moduleName.tooltip(labelTooltip != null ? List.of(namespaceText, labelTooltip) : List.of(namespaceText));
+			moduleName.horizontalSizing(Sizing.fixed(labelSize));
+			ButtonComponent enableButton = Components.button(buttonText, b -> buttonAction.accept(b, id));
+			if (buttonTooltip != null) enableButton.tooltip(buttonTooltip);
+			enableButton.active(enabled);
+			enableButton.horizontalSizing(Sizing.content());
+			moduleFlow.child(moduleName);
+			moduleFlow.child((Component) enableButton);
+			moduleFlow.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
+			moduleFlow.gap(2);
+			moduleFlow.padding(Insets.of(1));
+			moduleFlow.surface(Surface.flat(0xFF1E1E1E));
+			return moduleFlow;
+		}
+	}
+
+	public static class ModulesScroll extends ScrollContainer<FlowLayout> {
+		protected ModulesScroll(int vSize, FlowLayout child) {
+			super(ScrollDirection.VERTICAL, Sizing.content(), Sizing.fixed(vSize), child);
+			this.surface(Surface.flat(0xFF141414).and(Surface.outline(0xFF202020)));
+		}
+	}
+
+	public static class ModulesFlow extends FlowLayout {
+		public ModulesFlow() {
+			super(Sizing.content(), Sizing.content(), Algorithm.VERTICAL);
+			this.gap(2);
+		}
+	}
+
+	public static class DataTabComboField<T> extends FlowLayout {
+		public final ComboBoxComponent<T> comboBox;
+
+		public DataTabComboField(FlowLayout contextParent, Text label, Consumer<T> onUpdate) {
+			super(Sizing.content(), Sizing.content(), Algorithm.HORIZONTAL);
+			this.verticalAlignment(VerticalAlignment.CENTER); // So label lines up with box.
+			this.gap(4);
+			this.comboBox = new ComboBoxComponent<>(Sizing.content(), contextParent, onUpdate);
+			this.child(Components.label(label));
+			this.child(comboBox);
+		}
+	}
+
+	public class PresetsTabScroll extends ScrollContainer<FlowLayout> {
+		public PresetsTabScroll() {
+			super(ScrollDirection.VERTICAL, Sizing.content(), Sizing.fixed(180), new PresetsTabFlow());
+			this.surface(Surface.flat(0xFF141414).and(Surface.outline(0xFF202020)));
+			this.margins(Insets.of(10));
+		}
+
+		@Override
+		public PresetsTabFlow child() {
+			return (PresetsTabFlow) child;
+		}
+	}
+
+	public class PresetsTabFlow extends FlowLayout {
 		public final FlowLayout presetsFlow = Containers.verticalFlow(Sizing.content(), Sizing.content());
+		private String focusedPresetName;
 		public final ButtonComponent newPresetButton = Components.button(Feedback.translatable("screen.switchy.manage.presets.new"), b -> {
 			focusedPresetName = "";
 			refresh();
@@ -258,53 +332,6 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 		}
 	}
 
-	public static class ModuleSelectorFlow extends FlowLayout {
-		public final ModulesFlow leftModulesFlow;
-		public final ModulesFlow rightModulesFlow;
-
-		public ModuleSelectorFlow(int vSize, Text leftText, Text rightText) {
-			super(Sizing.content(), Sizing.content(), Algorithm.HORIZONTAL);
-			this.gap(2);
-			leftModulesFlow = new ModulesFlow();
-			rightModulesFlow = new ModulesFlow();
-			this.child(Containers.verticalFlow(Sizing.content(), Sizing.content()).child(Components.label(leftText)).child(new ModulesScroll(vSize, leftModulesFlow)).horizontalAlignment(HorizontalAlignment.CENTER));
-			this.child(Containers.verticalFlow(Sizing.content(), Sizing.content()).child(Components.label(rightText)).child(new ModulesScroll(vSize, rightModulesFlow)).horizontalAlignment(HorizontalAlignment.CENTER));
-		}
-
-		public static FlowLayout getModuleFlow(Identifier id, @Nullable Text labelTooltip, BiConsumer<ButtonComponent, Identifier> buttonAction, boolean enabled, Text buttonText, @Nullable Text buttonTooltip, int labelSize) {
-			FlowLayout moduleFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
-			LabelComponent moduleName = Components.label(Feedback.literal(id.getPath()));
-			Text namespaceText = Feedback.literal(Feedback.guessModTitle(id.getNamespace())).setStyle(Feedback.FORMAT_INFO.getLeft());
-			moduleName.tooltip(labelTooltip != null ? List.of(namespaceText, labelTooltip) : List.of(namespaceText));
-			moduleName.horizontalSizing(Sizing.fixed(labelSize));
-			ButtonComponent enableButton = Components.button(buttonText, b -> buttonAction.accept(b, id));
-			if (buttonTooltip != null) enableButton.tooltip(buttonTooltip);
-			enableButton.active(enabled);
-			enableButton.horizontalSizing(Sizing.content());
-			moduleFlow.child(moduleName);
-			moduleFlow.child((Component) enableButton);
-			moduleFlow.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
-			moduleFlow.gap(2);
-			moduleFlow.padding(Insets.of(1));
-			moduleFlow.surface(Surface.flat(0xFF1E1E1E));
-			return moduleFlow;
-		}
-	}
-
-	public static class ModulesScroll extends ScrollContainer<FlowLayout> {
-		protected ModulesScroll(int vSize, FlowLayout child) {
-			super(ScrollDirection.VERTICAL, Sizing.content(), Sizing.fixed(vSize), child);
-			this.surface(Surface.flat(0xFF141414).and(Surface.outline(0xFF202020)));
-		}
-	}
-
-	public static class ModulesFlow extends FlowLayout {
-		public ModulesFlow() {
-			super(Sizing.content(), Sizing.content(), Algorithm.VERTICAL);
-			this.gap(2);
-		}
-	}
-
 	public class DataTabTabLayout extends TabLayout {
 		public DataTabImportFlow importFlow;
 		public DataTabExportFlow exportFlow;
@@ -321,6 +348,10 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 			this.exportFlow = exportFlow;
 		}
 
+		public DataTabTabLayout() {
+			this(new DataTabImportFlow(), new DataTabExportFlow());
+		}
+
 		@Override
 		public void swapTabs(ButtonComponent tabButton, Component tabComponent) {
 			super.swapTabs(tabButton, tabComponent);
@@ -328,10 +359,6 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 			importFlow.fileDropdown.comboBox.closeMenu();
 			exportFlow.methodDropdown.comboBox.closeMenu();
 			exportFlow.fileDropdown.comboBox.closeMenu();
-		}
-
-		public DataTabTabLayout() {
-			this(new DataTabImportFlow(), new DataTabExportFlow());
 		}
 
 		public void refresh() {
@@ -404,15 +431,14 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 	}
 
 	public abstract class DataTabModeFlow extends FlowLayout {
-		public final DataTabComboField<String> methodDropdown = new DataTabComboField<>(ManageScreen.this.uiAdapter.rootComponent, Feedback.translatable("screen.switchy.manage.data.method"), this::updateDataMethod);
-		public final DataTabComboField<NbtCompound> fileDropdown = new DataTabComboField<>(ManageScreen.this.uiAdapter.rootComponent, Feedback.translatable("screen.switchy.manage.data.file"), this::onNbtSourceChange);
 		public final ModuleSelectorFlow moduleSelector = new ModuleSelectorFlow(80, Feedback.translatable("screen.switchy.manage.data.available"), Feedback.translatable("screen.switchy.manage.data.included"));
 		public final ButtonComponent actionButton;
-
+		protected final boolean isImporting;
 		protected List<Identifier> includedModules = new ArrayList<>();
 		protected List<Identifier> availableModules = new ArrayList<>();
 		protected NbtCompound selectedFileNbt;
-		protected final boolean isImporting;
+		public final DataTabComboField<NbtCompound> fileDropdown = new DataTabComboField<>(ManageScreen.this.uiAdapter.rootComponent, Feedback.translatable("screen.switchy.manage.data.file"), this::onNbtSourceChange);
+		public final DataTabComboField<String> methodDropdown = new DataTabComboField<>(ManageScreen.this.uiAdapter.rootComponent, Feedback.translatable("screen.switchy.manage.data.method"), this::updateDataMethod);
 
 		public DataTabModeFlow(boolean isImporting) {
 			super(Sizing.content(), Sizing.content(), Algorithm.VERTICAL);
@@ -519,19 +545,6 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 				}, true, Feedback.translatable("screen.switchy.manage.data.remove"), Feedback.translatable("screen.switchy.manage.data.export.remove"), labelSize)));
 			}
 			actionButton.active(!includedModules.isEmpty());
-		}
-	}
-
-	public static class DataTabComboField<T> extends FlowLayout {
-		public final ComboBoxComponent<T> comboBox;
-
-		public DataTabComboField(FlowLayout contextParent, Text label, Consumer<T> onUpdate) {
-			super(Sizing.content(), Sizing.content(), Algorithm.HORIZONTAL);
-			this.verticalAlignment(VerticalAlignment.CENTER); // So label lines up with box.
-			this.gap(4);
-			this.comboBox = new ComboBoxComponent<>(Sizing.content(), contextParent, onUpdate);
-			this.child(Components.label(label));
-			this.child(comboBox);
 		}
 	}
 }

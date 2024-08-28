@@ -65,6 +65,10 @@ public class OriginsClientModule implements SwitchyClientModule, SwitchyUIModule
 	 * Must match {@link OriginsModule#toClientNbt()}.
 	 */
 	public static final String KEY_ORIGIN = "Origin";
+	/**
+	 * The origin identifiers per layer.
+	 */
+	public Map<OriginLayer, Origin> origins;
 
 	/**
 	 * Registers the module
@@ -72,11 +76,6 @@ public class OriginsClientModule implements SwitchyClientModule, SwitchyUIModule
 	public static void register() {
 		SwitchyClientModuleRegistry.registerModule(ID, OriginsClientModule::new);
 	}
-
-	/**
-	 * The origin identifiers per layer.
-	 */
-	public Map<OriginLayer, Origin> origins;
 
 	private static Text safeGetName(Origin origin) {
 		try {
@@ -86,7 +85,6 @@ public class OriginsClientModule implements SwitchyClientModule, SwitchyUIModule
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public Pair<Component, SwitchyUIPosition> getPreviewComponent(String presetName) {
 		if (origins == null || origins.isEmpty()) return null;

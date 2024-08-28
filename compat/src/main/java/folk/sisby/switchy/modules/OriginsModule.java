@@ -52,6 +52,11 @@ public class OriginsModule implements SwitchyModule, SwitchyModuleTransferable {
 	 * The NBT key where the origin ID is stored in each list item.
 	 */
 	public static final String KEY_ORIGIN = "Origin";
+	/**
+	 * The origins per layer.
+	 */
+	@Nullable
+	public Map<OriginLayer, Origin> origins;
 
 	/**
 	 * Registers the module
@@ -68,11 +73,6 @@ public class OriginsModule implements SwitchyModule, SwitchyModuleTransferable {
 		);
 	}
 
-	/**
-	 * The origins per layer.
-	 */
-	@Nullable public Map<OriginLayer, Origin> origins;
-
 	private static OriginComponent getForgeComponent(ServerPlayerEntity player) {
 		try {
 			Class<?> containerClass = Class.forName("io.github.edwinmindcraft.origins.api.capabilities.IOriginContainer");
@@ -88,7 +88,6 @@ public class OriginsModule implements SwitchyModule, SwitchyModuleTransferable {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private static OriginComponent getComponent(ServerPlayerEntity player) {
 		return FabricLoader.getInstance().isModLoaded("connectormod") ? getForgeComponent(player) : ModComponents.ORIGIN.get(player);
 	}
