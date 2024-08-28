@@ -90,7 +90,7 @@ public class OriginsModule implements SwitchyModule, SwitchyModuleTransferable {
 
 	@SuppressWarnings("deprecation")
 	private static OriginComponent getComponent(ServerPlayerEntity player) {
-		return FabricLoader.getInstance().isModLoaded("connectormod") ? getForgeComponent(player) : ModComponents.ORIGIN.get(player);
+		return FabricLoader.getInstance().isModLoaded("connector") ? getForgeComponent(player) : ModComponents.ORIGIN.get(player);
 	}
 
 	private static void setOrigin(ServerPlayerEntity player, OriginLayer layer, Origin origin) {

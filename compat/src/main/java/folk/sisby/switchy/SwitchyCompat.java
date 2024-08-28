@@ -29,7 +29,7 @@ public class SwitchyCompat implements SwitchyEvents.Init {
 		if (FabricLoader.getInstance().isModLoaded("styled-nicknames")) StyledNicknamesModule.register();
 		if (FabricLoader.getInstance().isModLoaded("fabrictailor")) FabricTailorModule.register();
 		if (FabricLoader.getInstance().isModLoaded("origins")) OriginsModule.register();
-		if (FabricLoader.getInstance().isModLoaded("apoli") && !FabricLoader.getInstance().isModLoaded("connectormod")) ApoliModule.register();
+		if (FabricLoader.getInstance().isModLoaded("apoli") && !FabricLoader.getInstance().isModLoaded("connector")) ApoliModule.register();
 		if (FabricLoader.getInstance().isModLoaded("pehkui")) PehkuiModule.register();
 		if (FabricLoader.getInstance().isModLoaded("fabrication")) FabricationArmorModule.register();
 		LOGGER.info("[Switchy Compat] Initialized!");

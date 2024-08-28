@@ -93,7 +93,7 @@ public class OriginsClientModule implements SwitchyClientModule, SwitchyUIModule
 
 		FlowLayout originsFlow = Containers.horizontalFlow(Sizing.content(), Sizing.content());
 		originsFlow.verticalAlignment(VerticalAlignment.CENTER);
-		if (!FabricLoader.getInstance().isModLoaded("connectormod")) originsFlow.child(Components.item(ORB_OF_ORIGIN.getDefaultStack()).margins(Insets.right(2)));
+		if (!FabricLoader.getInstance().isModLoaded("connector")) originsFlow.child(Components.item(ORB_OF_ORIGIN.getDefaultStack()).margins(Insets.right(2)));
 		List<String> names = new ArrayList<>(origins.values().stream().map(OriginsClientModule::safeGetName).map(Text::getString).toList());
 		Collections.reverse(names);
 		originsFlow.child(Components.label(Feedback.literal(String.join(" | ", names)).setStyle(Style.EMPTY.withColor(Formatting.GRAY))));
