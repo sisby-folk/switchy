@@ -26,10 +26,10 @@ Most modules provide inter-compatibility with other mods - be sure to follow the
 You can hotswap these features out-of-the box by installing their relevant mods:
 
 - Player Nicknames with [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) (Note: Switchy force-allows nickname self-assignment)
-    - Player Pronouns/Bio through `<hover>` or [Drogstyle](https://modrinth.com/mod/drogstyle)'s `/bio`
+	- Player Pronouns/Bio through `<hover>` or [Drogstyle](https://modrinth.com/mod/drogstyle)'s `/bio`
 - Player Skin with [Fabric Tailor](https://modrinth.com/mod/fabrictailor) or model with [Figura](https://modrinth.com/mod/figura) (via API)
 - Player Origin with [Origins](https://modrinth.com/mod/origins) (includes all layers, e.g. [Statures](https://modrinth.com/mod/tinkerers-statures))
-    - Power state / command powers - e.g. Origin inventories and `/power grant` powers (via [MerchantPug](https://github.com/MerchantPug))
+	- Power state / command powers - e.g. Origin inventories and `/power grant` powers (via [MerchantPug](https://github.com/MerchantPug))
 - Player sizes and scales with [Pehkui](https://modrinth.com/mod/pehkui)
 - Detailed player profiles for conventions with [Lanyard](https://modrinth.com/mod/lanyard)
 
@@ -136,7 +136,7 @@ Modules will be listed with one of four import settings:
 
 The pehkui module will switch scale types by the IDs defined in `/config/switchy/pehkui.toml`.
 
-By default, it switches height, width, model  height, and model width.
+By default, it switches height, width, model height, and model width.
 
 This is set by the server - so you can add anything you want to give players switch access to, and remove anything that should be only temporary and switchy might accidentally let players keep.
 
@@ -199,7 +199,6 @@ end)
 
 The function body can then match specific preset names to swap in specific models.
 
-
 ### Modules
 
 Adding new Modules allows more data to be switched per-preset. They only need to:
@@ -210,7 +209,6 @@ Adding new Modules allows more data to be switched per-preset. They only need to
 
 Just implement `SwitchyModule` and register it with `SwitchyModuleRegistry` using `SwitchyEvents.Init` -
 See [Switchy Inventories](https://github.com/sisby-folk/switchy-inventories) for an example. (Remember to add the `switchy` entrypoint in your metafile)
-
 
 #### Module Configuration & Commands
 
@@ -239,23 +237,22 @@ Any data matching `data/*/switchy_cardinal/*.json` will be
 loaded [like so](https://github.com/sisby-folk/switchy/blob/1.19/compat/src/main/resources/data/switchy/switchy_cardinal/lanyard.json):
 
 - File namespace and name - module namespace and path.
-    - `default`: boolean, module is enabled for players by default.
-    - `editable`: See import configuration above.
-    - `ifModsLoaded`: mod IDs to check before trying to register the module.
-    - `components`: the cardinal components to swap.
+	- `default`: boolean, module is enabled for players by default.
+	- `editable`: See import configuration above.
+	- `ifModsLoaded`: mod IDs to check before trying to register the module.
+	- `components`: the cardinal components to swap.
 
 Modules can also be previewed in the UI using the serialized NBT data.<br/>
 Any data matching `assets/*/switchy_cardinal/*.json` will be
 loaded [like so](https://github.com/sisby-folk/switchy/blob/1.19/compat-ui/src/main/resources/assets/switchy/switchy_cardinal/lanyard.json):
 
 - File namespace and name - module namespace and path.
-    - `icon`: object. either parsed as a stack or use `"path"` with an NBT path to a stack.
-    - `condition`: optional. NBT path to a boolean
-    - `inventories`: optional. Array of NBT paths for inventories.
-    - `components`: optional. Array of NBT paths to pretty print into the tooltip key.
+	- `icon`: object. either parsed as a stack or use `"path"` with an NBT path to a stack.
+	- `condition`: optional. NBT path to a boolean
+	- `inventories`: optional. Array of NBT paths for inventories.
+	- `components`: optional. Array of NBT paths to pretty print into the tooltip key.
 
 The tooltip will be loaded from `switchy.modules.[namespace].[path].preview.tooltip`.
-
 
 ## Further Info
 

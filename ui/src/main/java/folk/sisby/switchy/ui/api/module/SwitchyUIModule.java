@@ -20,5 +20,6 @@ public interface SwitchyUIModule {
 	 * @return a renderable component, and the position on the preset preview it should be placed.
 	 * Null if no component should be added.
 	 */
-	@Nullable Pair<Component, SwitchyUIPosition> getPreviewComponent(String presetName);
+	@Nullable
+	Pair<Component, SwitchyUIPosition> getPreviewComponent(String presetName);
 }

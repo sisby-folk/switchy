@@ -1,12 +1,18 @@
 package folk.sisby.switchy.util;
 
+import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.*;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralTextContent;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
-import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.Arrays;
 import java.util.List;
@@ -106,9 +112,9 @@ public class Feedback {
 	 */
 	public static MutableText getIdListText(List<Identifier> identifiers) {
 		return literal("[").append(Texts.join(
-				identifiers,
-				literal(", "),
-				id -> literal(id.getPath()).setStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, literal(id.toString()))))
+			identifiers,
+			literal(", "),
+			id -> literal(id.getPath()).setStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, literal(id.toString()))))
 		)).append(literal("]"));
 	}
 
@@ -122,9 +128,9 @@ public class Feedback {
 	 */
 	public static MutableText getHighlightedListText(List<String> list, List<Pair<Predicate<String>, Formatting>> highlighter) {
 		return literal("[").append(Texts.join(
-				list,
-				literal(", "),
-				str -> literal(str).setStyle(Style.EMPTY.withFormatting(highlighter.stream().filter(e -> e.getLeft().test(str)).map(Pair::getRight).findFirst().orElse(Formatting.RESET)))
+			list,
+			literal(", "),
+			str -> literal(str).setStyle(Style.EMPTY.withFormatting(highlighter.stream().filter(e -> e.getLeft().test(str)).map(Pair::getRight).findFirst().orElse(Formatting.RESET)))
 		)).append(literal("]"));
 	}
 
@@ -209,6 +215,7 @@ public class Feedback {
 
 	/**
 	 * Transforms a namespace into a loaded mod's title where possible.
+	 *
 	 * @param namespace a namespace used by the mod.
 	 * @return The mod's title if a match or dash-replaced match is found, otherwise namespace.
 	 */

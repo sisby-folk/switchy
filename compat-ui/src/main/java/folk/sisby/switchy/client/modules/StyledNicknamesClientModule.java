@@ -32,6 +32,10 @@ public class StyledNicknamesClientModule implements SwitchyClientModule, Switchy
 	 * Must match {@link StyledNicknamesModule#toClientNbt()}.
 	 */
 	public static final String KEY_NICKNAME = "styled_nickname";
+	/**
+	 * The styled nickname, in Text format.
+	 */
+	public @Nullable Text styled_nickname;
 
 	/**
 	 * Registers the module
@@ -39,11 +43,6 @@ public class StyledNicknamesClientModule implements SwitchyClientModule, Switchy
 	public static void register() {
 		SwitchyClientModuleRegistry.registerModule(ID, StyledNicknamesClientModule::new);
 	}
-
-	/**
-	 * The styled nickname, in Text format.
-	 */
-	public @Nullable Text styled_nickname;
 
 	@Override
 	public Pair<Component, SwitchyUIPosition> getPreviewComponent(String presetName) {

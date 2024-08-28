@@ -41,11 +41,11 @@ public class IdentifiersArgumentType implements ArgumentType<List<Identifier>> {
 
 	private static boolean isPathCharacterValid(char character) {
 		return character == '_'
-				|| character == '-'
-				|| character >= 'a' && character <= 'z'
-				|| character >= '0' && character <= '9'
-				|| character == '/'
-				|| character == '.';
+			|| character == '-'
+			|| character >= 'a' && character <= 'z'
+			|| character >= '0' && character <= '9'
+			|| character == '/'
+			|| character == '.';
 	}
 
 	private static boolean isNamespaceCharacterValid(char character) {

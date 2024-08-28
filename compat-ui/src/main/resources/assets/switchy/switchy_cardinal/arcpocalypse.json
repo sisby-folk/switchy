@@ -1,9 +1,10 @@
 {
-  "icon": {
-    "id": "arcpocalypse:suspicious_broom"
-  },
-  "condition": "arcpocalypse:nekoarc.nekoarcueidbrunestud",
-  "values": [
-    "arcpocalypse:nekoarc.neco", "arcpocalypse:nekoarc.flying"
-  ]
+	"icon": {
+		"id": "arcpocalypse:suspicious_broom"
+	},
+	"condition": "arcpocalypse:nekoarc.nekoarcueidbrunestud",
+	"values": [
+		"arcpocalypse:nekoarc.neco",
+		"arcpocalypse:nekoarc.flying"
+	]
 }

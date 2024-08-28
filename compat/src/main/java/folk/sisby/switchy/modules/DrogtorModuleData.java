@@ -40,15 +40,18 @@ public class DrogtorModuleData implements SwitchySerializable {
 	/**
 	 * The raw nickname.
 	 */
-	@Nullable public String nickname;
+	@Nullable
+	public String nickname;
 	/**
 	 * The nickname colour.
 	 */
-	@Nullable public Formatting nameColor;
+	@Nullable
+	public Formatting nameColor;
 	/**
 	 * The "bio" (nickname hover text).
 	 */
-	@Nullable public String bio;
+	@Nullable
+	public String bio;
 
 	@Override
 	public NbtCompound toNbt() {

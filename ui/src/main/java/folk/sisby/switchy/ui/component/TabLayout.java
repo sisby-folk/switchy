@@ -3,7 +3,12 @@ package folk.sisby.switchy.ui.component;
 import io.wispforest.owo.ui.component.ButtonComponent;
 import io.wispforest.owo.ui.container.HorizontalFlowLayout;
 import io.wispforest.owo.ui.container.VerticalFlowLayout;
-import io.wispforest.owo.ui.core.*;
+import io.wispforest.owo.ui.core.Component;
+import io.wispforest.owo.ui.core.HorizontalAlignment;
+import io.wispforest.owo.ui.core.Insets;
+import io.wispforest.owo.ui.core.Sizing;
+import io.wispforest.owo.ui.core.Surface;
+import io.wispforest.owo.ui.core.VerticalAlignment;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -31,8 +36,6 @@ public class TabLayout extends VerticalFlowLayout {
 		contentPanel.child(tabContents.get(0));
 	}
 
-	public record Tab(Text buttonText, Component tabContents) {}
-
 	public void swapTabs(ButtonComponent tabButton, Component tabComponent) {
 		contentPanel.clearChildren();
 		contentPanel.child(tabComponent);
@@ -40,10 +43,7 @@ public class TabLayout extends VerticalFlowLayout {
 		tabButton.active(false);
 	}
 
-	public class TabButton extends ButtonComponent {
-		public TabButton(Text message, Component tabComponent) {
-			super(message, b -> TabLayout.this.swapTabs(b, tabComponent));
-		}
+	public record Tab(Text buttonText, Component tabContents) {
 	}
 
 	public static class TabContentPanel extends VerticalFlowLayout {
@@ -61,6 +61,12 @@ public class TabLayout extends VerticalFlowLayout {
 			this.verticalAlignment(VerticalAlignment.BOTTOM);
 			this.margins(Insets.horizontal(8));
 			this.children(children);
+		}
+	}
+
+	public class TabButton extends ButtonComponent {
+		public TabButton(Text message, Component tabComponent) {
+			super(message, b -> TabLayout.this.swapTabs(b, tabComponent));
 		}
 	}
 }

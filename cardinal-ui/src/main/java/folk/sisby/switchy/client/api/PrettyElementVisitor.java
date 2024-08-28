@@ -2,7 +2,14 @@ package folk.sisby.switchy.client.api;
 
 import folk.sisby.switchy.util.Feedback;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.NbtByte;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtDouble;
+import net.minecraft.nbt.NbtFloat;
+import net.minecraft.nbt.NbtInt;
+import net.minecraft.nbt.NbtLong;
+import net.minecraft.nbt.NbtShort;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 import net.minecraft.nbt.visitor.NbtTextFormatter;
 import net.minecraft.text.MutableText;
@@ -22,7 +29,8 @@ public class PrettyElementVisitor extends NbtTextFormatter implements NbtElement
 		try {
 			this.result = Text.Serializer.fromJson(element.asString()).formatted(Formatting.GREEN);
 			return;
-		} catch (Exception ignored) {}
+		} catch (Exception ignored) {
+		}
 		Registry.ITEM.getOrEmpty(Identifier.tryParse(element.asString())).ifPresentOrElse(
 			i -> this.result = Feedback.translatable(i.getTranslationKey()).formatted(Formatting.AQUA),
 			() -> this.result = Feedback.literal(element.asString()).formatted(Formatting.GREEN)
@@ -31,7 +39,7 @@ public class PrettyElementVisitor extends NbtTextFormatter implements NbtElement
 
 	@Override
 	public void visitByte(NbtByte element) {
-		this.result = Feedback.literal(String.valueOf(element.byteValue() == 0 ? "no" : (element.byteValue() == 1 ? "yes": element.numberValue()))).formatted(Formatting.GOLD);
+		this.result = Feedback.literal(String.valueOf(element.byteValue() == 0 ? "no" : (element.byteValue() == 1 ? "yes" : element.numberValue()))).formatted(Formatting.GOLD);
 	}
 
 	@Override
@@ -69,7 +77,8 @@ public class PrettyElementVisitor extends NbtTextFormatter implements NbtElement
 			text.formatted(Formatting.AQUA);
 			this.result = text;
 			return;
-		} catch (Exception ignored) {}
+		} catch (Exception ignored) {
+		}
 		super.visitCompound(compound);
 	}
 }

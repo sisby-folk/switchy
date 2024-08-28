@@ -18,7 +18,11 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static folk.sisby.switchy.util.Feedback.getIdListText;
 
@@ -39,9 +43,9 @@ public abstract class SwitchyPresetsDataImpl<Module extends SwitchySerializable,
 	/**
 	 * Constructs an instance of the object.
 	 *
-	 * @param modules           the enabled status of modules.
-	 * @param forPlayer         whether the presets object is "for a player" - affects recovering lost presets, and logging failures.
-	 * @param logger            the logger to use for construction failures.
+	 * @param modules   the enabled status of modules.
+	 * @param forPlayer whether the presets object is "for a player" - affects recovering lost presets, and logging failures.
+	 * @param logger    the logger to use for construction failures.
 	 */
 	SwitchyPresetsDataImpl(Map<Identifier, Boolean> modules, boolean forPlayer, Logger logger) {
 		this.modules = modules;
@@ -61,7 +65,7 @@ public abstract class SwitchyPresetsDataImpl<Module extends SwitchySerializable,
 	/**
 	 * Supplies a module instance.
 	 *
-	 * @param id     a module identifier.
+	 * @param id a module identifier.
 	 * @return an instance of the module.
 	 */
 	public abstract Module supplyModule(Identifier id);
@@ -69,7 +73,7 @@ public abstract class SwitchyPresetsDataImpl<Module extends SwitchySerializable,
 	/**
 	 * Supplies the player-level module configuration for the given module.
 	 *
-	 * @param id     a module identifier.
+	 * @param id a module identifier.
 	 * @return the configuration object for the module, or null if it doesn't exist.
 	 */
 	public abstract @Nullable SwitchySerializable supplyModuleConfig(Identifier id);

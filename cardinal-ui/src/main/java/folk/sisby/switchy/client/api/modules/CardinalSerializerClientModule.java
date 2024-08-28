@@ -94,7 +94,8 @@ public class CardinalSerializerClientModule extends CardinalSerializerData imple
 							});
 						}
 					});
-				} catch (CommandSyntaxException | ClassCastException ignored) {}
+				} catch (CommandSyntaxException | ClassCastException ignored) {
+				}
 			});
 			return items;
 		}

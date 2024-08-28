@@ -3,13 +3,13 @@ package folk.sisby.switchy.api;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import folk.sisby.switchy.SwitchyCommands;
 import folk.sisby.switchy.api.events.SwitchySwitchEvent;
-
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
@@ -58,6 +58,10 @@ public final class SwitchyEvents {
 			SwitchyCommands.IMPORT_ENABLED = true;
 		}
 	});
+
+	public static void registerEntrypointListeners() {
+		FabricLoader.getInstance().getEntrypoints("switchy", Init.class).forEach(INIT::register);
+	}
 
 	/**
 	 * Occurs when Switchy loads modules during initialization.
@@ -118,9 +122,5 @@ public final class SwitchyEvents {
 		 * @param event  The switch event that has occurred.
 		 */
 		void onSwitch(ServerPlayerEntity player, SwitchySwitchEvent event);
-	}
-
-	public static void registerEntrypointListeners() {
-		FabricLoader.getInstance().getEntrypoints("switchy", Init.class).forEach(INIT::register);
 	}
 }

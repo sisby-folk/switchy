@@ -15,7 +15,9 @@ import net.minecraft.network.PacketByteBuf;
 import java.util.HashMap;
 import java.util.function.BiConsumer;
 
-import static folk.sisby.switchy.SwitchyClientServerNetworking.*;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.S2C_CLIENT_PRESETS;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.S2C_EVENT_SWITCH;
+import static folk.sisby.switchy.SwitchyClientServerNetworking.S2C_PRESETS;
 import static folk.sisby.switchy.client.api.SwitchyClientApi.API_EXPORT_LISTENERS;
 import static folk.sisby.switchy.client.api.SwitchyClientApi.API_RESPONSE_LISTENERS;
 import static folk.sisby.switchy.util.SwitchyCommand.consumeEventPacket;

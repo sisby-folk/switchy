@@ -202,6 +202,7 @@ public class SwitchyModuleRegistry {
 
 	/**
 	 * Generates a player-level module configuration object, if the module has one.
+	 *
 	 * @param id a module identifier.
 	 * @return a configuration object for that module, or null if it doesn't have one.
 	 */

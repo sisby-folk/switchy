@@ -26,7 +26,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static io.github.apace100.origins.registry.ModItems.ORB_OF_ORIGIN;
 
@@ -60,6 +64,10 @@ public class OriginsClientModule implements SwitchyClientModule, SwitchyUIModule
 	 * Must match {@link OriginsModule#toClientNbt()}.
 	 */
 	public static final String KEY_ORIGIN = "Origin";
+	/**
+	 * The origin identifiers per layer.
+	 */
+	public Map<OriginLayer, Origin> origins;
 
 	/**
 	 * Registers the module
@@ -67,11 +75,6 @@ public class OriginsClientModule implements SwitchyClientModule, SwitchyUIModule
 	public static void register() {
 		SwitchyClientModuleRegistry.registerModule(ID, OriginsClientModule::new);
 	}
-
-	/**
-	 * The origin identifiers per layer.
-	 */
-	public Map<OriginLayer, Origin> origins;
 
 	@Override
 	public Pair<Component, SwitchyUIPosition> getPreviewComponent(String presetName) {

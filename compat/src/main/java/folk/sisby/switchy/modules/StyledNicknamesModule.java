@@ -5,7 +5,11 @@ import eu.pb4.placeholders.api.TextParserUtils;
 import eu.pb4.stylednicknames.NicknameHolder;
 import eu.pb4.stylednicknames.config.ConfigManager;
 import folk.sisby.switchy.SwitchyCompat;
-import folk.sisby.switchy.api.module.*;
+import folk.sisby.switchy.api.module.SwitchyModule;
+import folk.sisby.switchy.api.module.SwitchyModuleEditable;
+import folk.sisby.switchy.api.module.SwitchyModuleInfo;
+import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
+import folk.sisby.switchy.api.module.SwitchyModuleTransferable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -38,7 +42,8 @@ public class StyledNicknamesModule implements SwitchyModule, SwitchyModuleTransf
 	/**
 	 * The styled nickname, in placeholder API simplified text format.
 	 */
-	@Nullable public String styled_nickname;
+	@Nullable
+	public String styled_nickname;
 
 	/**
 	 * Registers the module
