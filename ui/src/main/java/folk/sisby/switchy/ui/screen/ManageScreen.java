@@ -309,9 +309,9 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 			leftModulesFlow.clearChildren();
 			rightModulesFlow.clearChildren();
 			int labelSize = 100;
-			leftModulesFlow.child(getModuleFlow(new Identifier("placeholder", "placeholder"), Feedback.literal(""), (b, i) -> {
+			leftModulesFlow.child(getModuleFlow(Feedback.identifier("placeholder", "placeholder"), Feedback.literal(""), (b, i) -> {
 			}, true, Feedback.translatable("screen.switchy.manage.modules.disable"), Feedback.literal(""), labelSize).verticalSizing(Sizing.fixed(0)));
-			rightModulesFlow.child(getModuleFlow(new Identifier("placeholder", "placeholder"), Feedback.literal(""), (b, i) -> {
+			rightModulesFlow.child(getModuleFlow(Feedback.identifier("placeholder", "placeholder"), Feedback.literal(""), (b, i) -> {
 			}, true, Feedback.translatable("screen.switchy.manage.modules.disable"), Feedback.literal(""), labelSize).verticalSizing(Sizing.fixed(0)));
 
 			// Disabled Modules
@@ -494,9 +494,9 @@ public class ManageScreen extends BaseOwoScreen<LockableFlowLayout> implements S
 			moduleSelector.leftModulesFlow.clearChildren();
 			moduleSelector.rightModulesFlow.clearChildren();
 			int labelSize = 100;
-			moduleSelector.leftModulesFlow.child(ModuleSelectorFlow.getModuleFlow(new Identifier("placeholder", "placeholder"), Feedback.literal(""), (b, i) -> {
+			moduleSelector.leftModulesFlow.child(ModuleSelectorFlow.getModuleFlow(Feedback.identifier("placeholder", "placeholder"), Feedback.literal(""), (b, i) -> {
 			}, false, Feedback.translatable("screen.switchy.manage.data.add"), Feedback.literal(""), labelSize).verticalSizing(Sizing.fixed(0)));
-			moduleSelector.rightModulesFlow.child(ModuleSelectorFlow.getModuleFlow(new Identifier("placeholder", "placeholder"), Feedback.literal(""), (b, i) -> {
+			moduleSelector.rightModulesFlow.child(ModuleSelectorFlow.getModuleFlow(Feedback.identifier("placeholder", "placeholder"), Feedback.literal(""), (b, i) -> {
 			}, false, Feedback.translatable("screen.switchy.manage.data.remove"), Feedback.literal(""), labelSize).verticalSizing(Sizing.fixed(0)));
 
 			if (isImporting) {

@@ -9,6 +9,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.JsonOps;
 import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
 import folk.sisby.switchy.client.api.modules.CardinalSerializerClientModule;
+import folk.sisby.switchy.util.Feedback;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.item.ItemStack;
@@ -45,7 +46,7 @@ public class CardinalClientModuleLoader extends JsonDataLoader implements Identi
 	 * The global instance for this resource loader.
 	 */
 	public static final CardinalClientModuleLoader INSTANCE = new CardinalClientModuleLoader(new Gson());
-	private static final Identifier ID = new Identifier(SwitchyCardinalClient.ID, "module_loader");
+	private static final Identifier ID = Feedback.identifier(SwitchyCardinalClient.ID, "module_loader");
 	private static final String KEY_CONDITION = "condition";
 	private static final String KEY_ICON = "icon";
 	private static final String KEY_ICON_PATH = "path";
