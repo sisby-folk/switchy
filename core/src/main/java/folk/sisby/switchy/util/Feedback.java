@@ -62,11 +62,11 @@ public class Feedback {
 	}
 
 	public static Identifier identifier(String identifier) {
-		return new Identifier(identifier);
+		return Identifier.tryParse(identifier);
 	}
 
 	public static Identifier identifier(String namespace, String key) {
-		return new Identifier(namespace, key);
+		return Identifier.of(namespace, key);
 	}
 
 	/**
