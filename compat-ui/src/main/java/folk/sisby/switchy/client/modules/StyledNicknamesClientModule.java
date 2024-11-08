@@ -6,6 +6,7 @@ import folk.sisby.switchy.client.api.module.SwitchyClientModuleRegistry;
 import folk.sisby.switchy.modules.StyledNicknamesModule;
 import folk.sisby.switchy.ui.api.SwitchyUIPosition;
 import folk.sisby.switchy.ui.api.module.SwitchyUIModule;
+import folk.sisby.switchy.util.Feedback;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.core.Component;
 import net.minecraft.nbt.NbtCompound;
@@ -28,7 +29,7 @@ public class StyledNicknamesClientModule implements SwitchyClientModule, Switchy
 	 * Identifier for this module.
 	 * Must match {@link StyledNicknamesModule}.
 	 */
-	public static final Identifier ID = Identifier.of("switchy", "styled_nicknames");
+	public static final Identifier ID = Feedback.identifier("switchy", "styled_nicknames");
 	/**
 	 * The NBT key where the nickname (in serialized text format) is stored.
 	 * Must match {@link StyledNicknamesModule#toClientNbt()}.

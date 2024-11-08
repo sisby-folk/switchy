@@ -10,6 +10,7 @@ import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.api.module.SwitchyModuleTransferable;
+import folk.sisby.switchy.util.Feedback;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -34,7 +35,7 @@ public class StyledNicknamesModule implements SwitchyModule, SwitchyModuleTransf
 	/**
 	 * Identifier for this module.
 	 */
-	public static final Identifier ID = Identifier.of("switchy", "styled_nicknames");
+	public static final Identifier ID = Feedback.identifier("switchy", "styled_nicknames");
 
 	/**
 	 * The NBT key where the nickname is stored.

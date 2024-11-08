@@ -9,6 +9,7 @@ import folk.sisby.switchy.api.module.SwitchyModule;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
+import folk.sisby.switchy.util.Feedback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -42,7 +43,7 @@ public class FabricationArmorModule implements SwitchyModule {
 	/**
 	 * Identifier for this module.
 	 */
-	public static final Identifier ID = Identifier.of("switchy", "hidearmor");
+	public static final Identifier ID = Feedback.identifier("switchy", "hidearmor");
 
 	/**
 	 * The NBT key where the list of EquipmentSlots to hide is stored.

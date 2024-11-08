@@ -20,6 +20,7 @@ import folk.sisby.switchy.packet.S2CExportPresets;
 import folk.sisby.switchy.packet.S2CPreviewPresets;
 import folk.sisby.switchy.packet.S2CSwitchEvent;
 import folk.sisby.switchy.presets.SwitchyPresetsImpl;
+import folk.sisby.switchy.util.Feedback;
 import folk.sisby.switchy.util.PresetConverter;
 import folk.sisby.switchy.util.SwitchyCommand;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;

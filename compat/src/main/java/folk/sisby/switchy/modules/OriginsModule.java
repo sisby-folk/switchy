@@ -6,6 +6,7 @@ import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.api.module.SwitchyModuleTransferable;
+import folk.sisby.switchy.util.Feedback;
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.origin.Origin;
 import io.github.apace100.origins.origin.OriginLayer;
@@ -38,7 +39,7 @@ public class OriginsModule implements SwitchyModule, SwitchyModuleTransferable {
 	/**
 	 * Identifier for this module.
 	 */
-	public static final Identifier ID = Identifier.of("switchy", "origins");
+	public static final Identifier ID = Feedback.identifier("switchy", "origins");
 
 	/**
 	 * The NBT key where the list of origins is stored.

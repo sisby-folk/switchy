@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import folk.sisby.switchy.util.Feedback;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
@@ -76,7 +77,7 @@ public class IdentifiersArgumentType implements ArgumentType<List<Identifier>> {
 			while (reader.canRead() && isPathCharacterValid(reader.peek())) {
 				reader.skip();
 			}
-			outList.add(Identifier.tryParse(reader.getString().substring(start, reader.getCursor())));
+			outList.add(Feedback.identifier(reader.getString().substring(start, reader.getCursor())));
 			if (reader.canRead() && reader.peek() == ',') {
 				reader.skip();
 				if (!reader.canRead() || reader.peek() == ' ') {

@@ -1,6 +1,7 @@
 package folk.sisby.switchy.modules;
 
 import folk.sisby.switchy.api.SwitchySerializable;
+import folk.sisby.switchy.util.Feedback;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +18,7 @@ public class FabricTailorModuleData implements SwitchySerializable {
 	/**
 	 * Identifier for this module.
 	 */
-	public static final Identifier ID = Identifier.of("switchy", "fabric_tailor");
+	public static final Identifier ID = Feedback.identifier("switchy", "fabric_tailor");
 
 	/**
 	 * The NBT key where the base64 encoded json skin value is stored.

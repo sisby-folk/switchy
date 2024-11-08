@@ -7,6 +7,7 @@ import folk.sisby.switchy.api.exception.ModuleNotFoundException;
 import folk.sisby.switchy.api.exception.PresetNotFoundException;
 import folk.sisby.switchy.api.presets.SwitchyPresetData;
 import folk.sisby.switchy.api.presets.SwitchyPresetsData;
+import folk.sisby.switchy.util.Feedback;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -90,7 +91,7 @@ public abstract class SwitchyPresetsDataImpl<Module extends SwitchySerializable,
 		NbtCompound configCompound = nbt.getCompound(KEY_MODULE_CONFIGS);
 		for (String key : configCompound.getKeys()) {
 			try {
-				SwitchySerializable config = setConfig(Identifier.tryParse(key));
+				SwitchySerializable config = setConfig(Feedback.identifier(key));
 				if (config != null) {
 					config.fillFromNbt(configCompound.getCompound(key));
 				}
