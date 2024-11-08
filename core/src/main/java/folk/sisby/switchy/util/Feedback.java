@@ -61,6 +61,14 @@ public class Feedback {
 		player.sendMessage(literal("[Switchy] ").setStyle(Style.EMPTY.withColor(Formatting.AQUA)).append(text), false);
 	}
 
+	public static Identifier identifier(String identifier) {
+		return new Identifier(identifier);
+	}
+
+	public static Identifier identifier(String namespace, String key) {
+		return new Identifier(namespace, key);
+	}
+
 	/**
 	 * Creates translatable text from a key.
 	 *

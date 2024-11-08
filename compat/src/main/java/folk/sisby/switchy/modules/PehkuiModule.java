@@ -6,6 +6,7 @@ import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.config.PehkuiModuleConfig;
+import folk.sisby.switchy.util.Feedback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -30,7 +31,7 @@ public class PehkuiModule implements SwitchyModule {
 	/**
 	 * Identifier for this module.
 	 */
-	public static final Identifier ID = new Identifier("switchy", "pehkui");
+	public static final Identifier ID = Feedback.identifier("switchy", "pehkui");
 	/**
 	 * The config object for the pehkui module, containing the current state of {@code /config/switchy/pehkui.toml}.
 	 */
@@ -41,7 +42,7 @@ public class PehkuiModule implements SwitchyModule {
 	public final Map<ScaleType, @Nullable Float> scaleValues = new HashMap<>();
 
 	PehkuiModule() {
-		CONFIG.scaleTypes.forEach(id -> scaleValues.put(ScaleRegistries.SCALE_TYPES.get(new Identifier(id)), null));
+		CONFIG.scaleTypes.forEach(id -> scaleValues.put(ScaleRegistries.SCALE_TYPES.get(Feedback.identifier(id)), null));
 	}
 
 	/**

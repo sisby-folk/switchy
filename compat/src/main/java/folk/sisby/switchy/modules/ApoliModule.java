@@ -7,6 +7,7 @@ import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.module.SwitchyModuleInfo;
 import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.config.ApoliModuleConfig;
+import folk.sisby.switchy.util.Feedback;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.InventoryPower;
 import io.github.apace100.apoli.power.Power;
@@ -40,7 +41,7 @@ public class ApoliModule implements SwitchyModule {
 	/**
 	 * Identifier for this module.
 	 */
-	public static final Identifier ID = new Identifier("switchy", "apoli");
+	public static final Identifier ID = Feedback.identifier("switchy", "apoli");
 	/**
 	 * The config object for the apoli module, containing the current state of {@code /config/switchy/apoli.toml}.
 	 */
@@ -53,7 +54,7 @@ public class ApoliModule implements SwitchyModule {
 	 * The NBT key where the list of power data is stored.
 	 */
 	public static final String KEY_POWER_DATA_LIST = "PowerData";
-	private static final Identifier COMMAND_SOURCE = new Identifier("apoli", "command");
+	private static final Identifier COMMAND_SOURCE = Feedback.identifier("apoli", "command");
 	/**
 	 * The NBT data for each power.
 	 */

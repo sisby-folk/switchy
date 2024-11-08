@@ -8,6 +8,7 @@ import folk.sisby.switchy.api.SwitchyPlayer;
 import folk.sisby.switchy.api.module.SwitchyModuleEditable;
 import folk.sisby.switchy.api.presets.SwitchyPresets;
 import folk.sisby.switchy.presets.SwitchyPresetsImpl;
+import folk.sisby.switchy.util.Feedback;
 import folk.sisby.switchy.util.PresetConverter;
 import folk.sisby.switchy.util.SwitchyCommand;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -44,62 +45,62 @@ public class SwitchyClientServerNetworking {
 	/**
 	 * Request serialized presets for exporting.
 	 */
-	public static final Identifier C2S_REQUEST_PRESETS = new Identifier(Switchy.ID, "c2s_presets");
+	public static final Identifier C2S_REQUEST_PRESETS = Feedback.identifier(Switchy.ID, "c2s_presets");
 	/**
 	 * Request client-compatible serialized presets for client addon use.
 	 */
-	public static final Identifier C2S_REQUEST_CLIENT_PRESETS = new Identifier(Switchy.ID, "c2s_client_presets");
+	public static final Identifier C2S_REQUEST_CLIENT_PRESETS = Feedback.identifier(Switchy.ID, "c2s_client_presets");
 
 	// Actions
 	/**
 	 * Send serialized presets to import.
 	 * Must be sent twice to finalize - outputs confirmation text in chat.
 	 */
-	public static final Identifier C2S_IMPORT_CONFIRM = new Identifier(Switchy.ID, "c2s_import_confirm");
+	public static final Identifier C2S_IMPORT_CONFIRM = Feedback.identifier(Switchy.ID, "c2s_import_confirm");
 	/**
 	 * Send serialized presets to import.
 	 */
-	public static final Identifier C2S_IMPORT = new Identifier(Switchy.ID, "c2s_import");
+	public static final Identifier C2S_IMPORT = Feedback.identifier(Switchy.ID, "c2s_import");
 	/**
 	 * Send switch action with preset name.
 	 */
-	public static final Identifier C2S_SWITCH = new Identifier(Switchy.ID, "c2s_switch");
+	public static final Identifier C2S_SWITCH = Feedback.identifier(Switchy.ID, "c2s_switch");
 	/**
 	 * Send new preset action with preset name.
 	 */
-	public static final Identifier C2S_PRESETS_NEW = new Identifier(Switchy.ID, "c2s_presets_new");
+	public static final Identifier C2S_PRESETS_NEW = Feedback.identifier(Switchy.ID, "c2s_presets_new");
 	/**
 	 * Send delete preset action with preset name.
 	 */
-	public static final Identifier C2S_PRESETS_DELETE = new Identifier(Switchy.ID, "c2s_presets_delete");
+	public static final Identifier C2S_PRESETS_DELETE = Feedback.identifier(Switchy.ID, "c2s_presets_delete");
 	/**
 	 * Send rename preset action with preset name and new name.
 	 */
-	public static final Identifier C2S_PRESETS_RENAME = new Identifier(Switchy.ID, "c2s_presets_rename");
+	public static final Identifier C2S_PRESETS_RENAME = Feedback.identifier(Switchy.ID, "c2s_presets_rename");
 	/**
 	 * Send disable module action with module ID.
 	 */
-	public static final Identifier C2S_PRESETS_MODULE_DISABLE = new Identifier(Switchy.ID, "c2s_presets_module_disable");
+	public static final Identifier C2S_PRESETS_MODULE_DISABLE = Feedback.identifier(Switchy.ID, "c2s_presets_module_disable");
 	/**
 	 * Send enable module action with module ID.
 	 */
-	public static final Identifier C2S_PRESETS_MODULE_ENABLE = new Identifier(Switchy.ID, "c2s_presets_module_enable");
+	public static final Identifier C2S_PRESETS_MODULE_ENABLE = Feedback.identifier(Switchy.ID, "c2s_presets_module_enable");
 
 	// Responses
 	/**
 	 * Serialized presets for exporting.
 	 */
-	public static final Identifier S2C_PRESETS = new Identifier(Switchy.ID, "s2c_presets");
+	public static final Identifier S2C_PRESETS = Feedback.identifier(Switchy.ID, "s2c_presets");
 	/**
 	 * Client-compatible serialized presets for previewing.
 	 */
-	public static final Identifier S2C_CLIENT_PRESETS = new Identifier(Switchy.ID, "s2c_client_presets");
+	public static final Identifier S2C_CLIENT_PRESETS = Feedback.identifier(Switchy.ID, "s2c_client_presets");
 
 	// Events
 	/**
 	 * @see SwitchyEvents.Switch
 	 */
-	public static final Identifier S2C_EVENT_SWITCH = new Identifier(Switchy.ID, "s2c_event_switch");
+	public static final Identifier S2C_EVENT_SWITCH = Feedback.identifier(Switchy.ID, "s2c_event_switch");
 
 	// NBT Keys
 	/**
