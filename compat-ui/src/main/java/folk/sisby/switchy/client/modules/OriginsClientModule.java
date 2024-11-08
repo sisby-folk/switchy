@@ -47,7 +47,7 @@ public class OriginsClientModule implements SwitchyClientModule, SwitchyUIModule
 	 * Identifier for this module.
 	 * Must match {@link OriginsModule}.
 	 */
-	public static final Identifier ID = new Identifier("switchy", "origins");
+	public static final Identifier ID = Feedback.identifier("switchy", "origins");
 
 	/**
 	 * The NBT key where the list of origins is stored.

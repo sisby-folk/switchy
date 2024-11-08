@@ -22,7 +22,7 @@ public class DrogtorModuleData implements SwitchySerializable {
 	/**
 	 * Identifier for this module.
 	 */
-	public static final Identifier ID = new Identifier("switchy", "drogtor");
+	public static final Identifier ID = Feedback.identifier("switchy", "drogtor");
 
 	/**
 	 * The NBT key where the nickname is stored.
