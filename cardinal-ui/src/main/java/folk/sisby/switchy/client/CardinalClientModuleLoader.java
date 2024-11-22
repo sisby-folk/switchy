@@ -82,7 +82,7 @@ public class CardinalClientModuleLoader extends JsonDataLoader implements Identi
 						}
 					};
 				} catch (CommandSyntaxException e) {
-					SwitchyCardinalClient.LOGGER.warn("[Switchy Cardinal UI] module '{}' has invalid condition path '{}', skipping...", moduleId, icon.get(KEY_ICON_PATH).getAsString());
+					SwitchyCardinalClient.LOGGER.warn("[Switchy Cardinal UI] module '{}' has invalid icon path '{}', skipping...", moduleId, icon.get(KEY_ICON_PATH).getAsString());
 					return;
 				}
 			} else {
@@ -103,7 +103,7 @@ public class CardinalClientModuleLoader extends JsonDataLoader implements Identi
 					try {
 						valuePaths.add(pathAtg.parse(new StringReader(element.getAsString())));
 					} catch (CommandSyntaxException e) {
-						SwitchyCardinalClient.LOGGER.warn("[Switchy Cardinal UI] module '{}' has invalid path '{}', skipping...", moduleId, element.getAsString());
+						SwitchyCardinalClient.LOGGER.warn("[Switchy Cardinal UI] module '{}' has invalid values path '{}', skipping...", moduleId, element.getAsString());
 						return;
 					}
 				}
@@ -115,7 +115,7 @@ public class CardinalClientModuleLoader extends JsonDataLoader implements Identi
 					try {
 						inventoryPaths.add(pathAtg.parse(new StringReader(element.getAsString())));
 					} catch (CommandSyntaxException e) {
-						SwitchyCardinalClient.LOGGER.warn("[Switchy Cardinal UI] module '{}' has invalid path '{}', skipping...", moduleId, element.getAsString());
+						SwitchyCardinalClient.LOGGER.warn("[Switchy Cardinal UI] module '{}' has invalid inventories path '{}', skipping...", moduleId, element.getAsString());
 						return;
 					}
 				}
