@@ -86,9 +86,15 @@ public class CardinalClientModuleLoader extends JsonDataLoader implements Identi
 					return;
 				}
 			} else {
-				ItemStack stack = ItemStack.fromNbt((NbtCompound) JsonOps.INSTANCE.convertTo(NbtOps.INSTANCE, icon));
+				ItemStack stack;
+				try {
+					stack = ItemStack.fromNbt((NbtCompound) JsonOps.INSTANCE.convertTo(NbtOps.INSTANCE, icon));
+				} catch (Exception e) {
+					stack = Items.DIRT.getDefaultStack();
+				}
 				if (stack.getCount() == 0) stack.setCount(1);
-				iconStackSupplier = nbt -> stack;
+				ItemStack finalStack = stack;
+				iconStackSupplier = nbt -> finalStack;
 			}
 
 			List<NbtPathArgumentType.NbtPath> valuePaths = new ArrayList<>();
