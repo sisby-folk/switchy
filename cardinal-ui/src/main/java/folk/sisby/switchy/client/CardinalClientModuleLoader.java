@@ -58,80 +58,82 @@ public class CardinalClientModuleLoader extends JsonDataLoader implements Identi
 		super(gson, "switchy_cardinal");
 	}
 
+	private static void accept(Identifier moduleId, JsonElement contents) {
+		if (SwitchyClientModuleRegistry.containsModule(moduleId)) {
+			return;
+		}
+		JsonObject moduleOptions = contents.getAsJsonObject();
+		if (!moduleOptions.has(KEY_ICON)) {
+			SwitchyCardinalClient.LOGGER.warn("[Switchy Cardinal UI] module '{}' is missing options, skipping...", moduleId);
+			return;
+		}
+
+		try {
+			Function<NbtCompound, ItemStack> iconStackSupplier;
+			JsonObject icon = moduleOptions.get(KEY_ICON).getAsJsonObject();
+			if (icon.has(KEY_ICON_PATH)) {
+				try {
+					NbtPathArgumentType.NbtPath path = pathAtg.parse(new StringReader(icon.get(KEY_ICON_PATH).getAsString()));
+					iconStackSupplier = nbt -> {
+						try {
+							return ItemStack.CODEC.decode(NbtOps.INSTANCE, path.get(nbt).get(0)).getOrThrow().getFirst();
+						} catch (Exception e) {
+							return Items.DIRT.getDefaultStack();
+						}
+					};
+				} catch (CommandSyntaxException e) {
+					SwitchyCardinalClient.LOGGER.warn("[Switchy Cardinal UI] module '{}' has invalid condition path '{}', skipping...", moduleId, icon.get(KEY_ICON_PATH).getAsString());
+					return;
+				}
+			} else {
+				ItemStack stack = ItemStack.CODEC.decode(JsonOps.INSTANCE, icon).getOrThrow().getFirst();
+				if (stack.getCount() == 0) stack.setCount(1);
+				iconStackSupplier = nbt -> stack;
+			}
+
+			List<NbtPathArgumentType.NbtPath> valuePaths = new ArrayList<>();
+			if (moduleOptions.has(KEY_VALUES)) {
+				for (JsonElement element : moduleOptions.getAsJsonArray(KEY_VALUES)) {
+					try {
+						valuePaths.add(pathAtg.parse(new StringReader(element.getAsString())));
+					} catch (CommandSyntaxException e) {
+						SwitchyCardinalClient.LOGGER.warn("[Switchy Cardinal UI] module '{}' has invalid path '{}', skipping...", moduleId, element.getAsString());
+						return;
+					}
+				}
+			}
+
+			List<NbtPathArgumentType.NbtPath> inventoryPaths = new ArrayList<>();
+			if (moduleOptions.has(KEY_INVENTORIES)) {
+				for (JsonElement element : moduleOptions.getAsJsonArray(KEY_INVENTORIES)) {
+					try {
+						inventoryPaths.add(pathAtg.parse(new StringReader(element.getAsString())));
+					} catch (CommandSyntaxException e) {
+						SwitchyCardinalClient.LOGGER.warn("[Switchy Cardinal UI] module '{}' has invalid path '{}', skipping...", moduleId, element.getAsString());
+						return;
+					}
+				}
+			}
+
+			NbtPathArgumentType.NbtPath condition = null;
+			if (moduleOptions.has(KEY_CONDITION)) {
+				try {
+					condition = pathAtg.parse(new StringReader(moduleOptions.get(KEY_CONDITION).getAsString()));
+				} catch (CommandSyntaxException e) {
+					SwitchyCardinalClient.LOGGER.warn("[Switchy Cardinal UI] module '{}' has invalid condition path '{}', skipping...", moduleId, moduleOptions.get(KEY_CONDITION).getAsString());
+					return;
+				}
+			}
+
+			CardinalSerializerClientModule.register(moduleId, new CardinalSerializerClientModule.PreviewConfig(iconStackSupplier, valuePaths, inventoryPaths, condition));
+		} catch (UnsupportedOperationException | JsonSyntaxException ignoredGetFromJsonEx) {
+			SwitchyCardinalClient.LOGGER.warn("[Switchy Cardinal UI] module '{}' has invalid types, skipping...", moduleId);
+		}
+	}
+
 	@Override
 	protected void apply(Map<Identifier, JsonElement> prepared, ResourceManager manager, Profiler profiler) {
-		prepared.forEach((moduleId, contents) -> {
-			if (SwitchyClientModuleRegistry.containsModule(moduleId)) {
-				return;
-			}
-			JsonObject moduleOptions = contents.getAsJsonObject();
-			if (!moduleOptions.has(KEY_ICON)) {
-				SwitchyCardinalClient.LOGGER.warn("[Switchy Cardinal UI] module '{}' is missing options, skipping...", moduleId);
-				return;
-			}
-
-			try {
-				Function<NbtCompound, ItemStack> iconStackSupplier;
-				JsonObject icon = moduleOptions.get(KEY_ICON).getAsJsonObject();
-				if (icon.has(KEY_ICON_PATH)) {
-					try {
-						NbtPathArgumentType.NbtPath path = pathAtg.parse(new StringReader(icon.get(KEY_ICON_PATH).getAsString()));
-						iconStackSupplier = nbt -> {
-							try {
-								return ItemStack.CODEC.decode(NbtOps.INSTANCE, path.get(nbt).get(0)).getOrThrow().getFirst();
-							} catch (Exception e) {
-								return Items.DIRT.getDefaultStack();
-							}
-						};
-					} catch (CommandSyntaxException e) {
-						SwitchyCardinalClient.LOGGER.warn("[Switchy Cardinal UI] module '{}' has invalid condition path '{}', skipping...", moduleId, icon.get(KEY_ICON_PATH).getAsString());
-						return;
-					}
-				} else {
-					ItemStack stack = ItemStack.CODEC.decode(JsonOps.INSTANCE, icon).getOrThrow().getFirst();
-					if (stack.getCount() == 0) stack.setCount(1);
-					iconStackSupplier = nbt -> stack;
-				}
-
-				List<NbtPathArgumentType.NbtPath> valuePaths = new ArrayList<>();
-				if (moduleOptions.has(KEY_VALUES)) {
-					for (JsonElement element : moduleOptions.getAsJsonArray(KEY_VALUES)) {
-						try {
-							valuePaths.add(pathAtg.parse(new StringReader(element.getAsString())));
-						} catch (CommandSyntaxException e) {
-							SwitchyCardinalClient.LOGGER.warn("[Switchy Cardinal UI] module '{}' has invalid path '{}', skipping...", moduleId, element.getAsString());
-							return;
-						}
-					}
-				}
-
-				List<NbtPathArgumentType.NbtPath> inventoryPaths = new ArrayList<>();
-				if (moduleOptions.has(KEY_INVENTORIES)) {
-					for (JsonElement element : moduleOptions.getAsJsonArray(KEY_INVENTORIES)) {
-						try {
-							inventoryPaths.add(pathAtg.parse(new StringReader(element.getAsString())));
-						} catch (CommandSyntaxException e) {
-							SwitchyCardinalClient.LOGGER.warn("[Switchy Cardinal UI] module '{}' has invalid path '{}', skipping...", moduleId, element.getAsString());
-							return;
-						}
-					}
-				}
-
-				NbtPathArgumentType.NbtPath condition = null;
-				if (moduleOptions.has(KEY_CONDITION)) {
-					try {
-						condition = pathAtg.parse(new StringReader(moduleOptions.get(KEY_CONDITION).getAsString()));
-					} catch (CommandSyntaxException e) {
-						SwitchyCardinalClient.LOGGER.warn("[Switchy Cardinal UI] module '{}' has invalid condition path '{}', skipping...", moduleId, moduleOptions.get(KEY_CONDITION).getAsString());
-						return;
-					}
-				}
-
-				CardinalSerializerClientModule.register(moduleId, new CardinalSerializerClientModule.PreviewConfig(iconStackSupplier, valuePaths, inventoryPaths, condition));
-			} catch (UnsupportedOperationException | JsonSyntaxException ignoredGetFromJsonEx) {
-				SwitchyCardinalClient.LOGGER.warn("[Switchy Cardinal UI] module '{}' has invalid types, skipping...", moduleId);
-			}
-		});
+		prepared.forEach(CardinalClientModuleLoader::accept);
 		SwitchyCardinalClient.LOGGER.info("[Switchy Cardinal UI] Finished reloading {} modules!", prepared.size());
 	}
 
