@@ -156,9 +156,9 @@ This allows, for example, adding an extra power to one preset to give it a 'hybr
 
 ```
 repositories {
-    maven { url 'https://repo.sleeping.town/' } // Switchy, Kaleido Config
+    maven { url "https://repo.sleeping.town/" } // Switchy, Kaleido Config
     maven { url "https://maven.nucleoid.xyz/" } // Server Trans
-    maven { url 'https://maven.wispforest.io' } // owo lib
+    maven { url "https://maven.wispforest.io" } // owo lib
 }
 dependencies {
     modCompileOnly "folk.sisby:switchy-core:2.8.2"
