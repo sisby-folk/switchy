@@ -156,8 +156,7 @@ This allows, for example, adding an extra power to one preset to give it a 'hybr
 
 ```
 repositories {
-    maven { url 'https://maven.proxyfox.dev/' } // Switchy
-    maven { url 'https://repo.sleeping.town/' } // Keleido
+    maven { url 'https://repo.sleeping.town/' } // Switchy, Kaleido Config
     maven { url "https://maven.nucleoid.xyz/" } // Server Trans
     maven { url 'https://maven.wispforest.io' } // owo lib
 }
