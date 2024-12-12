@@ -255,8 +255,7 @@ The tooltip will be loaded from `switchy.modules.[namespace].[path].preview.tool
 
 ## Further Info
 
-This mod is primarily motivated by improving accessibility for [plural systems](https://morethanone.info).<br/>
-❓ Check out [Plural Respect](https://pluralrespect.neocities.org).
+This mod is primarily motivated by improving accessibility for [plural systems](https://pluralrespect.neocities.org).
 
 ### Afterword
 
