@@ -15,13 +15,6 @@ import java.util.List;
 
 @FiguraEventPlugin
 public class SwitchyFiguraEvents implements FiguraEvent {
-	@LuaWhitelist
-	@LuaFieldDoc("events.switchy.world_switch")
-	public static LuaEvent WORLD_SWITCH = new LuaEvent();
-	@LuaWhitelist
-	@LuaFieldDoc("events.switchy.switch")
-	public static LuaEvent SWITCH = new LuaEvent();
-
 	static {
 		SwitchyClientEvents.SWITCH.register((event) -> {
 			Avatar avatar = AvatarManager.getAvatarForPlayer(event.player());
@@ -31,10 +24,10 @@ public class SwitchyFiguraEvents implements FiguraEvent {
 				String oldPreset = event.previousPreset();
 				List<String> enabledModules = event.enabledModules();
 
-				avatar.run(WORLD_SWITCH, avatar.worldTick, newPreset, oldPreset, enabledModules);
+				avatar.run("SWITCHY.WORLD_SWITCH", avatar.worldTick, newPreset, oldPreset, enabledModules);
 
 				if (avatar.loaded && avatar.luaRuntime != null && avatar.luaRuntime.entityAPI != null && avatar.luaRuntime.entityAPI.isLoaded())
-					avatar.run(SWITCH, avatar.tick, newPreset, oldPreset, enabledModules);
+					avatar.run("SWITCHY.SWITCH", avatar.tick, newPreset, oldPreset, enabledModules);
 			}
 		});
 	}
@@ -47,8 +40,8 @@ public class SwitchyFiguraEvents implements FiguraEvent {
 	@Override
 	public Collection<Pair<String, LuaEvent>> getEvents() {
 		return List.of(
-			new Pair<>("SWITCH", SWITCH),
-			new Pair<>("WORLD_SWITCH", WORLD_SWITCH)
+			new Pair<>("SWITCH", new LuaEvent()),
+			new Pair<>("WORLD_SWITCH", new LuaEvent())
 		);
 	}
 }
