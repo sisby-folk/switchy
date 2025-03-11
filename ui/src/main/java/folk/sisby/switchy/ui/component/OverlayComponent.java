@@ -14,6 +14,7 @@ public class OverlayComponent<T extends Component> extends OverlayContainer<T> {
 	public OverlayComponent(HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment, T child) {
 		super(child);
 		this.alignment(horizontalAlignment, verticalAlignment);
+		this.zIndex(100);
 		this.child(child);
 		this.child = child;
 	}
