@@ -137,16 +137,22 @@ allprojects {
 }
 
 dependencies {
-	include project(":core")
-	include project(":client")
-	include project(":ui")
-	include project(":cardinal")
-	include project(":cardinal-ui")
-	include project(":compat")
-	include project(":compat-ui")
-	modLocalRuntime libs.fapi
-	modLocalRuntime libs.kaleidoConfig
-	modLocalRuntime libs.serverTranslationsApi
+	final def addMod = { final String path ->
+		include project(path)
+		localRuntime(project(path: path, configuration: "namedElements")) { exclude(module: "fabric-loader") }
+	}
+
+	addMod(":core")
+	addMod(":client")
+	addMod(":ui")
+	addMod(":cardinal")
+	addMod(":cardinal-ui")
+	addMod(":compat")
+	addMod(":compat-ui")
+
+	modLocalRuntime(libs.fapi) { exclude(module: "fabric-loader") }
+	modLocalRuntime(libs.kaleidoConfig) { exclude(module: "fabric-loader") }
+	modLocalRuntime(libs.serverTranslationsApi) { exclude(module: "fabric-loader") }
 }
 
 githubRelease {
@@ -180,6 +186,14 @@ modrinth {
 		optional.project libs.pehkui.get().getName()
 		optional.project libs.figura.get().getName()
 	}
+}
+
+tasks.runClient {
+	dependsOn(subprojects*.tasks*.jar)
+}
+
+tasks.runServer {
+	dependsOn(subprojects*.tasks*.jar)
 }
 
 tasks.register("fullRelease") {
