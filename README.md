@@ -156,10 +156,9 @@ This allows, for example, adding an extra power to one preset to give it a 'hybr
 
 ```
 repositories {
-    maven { url 'https://maven.proxyfox.dev/' } // Switchy
-    maven { url 'https://repo.sleeping.town/' } // Keleido
+    maven { url "https://repo.sleeping.town/" } // Switchy, Kaleido Config
     maven { url "https://maven.nucleoid.xyz/" } // Server Trans
-    maven { url 'https://maven.wispforest.io' } // owo lib
+    maven { url "https://maven.wispforest.io" } // owo lib
 }
 dependencies {
     modCompileOnly "folk.sisby:switchy-core:2.8.2"
@@ -256,8 +255,7 @@ The tooltip will be loaded from `switchy.modules.[namespace].[path].preview.tool
 
 ## Further Info
 
-This mod is primarily motivated by improving accessibility for [plural systems](https://morethanone.info).<br/>
-❓ Check out [Plural Respect](https://pluralrespect.neocities.org).
+This mod is primarily motivated by improving accessibility for [plural systems](https://systemsguide.neocities.org).
 
 ### Afterword
 
