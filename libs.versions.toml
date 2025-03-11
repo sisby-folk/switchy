@@ -26,7 +26,7 @@ styledNicknames = "1.6.0+1.21"
 placeholder = "2.4.0-pre.2+1.21"
 playerData = "0.6.0+1.21"
 luaj = "3.0.8-figura"
-figura = "0.1.5-rc.1"
+figura = "0.1.5-rc.6"
 
 [plugins]
 loom = { id = "fabric-loom", version.ref = "loom" }

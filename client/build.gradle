@@ -3,4 +3,6 @@
 dependencies {
 	implementation project(path: ":core", configuration: "namedElements")
 	modImplementation libs.fapi
+	modRuntimeOnly libs.serverTranslationsApi
+	modRuntimeOnly libs.kaleidoConfig
 }

@@ -21,9 +21,6 @@
 		"parent": "${modId}"
 	},
 	"environment": "client",
-	"mixins": [
-		"${uiId}.mixins.json"
-	],
 	"depends": {
 		"minecraft": ">=${mc}",
 		"fabricloader": ">=${fl}",
