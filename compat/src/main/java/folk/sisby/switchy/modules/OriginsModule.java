@@ -10,8 +10,8 @@ import folk.sisby.switchy.util.Feedback;
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.origin.Origin;
 import io.github.apace100.origins.origin.OriginLayer;
-import io.github.apace100.origins.origin.OriginLayers;
-import io.github.apace100.origins.origin.OriginRegistry;
+import io.github.apace100.origins.origin.OriginLayerManager;
+import io.github.apace100.origins.origin.OriginManager;
 import io.github.apace100.origins.registry.ModComponents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.Entity;
@@ -116,16 +116,19 @@ public class OriginsModule implements SwitchyModule, SwitchyModuleTransferable {
 	public NbtCompound toNbt() {
 		NbtCompound outNbt = new NbtCompound();
 		// From Origins PlayerOriginComponent
-		NbtList originLayerList = new NbtList();
+		NbtList originLayersNbt = new NbtList();
 		if (origins != null) {
-			origins.forEach((key, value) -> {
-				NbtCompound layerTag = new NbtCompound();
-				layerTag.putString(KEY_LAYER, key.getIdentifier().toString());
-				layerTag.putString(KEY_ORIGIN, value.getIdentifier().toString());
-				originLayerList.add(layerTag);
+			origins.forEach((layer, origin) -> {
+				NbtCompound originLayerNbt = new NbtCompound();
+
+				originLayerNbt.putString("Layer", layer.getId().toString());
+				originLayerNbt.putString("Origin", origin.getId().toString());
+
+				originLayersNbt.add(originLayerNbt);
+
 			});
 		}
-		outNbt.put(KEY_ORIGINS_LIST, originLayerList);
+		outNbt.put(KEY_ORIGINS_LIST, originLayersNbt);
 		return outNbt;
 	}
 
@@ -139,8 +142,8 @@ public class OriginsModule implements SwitchyModule, SwitchyModuleTransferable {
 					String layerId = layerCompound.getString(KEY_LAYER);
 					String originId = layerCompound.getString(KEY_ORIGIN);
 					try {
-						OriginLayer layer = OriginLayers.getLayer(Identifier.tryParse(layerId));
-						Origin origin = OriginRegistry.get(Identifier.tryParse(originId));
+						OriginLayer layer = OriginLayerManager.get(Identifier.tryParse(layerId));
+						Origin origin = OriginManager.get(Identifier.tryParse(originId));
 						if (layer == null || origin == null) throw new IllegalArgumentException("A layer or origin was null!");
 						origins.put(layer, origin);
 					} catch (IllegalArgumentException originGetEx) {

@@ -3,7 +3,7 @@ package folk.sisby.switchy.config;
 import folk.sisby.kaleido.api.WrappedConfig;
 import folk.sisby.kaleido.lib.quiltconfig.api.annotations.Comment;
 import folk.sisby.kaleido.lib.quiltconfig.api.values.ValueList;
-import io.github.apace100.apoli.power.PowerType;
+import io.github.apace100.apoli.power.Power;
 
 /**
  * Handles module cold-editing permission configuration (including importing).
@@ -29,7 +29,7 @@ public class ApoliModuleConfig extends WrappedConfig {
 	 * @param type a power type.
 	 * @return whether the power can be switched by the apoli module.
 	 */
-	public boolean canSwitchPower(PowerType<?> type) {
-		return (switchCommandPowers && !exceptionPowerIds.contains(type.getIdentifier().toString())) || (!switchCommandPowers && exceptionPowerIds.contains(type.getIdentifier().toString()));
+	public boolean canSwitchPower(Power type) {
+		return (switchCommandPowers && !exceptionPowerIds.contains(type.getId().toString())) || (!switchCommandPowers && exceptionPowerIds.contains(type.getId().toString()));
 	}
 }

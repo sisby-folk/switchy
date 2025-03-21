@@ -9,8 +9,8 @@ import folk.sisby.switchy.ui.api.module.SwitchyUIModule;
 import folk.sisby.switchy.util.Feedback;
 import io.github.apace100.origins.origin.Origin;
 import io.github.apace100.origins.origin.OriginLayer;
-import io.github.apace100.origins.origin.OriginLayers;
-import io.github.apace100.origins.origin.OriginRegistry;
+import io.github.apace100.origins.origin.OriginLayerManager;
+import io.github.apace100.origins.origin.OriginManager;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
@@ -106,7 +106,7 @@ public class OriginsClientModule implements SwitchyClientModule, SwitchyUIModule
 		if (origins != null) {
 			origins.forEach((key, value) -> {
 				NbtCompound layerTag = new NbtCompound();
-				layerTag.putString(KEY_LAYER, key.getIdentifier().toString());
+				layerTag.putString(KEY_LAYER, key.getId().toString());
 				layerTag.putString(KEY_ORIGIN, value.toString());
 				originLayerList.add(layerTag);
 			});
@@ -122,7 +122,7 @@ public class OriginsClientModule implements SwitchyClientModule, SwitchyUIModule
 			NbtList originLayerList = nbt.getList(KEY_ORIGINS_LIST, NbtElement.COMPOUND_TYPE);
 			for (NbtElement layerElement : originLayerList) {
 				if (layerElement instanceof NbtCompound layerCompound) {
-					origins.put(OriginLayers.getLayer(Identifier.tryParse(layerCompound.getString(KEY_LAYER))), OriginRegistry.get(Identifier.tryParse(layerCompound.getString(KEY_ORIGIN))));
+					origins.put(OriginLayerManager.get(Identifier.tryParse(layerCompound.getString(KEY_LAYER))), OriginManager.get(Identifier.tryParse(layerCompound.getString(KEY_ORIGIN))));
 				}
 			}
 		}

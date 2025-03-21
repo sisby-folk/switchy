@@ -9,10 +9,10 @@ import folk.sisby.switchy.api.module.SwitchyModuleRegistry;
 import folk.sisby.switchy.config.ApoliModuleConfig;
 import folk.sisby.switchy.util.Feedback;
 import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.apace100.apoli.power.InventoryPower;
 import io.github.apace100.apoli.power.Power;
-import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.power.PowerTypeRegistry;
+import io.github.apace100.apoli.power.PowerManager;
+import io.github.apace100.apoli.power.type.InventoryPowerType;
+import io.github.apace100.apoli.power.type.PowerType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -58,11 +58,11 @@ public class ApoliModule implements SwitchyModule {
 	/**
 	 * The NBT data for each power.
 	 */
-	public final Map<PowerType<?>, NbtElement> powerNbt = new HashMap<>();
+	public final Map<Power, NbtElement> powerNbt = new HashMap<>();
 	/**
 	 * Powers added by commands allowed to be switched
 	 */
-	public List<PowerType<?>> commandPowers = null;
+	public List<Power> commandPowers = null;
 
 	/**
 	 * Registers the module
@@ -79,56 +79,56 @@ public class ApoliModule implements SwitchyModule {
 			.withApplyDependencies(Set.of(OriginsModule.ID)));
 	}
 
-	private static void clearInventories(List<InventoryPower> powers) {
-		powers.forEach(InventoryPower::clear);
+	private static void clearInventories(List<InventoryPowerType> powers) {
+		powers.forEach(InventoryPowerType::clear);
 	}
 
 	@Override
 	public void updateFromPlayer(ServerPlayerEntity player, @Nullable String nextPreset) {
-		PowerHolderComponent playerHolder = PowerHolderComponent.KEY.get(player);
+		PowerHolderComponent playerHolder = PowerHolderComponent.getNullable(player);
 		if (CONFIG.switchCommandPowers || !CONFIG.exceptionPowerIds.isEmpty()) {
 			commandPowers = new ArrayList<>();
-			for (PowerType<?> powerType : playerHolder.getPowersFromSource(COMMAND_SOURCE)) {
-				if (CONFIG.canSwitchPower(powerType) && !commandPowers.contains(powerType)) {
-					commandPowers.add(powerType);
+			for (Power power : playerHolder.getPowersFromSource(COMMAND_SOURCE)) {
+				if (CONFIG.canSwitchPower(power) && !commandPowers.contains(power)) {
+					commandPowers.add(power);
 				}
 			}
 		}
 		powerNbt.clear();
-		for (Power power : playerHolder.getPowers()) {
-			powerNbt.put(power.getType(), power.toTag());
+		for (PowerType powerType : playerHolder.getPowerTypes()) {
+			powerNbt.put(powerType.getPower(), powerType.toTag());
 		}
 		if (nextPreset != null) {
-			clearInventories(PowerHolderComponent.getPowers(player, InventoryPower.class));
+			clearInventories(PowerHolderComponent.getPowerTypes(player, InventoryPowerType.class));
 		}
 	}
 
 	@Override
 	public void applyToPlayer(ServerPlayerEntity player) {
-		PowerHolderComponent playerHolder = PowerHolderComponent.KEY.get(player);
+		PowerHolderComponent playerHolder = PowerHolderComponent.getNullable(player);
 		if (commandPowers != null) {
-			playerHolder.getPowersFromSource(COMMAND_SOURCE).forEach(powerType -> {
-				if (CONFIG.canSwitchPower(powerType) && !commandPowers.contains(powerType)) {
-					playerHolder.removePower(powerType, COMMAND_SOURCE);
+			playerHolder.getPowersFromSource(COMMAND_SOURCE).forEach(power -> {
+				if (CONFIG.canSwitchPower(power) && !commandPowers.contains(power)) {
+					playerHolder.removePower(power, COMMAND_SOURCE);
 				}
 			});
-			commandPowers.forEach(powerType -> {
-				if (CONFIG.canSwitchPower(powerType) && !playerHolder.hasPower(powerType, COMMAND_SOURCE)) {
-					playerHolder.addPower(powerType, COMMAND_SOURCE);
+			commandPowers.forEach(power -> {
+				if (CONFIG.canSwitchPower(power) && !playerHolder.hasPower(power, COMMAND_SOURCE)) {
+					playerHolder.addPower(power, COMMAND_SOURCE);
 				}
 			});
 		}
-		powerNbt.forEach((powerType, nbt) -> {
-			Power power = playerHolder.getPower(powerType);
-			if (power != null) {
-				power.fromTag(nbt);
+		powerNbt.forEach((power, nbt) -> {
+			PowerType powerType = playerHolder.getPowerType(power);
+			if (powerType != null) {
+				powerType.fromTag(nbt);
 			}
 		});
 	}
 
 	@Override
 	public void onDelete(ServerPlayerEntity player, boolean fromDisable) {
-		PowerHolderComponent.getPowers(player, InventoryPower.class).forEach(InventoryPower::dropItemsOnLost);
+		PowerHolderComponent.getPowerTypes(player, InventoryPowerType.class).forEach(InventoryPowerType::dropItemsOnLost);
 	}
 
 	@Override
@@ -136,13 +136,13 @@ public class ApoliModule implements SwitchyModule {
 		NbtCompound outNbt = new NbtCompound();
 		if (commandPowers != null) {
 			NbtList commandPowerList = new NbtList();
-			commandPowers.forEach(powerType -> commandPowerList.add(NbtString.of(powerType.getIdentifier().toString())));
+			commandPowers.forEach(power -> commandPowerList.add(NbtString.of(power.getId().toString())));
 			outNbt.put(KEY_COMMAND_POWERS, commandPowerList);
 		}
 		NbtList powerNbtList = new NbtList();
-		powerNbt.forEach((powerType, nbt) -> {
+		powerNbt.forEach((power, nbt) -> {
 			NbtCompound powerTag = new NbtCompound();
-			powerTag.putString("PowerType", powerType.getIdentifier().toString());
+			powerTag.putString("PowerType", power.getId().toString());
 			powerTag.put("Data", nbt);
 			powerNbtList.add(powerTag);
 		});
@@ -157,8 +157,8 @@ public class ApoliModule implements SwitchyModule {
 			commandPowers = new ArrayList<>();
 			commandPowerList.forEach(id -> {
 				try {
-					PowerType<?> powerType = PowerTypeRegistry.get(Identifier.tryParse(id.asString()));
-					commandPowers.add(powerType);
+					Power power = PowerManager.get(Identifier.tryParse(id.asString()));
+					commandPowers.add(power);
 				} catch (IllegalArgumentException powerGetEx) {
 					SwitchyCompat.LOGGER.warn("[Switchy Compat] Failed to load preset command power with id {}. Exception: {}", id, powerGetEx);
 				}
@@ -172,8 +172,8 @@ public class ApoliModule implements SwitchyModule {
 					String powerId = dataCompound.getString("PowerType");
 					NbtElement powerData = dataCompound.get("Data");
 					try {
-						PowerType<?> powerType = PowerTypeRegistry.get(Identifier.tryParse(powerId));
-						powerNbt.put(powerType, powerData);
+						Power power = PowerManager.get(Identifier.tryParse(powerId));
+						powerNbt.put(power, powerData);
 					} catch (IllegalArgumentException powerGetEx) {
 						SwitchyCompat.LOGGER.warn("[Switchy Compat] Failed to load preset power with id {}. Exception: {}", powerId, powerGetEx);
 					}
