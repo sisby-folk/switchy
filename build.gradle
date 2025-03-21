@@ -182,7 +182,7 @@ modrinth {
 		optional.version libs.owo.get().getName(), libs.versions.owo.get()
 		optional.version libs.styledNicknames.get().getName(), libs.versions.styledNicknames.get()
 		optional.version libs.fabrictailor.get().getName(), libs.versions.fabrictailor.get()
-		optional.version libs.origins.get().getName().replace("-fabric", ""), libs.versions.origins.get().replace("v", "")
+		optional.version libs.origins.get().getName().replace("-fabric", ""), "1.13.0-alpha.12+mc.1.21.1"
 		optional.project libs.pehkui.get().getName()
 		optional.project libs.figura.get().getName()
 	}
