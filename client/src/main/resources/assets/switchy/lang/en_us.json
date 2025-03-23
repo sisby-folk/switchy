@@ -12,5 +12,11 @@
 	"command.exception.identifiers.expected_namespace": "Expected namespace to begin after separator",
 	"command.exception.identifiers.expected_path": "Expected path to begin after namespace",
 	"command.exception.file.not_found": "File not found",
-	"command.exception.file.invalid_nbt": "File contained invalid NBT"
+	"command.exception.file.invalid_nbt": "File contained invalid NBT",
+	"commands.switchy_client.export.help": "save presets to a file",
+	"commands.switchy_client.import.help": "load exported presets",
+	"commands.switchy_client.import.fail.parse": "Failed to parse imported NBT",
+	"commands.switchy_client.import.fail.construct": "Failed to construct Presets from NBT",
+	"commands.switchy_client.import.fail.permission": "You do not have permission to specify operator modules: %s",
+	"commands.switchy_client.placeholder.file": "[file]"
 }

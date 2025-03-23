@@ -96,6 +96,9 @@ allprojects {
 				rename { "assets/${modId}/icon.png" }
 			}
 		}
+		from("src/main/resources/assets/${modId}/lang/en_us.json") {
+			into { "data/${modId}_assets/lang" } // loading from the same namespace causes a weird collision in some versions of STAPI
+		}
 	}
 
 	tasks.withType(JavaCompile).configureEach {
