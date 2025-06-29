@@ -17,8 +17,10 @@
 	},
 	"license": "${license}",
 	"icon": "assets/${modId}/icon.png",
-	"modmenu": {
-		"parent": "${modId}"
+	"custom": {
+		"modmenu": {
+			"parent": "${modId}"
+		}
 	},
 	"environment": "client",
 	"accessWidener": "switchy-compat-ui.accesswidener",
