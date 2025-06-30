@@ -29,7 +29,7 @@
 	},
 	"entrypoints": {
 		"main": [
-			"io.github.username.mod_id.ModId"
+			"dev.sisby.switchy.Switchy"
 		],
 		"client": [
 		]

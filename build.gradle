@@ -53,14 +53,12 @@ java {
 	targetCompatibility = JavaVersion.VERSION_21
 }
 
-jar {
-	from("LICENSE") {
-		rename { "${it}_${archivesBaseName}" }
-	}
-}
-
 publishing {
 	repositories {
+		maven {
+			url "https://repo-api.sleeping.town/"
+			credentials(PasswordCredentials)
+		}
 	}
 	publications {
 		mavenJava(MavenPublication) {

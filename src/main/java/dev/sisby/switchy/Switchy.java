@@ -1,15 +1,15 @@
-package io.github.username.mod_id;
+package dev.sisby.switchy;
 
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ModId implements ModInitializer {
-	public static final String ID = "mod_id";
+public class Switchy implements ModInitializer {
+	public static final String ID = "switchy";
 	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
 
 	@Override
 	public void onInitialize() {
-		//LOGGER.info("[Mod ID] pretty pink princess ponies prancing perpendicular");
+		LOGGER.info("[Switchy] Twitcha-twitch! A-twitcha-twitch!");
 	}
 }
