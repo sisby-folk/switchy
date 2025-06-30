@@ -1,8 +1,0 @@
-dependencies {
-	implementation libs.kaleidoConfig
-	include libs.kaleidoConfig
-
-	modImplementation libs.fapi
-	modImplementation libs.serverTranslationsApi
-	include libs.serverTranslationsApi
-}

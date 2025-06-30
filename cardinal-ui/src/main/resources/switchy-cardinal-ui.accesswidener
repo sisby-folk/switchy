@@ -1,5 +1,0 @@
-accessWidener v2 named
-
-accessible field net/minecraft/nbt/visitor/NbtTextFormatter result Lnet/minecraft/text/MutableText;
-mutable field net/minecraft/nbt/visitor/NbtTextFormatter result Lnet/minecraft/text/MutableText;
-accessible class net/minecraft/command/argument/NbtPathArgumentType$PathNode

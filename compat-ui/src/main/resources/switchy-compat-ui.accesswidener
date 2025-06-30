@@ -1,4 +1,0 @@
-accessWidener v2 named
-
-accessible field net/minecraft/client/texture/PlayerSkinProvider skinCache Lnet/minecraft/client/texture/PlayerSkinProvider$FileCache;
-accessible method net/minecraft/client/texture/PlayerSkinProvider$FileCache get (Lcom/mojang/authlib/minecraft/MinecraftProfileTexture;)Ljava/util/concurrent/CompletableFuture;

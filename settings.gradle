@@ -1,4 +1,3 @@
-//file:noinspection GroovyAssignabilityCheck
 pluginManagement {
 	repositories {
 		maven { url "https://maven.fabricmc.net/" }
@@ -13,5 +12,3 @@ dependencyResolutionManagement {
 		}
 	}
 }
-
-include("core", "client", "ui", "cardinal", "cardinal-ui", "compat", "compat-ui")
