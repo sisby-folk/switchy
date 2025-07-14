@@ -5,13 +5,17 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 
-public record SwitchyProfile(SwitchyComponentMap components) implements SwitchyComponentHolder {
-	public static final Codec<SwitchyProfile> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-		SwitchyComponentMap.CODEC.fieldOf("components").forGetter(SwitchyProfile::components)
-	).apply(instance, SwitchyProfile::new));
+public record SwitchyProfile(String id, SwitchyComponentMap components) implements SwitchyComponentHolder<SwitchyProfile> {
+	public static Codec<SwitchyProfile> codec(String id) {
+		return RecordCodecBuilder.create(instance -> instance.group(
+			SwitchyComponentMap.CODEC.fieldOf("components").forGetter(SwitchyProfile::components)
+		).apply(instance, components -> new SwitchyProfile(id, components)));
+	}
 
-	public static final PacketCodec<RegistryByteBuf, SwitchyProfile> PACKET_CODEC = PacketCodec.tuple(
-		SwitchyComponentMap.PACKET_CODEC, SwitchyProfile::components,
-		SwitchyProfile::new
-	);
+	public static PacketCodec<RegistryByteBuf, SwitchyProfile> packetCodec(String id) {
+		return PacketCodec.tuple(
+			SwitchyComponentMap.PACKET_CODEC, SwitchyProfile::components,
+			components -> new SwitchyProfile(id, components)
+		);
+	}
 }

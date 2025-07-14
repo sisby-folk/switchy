@@ -19,7 +19,7 @@ public interface SwitchyCodecs {
 	Codec<Set<Identifier>> IDENTIFIER_SET_CODEC = Codec.list(Identifier.CODEC).xmap(LinkedHashSet::new, ArrayList::new);
 	Codec<Set<SwitchyComponentType<?>>> COMPONENT_TYPE_SET_CODEC = Codec.list(SwitchyComponentTypes.instance().codec()).xmap(LinkedHashSet::new, ArrayList::new);
 
-	static <B extends ByteBuf, K, V, M extends Map<K, V>> PacketCodec<B, M> packetDispatchMap(
+	static <B extends ByteBuf, K, V, M extends Map<K, V>> PacketCodec<B, M> packetDispatchedMap(
 		IntFunction<? extends M> factory, PacketCodec<? super B, K> keyCodec, Function<K, PacketCodec<? super B, V>> valueCodec
 	) {
 		return new PacketCodec<>() {

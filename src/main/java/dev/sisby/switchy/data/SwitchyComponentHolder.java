@@ -3,9 +3,10 @@ package dev.sisby.switchy.data;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-public interface SwitchyComponentHolder {
+public interface SwitchyComponentHolder<H extends SwitchyComponentHolder<H>> {
 	SwitchyComponentMap components();
 
 	@Nullable
@@ -15,6 +16,10 @@ public interface SwitchyComponentHolder {
 
 	default <T> T getOrDefault(SwitchyComponentType<? extends T> type, T fallback) {
 		return this.components().getOrDefault(type, fallback);
+	}
+
+	default <T> T getOrGetDefault(SwitchyComponentType<? extends T> type, Function<H, T> fallback) {
+		return this.components().getOrDefault(type, fallback.apply((H) this));
 	}
 
 	@Nullable

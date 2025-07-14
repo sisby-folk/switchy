@@ -15,7 +15,7 @@ import java.util.Set;
 
 public class SwitchyComponentMap {
 	public static final Codec<SwitchyComponentMap> CODEC = SwitchyComponentType.TYPE_TO_VALUE_MAP_CODEC.flatComapMap(Builder::build, map -> DataResult.success(new Reference2ObjectArrayMap<>(map.map)));
-	public static final PacketCodec<RegistryByteBuf, Reference2ObjectMap<SwitchyComponentType<?>, Object>> MAP_PACKET_CODEC = SwitchyCodecs.packetDispatchMap(Reference2ObjectArrayMap::new,
+	public static final PacketCodec<RegistryByteBuf, Reference2ObjectMap<SwitchyComponentType<?>, Object>> MAP_PACKET_CODEC = SwitchyCodecs.packetDispatchedMap(Reference2ObjectArrayMap::new,
 		SwitchyComponentTypes.instance().packetCodec(),
 		t -> (PacketCodec<RegistryByteBuf, Object>) t.packetCodec()
 	);
