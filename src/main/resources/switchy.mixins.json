@@ -4,6 +4,7 @@
 	"package": "dev.sisby.switchy.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
+		"PlayerMixin"
 	],
 	"client": [
 	],

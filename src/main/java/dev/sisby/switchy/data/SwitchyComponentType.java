@@ -39,6 +39,12 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	@Nullable NbtMutator<T> nbtMutator();
 
+	default void tryMutate(SwitchyComponentMap components, NbtCompound playerData) throws Exception {
+		if (nbtMutator() != null) {
+			nbtMutator().mutate(new NbtMutator.NbtMutatorContext<>(components.get(this), playerData));
+		}
+	}
+
 	@Nullable LiveMutator<T> liveMutator();
 
 	@Nullable EmptyChecker<T> emptyChecker();
@@ -82,7 +88,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 		@Override
 		public T initialize(InitializerContext context) throws Exception {
-			ServerPlayerEntity defaultPlayer = new ServerPlayerEntity(context.player().getServer(), context.player().getServerWorld(), context.player().getGameProfile(), context.player().getClientOptions());
+			ServerPlayerEntity defaultPlayer = context.player().getServer().getPlayerManager().createPlayer(context.player().getGameProfile(), context.player().getClientOptions());
 			NbtCompound defaultNbt = new NbtCompound();
 			defaultPlayer.writeNbt(defaultNbt);
 			return reader.read(new Reader.ReaderContext(defaultNbt, defaultPlayer));

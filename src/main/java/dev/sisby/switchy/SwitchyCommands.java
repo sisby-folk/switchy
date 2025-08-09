@@ -1,5 +1,6 @@
 package dev.sisby.switchy;
 
+import com.google.common.collect.Sets;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -17,10 +18,12 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class SwitchyCommands {
 	private static int switchProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId) {
+		SwitchyProfile currentProfile = data.getCurrentProfile();
 		SwitchyProfile nextProfile;
 		try {
 			nextProfile = data.switchOrCreateProfile(profileId, player);
@@ -35,7 +38,7 @@ public class SwitchyCommands {
 		}
 		feedback.accept(prefix()
 			.append(Text.literal("Switched from ").formatted(Formatting.GREEN))
-			.append(data.getCurrentProfile().getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())))
+			.append(currentProfile.getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())))
 			.append(Text.literal(" to ").formatted(Formatting.GREEN))
 			.append(nextProfile.getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())))
 			.append(Text.literal("!").formatted(Formatting.GREEN))
@@ -48,7 +51,7 @@ public class SwitchyCommands {
 			CommandManager.literal("switchy")
 				.then(CommandManager.literal("switch")
 					.then(CommandManager.argument("profile", StringArgumentType.word())
-						.suggests((c, b) -> CommandSource.suggestMatching((Iterable<String>) map(c, (i, p, d, f) -> d.profiles().keySet(), false), b))
+						.suggests((c, b) -> CommandSource.suggestMatching((Iterable<String>) map(c, (i, p, d, f) -> Sets.difference(d.profiles().keySet(), Set.of(d.current())) , false), b))
 						.executes(c -> execute(c, (i, p, d, f) -> switchProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase())))
 					)
 				)
