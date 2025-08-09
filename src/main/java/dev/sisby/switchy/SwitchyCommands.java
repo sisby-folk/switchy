@@ -6,27 +6,38 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
 import dev.sisby.switchy.data.SwitchyPlayerData;
+import dev.sisby.switchy.data.SwitchyProfile;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
-import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 
 import java.util.Objects;
 import java.util.function.Consumer;
 
 public class SwitchyCommands {
-	private static int switchProfile(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId) {
+	private static int switchProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId) {
+		SwitchyProfile nextProfile;
+		try {
+			nextProfile = data.switchOrCreateProfile(profileId, player);
+		} catch (Exception e) {
+			feedback.accept(prefix()
+				.append("Error while switching: ").formatted(Formatting.RED)
+				.append(Objects.requireNonNullElse(e.getMessage(), "???")).formatted(Formatting.GRAY)
+				.append(" See server logs for more info.").formatted(Formatting.RED)
+			);
+			Switchy.LOGGER.error("[Switchy] Error while switching to {} for player {}", profileId, player.getGameProfile().getName(), e);
+			return 0;
+		}
 		feedback.accept(prefix()
 			.append(Text.literal("Switched from ").formatted(Formatting.GREEN))
 			.append(data.getCurrentProfile().getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())))
 			.append(Text.literal(" to ").formatted(Formatting.GREEN))
-			.append(data.switchOrCreateProfile(profileId, player).getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())))
+			.append(nextProfile.getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())))
 			.append(Text.literal("!").formatted(Formatting.GREEN))
 		);
 		return 1;
@@ -38,7 +49,7 @@ public class SwitchyCommands {
 				.then(CommandManager.literal("switch")
 					.then(CommandManager.argument("profile", StringArgumentType.word())
 						.suggests((c, b) -> CommandSource.suggestMatching((Iterable<String>) map(c, (i, p, d, f) -> d.profiles().keySet(), false), b))
-						.executes(c -> execute(c, (i, p, d, f) -> switchProfile(i, p, d, f, c.getArgument("profile", String.class).toLowerCase())))
+						.executes(c -> execute(c, (i, p, d, f) -> switchProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase())))
 					)
 				)
 		);

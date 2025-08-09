@@ -3,6 +3,7 @@ package dev.sisby.switchy.data;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sisby.switchy.util.SwitchyCodecs;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -21,7 +22,7 @@ public record SwitchyPlayerData(String current, Set<SwitchyComponentType<?>> com
 	public static final Codec<SwitchyPlayerData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		Codec.STRING.fieldOf("current").forGetter(SwitchyPlayerData::current),
 		SwitchyCodecs.COMPONENT_TYPE_SET_CODEC.fieldOf("componentTypes").forGetter(SwitchyPlayerData::componentTypes),
-		Codec.dispatchedMap(Codecs.NON_EMPTY_STRING, SwitchyProfile::codec).fieldOf("profiles").forGetter(SwitchyPlayerData::profiles)
+		Codec.dispatchedMap(Codecs.NON_EMPTY_STRING, SwitchyProfile::codec).fieldOf("profiles").xmap(a -> (Map<String, SwitchyProfile>) new HashMap<>(a), b -> b).forGetter(SwitchyPlayerData::profiles)
 	).apply(instance, SwitchyPlayerData::new));
 
 	public static final PacketCodec<RegistryByteBuf, SwitchyPlayerData> PACKET_CODEC = PacketCodec.tuple(
@@ -47,11 +48,18 @@ public record SwitchyPlayerData(String current, Set<SwitchyComponentType<?>> com
 		return profiles().get(current());
 	}
 
-	public SwitchyProfile createProfile(String profileId, String profileName, ServerPlayerEntity player) {
-		return profiles().put(profileId, new SwitchyProfile(profileId, SwitchyComponentMap.builder().add(SwitchyComponentTypes.NAME, Text.of(profileName)).build()));
+	public SwitchyProfile createProfile(String profileId, String profileName, ServerPlayerEntity player) throws Exception {
+		NbtCompound playerNbt = new NbtCompound();
+		player.writeNbt(playerNbt);
+		SwitchyComponentMap.Builder builder = SwitchyComponentMap.builder();
+		builder.add(SwitchyComponentTypes.NAME, Text.of(profileName));
+		for (SwitchyComponentType<?> componentType : SwitchyComponentTypes.instance().values()) {
+			componentType.tryInitialize(builder, new SwitchyComponentType.Initializer.InitializerContext(playerNbt, player));
+		}
+		return profiles().put(profileId, new SwitchyProfile(profileId, builder.build()));
 	}
 
-	public SwitchyProfile switchOrCreateProfile(String profileId, ServerPlayerEntity player) {
+	public SwitchyProfile switchOrCreateProfile(String profileId, ServerPlayerEntity player) throws Exception {
 		if (!profileExists(profileId)) createProfile(profileId, profileId.toUpperCase(), player);
 		return getCurrentProfile();
 	}
