@@ -9,8 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
 public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 	Codec<Map<SwitchyComponentType<?>, Object>> TYPE_TO_VALUE_MAP_CODEC = Codec.dispatchedMap(SwitchyComponentTypes.instance().codec(), SwitchyComponentType::codec);
@@ -22,10 +20,6 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 	@Nullable
 	Codec<T> codec();
 
-	SwitchyLayerType defaultLayerType();
-
-	Set<SwitchyLayerType> allowedLayerTypes();
-
 	@Nullable
 	PacketCodec<? super RegistryByteBuf, T> packetCodec();
 
@@ -36,10 +30,6 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		private Codec<T> codec;
 		@Nullable
 		private PacketCodec<? super RegistryByteBuf, T> packetCodec;
-		@Nullable
-		private SwitchyLayerType defaultLayerType;
-		@Nullable
-		private Set<SwitchyLayerType> allowedLayerTypes;
 
 		public Builder(@NotNull Identifier id) {
 			this.id = id;
@@ -55,32 +45,18 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 			return this;
 		}
 
-		public Builder<T> defaultLayerType(@Nullable SwitchyLayerType defaultLayerType) {
-			this.defaultLayerType = defaultLayerType;
-			return this;
-		}
-
-		public Builder<T> allowedLayerTypes(@Nullable Set<SwitchyLayerType> allowedLayerTypes) {
-			this.allowedLayerTypes = allowedLayerTypes;
-			return this;
-		}
-
 		public SwitchyComponentType<T> build() {
 			return new SimpleSwitchyComponentType<>(
 				this.id,
 				this.codec,
-				this.packetCodec,
-				Objects.requireNonNullElse(defaultLayerType, SwitchyLayerTypes.PRIMARY),
-				Objects.requireNonNullElse(allowedLayerTypes, Set.of(SwitchyLayerTypes.PRIMARY))
+				this.packetCodec
 			);
 		}
 
 		record SimpleSwitchyComponentType<T>(
 			Identifier id,
 			@Nullable Codec<T> codec,
-			@Nullable PacketCodec<? super RegistryByteBuf, T> packetCodec,
-			SwitchyLayerType defaultLayerType,
-			Set<SwitchyLayerType> allowedLayerTypes
+			@Nullable PacketCodec<? super RegistryByteBuf, T> packetCodec
 		) implements SwitchyComponentType<T> {
 			@Override
 			public String toString() {

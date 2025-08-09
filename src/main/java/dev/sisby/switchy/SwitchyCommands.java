@@ -5,8 +5,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
-import dev.sisby.switchy.data.SwitchyLayerType;
-import dev.sisby.switchy.data.SwitchyLayerTypes;
 import dev.sisby.switchy.data.SwitchyPlayerData;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
@@ -23,12 +21,12 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class SwitchyCommands {
-	private static int switchProfile(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, SwitchyLayerType layer, String profileId) {
+	private static int switchProfile(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId) {
 		feedback.accept(prefix()
 			.append(Text.literal("Switched from ").formatted(Formatting.GREEN))
-			.append(data.getCurrentProfile(layer).getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())))
+			.append(data.getCurrentProfile().getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())))
 			.append(Text.literal(" to ").formatted(Formatting.GREEN))
-			.append(data.switchOrCreateProfile(layer, profileId, player).getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())))
+			.append(data.switchOrCreateProfile(profileId, player).getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())))
 			.append(Text.literal("!").formatted(Formatting.GREEN))
 		);
 		return 1;
@@ -38,14 +36,11 @@ public class SwitchyCommands {
 		dispatcher.register(
 			CommandManager.literal("switchy")
 				.then(CommandManager.literal("switch")
-					.then(CommandManager.argument("layer", IdentifierArgumentType.identifier())
-						.suggests((c, b) -> CommandSource.suggestIdentifiers(SwitchyLayerTypes.instance().keys(), b))
-						.then(CommandManager.argument("profile", StringArgumentType.word())
-							.suggests((c, b) -> CommandSource.suggestMatching((Iterable<String>) map(c, (i, p, d, f) -> d.layers().get(SwitchyLayerTypes.instance().get(c.getArgument("layer", Identifier.class))).profiles().keySet(), false), b))
-							.executes(c -> execute(c, (i, p, d, f) -> switchProfile(i, p, d, f, SwitchyLayerTypes.instance().get(c.getArgument("layer", Identifier.class)), c.getArgument("profile", String.class).toLowerCase())))
-						)
+					.then(CommandManager.argument("profile", StringArgumentType.word())
+						.suggests((c, b) -> CommandSource.suggestMatching((Iterable<String>) map(c, (i, p, d, f) -> d.profiles().keySet(), false), b))
+						.executes(c -> execute(c, (i, p, d, f) -> switchProfile(i, p, d, f, c.getArgument("profile", String.class).toLowerCase())))
 					)
-			)
+				)
 		);
 	}
 

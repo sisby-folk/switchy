@@ -1,7 +1,6 @@
 package dev.sisby.switchy;
 
 import dev.sisby.switchy.data.SwitchyComponentTypes;
-import dev.sisby.switchy.data.SwitchyLayerTypes;
 import dev.sisby.switchy.data.SwitchyPlayerData;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
@@ -30,7 +29,6 @@ public class Switchy implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		LOGGER.info("[Switchy] Twitcha-twitch! A-twitcha-twitch!");
-		SwitchyLayerTypes.init();
 		SwitchyComponentTypes.init();
 		CommandRegistrationCallback.EVENT.register(SwitchyCommands::register);
 	}
