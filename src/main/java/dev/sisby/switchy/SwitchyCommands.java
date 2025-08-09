@@ -13,7 +13,10 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -22,6 +25,36 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class SwitchyCommands {
+	private static int list(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
+		try {
+			data.updateCurrent(player);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		feedback.accept(prefix()
+			.append(Text.literal("%s".formatted(data.profiles().size())).formatted(Formatting.WHITE))
+			.append(Text.literal(" profiles available. ").formatted(Formatting.GRAY))
+			.append(clickable("new", "/switchy switch ", false))
+		);
+		for (SwitchyProfile profile : data.profiles().values()) {
+			if (profile.id().equals(data.current())) continue;
+			feedback.accept(indent()
+				.append(clickable("switch", "/switchy switch %s".formatted(profile.id()), true))
+				.append(Text.of(" "))
+				.append(profile.getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())).copy().setStyle(Style.EMPTY
+					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(profile.components().toString())))
+				))
+			);
+		}
+		feedback.accept(indent()
+			.append(Text.literal("Current: ").formatted(Formatting.GRAY))
+			.append(data.getCurrentProfile().getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())).copy().setStyle(Style.EMPTY
+				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(data.getCurrentProfile().components().toString())))
+			))
+		);
+		return data.profiles().size();
+	}
+
 	private static int switchProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId) {
 		SwitchyProfile currentProfile = data.getCurrentProfile();
 		SwitchyProfile nextProfile;
@@ -41,7 +74,8 @@ public class SwitchyCommands {
 			.append(currentProfile.getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())))
 			.append(Text.literal(" to ").formatted(Formatting.GREEN))
 			.append(nextProfile.getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())))
-			.append(Text.literal("!").formatted(Formatting.GREEN))
+			.append(Text.literal("! ").formatted(Formatting.GREEN))
+			.append(clickable("list", "/switchy", true))
 		);
 		return 1;
 	}
@@ -55,6 +89,7 @@ public class SwitchyCommands {
 						.executes(c -> execute(c, (i, p, d, f) -> switchProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase())))
 					)
 				)
+				.executes(c -> execute(c, SwitchyCommands::list))
 		);
 	}
 
@@ -64,6 +99,17 @@ public class SwitchyCommands {
 
 	public static MutableText indent() {
 		return Text.literal("").append(Text.literal("|| ").formatted(Formatting.DARK_PURPLE));
+	}
+
+	public static MutableText clickable(String name, String command, boolean instant) {
+		return Text.literal("")
+			.append(Text.literal("<").formatted(Formatting.GRAY))
+			.append(Text.literal(name).setStyle(Style.EMPTY
+				.withFormatting(Formatting.AQUA)
+				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(command + (instant ? "" : "...")).formatted(Formatting.AQUA)))
+				.withClickEvent(new ClickEvent(instant ? ClickEvent.Action.RUN_COMMAND : ClickEvent.Action.SUGGEST_COMMAND, command))
+			))
+			.append(Text.literal(">").formatted(Formatting.GRAY));
 	}
 
 	public static <T> T map(CommandContext<ServerCommandSource> context, SurveyorCommandExecutor<T> executor, boolean feedback) {

@@ -73,17 +73,26 @@ public class SwitchyPlayerData {
 		return newProfile;
 	}
 
+	private NbtCompound updateFromPlayer(SwitchyProfile profile, ServerPlayerEntity player) throws Exception {
+		NbtCompound playerNbt = new NbtCompound();
+		player.writeNbt(playerNbt);
+		for (SwitchyComponentType<?> componentType : componentTypes) {
+			if (componentType.reader() != null) {
+				profile.components().set(componentType, componentType.reader().read(new SwitchyComponentType.Reader.ReaderContext(playerNbt, player)));
+			}
+		}
+		return playerNbt;
+	}
+
+	public void updateCurrent(ServerPlayerEntity player) throws Exception {
+		updateFromPlayer(getCurrentProfile(), player);
+	}
+
 	private void switchProfile(SwitchyProfile nextProfile, ServerPlayerEntity player) throws Exception {
 		if (nextProfile.id().equals(current)) throw new IllegalAccessException("can't switch to the current profile!");
 		SwitchyProfile currentProfile = getCurrentProfile();
 		// Read Components
-		NbtCompound playerNbt = new NbtCompound();
-		player.writeNbt(playerNbt);
-		for (SwitchyComponentType<?> componentType : currentProfile.components().keySet()) {
-			if (componentType.reader() != null) {
-				currentProfile.components().set(componentType, componentType.reader().read(new SwitchyComponentType.Reader.ReaderContext(playerNbt, player)));
-			}
-		}
+		NbtCompound playerNbt = updateFromPlayer(currentProfile, player);
 		// Mutate NBT
 		for (SwitchyComponentType<?> componentType : nextProfile.components().keySet()) {
 			componentType.tryMutate(nextProfile.components(), playerNbt);

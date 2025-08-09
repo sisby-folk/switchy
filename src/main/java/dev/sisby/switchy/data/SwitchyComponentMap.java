@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SwitchyComponentMap {
 	public static final Codec<SwitchyComponentMap> CODEC = SwitchyComponentType.TYPE_TO_VALUE_MAP_CODEC.flatComapMap(Builder::build, map -> DataResult.success(new Reference2ObjectArrayMap<>(map.map)));
@@ -55,7 +56,7 @@ public class SwitchyComponentMap {
 	}
 
 	public String toString() {
-		return this.map.toString();
+		return map.entrySet().stream().map(e -> "%s: %s".formatted(e.getKey().id().getPath(), e.getValue().toString())).collect(Collectors.joining("\n"));
 	}
 
 	@SuppressWarnings("unchecked")
