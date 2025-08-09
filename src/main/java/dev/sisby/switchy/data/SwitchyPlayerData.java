@@ -89,10 +89,9 @@ public class SwitchyPlayerData {
 			componentType.tryMutate(nextProfile.components(), playerNbt);
 		}
 
-		// Respawn player
-		((SwitchyPlayer) player).switchy$hotSwap(playerNbt);
-		// player.readNbt(playerNbt);
 		current = nextProfile.id();
+
+		((SwitchyPlayer) player).switchy$hotSwap(playerNbt);
 	}
 
 	public SwitchyProfile switchOrCreateProfile(String profileId, ServerPlayerEntity player) throws Exception {
