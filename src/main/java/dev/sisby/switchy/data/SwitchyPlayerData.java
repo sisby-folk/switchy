@@ -60,7 +60,7 @@ public class SwitchyPlayerData {
 	}
 
 	public SwitchyProfile getOrCreateProfile(String profileId, String profileName, ServerPlayerEntity player) throws Exception {
-		if (profileExists(profileId)) profiles.get(profileId);
+		if (profileExists(profileId)) return profiles.get(profileId);
 		NbtCompound playerNbt = new NbtCompound();
 		player.writeNbt(playerNbt);
 		SwitchyComponentMap.Builder builder = SwitchyComponentMap.builder();

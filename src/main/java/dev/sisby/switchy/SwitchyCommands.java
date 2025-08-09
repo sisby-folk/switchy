@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
 import dev.sisby.switchy.data.SwitchyPlayerData;
 import dev.sisby.switchy.data.SwitchyProfile;
+import dev.sisby.switchy.duck.SwitchyPlayer;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.CommandManager;
@@ -121,7 +122,7 @@ public class SwitchyCommands {
 			return null;
 		}
 
-		SwitchyPlayerData data = player.getAttachedOrCreate(Switchy.PLAYER_DATA);
+		SwitchyPlayerData data = ((SwitchyPlayer) player).switchy$playerData();
 		try {
 			return executor.execute(context.getInput(), player, data, t -> context.getSource().sendFeedback(() -> t, false));
 		} catch (Exception e) {
