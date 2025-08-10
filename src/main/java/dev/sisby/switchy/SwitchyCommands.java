@@ -149,15 +149,15 @@ public class SwitchyCommands {
 	}
 
 	public static MutableText prefix() {
-		return Text.literal("").append(Text.literal("[Switchy] ").formatted(Formatting.DARK_PURPLE));
+		return Text.empty().append(Text.literal("[Switchy] ").formatted(Formatting.DARK_PURPLE));
 	}
 
 	public static MutableText indent() {
-		return Text.literal("").append(Text.literal("|| ").formatted(Formatting.DARK_PURPLE));
+		return Text.empty().append(Text.literal("|| ").formatted(Formatting.DARK_PURPLE));
 	}
 
 	public static MutableText clickable(String name, String command, boolean instant) {
-		return Text.literal("")
+		return Text.empty()
 			.append(Text.literal("<").formatted(Formatting.GRAY))
 			.append(Text.literal(name).setStyle(Style.EMPTY
 				.withFormatting(Formatting.AQUA)

@@ -80,6 +80,6 @@ public class SwitchyComponentMap {
 	}
 
 	public List<MutableText> asTexts(ServerPlayerEntity player) {
-		return keySet().stream().map(t -> Text.literal("").append(Text.literal(t.id().getPath() + ": ").formatted(Formatting.GRAY)).append(t.asText(this, player))).toList();
+		return keySet().stream().map(t -> Text.empty().append(Text.literal(t.id().getPath() + ": ").formatted(Formatting.GRAY)).append(t.asText(this, player))).toList();
 	}
 }

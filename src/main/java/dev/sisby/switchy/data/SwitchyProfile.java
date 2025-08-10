@@ -26,7 +26,7 @@ public record SwitchyProfile(String id, SwitchyComponentMap components) implemen
 	}
 
 	public Collection<Text> asTexts(ServerPlayerEntity player) {
-		List<Text> outList = new ArrayList<>(List.of(Text.literal("").append(Text.literal("id: ").formatted(Formatting.GRAY)).append(id)));
+		List<Text> outList = new ArrayList<>(List.of(Text.empty().append(Text.literal("id: ").formatted(Formatting.GRAY)).append(id)));
 		outList.addAll(components().asTexts(player));
 		return outList;
 	}
