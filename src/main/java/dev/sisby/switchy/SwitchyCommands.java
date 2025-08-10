@@ -8,11 +8,13 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
 import dev.sisby.switchy.data.SwitchyPlayerData;
 import dev.sisby.switchy.data.SwitchyProfile;
-import dev.sisby.switchy.duck.SwitchyPlayer;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
@@ -26,6 +28,18 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class SwitchyCommands {
+	public static void greet(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
+		SwitchyPlayerData data = SwitchyPlayerData.of(handler.getPlayer());
+		if (data.profiles().size() > 1) {
+			handler.getPlayer().sendMessage(prefix()
+				.append(Text.literal("welcome back! current profile: ").formatted(Formatting.GRAY))
+				.append(data.current())
+				.append(Text.literal(". ").formatted(Formatting.GRAY))
+				.append(clickable("list", "/switchy", true))
+			);
+		}
+	}
+
 	private static int list(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
 		try {
 			data.updateCurrent(player);
@@ -122,7 +136,7 @@ public class SwitchyCommands {
 			return null;
 		}
 
-		SwitchyPlayerData data = ((SwitchyPlayer) player).switchy$playerData();
+		SwitchyPlayerData data = SwitchyPlayerData.of(player);
 		try {
 			return executor.execute(context.getInput(), player, data, t -> context.getSource().sendFeedback(() -> t, false));
 		} catch (Exception e) {
@@ -136,7 +150,7 @@ public class SwitchyCommands {
 		return Objects.requireNonNullElse(map(context, executor, true), 0);
 	}
 
-	public interface SurveyorCommandExecutor<T> {
+    public interface SurveyorCommandExecutor<T> {
 		T execute(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback);
 	}
 }

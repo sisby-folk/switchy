@@ -2,6 +2,7 @@ package dev.sisby.switchy.data;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.sisby.switchy.SwitchyCommands;
 import dev.sisby.switchy.duck.SwitchyPlayer;
 import dev.sisby.switchy.util.SwitchyCodecs;
 import net.minecraft.nbt.NbtCompound;
@@ -10,6 +11,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.dynamic.Codecs;
 
 import java.util.HashMap;
@@ -41,6 +43,10 @@ public class SwitchyPlayerData {
 		this.current = current;
 		this.componentTypes = componentTypes;
 		this.profiles = profiles;
+	}
+
+	public static SwitchyPlayerData of(ServerPlayerEntity player) {
+		return ((SwitchyPlayer) player).switchy$playerData();
 	}
 
 	public static SwitchyPlayerData create() {
@@ -100,7 +106,11 @@ public class SwitchyPlayerData {
 
 		current = nextProfile.id();
 
-		((SwitchyPlayer) player).switchy$hotSwap(playerNbt);
+		((SwitchyPlayer) player).switchy$hotSwap(playerNbt, SwitchyCommands.prefix()
+			.append(Text.literal("Switching to ").formatted(Formatting.GRAY))
+			.append(nextProfile.getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())))
+			.append(Text.literal("! Please reconnect.").formatted(Formatting.GRAY))
+		);
 	}
 
 	public SwitchyProfile switchOrCreateProfile(String profileId, ServerPlayerEntity player) throws Exception {

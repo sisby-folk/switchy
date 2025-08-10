@@ -18,10 +18,10 @@ public class PlayerMixin implements SwitchyPlayer {
 	private NbtCompound switchy$hotSwap = null;
 
 	@Override
-	public void switchy$hotSwap(NbtCompound nbt) {
+	public void switchy$hotSwap(NbtCompound nbt, Text reason) {
 		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
 		switchy$hotSwap = nbt;
-		self.networkHandler.disconnect(Text.of("Switching Profiles"));
+		self.networkHandler.disconnect(reason);
 	}
 
 	@Override
