@@ -8,6 +8,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -22,9 +23,11 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		return new SwitchyComponentType.Builder<>(id, codec);
 	}
 
-	@Nullable Codec<T> codec();
+	@NotNull Codec<T> codec();
 
-	@Nullable PacketCodec<? super RegistryByteBuf, T> packetCodec();
+	default @Nullable PacketCodec<? super RegistryByteBuf, T> packetCodec() {
+		return PacketCodecs.codec(codec());
+	}
 
 	@Nullable Initializer<T> initializer();
 
@@ -123,7 +126,6 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 	record SimpleSwitchyComponentType<T>(
 		Identifier id,
 		@Nullable Codec<T> codec,
-		@Nullable PacketCodec<? super RegistryByteBuf, T> packetCodec,
 		@Nullable Initializer<T> initializer,
 		@Nullable Reader<T> reader,
 		@Nullable NbtMutator<T> nbtMutator,
@@ -139,7 +141,6 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 	class Builder<T> {
 		private final @NotNull Identifier id;
 		private final @NotNull Codec<T> codec;
-		private @Nullable PacketCodec<? super RegistryByteBuf, T> packetCodec;
 		private @Nullable Initializer<T> initializer;
 		private @Nullable Reader<T> reader;
 		private @Nullable NbtMutator<T> nbtMutator;
@@ -149,11 +150,6 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		public Builder(@NotNull Identifier id, @NotNull Codec<T> codec) {
 			this.id = id;
 			this.codec = codec;
-		}
-
-		public Builder<T> packetCodec(PacketCodec<? super RegistryByteBuf, T> packetCodec) {
-			this.packetCodec = packetCodec;
-			return this;
 		}
 
 		public Builder<T> initializer(@Nullable Initializer<T> initializer) {
@@ -198,7 +194,6 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 			return new SwitchyComponentType.SimpleSwitchyComponentType<>(
 				this.id,
 				this.codec,
-				this.packetCodec,
 				this.initializer,
 				this.reader,
 				this.nbtMutator,
