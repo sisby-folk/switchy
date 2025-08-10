@@ -30,4 +30,8 @@ public record SwitchyProfile(String id, SwitchyComponentMap components) implemen
 		outList.addAll(components().asTexts());
 		return outList;
 	}
+
+	public SwitchyProfile withId(String newId) {
+		return new SwitchyProfile(newId, components);
+	}
 }

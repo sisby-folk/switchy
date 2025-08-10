@@ -59,20 +59,23 @@ public class SwitchyCommands {
 			if (profile.id().equals(data.current())) continue;
 			feedback.accept(indent()
 				.append(clickable("switch", "/switchy switch %s".formatted(profile.id()), true))
-				.append(Text.of(" "))
+				.append(" ")
 				.append(clickable("view", "/switchy view %s".formatted(profile.id()), true))
-				.append(Text.of(" "))
+				.append(" ")
 				.append(clickable("edit", "/switchy edit %s ".formatted(profile.id()), false))
-				.append(Text.of(" "))
+				.append(" ")
 				.append(profile.getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())).copy().setStyle(Style.EMPTY
 					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(profile.asTexts(player), Text.of("\n"))))
 				))
 			);
 		}
+
 		feedback.accept(indent()
 			.append(Text.literal("current ").formatted(Formatting.GRAY))
 			.append(clickable("view", "/switchy view %s".formatted(data.current()), true))
-			.append(Text.of(" "))
+			.append(" ")
+			.append(clickable("edit", "/switchy edit %s ".formatted(data.current()), false))
+			.append(" ")
 			.append(data.getCurrentProfile().getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())).copy().setStyle(Style.EMPTY
 				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(data.getCurrentProfile().asTexts(player), Text.of("\n"))))
 			))
@@ -148,6 +151,25 @@ public class SwitchyCommands {
 		return 1;
 	}
 
+	private static int renameProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId, String newId) {
+		try {
+			data.renameProfile(profileId, newId);
+		} catch (IllegalArgumentException e) {
+			feedback.accept(prefix().append(Text.literal(e.getMessage()).formatted(Formatting.YELLOW)));
+			return 0;
+		}
+		feedback.accept(prefix()
+			.append(Text.literal("renamed ").formatted(Formatting.GRAY))
+			.append(profileId)
+			.append(Text.literal(" \uD83E\uDC46 ").formatted(Formatting.GRAY))
+			.append(newId)
+			.append(Text.literal("!").formatted(Formatting.GRAY))
+			.append(" ")
+			.append(clickable("list", "/switchy", true))
+		);
+		return 1;
+	}
+
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registries, CommandManager.RegistrationEnvironment environment) {
 		RequiredArgumentBuilder<ServerCommandSource, String> editBuilder = profile(true);
 		for (SwitchyComponentType<?> type : SwitchyComponentTypes.instance().values()) {
@@ -166,7 +188,14 @@ public class SwitchyCommands {
 						.executes(c -> execute(c, (i, p, d, f) -> viewProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase())))
 					)
 				)
-				.then(CommandManager.literal("edit").then(editBuilder))
+				.then(CommandManager.literal("edit")
+					.then(editBuilder
+						.then(CommandManager.literal("id")
+							.then(
+								CommandManager.argument("id", StringArgumentType.word()).executes(c -> execute(c, (i, p, d, f) -> renameProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase(), c.getArgument("id", String.class).toLowerCase()))))
+						)
+					)
+				)
 				.executes(c -> execute(c, SwitchyCommands::list))
 		);
 	}

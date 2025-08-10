@@ -135,8 +135,15 @@ public class SwitchyPlayerData {
 		updateFromPlayer(getCurrentProfile(), player);
 	}
 
+	public void renameProfile(String oldId, String newId) throws IllegalArgumentException {
+		if (!profileExists(oldId)) throw new IllegalArgumentException("profile doesn't exist!");
+		if (profileExists(newId)) throw new IllegalArgumentException("new id is already in use!");
+		profiles.put(newId, profiles.remove(oldId).withId(newId));
+		if (current.equals(oldId)) current = newId;
+	}
+
 	private void switchProfile(SwitchyProfile nextProfile, ServerPlayerEntity player) throws Exception {
-		if (nextProfile.id().equals(current)) throw new IllegalAccessException("can't switch to the current profile!");
+		if (nextProfile.id().equals(current)) throw new IllegalArgumentException("can't switch to the current profile!");
 		SwitchyProfile currentProfile = getCurrentProfile();
 		// Read Components
 		NbtCompound playerNbt = updateFromPlayer(currentProfile, player);
