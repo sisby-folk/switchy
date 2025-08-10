@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.sisby.switchy.data.SwitchyComponentType;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
 import dev.sisby.switchy.data.SwitchyPlayerData;
 import dev.sisby.switchy.data.SwitchyProfile;
@@ -61,6 +62,8 @@ public class SwitchyCommands {
 				.append(Text.of(" "))
 				.append(clickable("view", "/switchy view %s".formatted(profile.id()), true))
 				.append(Text.of(" "))
+				.append(clickable("edit", "/switchy edit %s ".formatted(profile.id()), false))
+				.append(Text.of(" "))
 				.append(profile.getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())).copy().setStyle(Style.EMPTY
 					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(profile.asTexts(player), Text.of("\n"))))
 				))
@@ -80,7 +83,7 @@ public class SwitchyCommands {
 
 	private static int viewProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId) {
 		try {
-			data.updateCurrent(player);
+			if (profileId.equals(data.current())) data.updateCurrent(player);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -97,7 +100,7 @@ public class SwitchyCommands {
 			.append(Text.literal(" components. ").formatted(Formatting.GRAY))
 			.append(clickable("switch", "/switchy switch %s".formatted(profileId), true))
 		);
-		profile.components().asTexts(player).forEach(componentText -> feedback.accept(indent().append(componentText)));
+		profile.components().asTexts().forEach(componentText -> feedback.accept(indent().append(componentText)));
 		return profile.components().size();
 	}
 
@@ -126,26 +129,51 @@ public class SwitchyCommands {
 		return 1;
 	}
 
+	public static <T> int editComponent(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId, SwitchyComponentType<T> type, T value) {
+		SwitchyProfile profile = data.getProfile(profileId);
+		T oldValue = profile.set(type, value);
+		feedback.accept(prefix()
+			.append(Text.literal("edited ").formatted(Formatting.GRAY))
+			.append(profileId)
+			.append(Text.literal(":").formatted(Formatting.GRAY))
+			.append(type.id().getPath())
+			.append(Text.literal(" - ").formatted(Formatting.GRAY))
+			.append(oldValue == null ? Text.of("empty") : type.asText(oldValue))
+			.append(Text.literal(" \uD83E\uDC46 ").formatted(Formatting.GRAY))
+			.append(type.asText(value))
+			.append(Text.literal("!").formatted(Formatting.GRAY))
+			.append(" ")
+			.append(clickable("list", "/switchy", true))
+		);
+		return 1;
+	}
+
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registries, CommandManager.RegistrationEnvironment environment) {
+		RequiredArgumentBuilder<ServerCommandSource, String> editBuilder = profile(true);
+		for (SwitchyComponentType<?> type : SwitchyComponentTypes.instance().values()) {
+			type.tryCreateEditor(arg -> editBuilder.then(CommandManager.literal(type.id().toString().replace("switchy:", "")).then(arg)));
+		}
+
 		dispatcher.register(
 			CommandManager.literal("switchy")
 				.then(CommandManager.literal("switch")
-					.then(profile()
+					.then(profile(false)
 						.executes(c -> execute(c, (i, p, d, f) -> switchProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase())))
 					)
 				)
 				.then(CommandManager.literal("view")
-					.then(profile()
+					.then(profile(true)
 						.executes(c -> execute(c, (i, p, d, f) -> viewProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase())))
 					)
 				)
+				.then(CommandManager.literal("edit").then(editBuilder))
 				.executes(c -> execute(c, SwitchyCommands::list))
 		);
 	}
 
-	private static RequiredArgumentBuilder<ServerCommandSource, String> profile() {
+	private static RequiredArgumentBuilder<ServerCommandSource, String> profile(boolean includeCurrent) {
 		return CommandManager.argument("profile", StringArgumentType.word()).suggests((c, b) -> CommandSource.suggestMatching(
-			(Iterable<String>) map(c, (i, p, d, f) -> Sets.difference(d.keySet(), Set.of(d.current())) , false), b));
+			(Iterable<String>) map(c, (i, p, d, f) -> includeCurrent ? d.keySet() : Sets.difference(d.keySet(), Set.of(d.current())) , false), b));
 	}
 
 	public static MutableText prefix() {

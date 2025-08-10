@@ -7,7 +7,6 @@ import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -79,7 +78,7 @@ public class SwitchyComponentMap {
 		return (T) this.map.remove(type);
 	}
 
-	public List<MutableText> asTexts(ServerPlayerEntity player) {
-		return keySet().stream().map(t -> Text.empty().append(Text.literal(t.id().getPath() + ": ").formatted(Formatting.GRAY)).append(t.asText(this, player))).toList();
+	public List<MutableText> asTexts() {
+		return keySet().stream().map(t -> Text.empty().append(Text.literal(t.id().getPath() + ": ").formatted(Formatting.GRAY)).append(t.asText(this))).toList();
 	}
 }

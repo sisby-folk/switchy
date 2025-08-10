@@ -1,7 +1,10 @@
 package dev.sisby.switchy.data;
 
+import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import dev.sisby.switchy.SwitchyCommands;
 import dev.sisby.switchy.util.TypeRegistry;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.nbt.NbtCompound;
@@ -9,6 +12,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -17,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 	Codec<Map<SwitchyComponentType<?>, Object>> TYPE_TO_VALUE_MAP_CODEC = Codec.dispatchedMap(SwitchyComponentTypes.instance().codec(), SwitchyComponentType::codec);
@@ -37,6 +42,8 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	@Nullable TextProvider<T> textProvider();
 
+	@Nullable ArgumentEditor<T> argumentEditor();
+
 	default @Nullable PacketCodec<? super RegistryByteBuf, T> packetCodec() {
 		return PacketCodecs.codec(codec());
 	}
@@ -54,12 +61,22 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		}
 	}
 
-	default MutableText asText(SwitchyComponentMap components, ServerPlayerEntity player) {
+	default MutableText asText(T value) {
 		if (textProvider() != null) {
-			return textProvider().toText(components.get(this)).copy();
+			return textProvider().toText(value).copy();
 		} else {
-			return Text.literal(components.get(this).toString());
+			return Text.literal(value.toString());
 		}
+	}
+
+	default void tryCreateEditor(Consumer<ArgumentBuilder<ServerCommandSource, ?>> consumer) {
+		if (argumentEditor() != null) {
+			consumer.accept(argumentEditor().create((c, v) -> SwitchyCommands.execute(c, (i, p, d, f) -> SwitchyCommands.editComponent(p, d, f, c.getArgument("profile", String.class).toLowerCase(), this, v))));
+		}
+	}
+
+	default MutableText asText(SwitchyComponentMap components) {
+		return asText(components.get(this));
 	}
 
 	@FunctionalInterface
@@ -85,6 +102,16 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 	@FunctionalInterface
 	interface TextProvider<T> {
 		Text toText(T value);
+	}
+
+	@FunctionalInterface
+	interface ArgumentEditor<T> {
+		ArgumentBuilder<ServerCommandSource, ?> create(EditExecutor<T> executor);
+	}
+
+	@FunctionalInterface
+	interface EditExecutor<T> {
+		int execute(CommandContext<ServerCommandSource> context, T value);
 	}
 
 	class DefaultPlayerInitializer<T> implements Initializer<T> {
@@ -135,7 +162,8 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		@Nullable SwitchyComponentType.NbtReader<T> nbtReader,
 		@Nullable NbtMutator<T> nbtMutator,
 		@Nullable EmptyChecker<T> emptyChecker,
-		@Nullable TextProvider<T> textProvider
+		@Nullable TextProvider<T> textProvider,
+		@Nullable ArgumentEditor<T> argumentEditor
 	) implements SwitchyComponentType<T> {
 		@Override
 		public String toString() {
@@ -151,6 +179,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		private @Nullable NbtMutator<T> nbtMutator;
 		private @Nullable EmptyChecker<T> emptyChecker;
 		private @Nullable TextProvider<T> textProvider;
+		private @Nullable ArgumentEditor<T> argumentEditor;
 
 		public Builder(@NotNull Identifier id, @NotNull Codec<T> codec) {
 			this.id = id;
@@ -182,6 +211,11 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 			return this;
 		}
 
+		public Builder<T> argumentEditor(@Nullable ArgumentEditor<T> argumentEditor) {
+			this.argumentEditor = argumentEditor;
+			return this;
+		}
+
 		public Builder<T> nbtSwitcher(String nbtPath) {
 			NbtSwitcher<T> switcher;
 			try {
@@ -203,7 +237,8 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 				this.nbtReader,
 				this.nbtMutator,
 				this.emptyChecker,
-				this.textProvider
+				this.textProvider,
+				this.argumentEditor
 			);
 		}
 	}
