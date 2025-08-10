@@ -51,7 +51,7 @@ public class PlayerMixin implements SwitchyPlayer {
 
 	@Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
 	public void writePlayerData(NbtCompound nbt, CallbackInfo ci) {
-		if (switchy$playerData != null) {
+		if (switchy$playerData != null && switchy$playerData.size() > 1) {
 			nbt.put(Switchy.ID, SwitchyPlayerData.CODEC.encodeStart(NbtOps.INSTANCE, switchy$playerData).getOrThrow());
 		}
 	}

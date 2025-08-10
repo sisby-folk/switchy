@@ -3,6 +3,7 @@ package dev.sisby.switchy;
 import com.google.common.collect.Sets;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
@@ -21,6 +22,7 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 
 import java.util.Objects;
@@ -30,7 +32,7 @@ import java.util.function.Consumer;
 public class SwitchyCommands {
 	public static void greet(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
 		SwitchyPlayerData data = SwitchyPlayerData.of(handler.getPlayer());
-		if (data.profiles().size() > 1) {
+		if (data.size() > 1) {
 			handler.getPlayer().sendMessage(prefix()
 				.append(Text.literal("welcome back! current profile: ").formatted(Formatting.GRAY))
 				.append(data.current())
@@ -47,27 +49,56 @@ public class SwitchyCommands {
 			throw new RuntimeException(e);
 		}
 		feedback.accept(prefix()
-			.append(Text.literal("%s".formatted(data.profiles().size())).formatted(Formatting.WHITE))
+			.append(Text.literal("you have ").formatted(Formatting.GRAY))
+			.append(Text.literal("%s".formatted(data.size())).formatted(Formatting.WHITE))
 			.append(Text.literal(" profiles available. ").formatted(Formatting.GRAY))
 			.append(clickable("new", "/switchy switch ", false))
 		);
-		for (SwitchyProfile profile : data.profiles().values()) {
+		for (SwitchyProfile profile : data.values()) {
 			if (profile.id().equals(data.current())) continue;
 			feedback.accept(indent()
 				.append(clickable("switch", "/switchy switch %s".formatted(profile.id()), true))
 				.append(Text.of(" "))
+				.append(clickable("view", "/switchy view %s".formatted(profile.id()), true))
+				.append(Text.of(" "))
 				.append(profile.getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())).copy().setStyle(Style.EMPTY
-					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(profile.toString())))
+					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(profile.asTexts(player), Text.of("\n"))))
 				))
 			);
 		}
 		feedback.accept(indent()
-			.append(Text.literal("Current: ").formatted(Formatting.GRAY))
+			.append(Text.literal("current ").formatted(Formatting.GRAY))
+			.append(clickable("view", "/switchy view %s".formatted(data.current()), true))
+			.append(Text.of(" "))
 			.append(data.getCurrentProfile().getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())).copy().setStyle(Style.EMPTY
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(data.getCurrentProfile().toString())))
+				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(data.getCurrentProfile().asTexts(player), Text.of("\n"))))
 			))
 		);
-		return data.profiles().size();
+		return data.size();
+	}
+
+
+	private static int viewProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId) {
+		try {
+			data.updateCurrent(player);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		SwitchyProfile profile = data.getProfile(profileId);
+		if (profile == null) {
+			feedback.accept(prefix().append(Text.literal("profile doesn't exist!").formatted(Formatting.YELLOW)));
+			return 0;
+		}
+		feedback.accept(prefix()
+			.append(Text.literal("profile ").formatted(Formatting.GRAY))
+			.append(profileId)
+			.append(Text.literal(" contains ").formatted(Formatting.GRAY))
+			.append("%d".formatted(profile.components().size()))
+			.append(Text.literal(" components. ").formatted(Formatting.GRAY))
+			.append(clickable("switch", "/switchy switch %s".formatted(profileId), true))
+		);
+		profile.components().asTexts(player).forEach(componentText -> feedback.accept(indent().append(componentText)));
+		return profile.components().size();
 	}
 
 	private static int switchProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId) {
@@ -99,13 +130,22 @@ public class SwitchyCommands {
 		dispatcher.register(
 			CommandManager.literal("switchy")
 				.then(CommandManager.literal("switch")
-					.then(CommandManager.argument("profile", StringArgumentType.word())
-						.suggests((c, b) -> CommandSource.suggestMatching((Iterable<String>) map(c, (i, p, d, f) -> Sets.difference(d.profiles().keySet(), Set.of(d.current())) , false), b))
+					.then(profile()
 						.executes(c -> execute(c, (i, p, d, f) -> switchProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase())))
+					)
+				)
+				.then(CommandManager.literal("view")
+					.then(profile()
+						.executes(c -> execute(c, (i, p, d, f) -> viewProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase())))
 					)
 				)
 				.executes(c -> execute(c, SwitchyCommands::list))
 		);
+	}
+
+	private static RequiredArgumentBuilder<ServerCommandSource, String> profile() {
+		return CommandManager.argument("profile", StringArgumentType.word()).suggests((c, b) -> CommandSource.suggestMatching(
+			(Iterable<String>) map(c, (i, p, d, f) -> Sets.difference(d.keySet(), Set.of(d.current())) , false), b));
 	}
 
 	public static MutableText prefix() {

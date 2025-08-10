@@ -3,6 +3,13 @@ package dev.sisby.switchy.data;
 import com.mojang.serialization.Codec;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public record SwitchyProfile(String id, SwitchyComponentMap components) implements SwitchyComponentHolder<SwitchyProfile> {
 	public static Codec<SwitchyProfile> codec(String id) {
@@ -16,5 +23,11 @@ public record SwitchyProfile(String id, SwitchyComponentMap components) implemen
 	@Override
 	public String toString() {
 		return id + "\n" + components.toString();
+	}
+
+	public Collection<Text> asTexts(ServerPlayerEntity player) {
+		List<Text> outList = new ArrayList<>(List.of(Text.literal("").append(Text.literal("id: ").formatted(Formatting.GRAY)).append(id)));
+		outList.addAll(components().asTexts(player));
+		return outList;
 	}
 }

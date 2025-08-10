@@ -8,8 +8,13 @@ import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -69,6 +74,10 @@ public class SwitchyComponentMap {
 	@Nullable
 	public <T> T remove(SwitchyComponentType<? extends T> type) {
 		return (T) this.map.remove(type);
+	}
+
+	public List<MutableText> asTexts(ServerPlayerEntity player) {
+		return keySet().stream().map(t -> Text.literal("").append(Text.literal(t.id().getPath() + ": ").formatted(Formatting.GRAY)).append(t.asText(this, player))).toList();
 	}
 
 	public static class Builder {

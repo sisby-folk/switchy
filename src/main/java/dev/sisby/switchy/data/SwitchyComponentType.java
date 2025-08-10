@@ -10,6 +10,8 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,6 +54,16 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	@Nullable EmptyChecker<T> emptyChecker();
 
+	@Nullable TextProvider<T> textProvider();
+
+	default MutableText asText(SwitchyComponentMap components, ServerPlayerEntity player) {
+		if (textProvider() != null) {
+			return textProvider().toText(components.get(this), player).copy();
+		} else {
+			return Text.literal(components.get(this).toString());
+		}
+	}
+
 	@FunctionalInterface
 	interface Initializer<T> {
 		T initialize(InitializerContext context) throws Exception;
@@ -80,6 +92,11 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 	interface EmptyChecker<T> {
 		boolean isEmpty(EmptyCheckerContext<T> context);
 		record EmptyCheckerContext<T>(T componentData, ServerPlayerEntity player) {}
+	}
+
+	@FunctionalInterface
+	interface TextProvider<T> {
+		Text toText(T componentData, ServerPlayerEntity player);
 	}
 
 	class DefaultPlayerInitializer<T> implements Initializer<T> {
@@ -130,7 +147,8 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		@Nullable Reader<T> reader,
 		@Nullable NbtMutator<T> nbtMutator,
 		@Nullable LiveMutator<T> liveMutator,
-		@Nullable EmptyChecker<T> emptyChecker
+		@Nullable EmptyChecker<T> emptyChecker,
+		@Nullable TextProvider<T> textProvider
 	) implements SwitchyComponentType<T> {
 		@Override
 		public String toString() {
@@ -146,6 +164,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		private @Nullable NbtMutator<T> nbtMutator;
 		private @Nullable LiveMutator<T> liveMutator;
 		private @Nullable EmptyChecker<T> emptyChecker;
+		private @Nullable TextProvider<T> textProvider;
 
 		public Builder(@NotNull Identifier id, @NotNull Codec<T> codec) {
 			this.id = id;
@@ -177,6 +196,11 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 			return this;
 		}
 
+		public Builder<T> textProvider(@Nullable TextProvider<T> textProvider) {
+			this.textProvider = textProvider;
+			return this;
+		}
+
 		public Builder<T> nbtSwitcher(String nbtPath) {
 			NbtSwitcher<T> switcher;
 			try {
@@ -198,7 +222,8 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 				this.reader,
 				this.nbtMutator,
 				this.liveMutator,
-				this.emptyChecker
+				this.emptyChecker,
+				this.textProvider
 			);
 		}
 	}

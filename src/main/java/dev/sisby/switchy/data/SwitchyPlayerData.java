@@ -15,6 +15,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.dynamic.Codecs;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -24,14 +25,14 @@ import java.util.Set;
 public class SwitchyPlayerData {
 	public static final Codec<SwitchyPlayerData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		Codec.STRING.fieldOf("current").forGetter(SwitchyPlayerData::current),
-		SwitchyCodecs.COMPONENT_TYPE_SET_CODEC.fieldOf("componentTypes").forGetter(SwitchyPlayerData::componentTypes),
-		Codec.dispatchedMap(Codecs.NON_EMPTY_STRING, SwitchyProfile::codec).fieldOf("profiles").xmap(a -> (Map<String, SwitchyProfile>) new HashMap<>(a), b -> b).forGetter(SwitchyPlayerData::profiles)
+		SwitchyCodecs.COMPONENT_TYPE_SET_CODEC.fieldOf("componentTypes").forGetter(p -> p.componentTypes),
+		Codec.dispatchedMap(Codecs.NON_EMPTY_STRING, SwitchyProfile::codec).fieldOf("profiles").xmap(a -> (Map<String, SwitchyProfile>) new HashMap<>(a), b -> b).forGetter(p -> p.profiles)
 	).apply(instance, SwitchyPlayerData::new));
 
 	public static final PacketCodec<RegistryByteBuf, SwitchyPlayerData> PACKET_CODEC = PacketCodec.tuple(
 		PacketCodecs.STRING, SwitchyPlayerData::current,
-		PacketCodecs.collection(LinkedHashSet::new, SwitchyComponentTypes.instance().packetCodec()), SwitchyPlayerData::componentTypes,
-		SwitchyCodecs.packetDispatchedMap(HashMap::new, PacketCodecs.STRING, SwitchyProfile::packetCodec), SwitchyPlayerData::profiles,
+		PacketCodecs.collection(LinkedHashSet::new, SwitchyComponentTypes.instance().packetCodec()), p -> p.componentTypes,
+		SwitchyCodecs.packetDispatchedMap(HashMap::new, PacketCodecs.STRING, SwitchyProfile::packetCodec), p -> p.profiles,
 		SwitchyPlayerData::new
 	);
 
@@ -59,8 +60,36 @@ public class SwitchyPlayerData {
 		return data;
 	}
 
+	public boolean profileExists(String profileId) {
+		return profiles.containsKey(profileId);
+	}
+
+	public SwitchyProfile getCurrentProfile() {
+		return profiles.get(current());
+	}
+
+	public Set<String> keySet() {
+		return profiles.keySet();
+	}
+
+	public Collection<SwitchyProfile> values() {
+		return profiles.values();
+	}
+
+	public int size() {
+		return profiles.size();
+	}
+
+	public String current() {
+		return current;
+	}
+
+	public SwitchyProfile getProfile(String profileId) {
+		return profiles.get(profileId);
+	}
+
 	public void init(ServerPlayerEntity player, NbtCompound nbt) {
-		for (SwitchyComponentType<?> componentType : Sets.difference(SwitchyComponentTypes.instance().values(), componentTypes())) {
+		for (SwitchyComponentType<?> componentType : Sets.difference(SwitchyComponentTypes.instance().values(), componentTypes)) {
 			if (componentType.reader() != null) {
 				for (SwitchyProfile profile : profiles.values()) {
 					try {
@@ -71,14 +100,6 @@ public class SwitchyPlayerData {
 				}
 			}
 		}
-	}
-
-	public boolean profileExists(String profileId) {
-		return profiles().containsKey(profileId);
-	}
-
-	public SwitchyProfile getCurrentProfile() {
-		return profiles().get(current());
 	}
 
 	public SwitchyProfile getOrCreateProfile(String profileId, String profileName, ServerPlayerEntity player) {
@@ -95,7 +116,7 @@ public class SwitchyPlayerData {
 			}
 		}
 		SwitchyProfile newProfile = new SwitchyProfile(profileId, builder.build());
-		profiles().put(profileId, newProfile);
+		profiles.put(profileId, newProfile);
 		return newProfile;
 	}
 
@@ -136,17 +157,5 @@ public class SwitchyPlayerData {
 	public SwitchyProfile switchOrCreateProfile(String profileId, ServerPlayerEntity player) throws Exception {
 		switchProfile(getOrCreateProfile(profileId.toLowerCase(), profileId.toUpperCase(), player), player);
 		return getCurrentProfile();
-	}
-
-	public String current() {
-		return current;
-	}
-
-	public Set<SwitchyComponentType<?>> componentTypes() {
-		return componentTypes;
-	}
-
-	public Map<String, SwitchyProfile> profiles() {
-		return profiles;
 	}
 }
