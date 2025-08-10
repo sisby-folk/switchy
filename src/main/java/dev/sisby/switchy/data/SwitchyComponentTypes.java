@@ -2,13 +2,13 @@ package dev.sisby.switchy.data;
 
 import com.mojang.serialization.Codec;
 import dev.sisby.switchy.Switchy;
+import dev.sisby.switchy.util.FormatUtils;
 import dev.sisby.switchy.util.TypeRegistry;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.function.UnaryOperator;
 
@@ -16,10 +16,10 @@ import java.util.function.UnaryOperator;
 public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>> {
 	private static final SwitchyComponentTypes INSTANCE = new SwitchyComponentTypes();
 
-	public static final SwitchyComponentType<Text> NAME = register(Switchy.id("name"), TextCodecs.CODEC, b -> b.textProvider((c, p) -> c));
-	public static final SwitchyComponentType<Float> HEALTH = register(Switchy.id("health"), Codec.FLOAT, b -> b.nbtSwitcher("Health").textProvider((c, p) -> Text.of("❤x%.0f%s".formatted(Math.floor(c / 2.0f), Math.ceil(c % 2.0) > 0 ? ".5" : ""))));
-	public static final SwitchyComponentType<Vec3d> POS = register(Switchy.id("pos"), Vec3d.CODEC, b -> b.nbtSwitcher("Pos").textProvider((c, p) -> Text.of(BlockPos.ofFloored(c).toShortString())));
-	public static final SwitchyComponentType<Identifier> DIMENSION = register(Switchy.id("dimension"), Identifier.CODEC, b -> b.nbtSwitcher("Dimension").textProvider((c, p) -> Text.of(WordUtils.capitalize(c.getPath().replace("_", " ")))));
+	public static final SwitchyComponentType<Text> NAME = register(Switchy.id("name"), TextCodecs.CODEC, b -> b.textProvider(c -> c));
+	public static final SwitchyComponentType<Float> HEALTH = register(Switchy.id("health"), Codec.FLOAT, b -> b.nbtSwitcher("Health").textProvider(c -> Text.of("❤x%s".formatted(FormatUtils.ceilHalf(c)))));
+	public static final SwitchyComponentType<Vec3d> POS = register(Switchy.id("pos"), Vec3d.CODEC, b -> b.nbtSwitcher("Pos").textProvider(c -> Text.of(BlockPos.ofFloored(c).toShortString())));
+	public static final SwitchyComponentType<Identifier> DIMENSION = register(Switchy.id("dimension"), Identifier.CODEC, b -> b.nbtSwitcher("Dimension").textProvider(c -> Text.of(FormatUtils.prettify(c.getPath()))));
 
 	public static void init() {
 		// static init

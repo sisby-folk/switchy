@@ -5,7 +5,6 @@ import com.mojang.serialization.DataResult;
 import dev.sisby.switchy.util.SwitchyCodecs;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -20,18 +19,22 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SwitchyComponentMap {
-	public static final Codec<SwitchyComponentMap> CODEC = SwitchyComponentType.TYPE_TO_VALUE_MAP_CODEC.flatComapMap(Builder::build, map -> DataResult.success(new Reference2ObjectArrayMap<>(map.map)));
+	public static final Codec<SwitchyComponentMap> CODEC = SwitchyComponentType.TYPE_TO_VALUE_MAP_CODEC.flatComapMap(SwitchyComponentMap::create, map -> DataResult.success(new Reference2ObjectArrayMap<>(map.map)));
 	public static final PacketCodec<RegistryByteBuf, Reference2ObjectMap<SwitchyComponentType<?>, Object>> MAP_PACKET_CODEC = SwitchyCodecs.packetDispatchedMap(Reference2ObjectArrayMap::new,
 		SwitchyComponentTypes.instance().packetCodec(),
 		t -> (PacketCodec<RegistryByteBuf, Object>) t.packetCodec()
 	);
 	public static final PacketCodec<RegistryByteBuf, SwitchyComponentMap> PACKET_CODEC = MAP_PACKET_CODEC.xmap(SwitchyComponentMap::new, s -> s.map);
 
-	public static Builder builder() {
-		return new Builder();
+	private final Reference2ObjectMap<SwitchyComponentType<?>, Object> map;
+
+	public static SwitchyComponentMap empty() {
+		return create(Map.of());
 	}
 
-	private final Reference2ObjectMap<SwitchyComponentType<?>, Object> map;
+	private static SwitchyComponentMap create(Map<SwitchyComponentType<?>, Object> components) {
+		return new SwitchyComponentMap(new Reference2ObjectArrayMap<>(components));
+	}
 
 	private SwitchyComponentMap(Reference2ObjectMap<SwitchyComponentType<?>, Object> map) {
 		this.map = map;
@@ -79,36 +82,4 @@ public class SwitchyComponentMap {
 	public List<MutableText> asTexts(ServerPlayerEntity player) {
 		return keySet().stream().map(t -> Text.literal("").append(Text.literal(t.id().getPath() + ": ").formatted(Formatting.GRAY)).append(t.asText(this, player))).toList();
 	}
-
-	public static class Builder {
-		private final Reference2ObjectMap<SwitchyComponentType<?>, Object> components = new Reference2ObjectArrayMap<>();
-
-		public <T> SwitchyComponentMap.Builder add(SwitchyComponentType<T> type, @Nullable T value) {
-			this.put(type, value);
-			return this;
-		}
-
-		<T> void put(SwitchyComponentType<T> type, @Nullable Object value) {
-			if (value != null) {
-				this.components.put(type, value);
-			} else {
-				this.components.remove(type);
-			}
-		}
-
-		public SwitchyComponentMap build() {
-			return build(this.components);
-		}
-
-		private static SwitchyComponentMap build(Map<SwitchyComponentType<?>, Object> components) {
-			if (components.isEmpty()) {
-				return new SwitchyComponentMap(new Reference2ObjectArrayMap<>());
-			} else {
-				return components.size() < 8
-					? new SwitchyComponentMap(new Reference2ObjectArrayMap<>(components))
-					: new SwitchyComponentMap(new Reference2ObjectOpenHashMap<>(components));
-			}
-		}
-	}
-
 }

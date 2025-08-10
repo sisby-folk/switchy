@@ -27,38 +27,36 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	@NotNull Codec<T> codec();
 
-	default @Nullable PacketCodec<? super RegistryByteBuf, T> packetCodec() {
-		return PacketCodecs.codec(codec());
-	}
-
 	@Nullable Initializer<T> initializer();
 
-	default void tryInitialize(SwitchyComponentMap.Builder builder, Initializer.InitializerContext context) throws Exception {
-		if (initializer() == null) return;
-		T value = initializer().initialize(context);
-		if (value == null) return;
-		builder.add(this, value);
-	}
-
-	@Nullable Reader<T> reader();
+	@Nullable SwitchyComponentType.NbtReader<T> nbtReader();
 
 	@Nullable NbtMutator<T> nbtMutator();
-
-	default void tryMutate(SwitchyComponentMap components, NbtCompound playerData) throws Exception {
-		if (nbtMutator() != null) {
-			nbtMutator().mutate(new NbtMutator.NbtMutatorContext<>(components.get(this), playerData));
-		}
-	}
-
-	@Nullable LiveMutator<T> liveMutator();
 
 	@Nullable EmptyChecker<T> emptyChecker();
 
 	@Nullable TextProvider<T> textProvider();
 
+	default @Nullable PacketCodec<? super RegistryByteBuf, T> packetCodec() {
+		return PacketCodecs.codec(codec());
+	}
+
+	default void tryInitialize(SwitchyComponentMap consumer, NbtCompound nbt, ServerPlayerEntity player) throws Exception {
+		if (initializer() == null) return;
+		T value = initializer().initialize(nbt, player);
+		if (value == null) return;
+		consumer.set(this, value);
+	}
+
+	default void tryMutate(SwitchyComponentMap components, NbtCompound playerData) throws Exception {
+		if (nbtMutator() != null) {
+			nbtMutator().mutate(components.get(this), playerData);
+		}
+	}
+
 	default MutableText asText(SwitchyComponentMap components, ServerPlayerEntity player) {
 		if (textProvider() != null) {
-			return textProvider().toText(components.get(this), player).copy();
+			return textProvider().toText(components.get(this)).copy();
 		} else {
 			return Text.literal(components.get(this).toString());
 		}
@@ -66,56 +64,46 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	@FunctionalInterface
 	interface Initializer<T> {
-		T initialize(InitializerContext context) throws Exception;
-		record InitializerContext(NbtCompound playerData, ServerPlayerEntity player) {}
+		T initialize(NbtCompound playerNbt, ServerPlayerEntity player) throws Exception;
 	}
 
 	@FunctionalInterface
-	interface Reader<T> {
-		T read(ReaderContext context) throws Exception;
-		record ReaderContext(NbtCompound playerData, ServerPlayerEntity oldPlayer) {}
+	interface NbtReader<T> {
+		T read(NbtCompound nbt) throws Exception;
 	}
 
 	@FunctionalInterface
 	interface NbtMutator<T> {
-		void mutate(NbtMutatorContext<T> context) throws Exception;
-		record NbtMutatorContext<T>(T componentData, NbtCompound playerData) {}
-	}
-
-	@FunctionalInterface
-	interface LiveMutator<T> {
-		void mutate(LiveMutatorContext<T> context) throws Exception;
-		record LiveMutatorContext<T>(T componentData, ServerPlayerEntity newPlayer) {}
+		void mutate(T value, NbtCompound nbt) throws Exception;
 	}
 
 	@FunctionalInterface
 	interface EmptyChecker<T> {
-		boolean isEmpty(EmptyCheckerContext<T> context);
-		record EmptyCheckerContext<T>(T componentData, ServerPlayerEntity player) {}
+		boolean isEmpty(T value);
 	}
 
 	@FunctionalInterface
 	interface TextProvider<T> {
-		Text toText(T componentData, ServerPlayerEntity player);
+		Text toText(T value);
 	}
 
 	class DefaultPlayerInitializer<T> implements Initializer<T> {
-		private final Reader<T> reader;
+		private final NbtReader<T> nbtReader;
 
-		public DefaultPlayerInitializer(Reader<T> reader) {
-			this.reader = reader;
+		public DefaultPlayerInitializer(NbtReader<T> nbtReader) {
+			this.nbtReader = nbtReader;
 		}
 
 		@Override
-		public T initialize(InitializerContext context) throws Exception {
-			ServerPlayerEntity defaultPlayer = context.player().getServer().getPlayerManager().createPlayer(context.player().getGameProfile(), context.player().getClientOptions());
+		public T initialize(NbtCompound playerNbt, ServerPlayerEntity player) throws Exception {
+			ServerPlayerEntity defaultPlayer = player.getServer().getPlayerManager().createPlayer(player.getGameProfile(), player.getClientOptions());
 			NbtCompound defaultNbt = new NbtCompound();
 			defaultPlayer.writeNbt(defaultNbt);
-			return reader.read(new Reader.ReaderContext(defaultNbt, defaultPlayer));
+			return nbtReader.read(defaultNbt);
 		}
 	}
 
-	class NbtSwitcher<T> implements NbtMutator<T>, Reader<T> {
+	class NbtSwitcher<T> implements NbtMutator<T>, NbtReader<T> {
 		private final NbtPathArgumentType.NbtPath nbtPath;
 		private final Codec<T> codec;
 
@@ -125,13 +113,13 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		}
 
 		@Override
-		public T read(ReaderContext context) throws Exception {
-			return codec.parse(NbtOps.INSTANCE, nbtPath.get(context.playerData()).getFirst()).getOrThrow();
+		public T read(NbtCompound nbt) throws Exception {
+			return codec.parse(NbtOps.INSTANCE, nbtPath.get(nbt).getFirst()).getOrThrow();
 		}
 
 		@Override
-		public void mutate(NbtMutatorContext<T> context) throws Exception {
-			nbtPath.put(context.playerData(), codec.encodeStart(NbtOps.INSTANCE, context.componentData()).getOrThrow());
+		public void mutate(T value, NbtCompound nbt) throws Exception {
+			nbtPath.put(nbt, codec.encodeStart(NbtOps.INSTANCE, value).getOrThrow());
 		}
 
 		@Override
@@ -144,9 +132,8 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		Identifier id,
 		@Nullable Codec<T> codec,
 		@Nullable Initializer<T> initializer,
-		@Nullable Reader<T> reader,
+		@Nullable SwitchyComponentType.NbtReader<T> nbtReader,
 		@Nullable NbtMutator<T> nbtMutator,
-		@Nullable LiveMutator<T> liveMutator,
 		@Nullable EmptyChecker<T> emptyChecker,
 		@Nullable TextProvider<T> textProvider
 	) implements SwitchyComponentType<T> {
@@ -160,9 +147,8 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		private final @NotNull Identifier id;
 		private final @NotNull Codec<T> codec;
 		private @Nullable Initializer<T> initializer;
-		private @Nullable Reader<T> reader;
+		private @Nullable SwitchyComponentType.NbtReader<T> nbtReader;
 		private @Nullable NbtMutator<T> nbtMutator;
-		private @Nullable LiveMutator<T> liveMutator;
 		private @Nullable EmptyChecker<T> emptyChecker;
 		private @Nullable TextProvider<T> textProvider;
 
@@ -176,18 +162,13 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 			return this;
 		}
 
-		public Builder<T> reader(@Nullable Reader<T> reader) {
-			this.reader = reader;
+		public Builder<T> reader(@Nullable SwitchyComponentType.NbtReader<T> nbtReader) {
+			this.nbtReader = nbtReader;
 			return this;
 		}
 
 		public Builder<T> nbtMutator(@Nullable NbtMutator<T> nbtMutator) {
 			this.nbtMutator = nbtMutator;
-			return this;
-		}
-
-		public Builder<T> liveMutator(@Nullable LiveMutator<T> liveMutator) {
-			this.liveMutator = liveMutator;
 			return this;
 		}
 
@@ -208,7 +189,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 			} catch (CommandSyntaxException e) {
 				throw new RuntimeException(e);
 			}
-			this.reader = switcher;
+			this.nbtReader = switcher;
 			this.nbtMutator = switcher;
 			this.initializer = new DefaultPlayerInitializer<>(switcher);
 			return this;
@@ -219,9 +200,8 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 				this.id,
 				this.codec,
 				this.initializer,
-				this.reader,
+				this.nbtReader,
 				this.nbtMutator,
-				this.liveMutator,
 				this.emptyChecker,
 				this.textProvider
 			);

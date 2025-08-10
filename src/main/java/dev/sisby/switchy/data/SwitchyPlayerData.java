@@ -90,10 +90,10 @@ public class SwitchyPlayerData {
 
 	public void init(ServerPlayerEntity player, NbtCompound nbt) {
 		for (SwitchyComponentType<?> componentType : Sets.difference(SwitchyComponentTypes.instance().values(), componentTypes)) {
-			if (componentType.reader() != null) {
+			if (componentType.nbtReader() != null) {
 				for (SwitchyProfile profile : profiles.values()) {
 					try {
-						profile.components().set(componentType, componentType.reader().read(new SwitchyComponentType.Reader.ReaderContext(nbt, player)));
+						componentType.tryInitialize(profile.components(), nbt, player);
 					} catch (Exception e) {
 						throw new RuntimeException(e);
 					}
@@ -104,31 +104,31 @@ public class SwitchyPlayerData {
 
 	public SwitchyProfile getOrCreateProfile(String profileId, String profileName, ServerPlayerEntity player) {
 		if (profileExists(profileId)) return profiles.get(profileId);
-		NbtCompound playerNbt = new NbtCompound();
-		player.writeNbt(playerNbt);
-		SwitchyComponentMap.Builder builder = SwitchyComponentMap.builder();
-		builder.add(SwitchyComponentTypes.NAME, Text.of(profileName));
+		NbtCompound nbt = new NbtCompound();
+		player.writeNbt(nbt);
+		SwitchyComponentMap components = SwitchyComponentMap.empty();
+		components.set(SwitchyComponentTypes.NAME, Text.of(profileName));
 		for (SwitchyComponentType<?> componentType : componentTypes) {
 			try {
-				componentType.tryInitialize(builder, new SwitchyComponentType.Initializer.InitializerContext(playerNbt, player));
+				componentType.tryInitialize(components, nbt, player);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		}
-		SwitchyProfile newProfile = new SwitchyProfile(profileId, builder.build());
+		SwitchyProfile newProfile = new SwitchyProfile(profileId, components);
 		profiles.put(profileId, newProfile);
 		return newProfile;
 	}
 
 	private NbtCompound updateFromPlayer(SwitchyProfile profile, ServerPlayerEntity player) throws Exception {
-		NbtCompound playerNbt = new NbtCompound();
-		player.writeNbt(playerNbt);
+		NbtCompound nbt = new NbtCompound();
+		player.writeNbt(nbt);
 		for (SwitchyComponentType<?> componentType : componentTypes) {
-			if (componentType.reader() != null) {
-				profile.components().set(componentType, componentType.reader().read(new SwitchyComponentType.Reader.ReaderContext(playerNbt, player)));
+			if (componentType.nbtReader() != null) {
+				profile.components().set(componentType, componentType.nbtReader().read(nbt));
 			}
 		}
-		return playerNbt;
+		return nbt;
 	}
 
 	public void updateCurrent(ServerPlayerEntity player) throws Exception {
