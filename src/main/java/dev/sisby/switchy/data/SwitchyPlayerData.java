@@ -1,5 +1,6 @@
 package dev.sisby.switchy.data;
 
+import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sisby.switchy.SwitchyCommands;
@@ -21,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class SwitchyPlayerData {
-	public static final String KEY = "player_data";
 	public static final Codec<SwitchyPlayerData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		Codec.STRING.fieldOf("current").forGetter(SwitchyPlayerData::current),
 		SwitchyCodecs.COMPONENT_TYPE_SET_CODEC.fieldOf("componentTypes").forGetter(SwitchyPlayerData::componentTypes),
@@ -49,12 +49,28 @@ public class SwitchyPlayerData {
 		return ((SwitchyPlayer) player).switchy$playerData();
 	}
 
-	public static SwitchyPlayerData create() {
-		return new SwitchyPlayerData(
+	public static SwitchyPlayerData create(ServerPlayerEntity player) {
+		SwitchyPlayerData data = new SwitchyPlayerData(
 			"default",
 			new LinkedHashSet<>(SwitchyComponentTypes.instance().values()),
-			new LinkedHashMap<>(Map.of("default", new SwitchyProfile("default", SwitchyComponentMap.builder().add(SwitchyComponentTypes.NAME, Text.of("DEFAULT")).build())))
+			new LinkedHashMap<>()
 		);
+		data.getOrCreateProfile("default", "DEFAULT", player);
+		return data;
+	}
+
+	public void init(ServerPlayerEntity player, NbtCompound nbt) {
+		for (SwitchyComponentType<?> componentType : Sets.difference(SwitchyComponentTypes.instance().values(), componentTypes())) {
+			if (componentType.reader() != null) {
+				for (SwitchyProfile profile : profiles.values()) {
+					try {
+						profile.components().set(componentType, componentType.reader().read(new SwitchyComponentType.Reader.ReaderContext(nbt, player)));
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
 	}
 
 	public boolean profileExists(String profileId) {
@@ -65,14 +81,18 @@ public class SwitchyPlayerData {
 		return profiles().get(current());
 	}
 
-	public SwitchyProfile getOrCreateProfile(String profileId, String profileName, ServerPlayerEntity player) throws Exception {
+	public SwitchyProfile getOrCreateProfile(String profileId, String profileName, ServerPlayerEntity player) {
 		if (profileExists(profileId)) return profiles.get(profileId);
 		NbtCompound playerNbt = new NbtCompound();
 		player.writeNbt(playerNbt);
 		SwitchyComponentMap.Builder builder = SwitchyComponentMap.builder();
 		builder.add(SwitchyComponentTypes.NAME, Text.of(profileName));
 		for (SwitchyComponentType<?> componentType : componentTypes) {
-			componentType.tryInitialize(builder, new SwitchyComponentType.Initializer.InitializerContext(playerNbt, player));
+			try {
+				componentType.tryInitialize(builder, new SwitchyComponentType.Initializer.InitializerContext(playerNbt, player));
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 		}
 		SwitchyProfile newProfile = new SwitchyProfile(profileId, builder.build());
 		profiles().put(profileId, newProfile);

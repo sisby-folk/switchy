@@ -57,14 +57,14 @@ public class SwitchyCommands {
 				.append(clickable("switch", "/switchy switch %s".formatted(profile.id()), true))
 				.append(Text.of(" "))
 				.append(profile.getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())).copy().setStyle(Style.EMPTY
-					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(profile.components().toString())))
+					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(profile.toString())))
 				))
 			);
 		}
 		feedback.accept(indent()
 			.append(Text.literal("Current: ").formatted(Formatting.GRAY))
 			.append(data.getCurrentProfile().getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())).copy().setStyle(Style.EMPTY
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(data.getCurrentProfile().components().toString())))
+				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(data.getCurrentProfile().toString())))
 			))
 		);
 		return data.profiles().size();
