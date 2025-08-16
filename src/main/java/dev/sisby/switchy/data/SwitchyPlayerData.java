@@ -98,6 +98,7 @@ public class SwitchyPlayerData {
 						throw new RuntimeException(e);
 					}
 				}
+				componentTypes.add(componentType);
 			}
 		}
 	}
