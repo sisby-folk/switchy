@@ -108,12 +108,11 @@ public class SwitchyPlayerData {
 		}
 	}
 
-	public SwitchyProfile getOrCreateProfile(String profileId, String profileName, ServerPlayerEntity player) {
+	public SwitchyProfile getOrCreateProfile(String profileId, ServerPlayerEntity player) {
 		if (profileExists(profileId)) return profiles.get(profileId);
 		NbtCompound nbt = new NbtCompound();
 		player.writeNbt(nbt);
 		SwitchyComponentMap components = SwitchyComponentMap.empty();
-		components.set(SwitchyComponentTypes.NAME, Text.of(profileName));
 		for (SwitchyComponentType<?> componentType : componentTypes) {
 			try {
 				componentType.tryInitialize(components, nbt, player);
@@ -178,7 +177,7 @@ public class SwitchyPlayerData {
 	}
 
 	public SwitchyProfile switchOrCreateProfile(String profileId, ServerPlayerEntity player) throws Exception {
-		switchProfile(getOrCreateProfile(profileId.toLowerCase(), profileId.toUpperCase(), player), player);
+		switchProfile(getOrCreateProfile(profileId.toLowerCase(), player), player);
 		return getCurrentProfile();
 	}
 }

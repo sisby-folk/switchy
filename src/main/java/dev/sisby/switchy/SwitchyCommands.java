@@ -93,7 +93,7 @@ public class SwitchyCommands {
 			.append(Text.literal(" contains ").formatted(Formatting.GRAY))
 			.append("%d".formatted(profile.components().size()))
 			.append(Text.literal(" components. ").formatted(Formatting.GRAY))
-			.append(clickable("switch", "/switchy switch %s".formatted(profileId), true))
+			.append(profileId.equals(data.current()) ? Text.empty() : clickable("switch", "/switchy switch %s".formatted(profileId), true))
 		);
 		profile.components().asTexts().forEach(componentText -> feedback.accept(indent().append(componentText)));
 		return profile.components().size();
