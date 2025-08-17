@@ -26,7 +26,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	public static final SwitchyComponentType<Float> HEALTH = register(Switchy.id("health"), Codec.FLOAT, b -> b.nbtSwitcher("Health").textProvider(FormatUtils::healthText));
 	public static final SwitchyComponentType<Vec3d> POS = register(Switchy.id("pos"), Vec3d.CODEC, b -> b.nbtSwitcher("Pos").textProvider(c -> Text.of(BlockPos.ofFloored(c).toShortString())));
 	public static final SwitchyComponentType<Identifier> DIMENSION = register(Switchy.id("dimension"), Identifier.CODEC, b -> b.nbtSwitcher("Dimension").textProvider(c -> Text.of(FormatUtils.prettify(c.getPath()))));
-	public static final SwitchyComponentType<DefaultedList<ItemStack>> INVENTORY = register(Switchy.id("inventory"), SwitchyCodecs.INVENTORY_CODEC, b -> b.nbtSwitcher("Inventory").textProvider(FormatUtils::inventoryText));
+	public static final SwitchyComponentType<DefaultedList<ItemStack>> INVENTORY = register(Switchy.id("inventory"), SwitchyCodecs.INVENTORY_CODEC, b -> b.nbtSwitcher("Inventory").textProvider(FormatUtils::inventoryText).emptyChecker(dl -> dl.stream().allMatch(ItemStack::isEmpty)));
 
 	public static void init() {
 		// static init

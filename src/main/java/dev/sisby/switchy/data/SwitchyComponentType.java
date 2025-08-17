@@ -79,6 +79,13 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		return asText(components.get(this));
 	}
 
+	default boolean isPrecious(SwitchyComponentMap components) {
+		if (emptyChecker() != null) {
+			return !emptyChecker().isEmpty(components.get(this));
+		}
+		return false;
+	}
+
 	@FunctionalInterface
 	interface Initializer<T> {
 		T initialize(NbtCompound playerNbt, ServerPlayerEntity player) throws Exception;

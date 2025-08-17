@@ -5,6 +5,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sisby.switchy.SwitchyCommands;
 import dev.sisby.switchy.duck.SwitchyPlayer;
+import dev.sisby.switchy.exception.ProfileCurrentException;
+import dev.sisby.switchy.exception.ProfileMissingException;
+import dev.sisby.switchy.exception.ProfilePreciousException;
+import dev.sisby.switchy.exception.ProfileExistsException;
 import dev.sisby.switchy.util.SwitchyCodecs;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
@@ -21,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SwitchyPlayerData {
 	public static final Codec<SwitchyPlayerData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -137,14 +142,24 @@ public class SwitchyPlayerData {
 	}
 
 	public void renameProfile(String oldId, String newId) throws IllegalArgumentException {
-		if (!profileExists(oldId)) throw new IllegalArgumentException("profile doesn't exist!");
-		if (profileExists(newId)) throw new IllegalArgumentException("new id is already in use!");
+		if (!profileExists(oldId)) throw new ProfileMissingException(oldId);
+		if (profileExists(newId)) throw new ProfileExistsException(newId);
 		profiles.put(newId, profiles.remove(oldId).withId(newId));
 		if (current.equals(oldId)) current = newId;
 	}
 
+	public SwitchyProfile deleteProfile(String profileId) {
+		if (current.equals(profileId)) throw new ProfileCurrentException(profileId);
+		if (!profileExists(profileId)) throw new ProfileMissingException(profileId);
+		SwitchyProfile profile = getProfile(profileId);
+		var preciousComponents = profile.components().keySet().stream().filter(t -> t.isPrecious(profile.components())).collect(Collectors.toSet());
+		if (!preciousComponents.isEmpty()) throw new ProfilePreciousException(preciousComponents, profile.components());
+		profiles.remove(profileId);
+		return profile;
+	}
+
 	private void switchProfile(SwitchyProfile nextProfile, ServerPlayerEntity player) throws Exception {
-		if (nextProfile.id().equals(current)) throw new IllegalArgumentException("can't switch to the current profile!");
+		if (nextProfile.id().equals(current)) throw new ProfileCurrentException(nextProfile.id());
 		SwitchyProfile currentProfile = getCurrentProfile();
 		// Read Components
 		NbtCompound playerNbt = updateFromPlayer(currentProfile, player);
