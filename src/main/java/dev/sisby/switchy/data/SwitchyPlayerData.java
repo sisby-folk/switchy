@@ -61,7 +61,7 @@ public class SwitchyPlayerData {
 			new LinkedHashSet<>(SwitchyComponentTypes.instance().values()),
 			new LinkedHashMap<>()
 		);
-		data.getOrCreateProfile("default", "DEFAULT", player);
+		data.profiles.put("default", new SwitchyProfile("default", SwitchyComponentMap.empty()));
 		return data;
 	}
 
