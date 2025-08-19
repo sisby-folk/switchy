@@ -17,9 +17,9 @@ public class FormatUtils {
 		return WordUtils.capitalize(s.replace("_", " "));
 	}
 
-	public static Text healthText(float f) {
+	public static Text statText(String glyph, float f) {
 		return Text.empty()
-			.append(Text.literal("❤").formatted(Formatting.DARK_RED))
+			.append(Text.literal(glyph).formatted(Formatting.DARK_RED))
 			.append(Text.literal("x").formatted(Formatting.GRAY))
 			.append(NumberFormat.getNumberInstance(Locale.ROOT).format(Math.ceil(f) / 2F));
 	}
