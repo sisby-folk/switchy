@@ -16,7 +16,11 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.storage.NbtReadView;
+import net.minecraft.storage.NbtWriteView;
+import net.minecraft.storage.ReadView;
 import net.minecraft.text.Text;
+import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.dynamic.Codecs;
 
@@ -95,7 +99,7 @@ public class SwitchyPlayerData {
 		return profiles.get(profileId);
 	}
 
-	public void init(ServerPlayerEntity player, NbtCompound nbt) {
+	public void init(ServerPlayerEntity player, ReadView nbt) {
 		for (SwitchyComponentType<?> componentType : Sets.difference(SwitchyComponentTypes.instance().values(), componentTypes)) {
 			try {
 				componentType.tryInitialize(profiles.values().stream().map(SwitchyProfile::components).toList(), nbt, player);
@@ -109,12 +113,12 @@ public class SwitchyPlayerData {
 
 	public SwitchyProfile getOrCreateProfile(String profileId, ServerPlayerEntity player) {
 		if (profileExists(profileId)) return profiles.get(profileId);
-		NbtCompound nbt = new NbtCompound();
-		player.writeNbt(nbt);
+		NbtWriteView view = NbtWriteView.create(new ErrorReporter.Logging(player.getErrorReporterContext(), Switchy.LOGGER), player.getRegistryManager());
+		player.writeData(view);
 		SwitchyComponentMap components = SwitchyComponentMap.empty();
 		for (SwitchyComponentType<?> componentType : componentTypes) {
 			try {
-				componentType.tryInitialize(List.of(components), nbt, player);
+				componentType.tryInitialize(List.of(components), NbtReadView.create(new ErrorReporter.Logging(player.getErrorReporterContext(), Switchy.LOGGER), player.getRegistryManager(), view.getNbt()), player);
 			} catch (Exception e) {
 				Switchy.LOGGER.warn("Failed to initialize {} for {} profile {}", componentType.id(), player.getGameProfile().getName(), profileId, e);
 			}
@@ -125,14 +129,14 @@ public class SwitchyPlayerData {
 	}
 
 	private NbtCompound updateFromPlayer(SwitchyProfile profile, ServerPlayerEntity player) {
-		NbtCompound nbt = new NbtCompound();
-		player.writeNbt(nbt);
+		NbtWriteView view = NbtWriteView.create(new ErrorReporter.Logging(player.getErrorReporterContext(), Switchy.LOGGER), player.getRegistryManager());
+		player.writeData(view);
 		for (SwitchyComponentType<?> componentType : componentTypes) {
 			if (componentType.nbtReader() != null) {
-				profile.components().set(componentType, componentType.nbtReader().read(nbt));
+				profile.components().set(componentType, componentType.nbtReader().read(view.getNbt()));
 			}
 		}
-		return nbt;
+		return view.getNbt();
 	}
 
 	public void updateCurrent(ServerPlayerEntity player) {

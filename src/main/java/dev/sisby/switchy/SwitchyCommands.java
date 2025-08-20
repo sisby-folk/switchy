@@ -68,7 +68,7 @@ public class SwitchyCommands {
 				.append(clickable("edit", "/switchy edit %s ".formatted(profile.id()), false))
 				.append(" ")
 				.append(profile.getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())).copy().setStyle(Style.EMPTY
-					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(profile.asTexts(player), Text.of("\n"))))
+					.withHoverEvent(new HoverEvent.ShowText(Texts.join(profile.asTexts(player), Text.of("\n"))))
 				))
 			);
 		}
@@ -245,8 +245,8 @@ public class SwitchyCommands {
 			.append(Text.literal("<").formatted(Formatting.GRAY))
 			.append(Text.literal(name).setStyle(Style.EMPTY
 				.withFormatting(Formatting.AQUA)
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(command + (instant ? "" : "...")).formatted(Formatting.AQUA)))
-				.withClickEvent(new ClickEvent(instant ? ClickEvent.Action.RUN_COMMAND : ClickEvent.Action.SUGGEST_COMMAND, command))
+				.withHoverEvent(new HoverEvent.ShowText(Text.literal(command + (instant ? "" : "...")).formatted(Formatting.AQUA)))
+				.withClickEvent(instant ? new ClickEvent.RunCommand(command) : new ClickEvent.SuggestCommand(command))
 			))
 			.append(Text.literal(">").formatted(Formatting.GRAY));
 	}

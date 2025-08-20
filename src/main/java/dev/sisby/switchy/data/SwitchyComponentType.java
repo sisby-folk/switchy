@@ -4,6 +4,7 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.SwitchyCommands;
 import dev.sisby.switchy.exception.ComponentFailedInitializeException;
 import dev.sisby.switchy.exception.KeyNotFoundException;
@@ -17,8 +18,11 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.storage.NbtWriteView;
+import net.minecraft.storage.ReadView;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,10 +56,10 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		return PacketCodecs.codec(codec());
 	}
 
-	default void tryInitialize(Collection<SwitchyComponentMap> consumer, NbtCompound nbt, ServerPlayerEntity player) {
+	default void tryInitialize(Collection<SwitchyComponentMap> consumer, ReadView view, ServerPlayerEntity player) {
 		Initializer<T> initializer = initializer();
 		if (initializer == null) return;
-		T value = initializer.initialize(nbt, player);
+		T value = initializer.initialize(view, player);
 		if (value == null) return;
 		consumer.forEach(c -> c.set(this, value));
 	}
@@ -97,7 +101,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	@FunctionalInterface
 	interface Initializer<T> {
-		T initialize(NbtCompound playerNbt, ServerPlayerEntity player) throws ComponentFailedInitializeException;
+		T initialize(ReadView view, ServerPlayerEntity player) throws ComponentFailedInitializeException;
 	}
 
 	@FunctionalInterface
@@ -138,12 +142,12 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		}
 
 		@Override
-		public T initialize(NbtCompound playerNbt, ServerPlayerEntity player) throws ComponentFailedInitializeException {
-			ServerPlayerEntity defaultPlayer = player.getServer().getPlayerManager().createPlayer(player.getGameProfile(), player.getClientOptions());
-			NbtCompound defaultNbt = new NbtCompound();
-			defaultPlayer.writeNbt(defaultNbt);
+		public T initialize(ReadView view, ServerPlayerEntity player) throws ComponentFailedInitializeException {
+			ServerPlayerEntity defaultPlayer = new ServerPlayerEntity(player.getServer(), player.getServer().getOverworld(), player.getGameProfile(), player.getClientOptions());
+			NbtWriteView defaultNbt = NbtWriteView.create(new ErrorReporter.Logging(player.getErrorReporterContext(), Switchy.LOGGER), player.getRegistryManager());
+			defaultPlayer.writeData(defaultNbt);
 			try {
-				return nbtReader.read(defaultNbt);
+				return nbtReader.read(defaultNbt.getNbt());
 			} catch (Exception e) {
 				throw new ComponentFailedInitializeException("", e);
 			}

@@ -4,8 +4,10 @@ import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.data.SwitchyPlayerData;
 import dev.sisby.switchy.duck.SwitchyPlayer;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.storage.NbtWriteView;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,28 +33,26 @@ public class PlayerMixin implements SwitchyPlayer {
 		return switchy$playerData;
 	}
 
-	@Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
-	public void readPlayerData(NbtCompound nbt, CallbackInfo ci) {
+	@Inject(method = "readCustomData", at = @At("TAIL"))
+	public void readPlayerData(ReadView view, CallbackInfo ci) {
 		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
-		if (nbt.contains(Switchy.ID)) {
-			switchy$playerData = SwitchyPlayerData.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound(Switchy.ID)).mapOrElse(s -> s, e -> SwitchyPlayerData.create(self));
-			switchy$playerData.init(self, nbt);
-		}
+		switchy$playerData = view.read(Switchy.ID, SwitchyPlayerData.CODEC).orElseGet(() -> SwitchyPlayerData.create(self));
+		switchy$playerData.init(self, view);
 	}
 
-	@Inject(method = "writeCustomDataToNbt", at = @At("HEAD"), cancellable = true)
-	public void applyHotSwapData(NbtCompound nbt, CallbackInfo ci) {
-		if (switchy$hotSwap != null) {
-			nbt.copyFrom(switchy$hotSwap);
-			writePlayerData(nbt, ci);
+	@Inject(method = "writeCustomData", at = @At("HEAD"), cancellable = true)
+	public void applyHotSwapData(WriteView view, CallbackInfo ci) {
+		if (switchy$hotSwap != null && view instanceof NbtWriteView nbtView) {
+			nbtView.getNbt().copyFrom(switchy$hotSwap);
+			writePlayerData(view, ci);
 			ci.cancel();
 		}
 	}
 
-	@Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
-	public void writePlayerData(NbtCompound nbt, CallbackInfo ci) {
+	@Inject(method = "writeCustomData", at = @At("TAIL"))
+	public void writePlayerData(WriteView view, CallbackInfo ci) {
 		if (switchy$playerData != null && switchy$playerData.size() > 1) {
-			nbt.put(Switchy.ID, SwitchyPlayerData.CODEC.encodeStart(NbtOps.INSTANCE, switchy$playerData).getOrThrow());
+			view.put(Switchy.ID, SwitchyPlayerData.CODEC, switchy$playerData);
 		}
 	}
 
