@@ -10,6 +10,9 @@ import dev.sisby.switchy.data.SwitchyComponentType;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
 import dev.sisby.switchy.data.SwitchyPlayerData;
 import dev.sisby.switchy.data.SwitchyProfile;
+import dev.sisby.switchy.exception.ProfileCurrentException;
+import dev.sisby.switchy.exception.ProfileMissingException;
+import dev.sisby.switchy.exception.ProfilePreciousException;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
@@ -29,6 +32,7 @@ import net.minecraft.util.Formatting;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class SwitchyCommands {
 	public static void greet(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
@@ -55,10 +59,9 @@ public class SwitchyCommands {
 			.append(Text.literal(" profiles available. ").formatted(Formatting.GRAY))
 			.append(clickable("new", "/switchy switch ", false))
 		);
-		for (SwitchyProfile profile : data.values()) {
-			if (profile.id().equals(data.current())) continue;
+		for (SwitchyProfile profile : Stream.concat(Sets.difference(data.keySet(), Set.of(data.current())).stream().sorted(), Stream.of(data.current())).map(data::getProfile).toList()) {
 			feedback.accept(indent()
-				.append(clickable("switch", "/switchy switch %s".formatted(profile.id()), true))
+				.append(profile.id().equals(data.current()) ? Text.literal("current").formatted(Formatting.GRAY) : clickable("switch", "/switchy switch %s".formatted(profile.id()), true))
 				.append(" ")
 				.append(clickable("view", "/switchy view %s".formatted(profile.id()), true))
 				.append(" ")
@@ -69,17 +72,6 @@ public class SwitchyCommands {
 				))
 			);
 		}
-
-		feedback.accept(indent()
-			.append(Text.literal("current ").formatted(Formatting.GRAY))
-			.append(clickable("view", "/switchy view %s".formatted(data.current()), true))
-			.append(" ")
-			.append(clickable("edit", "/switchy edit %s ".formatted(data.current()), false))
-			.append(" ")
-			.append(data.getCurrentProfile().getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())).copy().setStyle(Style.EMPTY
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(data.getCurrentProfile().asTexts(player), Text.of("\n"))))
-			))
-		);
 		return data.size();
 	}
 
@@ -101,7 +93,7 @@ public class SwitchyCommands {
 			.append(Text.literal(" contains ").formatted(Formatting.GRAY))
 			.append("%d".formatted(profile.components().size()))
 			.append(Text.literal(" components. ").formatted(Formatting.GRAY))
-			.append(clickable("switch", "/switchy switch %s".formatted(profileId), true))
+			.append(profileId.equals(data.current()) ? Text.empty() : clickable("switch", "/switchy switch %s".formatted(profileId), true))
 		);
 		profile.components().asTexts().forEach(componentText -> feedback.accept(indent().append(componentText)));
 		return profile.components().size();
@@ -136,15 +128,15 @@ public class SwitchyCommands {
 		SwitchyProfile profile = data.getProfile(profileId);
 		T oldValue = profile.set(type, value);
 		feedback.accept(prefix()
-			.append(Text.literal("edited ").formatted(Formatting.GRAY))
+			.append(Text.literal("edited ").formatted(Formatting.GREEN))
 			.append(profileId)
 			.append(Text.literal(":").formatted(Formatting.GRAY))
 			.append(type.id().getPath())
-			.append(Text.literal(" - ").formatted(Formatting.GRAY))
+			.append(Text.literal(" - ").formatted(Formatting.GREEN))
 			.append(oldValue == null ? Text.of("empty") : type.asText(oldValue))
-			.append(Text.literal(" \uD83E\uDC46 ").formatted(Formatting.GRAY))
+			.append(Text.literal(" \uD83E\uDC46 ").formatted(Formatting.GREEN))
 			.append(type.asText(value))
-			.append(Text.literal("!").formatted(Formatting.GRAY))
+			.append(Text.literal("!").formatted(Formatting.GREEN))
 			.append(" ")
 			.append(clickable("list", "/switchy", true))
 		);
@@ -159,15 +151,45 @@ public class SwitchyCommands {
 			return 0;
 		}
 		feedback.accept(prefix()
-			.append(Text.literal("renamed ").formatted(Formatting.GRAY))
+			.append(Text.literal("renamed ").formatted(Formatting.GREEN))
 			.append(profileId)
-			.append(Text.literal(" \uD83E\uDC46 ").formatted(Formatting.GRAY))
+			.append(Text.literal(" \uD83E\uDC46 ").formatted(Formatting.GREEN))
 			.append(newId)
-			.append(Text.literal("!").formatted(Formatting.GRAY))
+			.append(Text.literal("!").formatted(Formatting.GREEN))
 			.append(" ")
 			.append(clickable("list", "/switchy", true))
 		);
 		return 1;
+	}
+
+	private static int deleteProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId) {
+		try {
+			SwitchyProfile profile = data.deleteProfile(profileId);
+			feedback.accept(prefix()
+				.append(Text.literal("profile ").formatted(Formatting.GREEN))
+				.append(profileId)
+				.append(Text.literal(" deleted successfully!").formatted(Formatting.GREEN))
+				.append(" ")
+				.append(clickable("list", "/switchy", true))
+			);
+			return profile.components().size();
+		} catch (ProfileCurrentException e) {
+			feedback.accept(prefix().append(Text.literal("can't delete current profile!").formatted(Formatting.YELLOW)));
+			return 0;
+		} catch (ProfileMissingException e) {
+			feedback.accept(prefix().append(Text.literal("profile doesn't exist!").formatted(Formatting.YELLOW)));
+			return 0;
+		} catch (ProfilePreciousException e) {
+			feedback.accept(prefix()
+				.append(Text.literal("profile ").formatted(Formatting.YELLOW))
+				.append(profileId)
+				.append(Text.literal(" contains ").formatted(Formatting.YELLOW))
+				.append(String.valueOf(e.getPreciousComponents().size()))
+				.append(Text.literal("x precious components!").formatted(Formatting.YELLOW))
+			);
+			e.getPreciousComponents().asTexts().forEach(componentText -> feedback.accept(indent().append(componentText)));
+			return 0;
+		}
 	}
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registries, CommandManager.RegistrationEnvironment environment) {
@@ -186,6 +208,11 @@ public class SwitchyCommands {
 				.then(CommandManager.literal("view")
 					.then(profile(true)
 						.executes(c -> execute(c, (i, p, d, f) -> viewProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase())))
+					)
+				)
+				.then(CommandManager.literal("delete")
+					.then(profile(false)
+						.executes(c -> execute(c, (i, p, d, f) -> deleteProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase())))
 					)
 				)
 				.then(CommandManager.literal("edit")

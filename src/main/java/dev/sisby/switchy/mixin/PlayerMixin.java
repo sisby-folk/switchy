@@ -26,6 +26,8 @@ public class PlayerMixin implements SwitchyPlayer {
 
 	@Override
 	public SwitchyPlayerData switchy$playerData() {
+		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
+		if (switchy$playerData == null) switchy$playerData = SwitchyPlayerData.create(self);
 		return switchy$playerData;
 	}
 
@@ -35,8 +37,6 @@ public class PlayerMixin implements SwitchyPlayer {
 		if (nbt.contains(Switchy.ID)) {
 			switchy$playerData = SwitchyPlayerData.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound(Switchy.ID)).mapOrElse(s -> s, e -> SwitchyPlayerData.create(self));
 			switchy$playerData.init(self, nbt);
-		} else {
-			switchy$playerData = SwitchyPlayerData.create(self);
 		}
 	}
 
