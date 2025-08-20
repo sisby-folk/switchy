@@ -3,6 +3,7 @@ package dev.sisby.switchy.data;
 import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.SwitchyCommands;
 import dev.sisby.switchy.duck.SwitchyPlayer;
 import dev.sisby.switchy.exception.ProfileCurrentException;
@@ -23,6 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -95,16 +97,13 @@ public class SwitchyPlayerData {
 
 	public void init(ServerPlayerEntity player, NbtCompound nbt) {
 		for (SwitchyComponentType<?> componentType : Sets.difference(SwitchyComponentTypes.instance().values(), componentTypes)) {
-			if (componentType.nbtReader() != null) {
-				for (SwitchyProfile profile : profiles.values()) {
-					try {
-						componentType.tryInitialize(profile.components(), nbt, player);
-					} catch (Exception e) {
-						throw new RuntimeException(e);
-					}
-				}
-				componentTypes.add(componentType);
+			try {
+				componentType.tryInitialize(profiles.values().stream().map(SwitchyProfile::components).toList(), nbt, player);
+			} catch (Exception e) {
+				Switchy.LOGGER.warn("Failed to initialize {} for {}", componentType.id(), player.getGameProfile().getName(), e);
+				continue;
 			}
+			componentTypes.add(componentType);
 		}
 	}
 
@@ -115,9 +114,9 @@ public class SwitchyPlayerData {
 		SwitchyComponentMap components = SwitchyComponentMap.empty();
 		for (SwitchyComponentType<?> componentType : componentTypes) {
 			try {
-				componentType.tryInitialize(components, nbt, player);
+				componentType.tryInitialize(List.of(components), nbt, player);
 			} catch (Exception e) {
-				throw new RuntimeException(e);
+				Switchy.LOGGER.warn("Failed to initialize {} for {} profile {}", componentType.id(), player.getGameProfile().getName(), profileId, e);
 			}
 		}
 		SwitchyProfile newProfile = new SwitchyProfile(profileId, components);
@@ -125,7 +124,7 @@ public class SwitchyPlayerData {
 		return newProfile;
 	}
 
-	private NbtCompound updateFromPlayer(SwitchyProfile profile, ServerPlayerEntity player) throws Exception {
+	private NbtCompound updateFromPlayer(SwitchyProfile profile, ServerPlayerEntity player) {
 		NbtCompound nbt = new NbtCompound();
 		player.writeNbt(nbt);
 		for (SwitchyComponentType<?> componentType : componentTypes) {
@@ -136,7 +135,7 @@ public class SwitchyPlayerData {
 		return nbt;
 	}
 
-	public void updateCurrent(ServerPlayerEntity player) throws Exception {
+	public void updateCurrent(ServerPlayerEntity player) {
 		updateFromPlayer(getCurrentProfile(), player);
 	}
 
@@ -157,7 +156,7 @@ public class SwitchyPlayerData {
 		return profile;
 	}
 
-	private void switchProfile(SwitchyProfile nextProfile, ServerPlayerEntity player) throws Exception {
+	private void switchProfile(SwitchyProfile nextProfile, ServerPlayerEntity player) {
 		if (nextProfile.id().equals(current)) throw new ProfileCurrentException(nextProfile.id());
 		SwitchyProfile currentProfile = getCurrentProfile();
 		// Read Components
@@ -176,7 +175,7 @@ public class SwitchyPlayerData {
 		);
 	}
 
-	public SwitchyProfile switchOrCreateProfile(String profileId, ServerPlayerEntity player) throws Exception {
+	public SwitchyProfile switchOrCreateProfile(String profileId, ServerPlayerEntity player) {
 		switchProfile(getOrCreateProfile(profileId.toLowerCase(), player), player);
 		return getCurrentProfile();
 	}
