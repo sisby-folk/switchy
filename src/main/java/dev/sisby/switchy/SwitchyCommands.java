@@ -37,7 +37,17 @@ import java.util.stream.Stream;
 public class SwitchyCommands {
 	public static void greet(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
 		SwitchyPlayerData data = SwitchyPlayerData.of(handler.getPlayer());
-		if (data.size() > 1) {
+		if (!data.previous().isEmpty()) {
+			handler.getPlayer().sendMessage(prefix()
+				.append(Text.literal("Switched from ").formatted(Formatting.GREEN))
+				.append(data.getProfile(data.previous()).getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())))
+				.append(Text.literal(" to ").formatted(Formatting.GREEN))
+				.append(data.getCurrentProfile().getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())))
+				.append(Text.literal("! ").formatted(Formatting.GREEN))
+				.append(clickable("list", "/switchy", true))
+			);
+			data.clearPrevious();
+		} else if (data.size() > 1) {
 			handler.getPlayer().sendMessage(prefix()
 				.append(Text.literal("welcome back! current profile: ").formatted(Formatting.GRAY))
 				.append(data.current())
@@ -113,14 +123,6 @@ public class SwitchyCommands {
 			Switchy.LOGGER.error("[Switchy] Error while switching to {} for player {}", profileId, player.getGameProfile().getName(), e);
 			return 0;
 		}
-		feedback.accept(prefix()
-			.append(Text.literal("Switched from ").formatted(Formatting.GREEN))
-			.append(currentProfile.getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())))
-			.append(Text.literal(" to ").formatted(Formatting.GREEN))
-			.append(nextProfile.getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())))
-			.append(Text.literal("! ").formatted(Formatting.GREEN))
-			.append(clickable("list", "/switchy", true))
-		);
 		return 1;
 	}
 
