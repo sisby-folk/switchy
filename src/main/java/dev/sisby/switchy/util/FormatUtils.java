@@ -17,11 +17,8 @@ public class FormatUtils {
 		return WordUtils.capitalize(s.replace("_", " "));
 	}
 
-	public static Text statText(String glyph, float f) {
-		return Text.empty()
-			.append(Text.literal(glyph).formatted(Formatting.DARK_RED))
-			.append(Text.literal("x").formatted(Formatting.GRAY))
-			.append(NumberFormat.getNumberInstance(Locale.ROOT).format(Math.ceil(f) / 2F));
+	public static Text statText(float f) {
+		return Text.empty().append(NumberFormat.getNumberInstance(Locale.ROOT).format(Math.ceil(f) / 2F));
 	}
 
 	public static Text inventoryText(DefaultedList<ItemStack> inventory) {

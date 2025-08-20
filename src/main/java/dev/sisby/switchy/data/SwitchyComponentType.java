@@ -26,6 +26,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 	Codec<Map<SwitchyComponentType<?>, Object>> TYPE_TO_VALUE_MAP_CODEC = Codec.dispatchedMap(SwitchyComponentTypes.instance().codec(), SwitchyComponentType::codec);
@@ -130,6 +132,27 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		int execute(CommandContext<ServerCommandSource> context, T value);
 	}
 
+	record SimpleTextProvider<T>(Function<T, Text> provider) implements TextProvider<T> {
+		@Override
+		public Text toText(T value) {
+			return provider.apply(value);
+		}
+	}
+
+	record SimpleEmptyChecker<T>(Predicate<T> predicate) implements EmptyChecker<T> {
+		@Override
+		public boolean isEmpty(T value) {
+			return predicate.test(value);
+		}
+	}
+
+	record SimpleArgumentEditor<T>(Function<EditExecutor<T>, ArgumentBuilder<ServerCommandSource, ?>> editor) implements ArgumentEditor<T> {
+		@Override
+		public ArgumentBuilder<ServerCommandSource, ?> create(EditExecutor<T> executor) {
+			return editor.apply(executor);
+		}
+	}
+
 	class DefaultPlayerInitializer<T> implements Initializer<T> {
 		private final NbtReader<T> nbtReader;
 
@@ -144,8 +167,12 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 			defaultPlayer.writeNbt(defaultNbt);
 			try {
 				return nbtReader.read(defaultNbt);
-			} catch (Exception e) {
-				throw new ComponentFailedInitializeException("", e);
+			} catch (Exception ignored) {
+				try {
+					return nbtReader.read(playerNbt);
+				} catch (Exception e) {
+					throw new ComponentFailedInitializeException("", e);
+				}
 			}
 		}
 	}
