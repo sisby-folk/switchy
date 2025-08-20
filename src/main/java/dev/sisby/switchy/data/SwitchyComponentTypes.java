@@ -8,12 +8,15 @@ import dev.sisby.switchy.util.SwitchyCodecs;
 import dev.sisby.switchy.util.TypeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -28,6 +31,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	private static final SwitchyComponentTypes INSTANCE = new SwitchyComponentTypes();
 
 	public static final Map<Identifier, Codec<?>> CODECS = new HashMap<>(Map.of(
+		Identifier.ofVanilla("nbt"), Codecs.fromOps(NbtOps.INSTANCE),
 		Identifier.ofVanilla("string"), Codec.STRING,
 		Identifier.ofVanilla("text"), TextCodecs.CODEC,
 		Identifier.ofVanilla("float"), Codec.FLOAT,
@@ -57,7 +61,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 		componentsFolder.mkdirs();
 		for (String file : Objects.requireNonNullElse(componentsFolder.list((dir, name) -> name.endsWith(".toml")), new String[]{})) {
 			SwitchyConfigComponentType config = SwitchyConfigComponentType.createToml(FabricLoader.getInstance().getConfigDir(), "%s/components".formatted(Switchy.ID), file.replace(".toml", ""), SwitchyConfigComponentType.class);
-			Codec<?> codec = CODECS.get(Identifier.tryParse(config.codec));
+			Codec<?> codec = CODECS.get(CODECS.containsKey(Identifier.tryParse(config.codec)) ? Identifier.tryParse(config.codec) : Identifier.tryParse("nbt"));
 			registerConfig(codec, config);
 		}
 	}
