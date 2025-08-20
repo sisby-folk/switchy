@@ -3,12 +3,14 @@ package dev.sisby.switchy.mixin;
 import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.data.SwitchyPlayerData;
 import dev.sisby.switchy.duck.SwitchyPlayer;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.storage.NbtWriteView;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
+import net.minecraft.util.ErrorReporter;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,7 +25,7 @@ public class PlayerMixin implements SwitchyPlayer {
 	public void switchy$hotSwap(NbtCompound nbt, Text reason) {
 		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
 		switchy$hotSwap = nbt;
-		self.networkHandler.disconnect(reason);
+		ServerPlayNetworking.reconfigure(self.networkHandler);
 	}
 
 	@Override
@@ -42,7 +44,15 @@ public class PlayerMixin implements SwitchyPlayer {
 
 	@Inject(method = "writeCustomData", at = @At("HEAD"), cancellable = true)
 	public void applyHotSwapData(WriteView view, CallbackInfo ci) {
+		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
 		if (switchy$hotSwap != null && view instanceof NbtWriteView nbtView) {
+			if (self.getServer().isHost(self.getGameProfile())) { // hosts don't support reconfiguration unless we patch this
+				self.getServer().getSaveProperties().getPlayerData().entrySet().clear();
+				self.getServer().getSaveProperties().getPlayerData().copyFrom(switchy$hotSwap);
+				NbtWriteView writeView = NbtWriteView.create(new ErrorReporter.Logging(self.getErrorReporterContext(), Switchy.LOGGER), self.getRegistryManager());
+				writePlayerData(writeView, ci);
+				self.getServer().getSaveProperties().getPlayerData().copyFrom(writeView.getNbt());
+			}
 			nbtView.getNbt().copyFrom(switchy$hotSwap);
 			writePlayerData(view, ci);
 			ci.cancel();
