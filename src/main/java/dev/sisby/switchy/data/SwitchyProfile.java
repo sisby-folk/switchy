@@ -1,8 +1,6 @@
 package dev.sisby.switchy.data;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -14,10 +12,6 @@ import java.util.List;
 public record SwitchyProfile(String id, SwitchyComponentMap components) implements SwitchyComponentHolder<SwitchyProfile> {
 	public static Codec<SwitchyProfile> codec(String id) {
 		return SwitchyComponentMap.CODEC.xmap(m -> new SwitchyProfile(id, m), SwitchyProfile::components);
-	}
-
-	public static PacketCodec<RegistryByteBuf, SwitchyProfile> packetCodec(String id) {
-		return SwitchyComponentMap.PACKET_CODEC.xmap(m -> new SwitchyProfile(id, m), SwitchyProfile::components);
 	}
 
 	@Override

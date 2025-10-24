@@ -15,30 +15,30 @@ logoFile = "assets/${modId}/icon.png"
 [properties]
 "connector:placeholder" = true
 
-[["dependencies.${ modId }"]]
-modId = "connector"
-type = "required"
+[[dependencies.${ modId }]]
+modId = "connectormod"
+mandatory = true
 versionRange = "*"
 ordering = "NONE"
 side = "BOTH"
 
-[["dependencies.${ modId }"]]
-modId = "neoforge"
-type = "required"
+[[dependencies.${ modId }]]
+modId = "forge"
+mandatory = true
 versionRange = "*"
 ordering = "NONE"
 side = "BOTH"
 
-[["dependencies.${ modId }"]]
+[[dependencies.${ modId }]]
 modId = "minecraft"
-type = "required"
+mandatory = true
 versionRange = "[${mc},)"
 ordering = "NONE"
 side = "BOTH"
 
-[["dependencies.${ modId }"]]
+[[dependencies.${ modId }]]
 modId = "fabric_api"
-type = "required"
+mandatory = true
 versionRange = "[${fapi},)"
 ordering = "NONE"
 side = "BOTH"

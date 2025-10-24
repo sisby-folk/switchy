@@ -1,20 +1,21 @@
 package dev.sisby.switchy.data;
 
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import dev.sisby.switchy.SwitchyCommands;
 import dev.sisby.switchy.exception.ComponentFailedInitializeException;
 import dev.sisby.switchy.exception.KeyNotFoundException;
+import dev.sisby.switchy.exception.NbtException;
+import dev.sisby.switchy.util.DispatchMapCodec;
 import dev.sisby.switchy.util.TypeRegistry;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtException;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
@@ -30,7 +31,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public interface SwitchyComponentType<T> extends TypeRegistry.Type {
-	Codec<Map<SwitchyComponentType<?>, Object>> TYPE_TO_VALUE_MAP_CODEC = Codec.dispatchedMap(SwitchyComponentTypes.instance().codec(), SwitchyComponentType::codec);
+	Codec<Map<SwitchyComponentType<?>, Object>> TYPE_TO_VALUE_MAP_CODEC = DispatchMapCodec.of(SwitchyComponentTypes.instance().codec(), t -> (Codec<Object>) t.codec());
 
 	static <T> SwitchyComponentType.Builder<T> builder(@NotNull Identifier id, @NotNull Codec<T> codec) {
 		return new SwitchyComponentType.Builder<>(id, codec);
@@ -50,10 +51,6 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	@Nullable ArgumentEditor<T> argumentEditor();
 
-	default @Nullable PacketCodec<? super RegistryByteBuf, T> packetCodec() {
-		return PacketCodecs.codec(codec());
-	}
-
 	default void tryInitialize(Collection<SwitchyComponentMap> consumer, NbtCompound nbt, ServerPlayerEntity player) {
 		Initializer<T> initializer = initializer();
 		if (initializer == null) return;
@@ -62,7 +59,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		consumer.forEach(c -> c.set(this, value));
 	}
 
-	default void tryMutate(SwitchyComponentMap components, NbtCompound playerData) {
+	default void tryMutate(SwitchyComponentMap components, NbtCompound playerData) throws NbtException {
 		NbtMutator<T> mutator = nbtMutator();
 		if (mutator != null) {
 			mutator.mutate(components.get(this), playerData);
@@ -162,7 +159,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 		@Override
 		public T initialize(NbtCompound playerNbt, ServerPlayerEntity player) throws ComponentFailedInitializeException {
-			ServerPlayerEntity defaultPlayer = player.getServer().getPlayerManager().createPlayer(player.getGameProfile(), player.getClientOptions());
+			ServerPlayerEntity defaultPlayer = new ServerPlayerEntity(player.getServer(), player.getServer().getOverworld(), player.getGameProfile());
 			NbtCompound defaultNbt = new NbtCompound();
 			defaultPlayer.writeNbt(defaultNbt);
 			try {
@@ -187,9 +184,13 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		}
 
 		@Override
-		public T read(NbtCompound nbt) {
+		public T read(NbtCompound nbt) throws NbtException {
 			try {
-				return codec.parse(NbtOps.INSTANCE, nbtPath.get(nbt).getFirst()).getOrThrow();
+				DataResult<T> result = codec.parse(NbtOps.INSTANCE, nbtPath.get(nbt).getFirst());
+				if (result.error().isPresent()) {
+					throw new NbtException("Failed to read from serialized player! %s".formatted(result.error().get().message()));
+				}
+				return result.result().orElseThrow();
 			} catch (CommandSyntaxException e) {
 				throw new KeyNotFoundException("NBT path returned no valid nodes!");
 			}
@@ -198,7 +199,11 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		@Override
 		public void mutate(T value, NbtCompound nbt) throws NbtException {
 			try {
-				nbtPath.put(nbt, codec.encodeStart(NbtOps.INSTANCE, value).getOrThrow());
+				DataResult<NbtElement> result = codec.encodeStart(NbtOps.INSTANCE, value);
+				if (result.error().isPresent()) {
+					throw new NbtException("Failed to serialize component! %s".formatted(result.error().get().message()));
+				}
+				nbtPath.put(nbt, result.result().orElseThrow());
 			} catch (CommandSyntaxException e) {
 				throw new NbtException("NBT path too deep!");
 			}
@@ -274,7 +279,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		public Builder<T> nbtSwitcher(String nbtPath) {
 			NbtSwitcher<T> switcher;
 			try {
-				switcher = new NbtSwitcher<>(NbtPathArgumentType.NbtPath.parse(nbtPath), codec);
+				switcher = new NbtSwitcher<>(NbtPathArgumentType.nbtPath().parse(new StringReader(nbtPath)), codec);
 			} catch (CommandSyntaxException e) {
 				throw new RuntimeException(e);
 			}

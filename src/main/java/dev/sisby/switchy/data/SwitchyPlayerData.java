@@ -6,15 +6,14 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.SwitchyCommands;
 import dev.sisby.switchy.duck.SwitchyPlayer;
+import dev.sisby.switchy.exception.NbtException;
 import dev.sisby.switchy.exception.ProfileCurrentException;
 import dev.sisby.switchy.exception.ProfileMissingException;
 import dev.sisby.switchy.exception.ProfilePreciousException;
 import dev.sisby.switchy.exception.ProfileExistsException;
+import dev.sisby.switchy.util.DispatchMapCodec;
 import dev.sisby.switchy.util.SwitchyCodecs;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -34,16 +33,8 @@ public class SwitchyPlayerData {
 		Codec.STRING.fieldOf("current").forGetter(SwitchyPlayerData::current),
 		Codec.STRING.fieldOf("previous").forGetter(SwitchyPlayerData::previous),
 		SwitchyCodecs.COMPONENT_TYPE_SET_CODEC.fieldOf("componentTypes").forGetter(p -> p.componentTypes),
-		Codec.dispatchedMap(Codecs.NON_EMPTY_STRING, SwitchyProfile::codec).fieldOf("profiles").xmap(a -> (Map<String, SwitchyProfile>) new HashMap<>(a), b -> b).forGetter(p -> p.profiles)
+		DispatchMapCodec.of(Codecs.NON_EMPTY_STRING, SwitchyProfile::codec).fieldOf("profiles").xmap(a -> (Map<String, SwitchyProfile>) new HashMap<>(a), b -> b).forGetter(p -> p.profiles)
 	).apply(instance, SwitchyPlayerData::new));
-
-	public static final PacketCodec<RegistryByteBuf, SwitchyPlayerData> PACKET_CODEC = PacketCodec.tuple(
-		PacketCodecs.STRING, SwitchyPlayerData::current,
-		PacketCodecs.STRING, SwitchyPlayerData::previous,
-		PacketCodecs.collection(LinkedHashSet::new, SwitchyComponentTypes.instance().packetCodec()), p -> p.componentTypes,
-		SwitchyCodecs.packetDispatchedMap(HashMap::new, PacketCodecs.STRING, SwitchyProfile::packetCodec), p -> p.profiles,
-		SwitchyPlayerData::new
-	);
 
 	private String current;
 	private String previous;
@@ -133,7 +124,7 @@ public class SwitchyPlayerData {
 		return newProfile;
 	}
 
-	private NbtCompound updateFromPlayer(SwitchyProfile profile, ServerPlayerEntity player) {
+	private NbtCompound updateFromPlayer(SwitchyProfile profile, ServerPlayerEntity player) throws NbtException {
 		NbtCompound nbt = new NbtCompound();
 		player.writeNbt(nbt);
 		for (SwitchyComponentType<?> componentType : componentTypes) {
@@ -144,7 +135,7 @@ public class SwitchyPlayerData {
 		return nbt;
 	}
 
-	public void updateCurrent(ServerPlayerEntity player) {
+	public void updateCurrent(ServerPlayerEntity player) throws NbtException {
 		updateFromPlayer(getCurrentProfile(), player);
 	}
 
@@ -165,7 +156,7 @@ public class SwitchyPlayerData {
 		return profile;
 	}
 
-	private void switchProfile(SwitchyProfile nextProfile, ServerPlayerEntity player) {
+	private void switchProfile(SwitchyProfile nextProfile, ServerPlayerEntity player) throws NbtException {
 		if (nextProfile.id().equals(current)) throw new ProfileCurrentException(nextProfile.id());
 		SwitchyProfile currentProfile = getCurrentProfile();
 		// Read Components
@@ -185,7 +176,7 @@ public class SwitchyPlayerData {
 		);
 	}
 
-	public SwitchyProfile switchOrCreateProfile(String profileId, ServerPlayerEntity player) {
+	public SwitchyProfile switchOrCreateProfile(String profileId, ServerPlayerEntity player) throws NbtException {
 		switchProfile(getOrCreateProfile(profileId.toLowerCase(), player), player);
 		return getCurrentProfile();
 	}

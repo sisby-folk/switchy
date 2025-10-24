@@ -4,8 +4,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.util.Identifier;
 
 import java.util.Optional;
@@ -13,18 +11,13 @@ import java.util.Set;
 import java.util.function.Function;
 
 public abstract class TypeRegistry<T extends TypeRegistry.Type> {
-	private final Codec<T> codec = Codec.lazyInitialized(() -> Identifier.CODEC.comapFlatMap(id -> Optional.ofNullable(get(id))
+	private final Codec<T> codec = Identifier.CODEC.comapFlatMap(id -> Optional.ofNullable(get(id))
 			.map(DataResult::success)
-			.orElse(DataResult.error(() -> "No type found with id " + id)), this::id));
-	private final PacketCodec<? super RegistryByteBuf, T> packetCodec = Identifier.PACKET_CODEC.xmap(this::get, this::id);
+			.orElse(DataResult.error(() -> "No type found with id " + id)), this::id);
 	private final BiMap<Identifier, T> map = HashBiMap.create();
 
 	public Codec<T> codec() {
 		return codec;
-	}
-
-	public PacketCodec<? super RegistryByteBuf, T> packetCodec() {
-		return packetCodec;
 	}
 
 	public boolean contains(Identifier id) {

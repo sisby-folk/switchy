@@ -2,11 +2,8 @@ package dev.sisby.switchy.data;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import dev.sisby.switchy.util.SwitchyCodecs;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -19,12 +16,6 @@ import java.util.stream.Collectors;
 
 public class SwitchyComponentMap {
 	public static final Codec<SwitchyComponentMap> CODEC = SwitchyComponentType.TYPE_TO_VALUE_MAP_CODEC.flatComapMap(SwitchyComponentMap::create, map -> DataResult.success(new Reference2ObjectArrayMap<>(map.map)));
-	public static final PacketCodec<RegistryByteBuf, Reference2ObjectMap<SwitchyComponentType<?>, Object>> MAP_PACKET_CODEC = SwitchyCodecs.packetDispatchedMap(Reference2ObjectArrayMap::new,
-		SwitchyComponentTypes.instance().packetCodec(),
-		t -> (PacketCodec<RegistryByteBuf, Object>) t.packetCodec()
-	);
-	public static final PacketCodec<RegistryByteBuf, SwitchyComponentMap> PACKET_CODEC = MAP_PACKET_CODEC.xmap(SwitchyComponentMap::new, s -> s.map);
-
 	private final Reference2ObjectMap<SwitchyComponentType<?>, Object> map;
 
 	public static SwitchyComponentMap empty() {

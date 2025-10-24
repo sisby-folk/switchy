@@ -8,11 +8,8 @@ import dev.sisby.switchy.util.SwitchyCodecs;
 import dev.sisby.switchy.util.TypeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
@@ -31,29 +28,29 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	private static final SwitchyComponentTypes INSTANCE = new SwitchyComponentTypes();
 
 	public static final Map<Identifier, Codec<?>> CODECS = new HashMap<>(Map.of(
-		Identifier.ofVanilla("nbt"), Codecs.fromOps(NbtOps.INSTANCE),
-		Identifier.ofVanilla("string"), Codec.STRING,
-		Identifier.ofVanilla("text"), TextCodecs.CODEC,
-		Identifier.ofVanilla("float"), Codec.FLOAT,
-		Identifier.ofVanilla("vec3d"), Vec3d.CODEC,
-		Identifier.ofVanilla("identifier"), Identifier.CODEC,
-		Identifier.ofVanilla("inventory"), SwitchyCodecs.INVENTORY_CODEC
+		new Identifier("nbt"), SwitchyCodecs.NBT,
+		new Identifier("string"), Codec.STRING,
+		new Identifier("text"), Codecs.TEXT,
+		new Identifier("float"), Codec.FLOAT,
+		new Identifier("vec3d"), Vec3d.CODEC,
+		new Identifier("identifier"), Identifier.CODEC,
+		new Identifier("inventory"), SwitchyCodecs.INVENTORY_CODEC
 	));
 	public static final Map<Identifier, SwitchyComponentType.TextProvider<?>> TEXT_PROVIDERS = new HashMap<>(Map.of(
-		Identifier.ofVanilla("text"), new SwitchyComponentType.SimpleTextProvider<Text>(t -> t),
-		Identifier.ofVanilla("halves"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::statText),
-		Identifier.ofVanilla("vec3d"), new SwitchyComponentType.SimpleTextProvider<Vec3d>(c -> Text.of(BlockPos.ofFloored(c).toShortString())),
-		Identifier.ofVanilla("identifier"), new SwitchyComponentType.SimpleTextProvider<Identifier>(i -> Text.of(FormatUtils.prettify(i.getPath()))),
-		Identifier.ofVanilla("inventory"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::inventoryText)
+		new Identifier("text"), new SwitchyComponentType.SimpleTextProvider<Text>(t -> t),
+		new Identifier("halves"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::statText),
+		new Identifier("vec3d"), new SwitchyComponentType.SimpleTextProvider<Vec3d>(c -> Text.of(BlockPos.ofFloored(c).toShortString())),
+		new Identifier("identifier"), new SwitchyComponentType.SimpleTextProvider<Identifier>(i -> Text.of(FormatUtils.prettify(i.getPath()))),
+		new Identifier("inventory"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::inventoryText)
 	));
 	public static final Map<Identifier, SwitchyComponentType.ArgumentEditor<?>> ARGUMENT_EDITORS = new HashMap<>(Map.of(
-		Identifier.ofVanilla("text"), new SwitchyComponentType.SimpleArgumentEditor<Text>(e -> CommandManager.argument("name", StringArgumentType.greedyString()).executes(c -> e.execute(c, Text.of(c.getArgument("name", String.class)))))
+		new Identifier("text"), new SwitchyComponentType.SimpleArgumentEditor<Text>(e -> CommandManager.argument("name", StringArgumentType.greedyString()).executes(c -> e.execute(c, Text.of(c.getArgument("name", String.class)))))
 	));
 	public static final Map<Identifier, SwitchyComponentType.EmptyChecker<?>> EMPTY_CHECKERS = new HashMap<>(Map.of(
-		Identifier.ofVanilla("inventory"), new SwitchyComponentType.SimpleEmptyChecker<DefaultedList<ItemStack>>(dl -> dl.stream().allMatch(ItemStack::isEmpty))
+		new Identifier("inventory"), new SwitchyComponentType.SimpleEmptyChecker<DefaultedList<ItemStack>>(dl -> dl.stream().allMatch(ItemStack::isEmpty))
 	));
 
-	public static final SwitchyComponentType<Text> NAME = register(Switchy.id("name"), TextCodecs.CODEC, b -> b.textProvider(c -> c)
+	public static final SwitchyComponentType<Text> NAME = register(Switchy.id("name"), Codecs.TEXT, b -> b.textProvider(c -> c)
 		.argumentEditor(e -> CommandManager.argument("name", StringArgumentType.greedyString()).executes(c -> e.execute(c, Text.of(c.getArgument("name", String.class))))));
 
 	public static void init() {
