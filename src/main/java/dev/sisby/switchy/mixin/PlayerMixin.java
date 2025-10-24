@@ -1,9 +1,7 @@
 package dev.sisby.switchy.mixin;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.data.SwitchyPlayerData;
-import dev.sisby.switchy.duck.SwitchyPlayHandler;
 import dev.sisby.switchy.duck.SwitchyPlayer;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
@@ -15,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerEntity.class)
-public class ServerPlayerEntityMixin implements SwitchyPlayer {
+public class PlayerMixin implements SwitchyPlayer {
 	private SwitchyPlayerData switchy$playerData = null;
 	private NbtCompound switchy$hotSwap = null;
 
@@ -23,7 +21,7 @@ public class ServerPlayerEntityMixin implements SwitchyPlayer {
 	public void switchy$hotSwap(NbtCompound nbt, Text reason) {
 		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
 		switchy$hotSwap = nbt;
-		((SwitchyPlayHandler) self.networkHandler).switchy$hotSwap();
+		self.networkHandler.disconnect(reason);
 	}
 
 	@Override
@@ -44,13 +42,7 @@ public class ServerPlayerEntityMixin implements SwitchyPlayer {
 
 	@Inject(method = "writeCustomDataToNbt", at = @At("HEAD"), cancellable = true)
 	public void applyHotSwapData(NbtCompound nbt, CallbackInfo ci) {
-		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
 		if (switchy$hotSwap != null) {
-			if (self.getServer().isHost(self.getGameProfile())) { // hosts don't support reconfiguration unless we patch this
-				self.getServer().getSaveProperties().getPlayerData().getKeys().clear();
-				self.getServer().getSaveProperties().getPlayerData().copyFrom(switchy$hotSwap);
-				writePlayerData(self.getServer().getSaveProperties().getPlayerData(), ci);
-			}
 			nbt.copyFrom(switchy$hotSwap);
 			writePlayerData(nbt, ci);
 			ci.cancel();
@@ -66,12 +58,6 @@ public class ServerPlayerEntityMixin implements SwitchyPlayer {
 
 	@Inject(method = "copyFrom", at = @At("TAIL"))
 	public void copyPlayerData(ServerPlayerEntity oldPlayer, boolean alive, CallbackInfo ci) {
-		switchy$playerData = ((ServerPlayerEntityMixin) (Object) oldPlayer).switchy$playerData;
-	}
-
-	@ModifyReturnValue(method = "acceptsMessage", at = @At("RETURN"))
-	private boolean dontSendMessagesDuringHotswap(boolean original) {
-		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
-		return original && !((SwitchyPlayHandler) self.networkHandler).switchy$isHotSwap();
+		switchy$playerData = ((PlayerMixin) (Object) oldPlayer).switchy$playerData;
 	}
 }
