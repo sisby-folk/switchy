@@ -186,7 +186,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		@Override
 		public T read(NbtCompound nbt) throws NbtException {
 			try {
-				DataResult<T> result = codec.parse(NbtOps.INSTANCE, nbtPath.get(nbt).getFirst());
+				DataResult<T> result = codec.parse(NbtOps.INSTANCE, nbtPath.get(nbt).get(0));
 				if (result.error().isPresent()) {
 					throw new NbtException("Failed to read from serialized player! %s".formatted(result.error().get().message()));
 				}
