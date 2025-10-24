@@ -4,7 +4,6 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.serialization.Codec;
 import dev.sisby.switchy.Switchy;
@@ -13,7 +12,11 @@ import dev.sisby.switchy.util.SwitchyCodecs;
 import dev.sisby.switchy.util.TypeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.command.CommandManager;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -44,12 +47,16 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 		new Identifier("string"), Codec.STRING,
 		new Identifier("text"), Codecs.TEXT,
 		new Identifier("float"), Codec.FLOAT,
+		new Identifier("int"), Codec.INT,
 		new Identifier("vec3d"), Vec3d.CODEC,
 		new Identifier("identifier"), Identifier.CODEC,
 		new Identifier("inventory"), SwitchyCodecs.INVENTORY_CODEC
 	));
 	public static final Map<Identifier, SwitchyComponentType.TextProvider<?>> TEXT_PROVIDERS = new HashMap<>(Map.of(
+		new Identifier("trunc"), new SwitchyComponentType.SimpleTextProvider<>(o -> Objects.toString(o).length() <= 10 ? Text.of(Objects.toString(o)) : Text.literal(Objects.toString(o).substring(0, 10) + "...").styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(Objects.toString(o)))))),
+		new Identifier("nbt"), new SwitchyComponentType.SimpleTextProvider<NbtElement>(e -> Text.literal("%d elements...".formatted(e instanceof NbtCompound c ? c.getSize() : e instanceof NbtList l ? l.size() : 1)).styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(Objects.toString(e)))))),
 		new Identifier("text"), new SwitchyComponentType.SimpleTextProvider<Text>(t -> t),
+		new Identifier("percent"), new SwitchyComponentType.SimpleTextProvider<Float>(n -> Text.of("%.0f%%".formatted(n * 100.0))),
 		new Identifier("halves"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::statText),
 		new Identifier("vec3d"), new SwitchyComponentType.SimpleTextProvider<Vec3d>(c -> Text.of(BlockPos.ofFloored(c).toShortString())),
 		new Identifier("identifier"), new SwitchyComponentType.SimpleTextProvider<Identifier>(i -> Text.of(FormatUtils.prettify(i.getPath()))),
@@ -71,14 +78,24 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	public static final SwitchyComponentType<Text> NAME = register(Switchy.id("name"), Codecs.TEXT, b -> b.textProvider(c -> c)
 		.argumentEditor(e -> CommandManager.argument("name", StringArgumentType.greedyString()).executes(c -> e.execute(c, Text.of(c.getArgument("name", String.class))))));
 
-	public static final Map<Identifier, EditableComponentType> DEFAULT_COMPONENTS = Map.of(
-		new Identifier("minecraft", "dimension"), new EditableComponentType(true, "identifier", "Dimension", "identifier", null, null, null),
-		new Identifier("minecraft", "food"), new EditableComponentType(true, "float", "foodLevel", "halves", "🍖x", null, null),
-		new Identifier("minecraft", "saturation"), new EditableComponentType(true, "float", "foodSaturationLevel", "halves", "+🍖x", null, null),
-		new Identifier("minecraft", "exhaustion"), new EditableComponentType(true, "float", "foodExhaustionLevel", "halves", "-💨x", null, null),
-		new Identifier("minecraft", "health"), new EditableComponentType(true, "float", "Health", "halves", "❤x", null, null),
-		new Identifier("minecraft", "pos"), new EditableComponentType(true, "vec3d", "Pos", "vec3d", null, null, null),
-		new Identifier("minecraft", "inventory"), new EditableComponentType(true, "inventory", "Inventory", "inventory", null, null, "inventory")
+	public static final Map<Identifier, EditableComponentType> DEFAULT_COMPONENTS = Map.ofEntries(
+		// minecraft
+		Map.entry(new Identifier("minecraft", "dimension"), new EditableComponentType(true, "identifier", "Dimension", "identifier", null, null, null)),
+		Map.entry(new Identifier("minecraft", "food"), new EditableComponentType(true, "float", "foodLevel", "halves", "🍖x", null, null)),
+		Map.entry(new Identifier("minecraft", "saturation"), new EditableComponentType(true, "float", "foodSaturationLevel", "halves", "+🍖x", null, null)),
+		Map.entry(new Identifier("minecraft", "exhaustion"), new EditableComponentType(true, "float", "foodExhaustionLevel", "halves", "-💨x", null, null)),
+		Map.entry(new Identifier("minecraft", "health"), new EditableComponentType(true, "float", "Health", "halves", "❤x", null, null)),
+		Map.entry(new Identifier("minecraft", "xp"), new EditableComponentType(true, "float", "XpP", "percent", null, null, null)),
+		Map.entry(new Identifier("minecraft", "level"), new EditableComponentType(true, "int", "XpLevel", null, "Lv.", null, null)),
+		Map.entry(new Identifier("minecraft", "pos"), new EditableComponentType(true, "vec3d", "Pos", "vec3d", null, null, null)),
+		Map.entry(new Identifier("minecraft", "inventory"), new EditableComponentType(true, "inventory", "Inventory", "inventory", null, null, "inventory")),
+		Map.entry(new Identifier("minecraft", "enderchest"), new EditableComponentType(true, "inventory", "EnderItems", "inventory", "👁 ", null, "inventory")),
+		// origins
+		Map.entry(new Identifier("origins", "origin"), new EditableComponentType(true, "identifier", "cardinal_components.origins:origin.OriginLayers[0].Origin", "identifier", null, null, null)),
+		Map.entry(new Identifier("origins", "powers"), new EditableComponentType(true, null, "cardinal_components.apoli:powers.Powers", "nbt", null, null, null)),
+		// fabric tailor
+		Map.entry(new Identifier("fabrictailor", "value"), new EditableComponentType(true, "string", "fabrictailor:skin_data.value", "trunc", null, null, null)),
+		Map.entry(new Identifier("fabrictailor", "signature"), new EditableComponentType(true, "string", "fabrictailor:skin_data.signature", "trunc", null, null, null))
 	);
 
 	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -103,11 +120,11 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 				for (Path path : paths.toList()) {
 					for (String fileName : Objects.requireNonNullElse(path.toFile().list((dir, name) -> name.endsWith(".json")), new String[]{})) {
 						File file = path.resolve(fileName).toFile();
-						Identifier id = new Identifier(componentsFolder.toPath().relativize(file.toPath()).toString().replace(".json", "").replaceFirst("/", ":"));
+						Identifier id = new Identifier(componentsFolder.toPath().relativize(file.toPath()).toString().replace("\\", "/").replace(".json", "").replaceFirst("/", ":"));
 						if (!FabricLoader.getInstance().isModLoaded(id.getNamespace())) return;
 						EditableComponentType config = GSON.fromJson(new JsonReader(new FileReader(file)), EDITABLE_COMPONENT_TYPE);
 						if (!config.enabled) return;
-						Codec<?> codec = CODECS.get(CODECS.containsKey(Identifier.tryParse(config.codec)) ? Identifier.tryParse(config.codec) : Identifier.tryParse("nbt"));
+						Codec<?> codec = CODECS.get(config.codec != null && CODECS.containsKey(Identifier.tryParse(config.codec)) ? Identifier.tryParse(config.codec) : Identifier.tryParse("nbt"));
 						registerConfig(codec, id, config);
 					}
 				}
@@ -124,7 +141,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 		SwitchyComponentType.EmptyChecker<T> checker = config.emptyChecker == null ? null :  (SwitchyComponentType.EmptyChecker<T>) EMPTY_CHECKERS.get(Identifier.tryParse(config.emptyChecker));
 		register(id, codec, b -> b
 			.nbtSwitcher(config.path)
-			.textProvider(provider != null && config.prefix != null ? (v -> Text.empty().append(Text.literal(config.prefix).formatted(Formatting.GRAY)).append(provider.toText(v))) : provider)
+			.textProvider(v -> Text.empty().append(Text.literal(Objects.requireNonNullElse(config.prefix, "")).formatted(Formatting.GRAY)).append(provider != null ? provider.toText(v) : Text.of(Objects.toString(v))))
 			.argumentEditor(editor)
 			.emptyChecker(checker)
 		);

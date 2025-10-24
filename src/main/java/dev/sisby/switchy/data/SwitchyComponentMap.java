@@ -9,8 +9,10 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -54,7 +56,7 @@ public class SwitchyComponentMap {
 	}
 
 	public String toString() {
-		return map.entrySet().stream().map(e -> "%s: %s".formatted(e.getKey().id().getPath(), e.getValue().toString())).collect(Collectors.joining("\n"));
+		return map.entrySet().stream().map(e -> "%s: %s".formatted(e.getKey().id().getPath(), Objects.toString(e.getValue()))).collect(Collectors.joining("\n"));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -70,6 +72,13 @@ public class SwitchyComponentMap {
 	}
 
 	public List<MutableText> asTexts() {
-		return keySet().stream().map(t -> Text.empty().append(Text.literal(t.id().getPath() + ": ").formatted(Formatting.GRAY)).append(t.asText(this))).toList();
+		return keySet().stream().sorted(Comparator.comparing(t -> t.id().toString())).map(t -> {
+			try {
+				Text text = t.asText(this);
+				return Text.empty().append(Text.literal(t.id().getPath() + ": ").formatted(Formatting.GRAY)).append(text);
+			} catch (Exception e) {
+				throw new RuntimeException("Failed to preview component %s with value %s".formatted(t.id(), this.get(t)), e);
+			}
+		}).toList();
 	}
 }

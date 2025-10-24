@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -71,7 +72,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		if (textProvider != null) {
 			return textProvider.toText(value).copy();
 		} else {
-			return Text.literal(value.toString());
+			return Text.literal(Objects.toString(value));
 		}
 	}
 
@@ -192,7 +193,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 				}
 				return result.result().orElseThrow();
 			} catch (CommandSyntaxException e) {
-				throw new KeyNotFoundException("NBT path returned no valid nodes!");
+				return null;
 			}
 		}
 

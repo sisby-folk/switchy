@@ -63,7 +63,7 @@ public class DispatchMapCodec<K, V> implements Codec<Map<K, V>> {
 
 	private <T> RecordBuilder<T> encode(final Map<K, V> input, final DynamicOps<T> ops, final RecordBuilder<T> prefix) {
 		for (final Map.Entry<K, V> entry : input.entrySet()) {
-			prefix.add(keyCodec.encodeStart(ops, entry.getKey()), valueCodec.apply(entry.getKey()).encodeStart(ops, entry.getValue()));
+			if (entry.getValue() != null) prefix.add(keyCodec.encodeStart(ops, entry.getKey()), valueCodec.apply(entry.getKey()).encodeStart(ops, entry.getValue()));
 		}
 		return prefix;
 	}
