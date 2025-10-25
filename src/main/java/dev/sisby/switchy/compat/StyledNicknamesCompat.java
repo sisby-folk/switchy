@@ -3,6 +3,7 @@ package dev.sisby.switchy.compat;
 import dev.sisby.switchy.data.SwitchyComponentType;
 import eu.pb4.playerdata.api.PlayerDataApi;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -14,6 +15,6 @@ public class StyledNicknamesCompat {
 			.playerReader((p, id) -> Objects.requireNonNullElse(PlayerDataApi.getGlobalDataFor(p, new Identifier("stylednicknames", "nickname"), NbtString.TYPE), NbtString.of(id)).asString())
 			.playerMutator((v, p) -> PlayerDataApi.setGlobalDataFor(p, new Identifier("stylednicknames", "nickname"), NbtString.of(v)))
 			.initializer((n, p, id) -> id)
-			.textProvider(s -> Text.of(s.replaceAll("<[^>]*>", "")));
+			.textProvider(s -> Text.literal(s.replaceAll("<[^>]*>", "")).styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(s)))));
 	}
 }
