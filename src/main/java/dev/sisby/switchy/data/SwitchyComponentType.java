@@ -55,10 +55,10 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	@Nullable ArgumentEditor<T> argumentEditor();
 
-	default void tryInitialize(Collection<SwitchyComponentMap> consumer, NbtCompound nbt, ServerPlayerEntity player) {
+	default void tryInitialize(Collection<SwitchyComponentMap> consumer, NbtCompound nbt, ServerPlayerEntity player, String profileId) {
 		Initializer<T> initializer = initializer();
 		if (initializer == null) return;
-		T value = initializer.initialize(nbt, player);
+		T value = initializer.initialize(nbt, player, profileId);
 		if (value == null) return;
 		consumer.forEach(c -> c.set(this, value));
 	}
@@ -103,7 +103,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	@FunctionalInterface
 	interface Initializer<T> {
-		T initialize(NbtCompound playerNbt, ServerPlayerEntity player) throws ComponentFailedInitializeException;
+		T initialize(NbtCompound playerNbt, ServerPlayerEntity player, String profileId) throws ComponentFailedInitializeException;
 	}
 
 	@FunctionalInterface
@@ -118,7 +118,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	@FunctionalInterface
 	interface PlayerReader<T> {
-		T read(ServerPlayerEntity player);
+		T read(ServerPlayerEntity player, String profileId);
 	}
 
 	@FunctionalInterface
@@ -175,7 +175,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		}
 
 		@Override
-		public T initialize(NbtCompound playerNbt, ServerPlayerEntity player) throws ComponentFailedInitializeException {
+		public T initialize(NbtCompound playerNbt, ServerPlayerEntity player, String profileId) throws ComponentFailedInitializeException {
 			ServerPlayerEntity defaultPlayer = new ServerPlayerEntity(player.getServer(), player.getServer().getOverworld(), player.getGameProfile());
 			NbtCompound defaultNbt = new NbtCompound();
 			defaultPlayer.writeNbt(defaultNbt);

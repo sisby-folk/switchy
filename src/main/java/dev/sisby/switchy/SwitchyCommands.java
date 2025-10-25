@@ -40,9 +40,9 @@ public class SwitchyCommands {
 		if (!data.previous().isEmpty()) {
 			handler.getPlayer().sendMessage(prefix()
 				.append(Text.literal("Switched from ").formatted(Formatting.GREEN))
-				.append(data.getProfile(data.previous()).getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())))
+				.append(SwitchyComponentTypes.NAME.asText(data.getProfile(data.previous()).getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
 				.append(Text.literal(" to ").formatted(Formatting.GREEN))
-				.append(data.getCurrentProfile().getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())))
+				.append(SwitchyComponentTypes.NAME.asText(data.getCurrentProfile().getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
 				.append(Text.literal("! ").formatted(Formatting.GREEN))
 				.append(clickable("list", "/switchy", true))
 			);
@@ -50,7 +50,7 @@ public class SwitchyCommands {
 		} else if (data.size() > 1) {
 			handler.getPlayer().sendMessage(prefix()
 				.append(Text.literal("welcome back! current profile: ").formatted(Formatting.GRAY))
-				.append(data.current())
+				.append(SwitchyComponentTypes.NAME.asText(data.getCurrentProfile().getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
 				.append(Text.literal(". ").formatted(Formatting.GRAY))
 				.append(clickable("list", "/switchy", true))
 			);
@@ -77,9 +77,9 @@ public class SwitchyCommands {
 				.append(" ")
 				.append(clickable("edit", "/switchy edit %s ".formatted(profile.id()), false))
 				.append(" ")
-				.append(profile.getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())).copy().setStyle(Style.EMPTY
+				.append(SwitchyComponentTypes.NAME.asText(profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id))).setStyle(Style.EMPTY
 					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(profile.asTexts(player), Text.of("\n"))))
-				))
+				)
 			);
 		}
 		return data.size();

@@ -98,7 +98,7 @@ public class SwitchyPlayerData {
 	public void init(ServerPlayerEntity player, NbtCompound nbt) {
 		for (SwitchyComponentType<?> componentType : Sets.difference(SwitchyComponentTypes.instance().values(), componentTypes)) {
 			try {
-				componentType.tryInitialize(profiles.values().stream().map(SwitchyProfile::components).toList(), nbt, player);
+				componentType.tryInitialize(profiles.values().stream().map(SwitchyProfile::components).toList(), nbt, player, player.getGameProfile().getName());
 			} catch (Exception e) {
 				Switchy.LOGGER.warn("Failed to initialize {} for {}", componentType.id(), player.getGameProfile().getName(), e);
 				continue;
@@ -114,7 +114,7 @@ public class SwitchyPlayerData {
 		SwitchyComponentMap components = SwitchyComponentMap.empty();
 		for (SwitchyComponentType<?> componentType : componentTypes) {
 			try {
-				componentType.tryInitialize(List.of(components), nbt, player);
+				componentType.tryInitialize(List.of(components), nbt, player, profileId);
 			} catch (Exception e) {
 				Switchy.LOGGER.warn("Failed to initialize {} for {} profile {}", componentType.id(), player.getGameProfile().getName(), profileId, e);
 			}
@@ -131,7 +131,7 @@ public class SwitchyPlayerData {
 			if (componentType.nbtReader() != null) {
 				profile.components().set(componentType, componentType.nbtReader().read(nbt));
 			} else if (componentType.playerReader() != null) {
-				profile.components().set(componentType, componentType.playerReader().read(player));
+				profile.components().set(componentType, componentType.playerReader().read(player, profile.id()));
 			}
 		}
 		return nbt;
@@ -173,7 +173,7 @@ public class SwitchyPlayerData {
 
 		((SwitchyPlayer) player).switchy$hotSwap(playerNbt, SwitchyCommands.prefix()
 			.append(Text.literal("Switching to ").formatted(Formatting.GRAY))
-			.append(nextProfile.getOrGetDefault(SwitchyComponentTypes.NAME, p -> Text.of(p.id())))
+			.append(SwitchyComponentTypes.NAME.asText(nextProfile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
 			.append(Text.literal("! Please reconnect.").formatted(Formatting.GRAY))
 		);
 	}
