@@ -130,6 +130,8 @@ public class SwitchyPlayerData {
 		for (SwitchyComponentType<?> componentType : componentTypes) {
 			if (componentType.nbtReader() != null) {
 				profile.components().set(componentType, componentType.nbtReader().read(nbt));
+			} else if (componentType.playerReader() != null) {
+				profile.components().set(componentType, componentType.playerReader().read(player));
 			}
 		}
 		return nbt;
@@ -163,7 +165,7 @@ public class SwitchyPlayerData {
 		NbtCompound playerNbt = updateFromPlayer(currentProfile, player);
 		// Mutate NBT
 		for (SwitchyComponentType<?> componentType : nextProfile.components().keySet()) {
-			componentType.tryMutate(nextProfile.components(), playerNbt);
+			componentType.tryMutate(nextProfile.components(), playerNbt, player);
 		}
 
 		previous = current;

@@ -10,7 +10,8 @@ version = "$modVersion+$branchName"
 base.archivesName = project.slug
 
 repositories {
-	maven { url "https://repo.sleeping.town/" }
+	maven { url = "https://repo.sleeping.town/" }
+	maven { url = "https://maven.nucleoid.xyz" } // player data API
 }
 
 dependencies {
@@ -19,6 +20,8 @@ dependencies {
 
 	minecraft libs.mc
 	mappings variantOf(libs.yarn) { classifier "v2" }
+
+	modCompileOnly "eu.pb4:player-data-api:0.2.2+1.19.3"
 
 	modImplementation libs.fl
 	modImplementation libs.fapi

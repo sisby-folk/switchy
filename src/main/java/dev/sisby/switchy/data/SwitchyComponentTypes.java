@@ -7,6 +7,7 @@ import com.google.gson.stream.JsonReader;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.serialization.Codec;
 import dev.sisby.switchy.Switchy;
+import dev.sisby.switchy.compat.StyledNicknamesCompat;
 import dev.sisby.switchy.util.FormatUtils;
 import dev.sisby.switchy.util.SwitchyCodecs;
 import dev.sisby.switchy.util.TypeRegistry;
@@ -102,6 +103,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 
 	public static void init() {
 		File componentsFolder = FabricLoader.getInstance().getConfigDir().resolve(Switchy.ID).resolve("components").toFile();
+		if (FabricLoader.getInstance().isModLoaded("styled-nicknames")) StyledNicknamesCompat.init();
 		try {
 			// Create missing defaults
 			for (Map.Entry<Identifier, EditableComponentType> entry : DEFAULT_COMPONENTS.entrySet()) {
@@ -133,6 +135,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 			// do something
 			throw new RuntimeException(e);
 		}
+		Switchy.LOGGER.info("[Switchy] Initialized {} component types: {}", INSTANCE.keys().size(), INSTANCE.keys().stream().sorted().toList());
 	}
 
 	public static <T> void registerConfig(Codec<T> codec, Identifier id, EditableComponentType config) {

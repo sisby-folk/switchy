@@ -8,7 +8,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import dev.sisby.switchy.SwitchyCommands;
 import dev.sisby.switchy.exception.ComponentFailedInitializeException;
-import dev.sisby.switchy.exception.KeyNotFoundException;
 import dev.sisby.switchy.exception.NbtException;
 import dev.sisby.switchy.util.DispatchMapCodec;
 import dev.sisby.switchy.util.TypeRegistry;
@@ -42,9 +41,13 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	@Nullable Initializer<T> initializer();
 
-	@Nullable SwitchyComponentType.NbtReader<T> nbtReader();
+	@Nullable NbtReader<T> nbtReader();
 
 	@Nullable NbtMutator<T> nbtMutator();
+
+	@Nullable PlayerReader<T> playerReader();
+
+	@Nullable PlayerMutator<T> playerMutator();
 
 	@Nullable EmptyChecker<T> emptyChecker();
 
@@ -60,10 +63,13 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		consumer.forEach(c -> c.set(this, value));
 	}
 
-	default void tryMutate(SwitchyComponentMap components, NbtCompound playerData) throws NbtException {
-		NbtMutator<T> mutator = nbtMutator();
-		if (mutator != null) {
-			mutator.mutate(components.get(this), playerData);
+	default void tryMutate(SwitchyComponentMap components, NbtCompound playerData, ServerPlayerEntity player) throws NbtException {
+		NbtMutator<T> nbtMutator = nbtMutator();
+		PlayerMutator<T> playerMutator = playerMutator();
+		if (nbtMutator != null) {
+			nbtMutator.mutate(components.get(this), playerData);
+		} else if (playerMutator != null) {
+			playerMutator.mutate(components.get(this), player);
 		}
 	}
 
@@ -108,6 +114,16 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 	@FunctionalInterface
 	interface NbtMutator<T> {
 		void mutate(T value, NbtCompound nbt) throws NbtException;
+	}
+
+	@FunctionalInterface
+	interface PlayerReader<T> {
+		T read(ServerPlayerEntity player);
+	}
+
+	@FunctionalInterface
+	interface PlayerMutator<T> {
+		void mutate(T value, ServerPlayerEntity player);
 	}
 
 	@FunctionalInterface
@@ -220,8 +236,10 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		Identifier id,
 		@Nullable Codec<T> codec,
 		@Nullable Initializer<T> initializer,
-		@Nullable SwitchyComponentType.NbtReader<T> nbtReader,
+		@Nullable NbtReader<T> nbtReader,
 		@Nullable NbtMutator<T> nbtMutator,
+		@Nullable PlayerReader<T> playerReader,
+		@Nullable PlayerMutator<T> playerMutator,
 		@Nullable EmptyChecker<T> emptyChecker,
 		@Nullable TextProvider<T> textProvider,
 		@Nullable ArgumentEditor<T> argumentEditor
@@ -236,8 +254,10 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		private final @NotNull Identifier id;
 		private final @NotNull Codec<T> codec;
 		private @Nullable Initializer<T> initializer;
-		private @Nullable SwitchyComponentType.NbtReader<T> nbtReader;
+		private @Nullable NbtReader<T> nbtReader;
 		private @Nullable NbtMutator<T> nbtMutator;
+		private @Nullable PlayerReader<T> playerReader;
+		private @Nullable PlayerMutator<T> playerMutator;
 		private @Nullable EmptyChecker<T> emptyChecker;
 		private @Nullable TextProvider<T> textProvider;
 		private @Nullable ArgumentEditor<T> argumentEditor;
@@ -252,13 +272,13 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 			return this;
 		}
 
-		public Builder<T> reader(@Nullable SwitchyComponentType.NbtReader<T> nbtReader) {
-			this.nbtReader = nbtReader;
+		public Builder<T> playerReader(@Nullable PlayerReader<T> playerReader) {
+			this.playerReader = playerReader;
 			return this;
 		}
 
-		public Builder<T> nbtMutator(@Nullable NbtMutator<T> nbtMutator) {
-			this.nbtMutator = nbtMutator;
+		public Builder<T> playerMutator(@Nullable PlayerMutator<T> playerMutator) {
+			this.playerMutator = playerMutator;
 			return this;
 		}
 
@@ -297,6 +317,8 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 				this.initializer,
 				this.nbtReader,
 				this.nbtMutator,
+				this.playerReader,
+				this.playerMutator,
 				this.emptyChecker,
 				this.textProvider,
 				this.argumentEditor
