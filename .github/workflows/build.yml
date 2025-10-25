@@ -1,6 +1,9 @@
 name: Build
 
 on:
+  release:
+    types:
+      - published
   push:
     branches:
       - '**'
@@ -9,10 +12,12 @@ on:
   pull_request:
 
 permissions:
-  contents: read
+  id-token: write
+  attestations: write
+  contents: write
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,12 +30,20 @@ jobs:
           distribution: 'temurin'
 
       - name: Gradle Setup
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           validate-wrappers: true
 
+      - name: Enable gradlew execution
+        run: chmod +x ./gradlew
+
       - name: Gradle Build
         run: ./gradlew build
+
+      - name: Attest Build Provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: 'build/libs/*.jar, !build/libs/*-sources.jar'
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
@@ -39,3 +52,24 @@ jobs:
           path: |
             build/libs/*.jar
             !build/libs/*-sources.jar
+
+      - name: Maven Publish
+        if: github.event_name == 'release' && github.event.action == 'published'
+        run: ./gradlew publish
+
+      - name: Github Publish
+        if: github.event_name == 'release' && github.event.action == 'published'
+        uses: AButler/upload-release-assets@v2.0
+        with:
+          files: 'build/libs/*.jar;!build/libs/*-sources.jar'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Modrinth Publish
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          CHANGELOG: ${{ github.event.release.body }}
+        if: ${{ github.event_name == 'release' && github.event.action == 'published' && env.MODRINTH_TOKEN != '' }}
+        run: |
+          ./gradlew --no-configuration-cache modrinth
+          ./gradlew --no-configuration-cache modrinthSyncBodyname: Build
+
