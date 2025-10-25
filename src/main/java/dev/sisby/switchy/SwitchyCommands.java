@@ -1,6 +1,7 @@
 package dev.sisby.switchy;
 
 import com.google.common.collect.Sets;
+import com.google.gson.Gson;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -28,7 +29,11 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.Nullable;
 
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -82,6 +87,28 @@ public class SwitchyCommands {
 				)
 			);
 		}
+		return data.size();
+	}
+
+	public record PlayerImportData(@Nullable String name, List<SwitchyPlayerData.ProfileImportData> members) {}
+
+	private static int importProfiles(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String url) {
+		int beforeSize = data.size();
+		PlayerImportData importData;
+		try {
+			importData = new Gson().fromJson(new InputStreamReader(new URL(url).openStream()), PlayerImportData.class);
+			data.importProfiles(importData.members(), player, importData.name());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		feedback.accept(prefix()
+			.append(Text.literal("imported ").formatted(Formatting.GRAY))
+			.append(Text.literal("%s".formatted(data.size() - beforeSize)).formatted(Formatting.WHITE))
+			.append(Text.literal(" new and updated ").formatted(Formatting.GRAY))
+			.append(Text.literal("%s".formatted(importData.members().size() - (data.size() - beforeSize))).formatted(Formatting.WHITE))
+			.append(Text.literal(" existing profiles.").formatted(Formatting.GRAY))
+			.append(clickable("list", "/switchy", true))
+		);
 		return data.size();
 	}
 
@@ -223,6 +250,11 @@ public class SwitchyCommands {
 							.then(
 								CommandManager.argument("id", StringArgumentType.word()).executes(c -> execute(c, (i, p, d, f) -> renameProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase(), c.getArgument("id", String.class).toLowerCase()))))
 						)
+					)
+				)
+				.then(CommandManager.literal("import")
+					.then(CommandManager.argument("url", StringArgumentType.greedyString())
+						.executes(c -> execute(c, (i, p, d, f) -> importProfiles(p, d, f, c.getArgument("url", String.class))))
 					)
 				)
 				.executes(c -> execute(c, SwitchyCommands::list))

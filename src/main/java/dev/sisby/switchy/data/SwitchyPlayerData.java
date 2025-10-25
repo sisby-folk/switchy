@@ -18,6 +18,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.dynamic.Codecs;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,7 +26,10 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class SwitchyPlayerData {
@@ -122,6 +126,31 @@ public class SwitchyPlayerData {
 		SwitchyProfile newProfile = new SwitchyProfile(profileId, components);
 		profiles.put(profileId, newProfile);
 		return newProfile;
+	}
+
+	public record ProfileImportData(String name, @Nullable String display_name, @Nullable String color, @Nullable String pronouns) {}
+
+	private static final Pattern PARENTHESES = Pattern.compile("([<(\\[][^>)\\]]*[)>\\]])");
+
+	public void importProfiles(List<ProfileImportData> profileData, ServerPlayerEntity player, @Nullable String name) {
+		for (ProfileImportData data : profileData) {
+			String id = data.name().toLowerCase();
+			SwitchyProfile profile = getOrCreateProfile(id, player);
+			StringBuilder bracketed = new StringBuilder();
+			if (data.display_name() != null) { // discord is better with long names. let's put it in the bio instead
+				Matcher matcher = PARENTHESES.matcher(data.display_name());
+				while (matcher.find()) {
+					bracketed.append(matcher.group());
+				}
+			}
+			profile.set(SwitchyComponentTypes.NAME, "<hover:'%s%s | %s'><#%s>%s".formatted(
+				bracketed.isEmpty() ? "" : bracketed + (data.pronouns() != null ? " - " : ""),
+				Objects.requireNonNullElse(data.pronouns(), ""),
+				Objects.requireNonNullElse(name, player.getGameProfile().getName()),
+				Objects.requireNonNullElse(data.color(), "FFFFFF"),
+				Objects.requireNonNullElse(data.display_name(), id).replace(bracketed, "")).trim()
+			);
+		}
 	}
 
 	private NbtCompound updateFromPlayer(SwitchyProfile profile, ServerPlayerEntity player) throws NbtException {
