@@ -14,9 +14,11 @@ import dev.sisby.switchy.data.SwitchyProfile;
 import dev.sisby.switchy.exception.ProfileCurrentException;
 import dev.sisby.switchy.exception.ProfileMissingException;
 import dev.sisby.switchy.exception.ProfilePreciousException;
+import dev.sisby.switchy.util.TypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
+import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -29,6 +31,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStreamReader;
@@ -90,6 +93,27 @@ public class SwitchyCommands {
 		return data.size();
 	}
 
+	private static int components(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
+		feedback.accept(prefix()
+			.append(Text.literal("You're switching ").formatted(Formatting.GRAY))
+			.append(Text.literal("%s".formatted(data.componentSet().size())).formatted(Formatting.WHITE))
+			.append(Text.literal(" components and sharing ").formatted(Formatting.GRAY))
+			.append(Text.literal("%s".formatted(SwitchyComponentTypes.instance().keys().size() - data.componentSet().size())).formatted(Formatting.WHITE))
+			.append(Text.literal(".").formatted(Formatting.GRAY))
+		);
+		for (SwitchyComponentType<?> type : SwitchyComponentTypes.instance().values()) {
+			feedback.accept(indent()
+				.append(data.componentSet().contains(type) ? clickable("share", "/switchy components disable %s".formatted(type.id()), false) : clickable("switch", "/switchy components enable %s".formatted(type.id()), true))
+				.append(" ")
+				.append(type.id().getPath()).setStyle(Style.EMPTY
+					.withColor(data.componentSet().contains(type) ? Formatting.WHITE : Formatting.GRAY)
+					.withHoverEvent(!data.componentSet().contains(type) ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(data.values().stream().map(p -> Text.empty().append(Text.literal(p.id()).formatted(Formatting.GRAY)).append(": ").append(type.asText(p.components()))).toList(), Text.of("\n"))))
+				)
+			);
+		}
+		return data.componentSet().size();
+	}
+
 	public record PlayerImportData(@Nullable String name, List<SwitchyPlayerData.ProfileImportData> members) {}
 
 	private static int importProfiles(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String url) {
@@ -106,7 +130,7 @@ public class SwitchyCommands {
 			.append(Text.literal("%s".formatted(data.size() - beforeSize)).formatted(Formatting.WHITE))
 			.append(Text.literal(" new and updated ").formatted(Formatting.GRAY))
 			.append(Text.literal("%s".formatted(importData.members().size() - (data.size() - beforeSize))).formatted(Formatting.WHITE))
-			.append(Text.literal(" existing profiles.").formatted(Formatting.GRAY))
+			.append(Text.literal(" existing profiles. ").formatted(Formatting.GRAY))
 			.append(clickable("list", "/switchy", true))
 		);
 		return data.size();
@@ -221,6 +245,44 @@ public class SwitchyCommands {
 		}
 	}
 
+	private static int enableComponent(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, Identifier id) {
+		SwitchyComponentType<?> type = SwitchyComponentTypes.instance().get(id);
+		if (type == null) {
+			feedback.accept(prefix().append(Text.literal("component doesn't exist!").formatted(Formatting.YELLOW)));
+			return 0;
+		}
+		if (data.componentSet().contains(type)) {
+			feedback.accept(prefix().append(Text.literal("component is already enabled!").formatted(Formatting.YELLOW)));
+			return 0;
+		}
+		if (!data.initComponent(type, player)) {
+			feedback.accept(prefix().append(Text.literal("component is precious! empty it first.").formatted(Formatting.YELLOW)));
+			return 0;
+		}
+		components("", player, data, feedback);
+		feedback.accept(prefix().append(Text.literal(id.getPath())).append(Text.literal(" will now be switched between profiles. ").formatted(Formatting.GREEN)).append(clickable("list", "/switchy", true)));
+		return 1;
+	}
+
+	private static int disableComponent(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, Identifier id) {
+		SwitchyComponentType<?> type = SwitchyComponentTypes.instance().get(id);
+		if (type == null) {
+			feedback.accept(prefix().append(Text.literal("component doesn't exist!").formatted(Formatting.YELLOW)));
+			return 0;
+		}
+		if (!data.componentSet().contains(type)) {
+			feedback.accept(prefix().append(Text.literal("component isn't enabled!").formatted(Formatting.YELLOW)));
+			return 0;
+		}
+		if (!data.removeComponent(type)) {
+			feedback.accept(prefix().append(Text.literal("component is precious! empty it first.").formatted(Formatting.YELLOW)));
+			return 0;
+		}
+		components("", player, data, feedback);
+		feedback.accept(prefix().append(Text.literal(id.getPath())).append(Text.literal(" will now be shared between profiles. ").formatted(Formatting.GREEN)).append(clickable("list", "/switchy", true)));
+		return 1;
+	}
+
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registries, CommandManager.RegistrationEnvironment environment) {
 		RequiredArgumentBuilder<ServerCommandSource, String> editBuilder = profile(true);
 		for (SwitchyComponentType<?> type : SwitchyComponentTypes.instance().values()) {
@@ -257,6 +319,19 @@ public class SwitchyCommands {
 						.executes(c -> execute(c, (i, p, d, f) -> importProfiles(p, d, f, c.getArgument("url", String.class))))
 					)
 				)
+				.then(CommandManager.literal("components")
+					.then(CommandManager.literal("disable")
+						.then(component(true)
+							.executes(c -> execute(c, (i, p, d, f) -> disableComponent(p, d, f, c.getArgument("component", Identifier.class))))
+						)
+					)
+					.then(CommandManager.literal("enable")
+						.then(component(false)
+							.executes(c -> execute(c, (i, p, d, f) -> enableComponent(p, d, f, c.getArgument("component", Identifier.class))))
+						)
+					)
+					.executes(c -> execute(c, SwitchyCommands::components))
+				)
 				.executes(c -> execute(c, SwitchyCommands::list))
 		);
 	}
@@ -264,6 +339,11 @@ public class SwitchyCommands {
 	private static RequiredArgumentBuilder<ServerCommandSource, String> profile(boolean includeCurrent) {
 		return CommandManager.argument("profile", StringArgumentType.word()).suggests((c, b) -> CommandSource.suggestMatching(
 			(Iterable<String>) map(c, (i, p, d, f) -> includeCurrent ? d.keySet() : Sets.difference(d.keySet(), Set.of(d.current())) , false), b));
+	}
+
+	private static RequiredArgumentBuilder<ServerCommandSource, Identifier> component(Boolean enabled) {
+		return CommandManager.argument("component", IdentifierArgumentType.identifier()).suggests((c, b) -> CommandSource.suggestIdentifiers(
+			(Iterable<Identifier>) map(c, (i, p, d, f) -> SwitchyComponentTypes.instance().values().stream().filter(t -> enabled == null || (!enabled ^ d.componentSet().contains(t))).map(TypeRegistry.Type::id).toList(), false), b));
 	}
 
 	public static MutableText prefix() {

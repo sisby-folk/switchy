@@ -82,7 +82,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 
 	public static final SwitchyComponentType<String> NAME = register(Switchy.id("name"), Codec.STRING, builder -> {
 		builder = builder
-			.textProvider(Text::literal)
+			.textProvider(s -> s != null ? Text.literal(s) : Text.empty())
 			.argumentEditor(e -> CommandManager.argument("name", StringArgumentType.greedyString()).executes(c -> e.execute(c, c.getArgument("name", String.class))));
 		return FabricLoader.getInstance().isModLoaded("styled-nicknames") ? StyledNicknamesCompat.nicknameComponent(builder) : builder;
 	});

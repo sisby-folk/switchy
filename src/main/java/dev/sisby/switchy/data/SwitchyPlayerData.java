@@ -79,6 +79,10 @@ public class SwitchyPlayerData {
 		return profiles.keySet();
 	}
 
+	public Set<SwitchyComponentType<?>> componentSet() {
+		return componentTypes;
+	}
+
 	public Collection<SwitchyProfile> values() {
 		return profiles.values();
 	}
@@ -99,15 +103,35 @@ public class SwitchyPlayerData {
 		return profiles.get(profileId);
 	}
 
+	public boolean initComponent(SwitchyComponentType<?> type, ServerPlayerEntity player) {
+		NbtCompound compound = new NbtCompound();
+		player.writeNbt(compound);
+		return initComponent(type, player, compound);
+	}
+
+	public boolean initComponent(SwitchyComponentType<?> componentType, ServerPlayerEntity player, NbtCompound nbt) {
+		try {
+			componentType.tryInitialize(profiles.values().stream().map(SwitchyProfile::components).toList(), nbt, player, player.getGameProfile().getName());
+		} catch (Exception e) {
+			Switchy.LOGGER.warn("Failed to initialize {} for {}", componentType.id(), player.getGameProfile().getName(), e);
+			return false;
+		}
+		componentTypes.add(componentType);
+		return true;
+	}
+
+	public boolean removeComponent(SwitchyComponentType<?> componentType) {
+		if (!profiles.values().stream().filter(p -> componentType.isPrecious(p.components())).toList().isEmpty()) return false;
+		for (SwitchyProfile profile : profiles.values()) {
+			profile.remove(componentType);
+		}
+		componentTypes.remove(componentType);
+		return true;
+	}
+
 	public void init(ServerPlayerEntity player, NbtCompound nbt) {
 		for (SwitchyComponentType<?> componentType : Sets.difference(SwitchyComponentTypes.instance().values(), componentTypes)) {
-			try {
-				componentType.tryInitialize(profiles.values().stream().map(SwitchyProfile::components).toList(), nbt, player, player.getGameProfile().getName());
-			} catch (Exception e) {
-				Switchy.LOGGER.warn("Failed to initialize {} for {}", componentType.id(), player.getGameProfile().getName(), e);
-				continue;
-			}
-			componentTypes.add(componentType);
+			initComponent(componentType, player, nbt);
 		}
 	}
 
