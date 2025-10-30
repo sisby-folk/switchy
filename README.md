@@ -1,5 +1,5 @@
 <!--suppress HtmlDeprecatedTag, XmlDeprecatedElement -->
-<center><img alt="mod preview" src="https://upload.wikimedia.org/wikipedia/commons/7/70/Example.png"/></center>
+<center><img alt="mod preview" src="https://github.com/user-attachments/assets/b51c7392-bcf5-4c3f-9088-d35933636dc4"/></center>
 
 <center>
 A short quick summary of this mod
