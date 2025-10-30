@@ -10,7 +10,7 @@ Serverside player profiles for hotseat multiplayer, adventure maps, and plural s
 **Switchy** allows players to create **profiles**, which have their own partial player data, and can be switched between.
 
 Data components are player-toggleable and config-driven, including:
-- Vanilla Health, Food, Inventory, Ender Chest, Position, and XP
+- Vanilla health, hunger, inventory, ender chest, position, and xp
 - [Fabric Tailor](https://modrinth.com/mod/fabrictailor) skins
 - [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) nicknames
 - [Trinkets](modrinth.com/mod/trinkets) slots
