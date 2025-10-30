@@ -7,7 +7,7 @@ Serverside player profiles for hotseat multiplayer, adventure maps, and plural s
 
 ---
 
-**Switchy** allows players to create **profiles**, which have their own partial player data, and can be switched between using commands.
+**Switchy** allows players to create **profiles**, which have their own partial player data, and can be switched between.
 
 Data components are player-toggleable and config-driven, including:
 - Vanilla Health, Food, Inventory, Ender Chest, Position, and XP
