@@ -54,5 +54,6 @@ API TBD - Let us know if you're a mod developer seeking API features for integra
 If you're a plural system (or a friend to one) and appreciate our work, please consider reading and sharing [sys.guide](https://sys.guide), our plurality handbook.
 
 Switchy was our first original minecraft mod, made during the mod jam [ModFest: Singularity](https://modfest.net/singularity/submissions).<br/>
-Since making it, the minecraft modding community has given us friendship, mentorship, endless favours, an outlet for self-expression, and reinforced our passion for software as an art.<br/>
+Since making it, the minecraft modding community has given us friendship, mentorship,<br/>
+endless favours, an outlet for self-expression, and reinforced our passion for software as an art.<br/>
 Everyone who's been a part of that - and you should know who you are - thank you.
