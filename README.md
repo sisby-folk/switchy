@@ -20,7 +20,7 @@ Data components are player-toggleable and config-driven, including:
 
 Use `/switchy` to view your profiles, alongside clickable shortcuts for `switch`, `edit id/name`, and `delete`.
 
-Use `/switchy components` to view your switched components, alongside shortcuts for `enable` and `disable` for per-player customization.
+Use `/switchy components` to view your components, and set them to switched or shared (`enable`/`disable`).
 
 Use `/switchy import [url].json` to import profiles from a [pluralkit export](https://pluralkit.me/guide/#exporting-your-pluralkit-data) (better with [Styled Nicknames](https://modrinth.com/mod/styled-nicknames)).
 
