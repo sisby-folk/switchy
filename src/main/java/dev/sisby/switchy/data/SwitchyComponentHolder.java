@@ -23,7 +23,7 @@ public interface SwitchyComponentHolder<H extends SwitchyComponentHolder<H>> {
 	}
 
 	@Nullable
-	default <T> T set(SwitchyComponentType<T> type, @Nullable T value) {
+	default <T> T set(SwitchyComponentType<? extends T> type, @Nullable T value) {
 		return this.components().set(type, value);
 	}
 

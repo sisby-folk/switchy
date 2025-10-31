@@ -14,12 +14,21 @@ import dev.sisby.switchy.exception.ProfileExistsException;
 import dev.sisby.switchy.util.DispatchMapCodec;
 import dev.sisby.switchy.util.SwitchyCodecs;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
+import net.minecraft.util.Util;
+import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.dynamic.Codecs;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -60,7 +69,7 @@ public class SwitchyPlayerData {
 		SwitchyPlayerData data = new SwitchyPlayerData(
 			"default",
 			"",
-			new LinkedHashSet<>(SwitchyComponentTypes.instance().values()),
+			new LinkedHashSet<>(),
 			new LinkedHashMap<>()
 		);
 		data.profiles.put("default", new SwitchyProfile("default", SwitchyComponentMap.empty()));
@@ -129,10 +138,56 @@ public class SwitchyPlayerData {
 		return true;
 	}
 
+	private static final Map<String, Pair<String, String>> LEGACY_RECOVERIES = Map.of(
+		"inventory", new Pair<>("switchy_inventories:inventories", "inventory"),
+		"enderchest", new Pair<>("switchy_inventories:ender_chests", "inventory"),
+		"level", new Pair<>("switchy_inventories:experience", "experienceLevel"),
+		"xp", new Pair<>("switchy_inventories:experience", "experienceProgress"),
+		"trinkets:trinkets", new Pair<>("switchy_inventories:inventories", "trinkets:trinkets")
+	);
+
+	public void recoverLegacyData(ServerPlayerEntity player, NbtCompound legacyData) {
+		Switchy.LOGGER.warn("[Switchy] Found legacy switchy profiles in {}, performing data recovery...", player.getGameProfile().getName());
+		try {
+			File playerDataDir =  player.getServer().getSavePath(WorldSavePath.PLAYERDATA).toFile();
+			File file = File.createTempFile(player.getUuidAsString() + "-switchy" + "-", ".dat_old", playerDataDir);
+			NbtIo.writeCompressed(legacyData, file);
+			File file2 = new File(playerDataDir, player.getUuidAsString() + "-switchy.dat_old");
+			File file3 = new File(playerDataDir, player.getUuidAsString() + "-switchy.dat_older");
+			Util.backupAndReplace(file2, file, file3);
+			Switchy.LOGGER.info("[Switchy] Backed up legacy switchy data for {} to {}", player.getGameProfile().getName(), file2.getName());
+		} catch (IOException e) { // allowing the game to keep running here would cause a data loss, so, don't
+			throw new RuntimeException("Failed to save switchy data backup for %s! Please manually back up and remove switchy:presets from the player.dat".formatted(player.getGameProfile().getName()), e);
+		}
+		// we're backed up, so make our best attempt.
+		NbtCompound presets = legacyData.getCompound("list");
+		boolean containsDefault = false;
+		for (String id : presets.getKeys()) {
+			// make sure every related profile exists
+			SwitchyProfile profile = getOrCreateProfile(id.toLowerCase(), player);
+			if (profile.id().equals("default")) containsDefault = true;
+			try { // try copy precious data for each
+				NbtCompound modules = presets.getCompound(id);
+				for (String typeId : LEGACY_RECOVERIES.keySet()) {
+					SwitchyComponentType<?> type = SwitchyComponentTypes.instance().get(Identifier.tryParse(typeId));
+					if (type == null) continue;
+					NbtElement element = modules.getCompound(LEGACY_RECOVERIES.get(typeId).getLeft()).get(LEGACY_RECOVERIES.get(typeId).getRight());
+					type.codec().parse(NbtOps.INSTANCE, element).result().ifPresent(v -> profile.set(type, v));
+				}
+			} catch (Exception e) {
+				Switchy.LOGGER.error("[Switchy] Failed to recover legacy precious data {} of {}, please manually recover via -switchy.dat_old", id, player.getGameProfile().getName(), e);
+			}
+		}
+		current = legacyData.getString("current").toLowerCase();
+		if (!containsDefault) profiles.remove("default");
+		Switchy.LOGGER.info("[Switchy] Finished recovering {} legacy switchy profiles for {}.", presets.getSize(), player.getGameProfile().getName());
+	}
+
 	public void init(ServerPlayerEntity player, NbtCompound nbt) {
 		for (SwitchyComponentType<?> componentType : Sets.difference(SwitchyComponentTypes.instance().values(), componentTypes)) {
 			initComponent(componentType, player, nbt);
 		}
+		if (nbt.contains("switchy:presets", NbtElement.COMPOUND_TYPE)) recoverLegacyData(player, nbt.getCompound("switchy:presets"));
 	}
 
 	public SwitchyProfile getOrCreateProfile(String profileId, ServerPlayerEntity player) {

@@ -1,6 +1,5 @@
 package dev.sisby.switchy.data;
 
-import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -8,13 +7,11 @@ import com.google.gson.stream.JsonReader;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.serialization.Codec;
 import dev.sisby.switchy.Switchy;
-import dev.sisby.switchy.SwitchyCommands;
 import dev.sisby.switchy.compat.StyledNicknamesCompat;
 import dev.sisby.switchy.util.FormatUtils;
 import dev.sisby.switchy.util.SwitchyCodecs;
 import dev.sisby.switchy.util.TypeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.command.CommandSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -39,7 +36,6 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 

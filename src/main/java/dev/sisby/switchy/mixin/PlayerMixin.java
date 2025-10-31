@@ -39,7 +39,7 @@ public class PlayerMixin implements SwitchyPlayer {
 	@Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
 	public void readPlayerData(NbtCompound nbt, CallbackInfo ci) {
 		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
-		if (nbt.contains(Switchy.ID)) {
+		if (nbt.contains(Switchy.ID) || nbt.contains("switchy:presets")) {
 			switchy$playerData = SwitchyPlayerData.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound(Switchy.ID)).result().orElseGet(() -> {
 				SwitchyPlayerData data = SwitchyPlayerData.create(self);
 				data.init(self, nbt);

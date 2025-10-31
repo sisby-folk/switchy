@@ -25,7 +25,13 @@
 		"fabricloader": ">=${fl}",
 		"fabric-api": ">=${fapi}"
 	},
-	"suggests": {
+	"breaks": {
+		"switchy-core": "*",
+		"switchy-inventories": "*",
+		"switchy-proxy": "*",
+		"switchy-teleport": "*",
+		"switchy-status": "*",
+		"switchykit": "*"
 	},
 	"entrypoints": {
 		"main": [
