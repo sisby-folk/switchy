@@ -69,6 +69,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	public static final Map<Identifier, SwitchyComponentType.EmptyChecker<?>> EMPTY_CHECKERS = new HashMap<>(Map.of(
 		new Identifier("inventory"), new SwitchyComponentType.SimpleEmptyChecker<DefaultedList<ItemStack>>(dl -> dl.stream().allMatch(ItemStack::isEmpty))
 	));
+	private static final Identifier ORIGINS_POWERS = new Identifier("origins", "powers");
 
 	public record EditableComponentType(boolean enabled, String codec, String path, String preview, String prefix, String editor, String emptyChecker) {
 	}
@@ -83,26 +84,40 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 		return FabricLoader.getInstance().isModLoaded("styled-nicknames") ? StyledNicknamesCompat.nicknameComponent(builder) : builder;
 	});
 
+	public static final Identifier DIMENSION = new Identifier("minecraft", "dimension");
+	public static final Identifier FOOD = new Identifier("minecraft", "food");
+	public static final Identifier SATURATION = new Identifier("minecraft", "saturation");
+	public static final Identifier EXHAUSTION = new Identifier("minecraft", "exhaustion");
+	public static final Identifier HEALTH = new Identifier("minecraft", "health");
+	public static final Identifier XP = new Identifier("minecraft", "xp");
+	public static final Identifier LEVEL = new Identifier("minecraft", "level");
+	public static final Identifier POS = new Identifier("minecraft", "pos");
+	public static final Identifier INVENTORY = new Identifier("minecraft", "inventory");
+	public static final Identifier ENDERCHEST = new Identifier("minecraft", "enderchest");
+	public static final Identifier ORIGINS_ORIGIN = new Identifier("origins", "origin");
+	public static final Identifier TAILOR_VALUE = new Identifier("fabrictailor", "value");
+	public static final Identifier TAILOR_SIGNATURE = new Identifier("fabrictailor", "signature");
+	public static final Identifier TRINKETS_SLOTS = new Identifier("trinkets", "slots");
 	public static final Map<Identifier, EditableComponentType> DEFAULT_COMPONENTS = Map.ofEntries(
 		// minecraft
-		Map.entry(new Identifier("minecraft", "dimension"), new EditableComponentType(true, "identifier", "Dimension", "identifier", null, null, null)),
-		Map.entry(new Identifier("minecraft", "food"), new EditableComponentType(true, "float", "foodLevel", "halves", "🍖x", null, null)),
-		Map.entry(new Identifier("minecraft", "saturation"), new EditableComponentType(true, "float", "foodSaturationLevel", "halves", "+🍖x", null, null)),
-		Map.entry(new Identifier("minecraft", "exhaustion"), new EditableComponentType(true, "float", "foodExhaustionLevel", "halves", "-💨x", null, null)),
-		Map.entry(new Identifier("minecraft", "health"), new EditableComponentType(true, "float", "Health", "halves", "❤x", null, null)),
-		Map.entry(new Identifier("minecraft", "xp"), new EditableComponentType(true, "float", "XpP", "percent", null, null, null)),
-		Map.entry(new Identifier("minecraft", "level"), new EditableComponentType(true, "int", "XpLevel", null, "Lv.", null, null)),
-		Map.entry(new Identifier("minecraft", "pos"), new EditableComponentType(true, "vec3d", "Pos", "vec3d", null, null, null)),
-		Map.entry(new Identifier("minecraft", "inventory"), new EditableComponentType(true, "inventory", "Inventory", "inventory", null, null, "inventory")),
-		Map.entry(new Identifier("minecraft", "enderchest"), new EditableComponentType(true, "inventory", "EnderItems", "inventory", "👁 ", null, "inventory")),
+		Map.entry(DIMENSION, new EditableComponentType(true, "identifier", "Dimension", "identifier", null, null, null)),
+		Map.entry(FOOD, new EditableComponentType(true, "float", "foodLevel", "halves", "🍖x", null, null)),
+		Map.entry(SATURATION, new EditableComponentType(true, "float", "foodSaturationLevel", "halves", "+🍖x", null, null)),
+		Map.entry(EXHAUSTION, new EditableComponentType(true, "float", "foodExhaustionLevel", "halves", "-💨x", null, null)),
+		Map.entry(HEALTH, new EditableComponentType(true, "float", "Health", "halves", "❤x", null, null)),
+		Map.entry(XP, new EditableComponentType(true, "float", "XpP", "percent", null, null, null)),
+		Map.entry(LEVEL, new EditableComponentType(true, "int", "XpLevel", null, "Lv.", null, null)),
+		Map.entry(POS, new EditableComponentType(true, "vec3d", "Pos", "vec3d", null, null, null)),
+		Map.entry(INVENTORY, new EditableComponentType(true, "inventory", "Inventory", "inventory", null, null, "inventory")),
+		Map.entry(ENDERCHEST, new EditableComponentType(true, "inventory", "EnderItems", "inventory", "👁 ", null, "inventory")),
 		// origins
-		Map.entry(new Identifier("origins", "origin"), new EditableComponentType(true, "identifier", "cardinal_components.origins:origin.OriginLayers[0].Origin", "identifier", null, null, null)),
-		Map.entry(new Identifier("origins", "powers"), new EditableComponentType(true, "nbt", "cardinal_components.apoli:powers.Powers", "nbt", null, null, null)),
+		Map.entry(ORIGINS_ORIGIN, new EditableComponentType(true, "identifier", "cardinal_components.origins:origin.OriginLayers", "identifier", null, null, null)),
+		Map.entry(ORIGINS_POWERS, new EditableComponentType(true, "nbt", "cardinal_components.apoli:powers.Powers", "nbt", null, null, null)),
 		// fabric tailor
-		Map.entry(new Identifier("fabrictailor", "value"), new EditableComponentType(true, "string", "fabrictailor:skin_data.value", "trunc", null, null, null)),
-		Map.entry(new Identifier("fabrictailor", "signature"), new EditableComponentType(true, "string", "fabrictailor:skin_data.signature", "trunc", null, null, null)),
+		Map.entry(TAILOR_VALUE, new EditableComponentType(true, "string", "fabrictailor:skin_data.value", "trunc", null, null, null)),
+		Map.entry(TAILOR_SIGNATURE, new EditableComponentType(true, "string", "fabrictailor:skin_data.signature", "trunc", null, null, null)),
 		// trinkets
-		Map.entry(new Identifier("trinkets", "slots"), new EditableComponentType(true, "nbt", "cardinal_components.trinkets:trinkets", "nbt", "💍", null, null))
+		Map.entry(TRINKETS_SLOTS, new EditableComponentType(true, "nbt", "cardinal_components.trinkets:trinkets", "nbt", "💍", null, null))
 	);
 
 	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -128,9 +143,12 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 					for (String fileName : Objects.requireNonNullElse(path.toFile().list((dir, name) -> name.endsWith(".json")), new String[]{})) {
 						File file = path.resolve(fileName).toFile();
 						Identifier id = new Identifier(componentsFolder.toPath().relativize(file.toPath()).toString().replace("\\", "/").replace(".json", "").replaceFirst("/", ":"));
-						if (!FabricLoader.getInstance().isModLoaded(id.getNamespace())) return;
+						if (!FabricLoader.getInstance().isModLoaded(id.getNamespace())) {
+							Switchy.LOGGER.warn("[Switchy] Skipping loading enabled module {} as mod {} is not loaded", id, id.getNamespace());
+							continue;
+						}
 						EditableComponentType config = GSON.fromJson(new JsonReader(new FileReader(file)), EDITABLE_COMPONENT_TYPE);
-						if (!config.enabled) return;
+						if (!config.enabled) continue;
 						Codec<?> codec = CODECS.get(config.codec != null && CODECS.containsKey(Identifier.tryParse(config.codec)) ? Identifier.tryParse(config.codec) : Identifier.tryParse("nbt"));
 						registerConfig(codec, id, config);
 					}

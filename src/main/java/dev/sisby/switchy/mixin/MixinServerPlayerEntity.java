@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerEntity.class)
-public class PlayerMixin implements SwitchyPlayer {
+public class MixinServerPlayerEntity implements SwitchyPlayer {
 	private SwitchyPlayerData switchy$playerData = null;
 	private NbtCompound switchy$hotSwap = null;
 
@@ -25,7 +25,7 @@ public class PlayerMixin implements SwitchyPlayer {
 	}
 
 	@Override
-	public SwitchyPlayerData switchy$playerData() {
+	public SwitchyPlayerData switchy$getOrCreatePlayerData() {
 		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
 		if (switchy$playerData == null) {
 			NbtCompound compound = new NbtCompound();
@@ -36,15 +36,23 @@ public class PlayerMixin implements SwitchyPlayer {
 		return switchy$playerData;
 	}
 
+	@Override
+	public SwitchyPlayerData switchy$getPlayerData() {
+		return switchy$playerData;
+	}
+
 	@Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
 	public void readPlayerData(NbtCompound nbt, CallbackInfo ci) {
 		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
-		if (nbt.contains(Switchy.ID) || nbt.contains("switchy:presets")) {
+		if (nbt.contains(Switchy.ID)) {
 			switchy$playerData = SwitchyPlayerData.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound(Switchy.ID)).result().orElseGet(() -> {
 				SwitchyPlayerData data = SwitchyPlayerData.create(self);
 				data.init(self, nbt);
 				return data;
 			});
+		} else if (nbt.contains("switchy:presets")) {
+			switchy$playerData = SwitchyPlayerData.create(self);
+			switchy$playerData.init(self, nbt);
 		}
 	}
 
@@ -66,6 +74,6 @@ public class PlayerMixin implements SwitchyPlayer {
 
 	@Inject(method = "copyFrom", at = @At("TAIL"))
 	public void copyPlayerData(ServerPlayerEntity oldPlayer, boolean alive, CallbackInfo ci) {
-		switchy$playerData = ((PlayerMixin) (Object) oldPlayer).switchy$playerData;
+		switchy$playerData = ((MixinServerPlayerEntity) (Object) oldPlayer).switchy$playerData;
 	}
 }

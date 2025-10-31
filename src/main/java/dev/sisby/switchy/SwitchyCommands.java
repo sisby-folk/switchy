@@ -44,7 +44,8 @@ import java.util.stream.Stream;
 
 public class SwitchyCommands {
 	public static void greet(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
-		SwitchyPlayerData data = SwitchyPlayerData.of(handler.getPlayer());
+		SwitchyPlayerData data = SwitchyPlayerData.ofEarly(handler.getPlayer());
+		if (data == null) return;
 		if (!data.previous().isEmpty()) {
 			handler.getPlayer().sendMessage(prefix()
 				.append(Text.literal("Switched from ").formatted(Formatting.GREEN))

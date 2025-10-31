@@ -24,6 +24,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.dynamic.Codecs;
 import org.jetbrains.annotations.Nullable;
 
@@ -62,7 +64,11 @@ public class SwitchyPlayerData {
 	}
 
 	public static SwitchyPlayerData of(ServerPlayerEntity player) {
-		return ((SwitchyPlayer) player).switchy$playerData();
+		return ((SwitchyPlayer) player).switchy$getOrCreatePlayerData();
+	}
+
+	public static SwitchyPlayerData ofEarly(ServerPlayerEntity player) {
+		return ((SwitchyPlayer) player).switchy$getPlayerData();
 	}
 
 	public static SwitchyPlayerData create(ServerPlayerEntity player) {
@@ -138,12 +144,12 @@ public class SwitchyPlayerData {
 		return true;
 	}
 
-	private static final Map<String, Pair<String, String>> LEGACY_RECOVERIES = Map.of(
-		"inventory", new Pair<>("switchy_inventories:inventories", "inventory"),
-		"enderchest", new Pair<>("switchy_inventories:ender_chests", "inventory"),
-		"level", new Pair<>("switchy_inventories:experience", "experienceLevel"),
-		"xp", new Pair<>("switchy_inventories:experience", "experienceProgress"),
-		"trinkets:trinkets", new Pair<>("switchy_inventories:inventories", "trinkets:trinkets")
+	private static final Map<Identifier, Pair<String, String>> LEGACY_RECOVERIES = Map.of(
+		SwitchyComponentTypes.INVENTORY, new Pair<>("switchy_inventories:inventories", "inventory"),
+		SwitchyComponentTypes.ENDERCHEST, new Pair<>("switchy_inventories:ender_chests", "inventory"),
+		SwitchyComponentTypes.LEVEL, new Pair<>("switchy_inventories:experience", "experienceLevel"),
+		SwitchyComponentTypes.XP, new Pair<>("switchy_inventories:experience", "experienceProgress"),
+		SwitchyComponentTypes.TRINKETS_SLOTS, new Pair<>("switchy_inventories:trinkets", "trinkets:trinkets")
 	);
 
 	public void recoverLegacyData(ServerPlayerEntity player, NbtCompound legacyData) {
@@ -157,7 +163,8 @@ public class SwitchyPlayerData {
 			Util.backupAndReplace(file2, file, file3);
 			Switchy.LOGGER.info("[Switchy] Backed up legacy switchy data for {} to {}", player.getGameProfile().getName(), file2.getName());
 		} catch (IOException e) { // allowing the game to keep running here would cause a data loss, so, don't
-			throw new RuntimeException("Failed to save switchy data backup for %s! Please manually back up and remove switchy:presets from the player.dat".formatted(player.getGameProfile().getName()), e);
+			Switchy.LOGGER.error("[Switchy] Failed to save switchy data backup for {}! Please manually back up and remove switchy:presets from the player.dat", player.getGameProfile().getName(), e);
+			throw new CrashException(CrashReport.create(e, "Failed to save switchy data backup for %s!".formatted(player.getGameProfile().getName())));
 		}
 		// we're backed up, so make our best attempt.
 		NbtCompound presets = legacyData.getCompound("list");
@@ -168,10 +175,11 @@ public class SwitchyPlayerData {
 			if (profile.id().equals("default")) containsDefault = true;
 			try { // try copy precious data for each
 				NbtCompound modules = presets.getCompound(id);
-				for (String typeId : LEGACY_RECOVERIES.keySet()) {
-					SwitchyComponentType<?> type = SwitchyComponentTypes.instance().get(Identifier.tryParse(typeId));
+				for (Identifier typeId : LEGACY_RECOVERIES.keySet()) {
+					SwitchyComponentType<?> type = SwitchyComponentTypes.instance().get(typeId);
 					if (type == null) continue;
 					NbtElement element = modules.getCompound(LEGACY_RECOVERIES.get(typeId).getLeft()).get(LEGACY_RECOVERIES.get(typeId).getRight());
+					if (element == null) continue;
 					type.codec().parse(NbtOps.INSTANCE, element).result().ifPresent(v -> profile.set(type, v));
 				}
 			} catch (Exception e) {
