@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SwitchyCommands {
@@ -102,16 +103,21 @@ public class SwitchyCommands {
 			.append(Text.literal("%s".formatted(SwitchyComponentTypes.instance().keys().size() - data.componentSet().size())).formatted(Formatting.WHITE))
 			.append(Text.literal(".").formatted(Formatting.GRAY))
 		);
-		for (SwitchyComponentType<?> type : SwitchyComponentTypes.instance().values()) {
+		SwitchyComponentTypes.grouped(SwitchyComponentTypes.instance().values()).forEach((id, types) -> {
+			boolean enabled = data.componentSet().contains(types.get(0));
 			feedback.accept(indent()
-				.append(data.componentSet().contains(type) ? clickable("share", "/switchy components disable %s".formatted(type.id()), false) : clickable("switch", "/switchy components enable %s".formatted(type.id()), true))
+				.append(enabled ? clickable("share", "/switchy components disable %s".formatted(id), false) : clickable("switch", "/switchy components enable %s".formatted(id), true))
 				.append(" ")
-				.append(type.id().getPath()).setStyle(Style.EMPTY
-					.withColor(data.componentSet().contains(type) ? Formatting.WHITE : Formatting.GRAY)
-					.withHoverEvent(!data.componentSet().contains(type) ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(data.values().stream().map(p -> Text.empty().append(Text.literal(p.id()).formatted(Formatting.GRAY)).append(": ").append(type.asText(p.components()))).toList(), Text.of("\n"))))
+				.append(id.getPath()).setStyle(Style.EMPTY
+					.withColor(enabled ? Formatting.WHITE : Formatting.GRAY)
+					.withHoverEvent(!enabled ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(data.values().stream().map(p -> Text.empty()
+						.append(Text.literal(p.id()).formatted(Formatting.GRAY))
+						.append(": ")
+						.append(Texts.join(types.stream().filter(p::contains).map(t -> t.asText(p.components())).toList(), Text.literal(", ").formatted(Formatting.GRAY)))
+					).toList(), Text.of("\n"))))
 				)
 			);
-		}
+		});
 		return data.componentSet().size();
 	}
 
@@ -247,41 +253,45 @@ public class SwitchyCommands {
 	}
 
 	private static int enableComponent(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, Identifier id) {
-		SwitchyComponentType<?> type = SwitchyComponentTypes.instance().get(id);
-		if (type == null) {
+		Set<SwitchyComponentType<?>> types = SwitchyComponentTypes.instance().values().stream().filter(t -> id.equals(t.group())).collect(Collectors.toSet());
+		if (types.isEmpty() && SwitchyComponentTypes.instance().contains(id)) types.add(SwitchyComponentTypes.instance().get(id));
+		if (types.isEmpty()) {
 			feedback.accept(prefix().append(Text.literal("component doesn't exist!").formatted(Formatting.YELLOW)));
 			return 0;
 		}
-		if (data.componentSet().contains(type)) {
+		if (types.stream().anyMatch(t -> data.componentSet().contains(t))) {
 			feedback.accept(prefix().append(Text.literal("component is already enabled!").formatted(Formatting.YELLOW)));
 			return 0;
 		}
-		if (!data.initComponent(type, player)) {
-			feedback.accept(prefix().append(Text.literal("component is precious! empty it first.").formatted(Formatting.YELLOW)));
+		int changed = data.initComponents(types, player);
+		if (changed == 0) {
+			feedback.accept(prefix().append(Text.literal("component failed to initialize! see logs for more info").formatted(Formatting.RED)));
 			return 0;
 		}
 		components("", player, data, feedback);
 		feedback.accept(prefix().append(Text.literal(id.getPath())).append(Text.literal(" will now be switched between profiles. ").formatted(Formatting.GREEN)).append(clickable("list", "/switchy", true)));
-		return 1;
+		return changed;
 	}
 
 	private static int disableComponent(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, Identifier id) {
-		SwitchyComponentType<?> type = SwitchyComponentTypes.instance().get(id);
-		if (type == null) {
+		Set<SwitchyComponentType<?>> types = SwitchyComponentTypes.instance().values().stream().filter(t -> id.equals(t.group())).collect(Collectors.toSet());
+		if (types.isEmpty() && SwitchyComponentTypes.instance().contains(id)) types.add(SwitchyComponentTypes.instance().get(id));
+		if (types.isEmpty()) {
 			feedback.accept(prefix().append(Text.literal("component doesn't exist!").formatted(Formatting.YELLOW)));
 			return 0;
 		}
-		if (!data.componentSet().contains(type)) {
-			feedback.accept(prefix().append(Text.literal("component isn't enabled!").formatted(Formatting.YELLOW)));
+		if (types.stream().anyMatch(t -> !data.componentSet().contains(t))) {
+			feedback.accept(prefix().append(Text.literal("component is already disabled!").formatted(Formatting.YELLOW)));
 			return 0;
 		}
-		if (!data.removeComponent(type)) {
+		int changed = data.removeComponents(types);
+		if (changed == 0) {
 			feedback.accept(prefix().append(Text.literal("component is precious! empty it first.").formatted(Formatting.YELLOW)));
 			return 0;
 		}
 		components("", player, data, feedback);
 		feedback.accept(prefix().append(Text.literal(id.getPath())).append(Text.literal(" will now be shared between profiles. ").formatted(Formatting.GREEN)).append(clickable("list", "/switchy", true)));
-		return 1;
+		return changed;
 	}
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registries, CommandManager.RegistrationEnvironment environment) {
@@ -322,12 +332,12 @@ public class SwitchyCommands {
 				)
 				.then(CommandManager.literal("components")
 					.then(CommandManager.literal("disable")
-						.then(component(true)
+						.then(groupedComponent(true)
 							.executes(c -> execute(c, (i, p, d, f) -> disableComponent(p, d, f, c.getArgument("component", Identifier.class))))
 						)
 					)
 					.then(CommandManager.literal("enable")
-						.then(component(false)
+						.then(groupedComponent(false)
 							.executes(c -> execute(c, (i, p, d, f) -> enableComponent(p, d, f, c.getArgument("component", Identifier.class))))
 						)
 					)
@@ -340,6 +350,11 @@ public class SwitchyCommands {
 	private static RequiredArgumentBuilder<ServerCommandSource, String> profile(boolean includeCurrent) {
 		return CommandManager.argument("profile", StringArgumentType.word()).suggests((c, b) -> CommandSource.suggestMatching(
 			(Iterable<String>) map(c, (i, p, d, f) -> includeCurrent ? d.keySet() : Sets.difference(d.keySet(), Set.of(d.current())) , false), b));
+	}
+
+	private static RequiredArgumentBuilder<ServerCommandSource, Identifier> groupedComponent(Boolean enabled) {
+		return CommandManager.argument("component", IdentifierArgumentType.identifier()).suggests((c, b) -> CommandSource.suggestIdentifiers(
+			(Iterable<Identifier>) map(c, (i, p, d, f) -> SwitchyComponentTypes.instance().values().stream().filter(t -> enabled == null || (!enabled ^ d.componentSet().contains(t))).map(t -> Objects.requireNonNullElse(t.group(), t.id())).distinct().toList(), false), b));
 	}
 
 	private static RequiredArgumentBuilder<ServerCommandSource, Identifier> component(Boolean enabled) {

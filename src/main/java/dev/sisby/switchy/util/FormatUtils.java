@@ -22,7 +22,7 @@ public class FormatUtils {
 	}
 
 	public static Text inventoryText(DefaultedList<ItemStack> inventory) {
-		if (inventory.stream().allMatch(ItemStack::isEmpty)) return Text.literal("(empty)").formatted(Formatting.GRAY);
+		if (inventory == null || inventory.stream().allMatch(ItemStack::isEmpty)) return Text.literal("(empty)").formatted(Formatting.GRAY);
 		return Text.empty()
 			.styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.empty().append(Text.literal("Contents:\n").formatted(Formatting.GRAY)).append(Texts.join(inventory.stream().filter(i -> !i.isEmpty()).map(i -> Text.empty().append(Text.literal("- ").formatted(Formatting.GRAY)).append(String.valueOf(i.getCount())).append("x ").append(i.getName())).toList(), Text.of("\n"))))))
 			.append(String.valueOf(inventory.stream().filter(i -> !i.isEmpty()).count()))

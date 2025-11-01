@@ -10,13 +10,10 @@ import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class SwitchyComponentMap {
@@ -75,15 +72,9 @@ public class SwitchyComponentMap {
 	}
 
 	public List<MutableText> asTexts() {
-		Map<String, List<Text>> grouped = new TreeMap<>();
-		for (SwitchyComponentType<?> t : keySet().stream().sorted(Comparator.comparing(t -> t.id().toString())).toList()) {
-			try {
-				Text text = t.asText(this);
-				grouped.computeIfAbsent(t.group() != null ? t.group().getPath() : t.id().getPath(), k -> new ArrayList<>()).add(text);
-			} catch (Exception e) {
-				throw new RuntimeException("Failed to preview component %s with value %s".formatted(t.id(), this.get(t)), e);
-			}
-		}
-		return grouped.entrySet().stream().map(e -> Text.empty().append(Text.literal(e.getKey() + ": ").formatted(Formatting.GRAY)).append(Texts.join(e.getValue(), Text.literal(", ").formatted(Formatting.GRAY)))).toList();
+		return SwitchyComponentTypes.grouped(keySet()).entrySet().stream().map(e -> Text.empty()
+				.append(Text.literal(e.getKey() + ": ").formatted(Formatting.GRAY))
+				.append(Texts.join(e.getValue().stream().map(t -> t.asText(this)).toList(), Text.literal(", ").formatted(Formatting.GRAY)))
+		).toList();
 	}
 }

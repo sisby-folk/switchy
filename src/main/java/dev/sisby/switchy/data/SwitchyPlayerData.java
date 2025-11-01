@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -71,7 +72,7 @@ public class SwitchyPlayerData {
 		return ((SwitchyPlayer) player).switchy$getPlayerData();
 	}
 
-	public static SwitchyPlayerData create(ServerPlayerEntity player) {
+	public static SwitchyPlayerData create(ServerPlayerEntity player, NbtCompound nbt) {
 		SwitchyPlayerData data = new SwitchyPlayerData(
 			"default",
 			"",
@@ -79,6 +80,10 @@ public class SwitchyPlayerData {
 			new LinkedHashMap<>()
 		);
 		data.profiles.put("default", new SwitchyProfile("default", SwitchyComponentMap.empty()));
+		for (SwitchyComponentType<?> componentType : Sets.difference(SwitchyComponentTypes.instance().values(), data.componentTypes)) {
+			data.initComponent(componentType, player, nbt);
+		}
+		if (nbt.contains("switchy:presets", NbtElement.COMPOUND_TYPE)) data.recoverLegacyData(player, nbt.getCompound("switchy:presets"));
 		return data;
 	}
 
@@ -118,10 +123,18 @@ public class SwitchyPlayerData {
 		return profiles.get(profileId);
 	}
 
-	public boolean initComponent(SwitchyComponentType<?> type, ServerPlayerEntity player) {
+	public int initComponents(Set<SwitchyComponentType<?>> types, ServerPlayerEntity player) {
 		NbtCompound compound = new NbtCompound();
 		player.writeNbt(compound);
-		return initComponent(type, player, compound);
+		for (SwitchyComponentType<?> type : types) {
+			if (initComponent(type, player, compound)) {
+				types.add(type);
+			} else { // roll back
+				types.forEach(this::removeComponent);
+				return 0;
+			}
+		}
+		return types.size();
 	}
 
 	public boolean initComponent(SwitchyComponentType<?> componentType, ServerPlayerEntity player, NbtCompound nbt) {
@@ -135,8 +148,19 @@ public class SwitchyPlayerData {
 		return true;
 	}
 
+	public int removeComponents(Set<SwitchyComponentType<?>> types) {
+		if (profiles.values().stream().anyMatch(p -> !p.id().equals(current) && types.stream().anyMatch(t -> t.isPrecious(p.components())))) return 0;
+		for (SwitchyComponentType<?> type : types) {
+			for (SwitchyProfile p : profiles.values()) {
+				p.remove(type);
+			}
+			componentTypes.remove(type);
+		}
+		return types.size();
+	}
+
 	public boolean removeComponent(SwitchyComponentType<?> componentType) {
-		if (!profiles.values().stream().filter(p -> componentType.isPrecious(p.components())).toList().isEmpty()) return false;
+		if (!profiles.values().stream().filter(p -> !p.id().equals(current) && componentType.isPrecious(p.components())).toList().isEmpty()) return false;
 		for (SwitchyProfile profile : profiles.values()) {
 			profile.remove(componentType);
 		}
@@ -191,13 +215,6 @@ public class SwitchyPlayerData {
 		Switchy.LOGGER.info("[Switchy] Finished recovering {} legacy switchy profiles for {}.", presets.getSize(), player.getGameProfile().getName());
 	}
 
-	public void init(ServerPlayerEntity player, NbtCompound nbt) {
-		for (SwitchyComponentType<?> componentType : Sets.difference(SwitchyComponentTypes.instance().values(), componentTypes)) {
-			initComponent(componentType, player, nbt);
-		}
-		if (nbt.contains("switchy:presets", NbtElement.COMPOUND_TYPE)) recoverLegacyData(player, nbt.getCompound("switchy:presets"));
-	}
-
 	public SwitchyProfile getOrCreateProfile(String profileId, ServerPlayerEntity player) {
 		if (profileExists(profileId)) return profiles.get(profileId);
 		NbtCompound nbt = new NbtCompound();
@@ -213,6 +230,22 @@ public class SwitchyPlayerData {
 		SwitchyProfile newProfile = new SwitchyProfile(profileId, components);
 		profiles.put(profileId, newProfile);
 		return newProfile;
+	}
+
+	public void validate(ServerPlayerEntity self, NbtCompound nbt) {
+		Set<Identifier> groupsChecked = new HashSet<>();
+		for (SwitchyComponentType<?> type : new HashSet<>(componentTypes)) {
+			Identifier group = type.group();
+			if (group != null && !groupsChecked.contains(group)) {
+				groupsChecked.add(group);
+				for (SwitchyComponentType<?> otherType : SwitchyComponentTypes.instance().values()) {
+					if (group.equals(otherType.group()) && !componentTypes.contains(otherType)) {
+						Switchy.LOGGER.info("[Switchy] Enabling component {} of partially enabled group {} for user {}", otherType.id(), group, self.getGameProfile().getName());
+						initComponent(otherType, self, nbt);
+					}
+				}
+			}
+		}
 	}
 
 	public record ProfileImportData(String name, @Nullable String display_name, @Nullable String color, @Nullable String pronouns) {}

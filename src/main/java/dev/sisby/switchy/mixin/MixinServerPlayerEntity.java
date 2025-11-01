@@ -28,10 +28,10 @@ public class MixinServerPlayerEntity implements SwitchyPlayer {
 	public SwitchyPlayerData switchy$getOrCreatePlayerData() {
 		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
 		if (switchy$playerData == null) {
-			NbtCompound compound = new NbtCompound();
-			self.writeNbt(compound);
-			switchy$playerData = SwitchyPlayerData.create(self);
-			switchy$playerData.init(self, compound);
+			NbtCompound nbt = new NbtCompound();
+			self.writeNbt(nbt);
+			switchy$playerData = SwitchyPlayerData.create(self, nbt);
+			switchy$playerData.validate(self, nbt);
 		}
 		return switchy$playerData;
 	}
@@ -46,9 +46,10 @@ public class MixinServerPlayerEntity implements SwitchyPlayer {
 		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
 		if (nbt.contains(Switchy.ID)) {
 			switchy$playerData = SwitchyPlayerData.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound(Switchy.ID)).result().orElseThrow();
+			switchy$playerData.validate(self, nbt);
 		} else if (nbt.contains("switchy:presets")) {
-			switchy$playerData = SwitchyPlayerData.create(self);
-			switchy$playerData.init(self, nbt);
+			switchy$playerData = SwitchyPlayerData.create(self, nbt);
+			switchy$playerData.validate(self, nbt);
 		}
 	}
 

@@ -33,9 +33,14 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
@@ -119,6 +124,15 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	);
 
 	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
+	public static Map<Identifier, List<SwitchyComponentType<?>>> grouped(Set<SwitchyComponentType<?>> keyset) {
+		Map<Identifier, List<SwitchyComponentType<?>>> grouped = new LinkedHashMap<>();
+		for (SwitchyComponentType<?> t : keyset.stream().sorted(Comparator.comparing(t -> t.id().toString())).toList()) {
+			Identifier group = t.group();
+			grouped.computeIfAbsent(group != null ? group : t.id(), k -> new ArrayList<>()).add(t);
+		}
+		return grouped;
+	}
 
 	public static void init() {
 		File componentsFolder = FabricLoader.getInstance().getConfigDir().resolve(Switchy.ID).resolve("components").toFile();
