@@ -95,8 +95,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	public static final Identifier INVENTORY = new Identifier("minecraft", "inventory");
 	public static final Identifier ENDERCHEST = new Identifier("minecraft", "enderchest");
 	public static final Identifier ORIGINS_ORIGIN = new Identifier("origins", "origin");
-	public static final Identifier TAILOR_VALUE = new Identifier("fabrictailor", "value");
-	public static final Identifier TAILOR_SIGNATURE = new Identifier("fabrictailor", "signature");
+	public static final Identifier TAILOR_SKIN = new Identifier("fabrictailor", "skin");
 	public static final Identifier TRINKETS_SLOTS = new Identifier("trinkets", "slots");
 	public static final Map<Identifier, EditableComponentType> DEFAULT_COMPONENTS = Map.ofEntries(
 		// minecraft
@@ -114,8 +113,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 		Map.entry(ORIGINS_ORIGIN, new EditableComponentType(true, "identifier", "cardinal_components.origins:origin.OriginLayers", "identifier", null, null, null)),
 		Map.entry(ORIGINS_POWERS, new EditableComponentType(true, "nbt", "cardinal_components.apoli:powers.Powers", "nbt", null, null, null)),
 		// fabric tailor
-		Map.entry(TAILOR_VALUE, new EditableComponentType(true, "string", "fabrictailor:skin_data.value", "trunc", null, null, null)),
-		Map.entry(TAILOR_SIGNATURE, new EditableComponentType(true, "string", "fabrictailor:skin_data.signature", "trunc", null, null, null)),
+		Map.entry(TAILOR_SKIN, new EditableComponentType(true, "nbt", "fabrictailor:skin_data", "nbt", null, null, null)),
 		// trinkets
 		Map.entry(TRINKETS_SLOTS, new EditableComponentType(true, "nbt", "cardinal_components.trinkets:trinkets", "nbt", "💍", null, null))
 	);
