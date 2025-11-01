@@ -1,5 +1,6 @@
 package dev.sisby.switchy.data;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -26,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -176,7 +178,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 		@Override
 		public T initialize(NbtCompound playerNbt, ServerPlayerEntity player, String profileId) throws ComponentFailedInitializeException {
-			ServerPlayerEntity defaultPlayer = new ServerPlayerEntity(player.getServer(), player.getServer().getOverworld(), player.getGameProfile());
+			ServerPlayerEntity defaultPlayer = new ServerPlayerEntity(player.getServer(), player.getServer().getOverworld(), new GameProfile(UUID.randomUUID(), player.getGameProfile().getName()));
 			NbtCompound defaultNbt = new NbtCompound();
 			defaultPlayer.writeNbt(defaultNbt);
 			try {

@@ -45,11 +45,7 @@ public class MixinServerPlayerEntity implements SwitchyPlayer {
 	public void readPlayerData(NbtCompound nbt, CallbackInfo ci) {
 		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
 		if (nbt.contains(Switchy.ID)) {
-			switchy$playerData = SwitchyPlayerData.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound(Switchy.ID)).result().orElseGet(() -> {
-				SwitchyPlayerData data = SwitchyPlayerData.create(self);
-				data.init(self, nbt);
-				return data;
-			});
+			switchy$playerData = SwitchyPlayerData.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound(Switchy.ID)).result().orElseThrow();
 		} else if (nbt.contains("switchy:presets")) {
 			switchy$playerData = SwitchyPlayerData.create(self);
 			switchy$playerData.init(self, nbt);
