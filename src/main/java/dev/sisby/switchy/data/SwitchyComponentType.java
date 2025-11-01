@@ -63,8 +63,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 	default void tryInitialize(Collection<SwitchyComponentMap> consumer, NbtCompound nbt, ServerPlayerEntity player, String profileId) {
 		Initializer<T> initializer = initializer();
 		if (initializer == null) return;
-		T value = initializer.initialize(nbt, player, profileId);
-		if (value == null) return;
+		T value = initializer.initialize(nbt, player, profileId); // value might be null (means "erase key")
 		consumer.forEach(c -> c.set(this, value));
 	}
 
@@ -221,6 +220,10 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		@Override
 		public void mutate(T value, NbtCompound nbt) throws NbtException {
 			try {
+				if (value == null) { // special case - erase the key.
+					nbtPath.remove(nbt);
+					return;
+				}
 				DataResult<NbtElement> result = codec.encodeStart(NbtOps.INSTANCE, value);
 				if (result.error().isPresent()) {
 					throw new NbtException("Failed to serialize component! %s".formatted(result.error().get().message()));
