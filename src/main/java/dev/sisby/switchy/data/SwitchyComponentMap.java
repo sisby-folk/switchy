@@ -6,14 +6,17 @@ import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class SwitchyComponentMap {
@@ -72,13 +75,15 @@ public class SwitchyComponentMap {
 	}
 
 	public List<MutableText> asTexts() {
-		return keySet().stream().sorted(Comparator.comparing(t -> t.id().toString())).map(t -> {
+		Map<String, List<Text>> grouped = new TreeMap<>();
+		for (SwitchyComponentType<?> t : keySet().stream().sorted(Comparator.comparing(t -> t.id().toString())).toList()) {
 			try {
 				Text text = t.asText(this);
-				return Text.empty().append(Text.literal(t.id().getPath() + ": ").formatted(Formatting.GRAY)).append(text);
+				grouped.computeIfAbsent(t.group() != null ? t.group().getPath() : t.id().getPath(), k -> new ArrayList<>()).add(text);
 			} catch (Exception e) {
 				throw new RuntimeException("Failed to preview component %s with value %s".formatted(t.id(), this.get(t)), e);
 			}
-		}).toList();
+		}
+		return grouped.entrySet().stream().map(e -> Text.empty().append(Text.literal(e.getKey() + ": ").formatted(Formatting.GRAY)).append(Texts.join(e.getValue(), Text.literal(", ").formatted(Formatting.GRAY)))).toList();
 	}
 }

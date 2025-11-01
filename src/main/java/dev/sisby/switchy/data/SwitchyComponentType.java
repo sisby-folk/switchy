@@ -57,6 +57,8 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	@Nullable ArgumentEditor<T> argumentEditor();
 
+	@Nullable Identifier group();
+
 	default void tryInitialize(Collection<SwitchyComponentMap> consumer, NbtCompound nbt, ServerPlayerEntity player, String profileId) {
 		Initializer<T> initializer = initializer();
 		if (initializer == null) return;
@@ -244,7 +246,8 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		@Nullable PlayerMutator<T> playerMutator,
 		@Nullable EmptyChecker<T> emptyChecker,
 		@Nullable TextProvider<T> textProvider,
-		@Nullable ArgumentEditor<T> argumentEditor
+		@Nullable ArgumentEditor<T> argumentEditor,
+		@Nullable Identifier group
 	) implements SwitchyComponentType<T> {
 		@Override
 		public String toString() {
@@ -263,6 +266,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		private @Nullable EmptyChecker<T> emptyChecker;
 		private @Nullable TextProvider<T> textProvider;
 		private @Nullable ArgumentEditor<T> argumentEditor;
+		private @Nullable Identifier group;
 
 		public Builder(@NotNull Identifier id, @NotNull Codec<T> codec) {
 			this.id = id;
@@ -312,6 +316,11 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 			return this;
 		}
 
+		public Builder<T> group(@Nullable Identifier group) {
+			this.group = group;
+			return this;
+		}
+
 		public SwitchyComponentType<T> build() {
 			return new SwitchyComponentType.SimpleSwitchyComponentType<>(
 				this.id,
@@ -323,7 +332,8 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 				this.playerMutator,
 				this.emptyChecker,
 				this.textProvider,
-				this.argumentEditor
+				this.argumentEditor,
+				this.group
 			);
 		}
 	}

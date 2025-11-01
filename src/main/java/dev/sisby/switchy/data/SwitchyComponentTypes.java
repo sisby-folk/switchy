@@ -71,7 +71,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	));
 	private static final Identifier ORIGINS_POWERS = new Identifier("origins", "powers");
 
-	public record EditableComponentType(boolean enabled, String codec, String path, String preview, String prefix, String editor, String emptyChecker) {
+	public record EditableComponentType(boolean enabled, String codec, String path, String preview, String prefix, String editor, String emptyChecker, String group) {
 	}
 
 	private static final java.lang.reflect.Type EDITABLE_COMPONENT_TYPE = new TypeToken<EditableComponentType>() {
@@ -99,23 +99,23 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	public static final Identifier TRINKETS_SLOTS = new Identifier("trinkets", "slots");
 	public static final Map<Identifier, EditableComponentType> DEFAULT_COMPONENTS = Map.ofEntries(
 		// minecraft
-		Map.entry(DIMENSION, new EditableComponentType(true, "identifier", "Dimension", "identifier", null, null, null)),
-		Map.entry(FOOD, new EditableComponentType(true, "float", "foodLevel", "halves", "🍖x", null, null)),
-		Map.entry(SATURATION, new EditableComponentType(true, "float", "foodSaturationLevel", "halves", "+🍖x", null, null)),
-		Map.entry(EXHAUSTION, new EditableComponentType(true, "float", "foodExhaustionLevel", "halves", "-💨x", null, null)),
-		Map.entry(HEALTH, new EditableComponentType(true, "float", "Health", "halves", "❤x", null, null)),
-		Map.entry(XP, new EditableComponentType(true, "float", "XpP", "percent", null, null, null)),
-		Map.entry(LEVEL, new EditableComponentType(true, "int", "XpLevel", null, "Lv.", null, null)),
-		Map.entry(POS, new EditableComponentType(true, "vec3d", "Pos", "vec3d", null, null, null)),
-		Map.entry(INVENTORY, new EditableComponentType(true, "inventory", "Inventory", "inventory", null, null, "inventory")),
-		Map.entry(ENDERCHEST, new EditableComponentType(true, "inventory", "EnderItems", "inventory", "👁 ", null, "inventory")),
+		Map.entry(DIMENSION, new EditableComponentType(true, "identifier", "Dimension", "identifier", null, null, null, "location")),
+		Map.entry(FOOD, new EditableComponentType(true, "float", "foodLevel", "halves", "🍖x", null, null, "hunger")),
+		Map.entry(SATURATION, new EditableComponentType(true, "float", "foodSaturationLevel", "halves", "+🍖x", null, null, "hunger")),
+		Map.entry(EXHAUSTION, new EditableComponentType(true, "float", "foodExhaustionLevel", "halves", "-💨x", null, null, "hunger")),
+		Map.entry(HEALTH, new EditableComponentType(true, "float", "Health", "halves", "❤x", null, null, null)),
+		Map.entry(XP, new EditableComponentType(true, "float", "XpP", "percent", null, null, null, "xp")),
+		Map.entry(LEVEL, new EditableComponentType(true, "int", "XpLevel", null, "Lv.", null, null, "xp")),
+		Map.entry(POS, new EditableComponentType(true, "vec3d", "Pos", "vec3d", null, null, null, "location")),
+		Map.entry(INVENTORY, new EditableComponentType(true, "inventory", "Inventory", "inventory", "🧰 ", null, "inventory", "inventory")),
+		Map.entry(ENDERCHEST, new EditableComponentType(true, "inventory", "EnderItems", "inventory", "👁 ", null, "inventory", "inventory")),
 		// origins
-		Map.entry(ORIGINS_ORIGIN, new EditableComponentType(true, "identifier", "cardinal_components.origins:origin.OriginLayers", "identifier", null, null, null)),
-		Map.entry(ORIGINS_POWERS, new EditableComponentType(true, "nbt", "cardinal_components.apoli:powers.Powers", "nbt", null, null, null)),
+		Map.entry(ORIGINS_ORIGIN, new EditableComponentType(true, "identifier", "cardinal_components.origins:origin.OriginLayers", "identifier", null, null, null, "origins:origin")),
+		Map.entry(ORIGINS_POWERS, new EditableComponentType(true, "nbt", "cardinal_components.apoli:powers.Powers", "nbt", null, null, null, "origins:origin")),
 		// fabric tailor
-		Map.entry(TAILOR_SKIN, new EditableComponentType(true, "nbt", "fabrictailor:skin_data", "nbt", null, null, null)),
+		Map.entry(TAILOR_SKIN, new EditableComponentType(true, "nbt", "fabrictailor:skin_data", "nbt", null, null, null, null)),
 		// trinkets
-		Map.entry(TRINKETS_SLOTS, new EditableComponentType(true, "nbt", "cardinal_components.trinkets:trinkets", "nbt", "💍", null, null))
+		Map.entry(TRINKETS_SLOTS, new EditableComponentType(true, "nbt", "cardinal_components.trinkets:trinkets", "nbt", "💍 ", null, null, "inventory"))
 	);
 
 	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -168,6 +168,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 			.textProvider(v -> Text.empty().append(Text.literal(Objects.requireNonNullElse(config.prefix, "")).formatted(Formatting.GRAY)).append(provider != null ? provider.toText(v) : Text.of(Objects.toString(v))))
 			.argumentEditor(editor)
 			.emptyChecker(checker)
+			.group(config.group == null ? null : Identifier.tryParse(config.group))
 		);
 	}
 
