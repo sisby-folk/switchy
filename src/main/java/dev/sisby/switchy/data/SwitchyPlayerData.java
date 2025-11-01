@@ -327,6 +327,12 @@ public class SwitchyPlayerData {
 		);
 	}
 
+	public void writeNbt(NbtCompound nbt) {
+		if (size() > 1) {
+			nbt.put(Switchy.ID, SwitchyPlayerData.CODEC.encodeStart(NbtOps.INSTANCE, this).getOrThrow(true, Switchy.LOGGER::error));
+		}
+	}
+
 	public SwitchyProfile switchOrCreateProfile(String profileId, ServerPlayerEntity player) throws NbtException {
 		switchProfile(getOrCreateProfile(profileId.toLowerCase(), player), player);
 		return getCurrentProfile();

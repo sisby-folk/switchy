@@ -1,12 +1,16 @@
 package dev.sisby.switchy;
 
 import dev.sisby.switchy.data.SwitchyComponentTypes;
+import dev.sisby.switchy.data.SwitchyPlayerData;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 public class Switchy implements ModInitializer {
 	public static final String ID = "switchy";

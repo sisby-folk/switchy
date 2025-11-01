@@ -18,6 +18,11 @@ public class MixinServerPlayerEntity implements SwitchyPlayer {
 	private NbtCompound switchy$hotSwap = null;
 
 	@Override
+	public NbtCompound switchy$hotSwapData() {
+		return switchy$hotSwap;
+	}
+
+	@Override
 	public void switchy$hotSwap(NbtCompound nbt, Text reason) {
 		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
 		switchy$hotSwap = nbt;
@@ -53,20 +58,9 @@ public class MixinServerPlayerEntity implements SwitchyPlayer {
 		}
 	}
 
-	@Inject(method = "writeCustomDataToNbt", at = @At("HEAD"), cancellable = true)
-	public void applyHotSwapData(NbtCompound nbt, CallbackInfo ci) {
-		if (switchy$hotSwap != null) {
-			nbt.copyFrom(switchy$hotSwap);
-			writePlayerData(nbt, ci);
-			ci.cancel();
-		}
-	}
-
 	@Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
 	public void writePlayerData(NbtCompound nbt, CallbackInfo ci) {
-		if (switchy$playerData != null && switchy$playerData.size() > 1) {
-			nbt.put(Switchy.ID, SwitchyPlayerData.CODEC.encodeStart(NbtOps.INSTANCE, switchy$playerData).getOrThrow(true, Switchy.LOGGER::error));
-		}
+		if (switchy$playerData != null) switchy$playerData.writeNbt(nbt);
 	}
 
 	@Inject(method = "copyFrom", at = @At("TAIL"))

@@ -129,7 +129,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 		Map.entry(INVENTORY, new EditableComponentType(true, "inventory", "Inventory", "inventory", "🧰 ", null, "inventory", "inventory")),
 		Map.entry(ENDER_CHEST, new EditableComponentType(true, "inventory", "EnderItems", "inventory", "👁 ", null, "inventory", "inventory")),
 		// origins
-		Map.entry(ORIGINS_ORIGIN, new EditableComponentType(true, "nbt", "cardinal_components.origins:origin.OriginLayers", "nbt", null, null, null, "origins:origin")),
+		Map.entry(ORIGINS_ORIGIN, new EditableComponentType(true, "nbt", "cardinal_components.origins:origin", "nbt", null, null, null, "origins:origin")),
 		Map.entry(ORIGINS_POWERS, new EditableComponentType(true, "nbt", "cardinal_components.apoli:powers.Powers", "nbt", null, null, null, "origins:origin")),
 		// fabric tailor
 		Map.entry(TAILOR_SKIN, new EditableComponentType(true, "nbt", "fabrictailor:skin_data", "nbt", null, null, null, null)),
