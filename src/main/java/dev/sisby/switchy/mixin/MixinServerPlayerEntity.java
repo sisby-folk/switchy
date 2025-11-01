@@ -45,7 +45,7 @@ public class MixinServerPlayerEntity implements SwitchyPlayer {
 	public void readPlayerData(NbtCompound nbt, CallbackInfo ci) {
 		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
 		if (nbt.contains(Switchy.ID)) {
-			switchy$playerData = SwitchyPlayerData.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound(Switchy.ID)).result().orElseThrow();
+			switchy$playerData = SwitchyPlayerData.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound(Switchy.ID)).getOrThrow(true, Switchy.LOGGER::error);
 			switchy$playerData.validate(self, nbt);
 		} else if (nbt.contains("switchy:presets")) {
 			switchy$playerData = SwitchyPlayerData.create(self, nbt);
@@ -65,7 +65,7 @@ public class MixinServerPlayerEntity implements SwitchyPlayer {
 	@Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
 	public void writePlayerData(NbtCompound nbt, CallbackInfo ci) {
 		if (switchy$playerData != null && switchy$playerData.size() > 1) {
-			nbt.put(Switchy.ID, SwitchyPlayerData.CODEC.encodeStart(NbtOps.INSTANCE, switchy$playerData).result().orElseThrow());
+			nbt.put(Switchy.ID, SwitchyPlayerData.CODEC.encodeStart(NbtOps.INSTANCE, switchy$playerData).getOrThrow(true, Switchy.LOGGER::error));
 		}
 	}
 

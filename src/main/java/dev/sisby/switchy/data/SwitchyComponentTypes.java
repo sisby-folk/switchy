@@ -50,6 +50,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 
 	public static final Map<Identifier, Codec<?>> CODECS = new HashMap<>(Map.of(
 		new Identifier("nbt"), SwitchyCodecs.NBT,
+		new Identifier("boolean"), Codec.BOOL,
 		new Identifier("string"), Codec.STRING,
 		new Identifier("text"), Codecs.TEXT,
 		new Identifier("float"), Codec.FLOAT,
@@ -63,6 +64,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 		new Identifier("nbt"), new SwitchyComponentType.SimpleTextProvider<NbtElement>(e -> Text.literal("%d elements...".formatted(e instanceof NbtCompound c ? c.getSize() : e instanceof NbtList l ? l.size() : 1)).styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(Objects.toString(e)))))),
 		new Identifier("text"), new SwitchyComponentType.SimpleTextProvider<Text>(t -> t),
 		new Identifier("percent"), new SwitchyComponentType.SimpleTextProvider<Float>(n -> Text.of("%.0f%%".formatted(n * 100.0))),
+		new Identifier("rounded"), new SwitchyComponentType.SimpleTextProvider<Float>(n -> Text.of("%.0f".formatted(n))),
 		new Identifier("halves"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::statText),
 		new Identifier("vec3d"), new SwitchyComponentType.SimpleTextProvider<Vec3d>(c -> Text.of(BlockPos.ofFloored(c).toShortString())),
 		new Identifier("identifier"), new SwitchyComponentType.SimpleTextProvider<Identifier>(i -> Text.of(FormatUtils.prettify(i.getPath()))),
@@ -89,16 +91,22 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 		return FabricLoader.getInstance().isModLoaded("styled-nicknames") ? StyledNicknamesCompat.nicknameComponent(builder) : builder;
 	});
 
-	public static final Identifier DIMENSION = new Identifier("minecraft", "dimension");
-	public static final Identifier FOOD = new Identifier("minecraft", "food");
-	public static final Identifier SATURATION = new Identifier("minecraft", "saturation");
-	public static final Identifier EXHAUSTION = new Identifier("minecraft", "exhaustion");
+	public static final Identifier DIMENSION = new Identifier("minecraft", "location/dimension");
+	public static final Identifier FOOD = new Identifier("minecraft", "hunger/food");
+	public static final Identifier SATURATION = new Identifier("minecraft", "hunger/saturation");
+	public static final Identifier EXHAUSTION = new Identifier("minecraft", "hunger/exhaustion");
 	public static final Identifier HEALTH = new Identifier("minecraft", "health");
-	public static final Identifier XP = new Identifier("minecraft", "xp");
-	public static final Identifier LEVEL = new Identifier("minecraft", "level");
-	public static final Identifier POS = new Identifier("minecraft", "pos");
-	public static final Identifier INVENTORY = new Identifier("minecraft", "inventory");
-	public static final Identifier ENDERCHEST = new Identifier("minecraft", "enderchest");
+	public static final Identifier XP = new Identifier("minecraft", "xp/progress");
+	public static final Identifier LEVEL = new Identifier("minecraft", "xp/level");
+	public static final Identifier POS = new Identifier("minecraft", "location/pos");
+	public static final Identifier SPAWN_X = new Identifier("minecraft", "spawn/x");
+	public static final Identifier SPAWN_Y = new Identifier("minecraft", "spawn/y");
+	public static final Identifier SPAWN_Z = new Identifier("minecraft", "spawn/z");
+	public static final Identifier SPAWN_FORCED = new Identifier("minecraft", "spawn/forced");
+	public static final Identifier SPAWN_ANGLE = new Identifier("minecraft", "spawn/angle");
+	public static final Identifier SPAWN_DIMENSION = new Identifier("minecraft", "spawn/dimension");
+	public static final Identifier INVENTORY = new Identifier("minecraft", "inventory/inventory");
+	public static final Identifier ENDER_CHEST = new Identifier("minecraft", "inventory/ender_chest");
 	public static final Identifier ORIGINS_ORIGIN = new Identifier("origins", "origin");
 	public static final Identifier TAILOR_SKIN = new Identifier("fabrictailor", "skin");
 	public static final Identifier TRINKETS_SLOTS = new Identifier("trinkets", "slots");
@@ -112,8 +120,14 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 		Map.entry(XP, new EditableComponentType(true, "float", "XpP", "percent", null, null, null, "xp")),
 		Map.entry(LEVEL, new EditableComponentType(true, "int", "XpLevel", null, "Lv.", null, null, "xp")),
 		Map.entry(POS, new EditableComponentType(true, "vec3d", "Pos", "vec3d", null, null, null, "location")),
+		Map.entry(SPAWN_X, new EditableComponentType(true, "int", "SpawnX", null, "X:", null, null, "spawn")),
+		Map.entry(SPAWN_Y, new EditableComponentType(true, "int", "SpawnY", null, "Y:", null, null, "spawn")),
+		Map.entry(SPAWN_Z, new EditableComponentType(true, "int", "SpawnZ", null, "Z:", null, null, "spawn")),
+		Map.entry(SPAWN_FORCED, new EditableComponentType(true, "int", "SpawnForced", null, "🛏:", null, null, "spawn")),
+		Map.entry(SPAWN_ANGLE, new EditableComponentType(true, "float", "SpawnAngle", "rounded", "°", null, null, "spawn")),
+		Map.entry(SPAWN_DIMENSION, new EditableComponentType(true, "identifier", "SpawnDimension", "identifier", null, null, null, "spawn")),
 		Map.entry(INVENTORY, new EditableComponentType(true, "inventory", "Inventory", "inventory", "🧰 ", null, "inventory", "inventory")),
-		Map.entry(ENDERCHEST, new EditableComponentType(true, "inventory", "EnderItems", "inventory", "👁 ", null, "inventory", "inventory")),
+		Map.entry(ENDER_CHEST, new EditableComponentType(true, "inventory", "EnderItems", "inventory", "👁 ", null, "inventory", "inventory")),
 		// origins
 		Map.entry(ORIGINS_ORIGIN, new EditableComponentType(true, "identifier", "cardinal_components.origins:origin.OriginLayers", "identifier", null, null, null, "origins:origin")),
 		Map.entry(ORIGINS_POWERS, new EditableComponentType(true, "nbt", "cardinal_components.apoli:powers.Powers", "nbt", null, null, null, "origins:origin")),
@@ -142,7 +156,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 				Identifier key = entry.getKey();
 				EditableComponentType config = entry.getValue();
 				if (!FabricLoader.getInstance().isModLoaded(key.getNamespace())) continue;
-				File componentFile = componentsFolder.toPath().resolve(key.toString().replace("minecraft:", "").replace(":", "/") + ".json").toFile();
+				File componentFile = componentsFolder.toPath().resolve(key.toString().replace(":", "/") + ".json").toFile();
 				if (!componentFile.exists()) {
 					componentFile.getParentFile().mkdirs();
 					try (Writer writer = new FileWriter(componentFile)) {

@@ -170,7 +170,7 @@ public class SwitchyPlayerData {
 
 	private static final Map<Identifier, Pair<String, String>> LEGACY_RECOVERIES = Map.of(
 		SwitchyComponentTypes.INVENTORY, new Pair<>("switchy_inventories:inventories", "inventory"),
-		SwitchyComponentTypes.ENDERCHEST, new Pair<>("switchy_inventories:ender_chests", "inventory"),
+		SwitchyComponentTypes.ENDER_CHEST, new Pair<>("switchy_inventories:ender_chests", "inventory"),
 		SwitchyComponentTypes.LEVEL, new Pair<>("switchy_inventories:experience", "experienceLevel"),
 		SwitchyComponentTypes.XP, new Pair<>("switchy_inventories:experience", "experienceProgress"),
 		SwitchyComponentTypes.TRINKETS_SLOTS, new Pair<>("switchy_inventories:trinkets", "trinkets:trinkets")

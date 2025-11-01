@@ -254,7 +254,7 @@ public class SwitchyCommands {
 
 	private static int enableComponent(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, Identifier id) {
 		Set<SwitchyComponentType<?>> types = SwitchyComponentTypes.instance().values().stream().filter(t -> id.equals(t.group())).collect(Collectors.toSet());
-		if (types.isEmpty() && SwitchyComponentTypes.instance().contains(id)) types.add(SwitchyComponentTypes.instance().get(id));
+		if (types.isEmpty() && SwitchyComponentTypes.instance().contains(id) && SwitchyComponentTypes.instance().get(id).group() == null) types.add(SwitchyComponentTypes.instance().get(id));
 		if (types.isEmpty()) {
 			feedback.accept(prefix().append(Text.literal("component doesn't exist!").formatted(Formatting.YELLOW)));
 			return 0;
@@ -275,7 +275,7 @@ public class SwitchyCommands {
 
 	private static int disableComponent(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, Identifier id) {
 		Set<SwitchyComponentType<?>> types = SwitchyComponentTypes.instance().values().stream().filter(t -> id.equals(t.group())).collect(Collectors.toSet());
-		if (types.isEmpty() && SwitchyComponentTypes.instance().contains(id)) types.add(SwitchyComponentTypes.instance().get(id));
+		if (types.isEmpty() && SwitchyComponentTypes.instance().contains(id) && SwitchyComponentTypes.instance().get(id).group() == null) types.add(SwitchyComponentTypes.instance().get(id));
 		if (types.isEmpty()) {
 			feedback.accept(prefix().append(Text.literal("component doesn't exist!").formatted(Formatting.YELLOW)));
 			return 0;

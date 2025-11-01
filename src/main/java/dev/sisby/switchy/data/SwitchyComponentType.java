@@ -7,6 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.SwitchyCommands;
 import dev.sisby.switchy.exception.ComponentFailedInitializeException;
 import dev.sisby.switchy.exception.NbtException;
@@ -153,7 +154,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 	record SimpleTextProvider<T>(Function<T, Text> provider) implements TextProvider<T> {
 		@Override
 		public Text toText(T value) {
-			return provider.apply(value);
+			return value == null ? Text.empty() : provider.apply(value);
 		}
 	}
 
@@ -211,7 +212,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 				if (result.error().isPresent()) {
 					throw new NbtException("Failed to read from serialized player! %s".formatted(result.error().get().message()));
 				}
-				return result.result().orElseThrow();
+				return result.getOrThrow(true, Switchy.LOGGER::error);
 			} catch (CommandSyntaxException e) {
 				return null;
 			}
@@ -224,7 +225,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 				if (result.error().isPresent()) {
 					throw new NbtException("Failed to serialize component! %s".formatted(result.error().get().message()));
 				}
-				nbtPath.put(nbt, result.result().orElseThrow());
+				nbtPath.put(nbt, result.getOrThrow(true, Switchy.LOGGER::error));
 			} catch (CommandSyntaxException e) {
 				throw new NbtException("NBT path too deep!");
 			}
