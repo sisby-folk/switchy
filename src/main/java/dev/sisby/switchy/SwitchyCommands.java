@@ -87,9 +87,8 @@ public class SwitchyCommands {
 				.append(" ")
 				.append(clickable("edit", "/switchy edit %s ".formatted(profile.id()), false))
 				.append(" ")
-				.append(SwitchyComponentTypes.NAME.asText(profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id))).setStyle(Style.EMPTY
-					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(profile.asTexts(player), Text.of("\n"))))
-				)
+				.append(SwitchyComponentTypes.NAME.asText(profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)).setStyle(Style.EMPTY
+					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(profile.asTexts(player), Text.of("\n"))))))
 			);
 		}
 		return data.size();
@@ -185,6 +184,10 @@ public class SwitchyCommands {
 	}
 
 	public static <T> int editComponent(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId, SwitchyComponentType<T> type, T value) {
+		if (!data.componentSet().contains(type)) {
+			feedback.accept(prefix().append(Text.literal("can't edit a shared component!").formatted(Formatting.YELLOW)));
+			return 0;
+		}
 		SwitchyProfile profile = data.getProfile(profileId);
 		T oldValue = profile.set(type, value);
 		feedback.accept(prefix()
