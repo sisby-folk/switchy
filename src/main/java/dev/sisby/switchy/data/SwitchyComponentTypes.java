@@ -92,13 +92,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	private static final java.lang.reflect.Type EDITABLE_COMPONENT_TYPE = new TypeToken<EditableComponentType>() {
 	}.getType();
 
-	public static final SwitchyComponentType<String> NAME = register(Switchy.id("name"), Codec.STRING, builder -> {
-		builder = builder
-			.textProvider(s -> s != null ? Text.literal(s) : Text.empty())
-			.argumentEditor(e -> CommandManager.argument("name", StringArgumentType.greedyString()).executes(c -> e.execute(c, c.getArgument("name", String.class))));
-		return FabricLoader.getInstance().isModLoaded("styled-nicknames") ? StyledNicknamesCompat.nicknameComponent(builder) : builder;
-	});
-
+	public static final Identifier NAME_ID = Switchy.id("name");
 	public static final Identifier DIMENSION = new Identifier("minecraft", "location/dimension");
 	public static final Identifier FOOD = new Identifier("minecraft", "hunger/food");
 	public static final Identifier SATURATION = new Identifier("minecraft", "hunger/saturation");
@@ -118,6 +112,14 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	public static final Identifier ORIGINS_ORIGIN = new Identifier("origins", "origin");
 	public static final Identifier TAILOR_SKIN = new Identifier("fabrictailor", "skin");
 	public static final Identifier TRINKETS_SLOTS = new Identifier("trinkets", "slots");
+
+	public static final SwitchyComponentType<String> NAME = register(NAME_ID, Codec.STRING, builder -> {
+		builder = builder
+			.textProvider(s -> s != null ? Text.literal(s) : Text.empty())
+			.argumentEditor(e -> CommandManager.argument("name", StringArgumentType.greedyString()).executes(c -> e.execute(c, c.getArgument("name", String.class))));
+		return FabricLoader.getInstance().isModLoaded("styled-nicknames") ? StyledNicknamesCompat.nicknameComponent(builder) : builder;
+	});
+
 	public static final Map<Identifier, EditableComponentType> DEFAULT_COMPONENTS = Map.ofEntries(
 		// minecraft
 		Map.entry(DIMENSION, new EditableComponentType(true, "identifier", "Dimension", "identifier", null, null, null, "location",  new JsonPrimitive("overworld"))),

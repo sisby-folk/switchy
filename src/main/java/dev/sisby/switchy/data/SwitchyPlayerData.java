@@ -168,12 +168,17 @@ public class SwitchyPlayerData {
 		return true;
 	}
 
-	private static final Map<Identifier, Pair<String, String>> LEGACY_RECOVERIES = Map.of(
-		SwitchyComponentTypes.INVENTORY, new Pair<>("switchy_inventories:inventories", "inventory"),
-		SwitchyComponentTypes.ENDER_CHEST, new Pair<>("switchy_inventories:ender_chests", "inventory"),
-		SwitchyComponentTypes.LEVEL, new Pair<>("switchy_inventories:experience", "experienceLevel"),
-		SwitchyComponentTypes.XP, new Pair<>("switchy_inventories:experience", "experienceProgress"),
-		SwitchyComponentTypes.TRINKETS_SLOTS, new Pair<>("switchy_inventories:trinkets", "trinkets:trinkets")
+	private static final Map<Identifier, Pair<String, String>> LEGACY_RECOVERIES = Map.ofEntries(
+		Map.entry(SwitchyComponentTypes.INVENTORY, new Pair<>("switchy_inventories:inventories", "inventory")),
+		Map.entry(SwitchyComponentTypes.ENDER_CHEST, new Pair<>("switchy_inventories:ender_chests", "inventory")),
+		Map.entry(SwitchyComponentTypes.LEVEL, new Pair<>("switchy_inventories:experience", "experienceLevel")),
+		Map.entry(SwitchyComponentTypes.XP, new Pair<>("switchy_inventories:experience", "experienceProgress")),
+		Map.entry(SwitchyComponentTypes.TRINKETS_SLOTS, new Pair<>("switchy_inventories:trinkets", "trinkets:trinkets")),
+		Map.entry(SwitchyComponentTypes.FOOD, new Pair<>("switchy_status:hunger", "foodLevel")),
+		Map.entry(SwitchyComponentTypes.SATURATION, new Pair<>("switchy_status:hunger", "foodSaturationLevel")),
+		Map.entry(SwitchyComponentTypes.EXHAUSTION, new Pair<>("switchy_status:hunger", "exhaustion")),
+		Map.entry(SwitchyComponentTypes.NAME_ID, new Pair<>("switchy:styled_nicknames", "styled_nickname")),
+		Map.entry(SwitchyComponentTypes.TAILOR_SKIN, new Pair<>("switchy:fabric_tailor", ""))
 	);
 
 	public void recoverLegacyData(ServerPlayerEntity player, NbtCompound legacyData) {
@@ -202,7 +207,7 @@ public class SwitchyPlayerData {
 				for (Identifier typeId : LEGACY_RECOVERIES.keySet()) {
 					SwitchyComponentType<?> type = SwitchyComponentTypes.instance().get(typeId);
 					if (type == null) continue;
-					NbtElement element = modules.getCompound(LEGACY_RECOVERIES.get(typeId).getLeft()).get(LEGACY_RECOVERIES.get(typeId).getRight());
+					NbtElement element = LEGACY_RECOVERIES.get(typeId).getRight().isEmpty() ? modules.getCompound(LEGACY_RECOVERIES.get(typeId).getLeft()) : modules.getCompound(LEGACY_RECOVERIES.get(typeId).getLeft()).get(LEGACY_RECOVERIES.get(typeId).getRight());
 					if (element == null) continue;
 					type.codec().parse(NbtOps.INSTANCE, element).result().ifPresent(v -> profile.set(type, v));
 				}
