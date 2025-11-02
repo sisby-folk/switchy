@@ -36,6 +36,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -109,7 +110,7 @@ public class SwitchyCommands {
 				.append(" ")
 				.append(id.getPath()).setStyle(Style.EMPTY
 					.withColor(enabled ? Formatting.WHITE : Formatting.GRAY)
-					.withHoverEvent(!enabled ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(data.values().stream().map(p -> Text.empty()
+					.withHoverEvent(!enabled ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(data.values().stream().sorted(Comparator.comparing(SwitchyProfile::id)).map(p -> Text.empty()
 						.append(Text.literal(p.id()).formatted(Formatting.GRAY))
 						.append(": ")
 						.append(Texts.join(types.stream().filter(p::contains).map(t -> t.asText(p.components())).toList(), Text.literal(", ").formatted(Formatting.GRAY)))
