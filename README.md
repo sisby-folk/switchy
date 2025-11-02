@@ -1,5 +1,6 @@
 <!--suppress HtmlDeprecatedTag, XmlDeprecatedElement -->
-<center><img alt="mod preview" src="https://github.com/user-attachments/assets/b51c7392-bcf5-4c3f-9088-d35933636dc4"/></center>
+<center><img alt="mod preview" src="https://github.com/user-attachments/assets/d91655f7-7220-4d46-99e3-1bc710f65b67"/></center>
+
 
 <center>
 Serverside player profiles for hotseat multiplayer, adventure maps, and plural systems.
@@ -10,7 +11,7 @@ Serverside player profiles for hotseat multiplayer, adventure maps, and plural s
 **Switchy** allows players to create **profiles**, which have their own partial player data, and can be switched between.
 
 Data components are player-toggleable and config-driven, including:
-- Vanilla health, hunger, inventory, ender chest, position, and xp
+- Vanilla health, hunger, inventory, ender chest, location, spawn point, and xp
 - [Fabric Tailor](https://modrinth.com/mod/fabrictailor) skins
 - [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) nicknames
 - [Trinkets](modrinth.com/mod/trinkets) slots
@@ -33,14 +34,16 @@ Components are defined by json files in `config/switchy/components`.
 Mod presence is checked by file location, so `components/origins/origin.json` creates an `origins:origin` component if `origins` is loaded.
 
 ```json5
-// config/components/enderchest.json (minecraft:enderchest)
+// config/components/minecraft/inventory/ender_chest.json (minecraft:inventory/ender_chest)
 {
   "enabled": true, // whether to load the component at all. use this instead of deleting default files, as they'll regenerate.
   "codec": "inventory", // which codec (from the registry in SwitchyComponentTypes) to use to deserialize the data. defaults to "nbt" (passthrough)
   "path": "EnderItems", // NBT path targeting the part of player.dat to load from / modify to
   "preview": "inventory", // which text previewer (from the registry in SwitchyComponentTypes) to use in chat. null = toString(), use "trunc" for long data.
   "prefix": "👁 ", // a prefix to add to the text preview, for glanceability
-  "emptyChecker": "inventory" // which empty checker (from the registry in SwitchyComponentTypes) to use to prevent profile deletion for precious data.
+  "emptyChecker": "inventory", // which empty checker (from the registry in SwitchyComponentTypes) to use to prevent profile deletion for precious data.
+  "group": "inventory", // components with a matching group ID will be previewed and toggled as if they're one component
+  "default": [] // default value. JSON serialized. set to "$copy" to copy the value from previous. set to null or omit to delete the key from player data as the initial value.
 }
 ```
 
