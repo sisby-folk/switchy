@@ -169,6 +169,17 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		}
 	}
 
+	record CopyInitializer<T>(NbtReader<T> nbtReader) implements Initializer<T> {
+		@Override
+		public T initialize(NbtCompound playerNbt, ServerPlayerEntity player, String profileId) throws ComponentFailedInitializeException {
+			try {
+				return nbtReader.read(playerNbt);
+			} catch (Exception e) {
+				throw new ComponentFailedInitializeException("", e);
+			}
+		}
+	}
+
 	class NbtSwitcher<T> implements NbtMutator<T>, NbtReader<T> {
 		private final NbtPathArgumentType.NbtPath nbtPath;
 		private final Codec<T> codec;
@@ -252,7 +263,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		}
 
 		public Builder<T> initializer(@Nullable Initializer<T> initializer) {
-			this.initializer = initializer;
+			if (initializer != null) this.initializer = initializer;
 			return this;
 		}
 
@@ -290,6 +301,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 			}
 			this.nbtReader = switcher;
 			this.nbtMutator = switcher;
+			this.initializer = new CopyInitializer<>(switcher);
 			return this;
 		}
 

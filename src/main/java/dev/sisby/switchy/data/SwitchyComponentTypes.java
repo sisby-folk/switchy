@@ -202,6 +202,8 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 		SwitchyComponentType.Initializer<T> initializer;
 		if (config.defaultValue == null) {
 			initializer = (nbt, player, pId) -> null;
+		} else if (config.defaultValue.toString().equals("\"$copy\"")) { // lazy
+			initializer = null;
 		} else if (config.defaultValue.isJsonPrimitive() && config.defaultValue.getAsJsonPrimitive().isString() && config.defaultValue.getAsJsonPrimitive().getAsString().startsWith("$")) {
 			initializer = (SwitchyComponentType.Initializer<T>) INITIALIZERS.get(Identifier.tryParse(config.defaultValue.getAsString().substring(1)));
 		} else {
@@ -214,7 +216,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 			.argumentEditor(editor)
 			.emptyChecker(checker)
 			.group(config.group == null ? null : Identifier.tryParse(config.group))
-			.initializer(initializer)
+			.initializer(initializer) // overrides switcher
 		);
 	}
 
