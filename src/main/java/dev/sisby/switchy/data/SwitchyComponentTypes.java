@@ -3,9 +3,14 @@ package dev.sisby.switchy.data;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.compat.StyledNicknamesCompat;
 import dev.sisby.switchy.util.FormatUtils;
@@ -76,9 +81,12 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	public static final Map<Identifier, SwitchyComponentType.EmptyChecker<?>> EMPTY_CHECKERS = new HashMap<>(Map.of(
 		new Identifier("inventory"), new SwitchyComponentType.SimpleEmptyChecker<DefaultedList<ItemStack>>(dl -> dl.stream().allMatch(ItemStack::isEmpty))
 	));
+	public static final Map<Identifier, SwitchyComponentType.Initializer<?>> INITIALIZERS = new HashMap<>(Map.of(
+		new Identifier("spawn_pos"), (nbt, player, id) -> player.getServer().getOverworld().getSpawnPos().toCenterPos()
+	));
 	private static final Identifier ORIGINS_POWERS = new Identifier("origins", "powers");
 
-	public record EditableComponentType(boolean enabled, String codec, String path, String preview, String prefix, String editor, String emptyChecker, String group) {
+	public record EditableComponentType(boolean enabled, String codec, String path, String preview, String prefix, String editor, String emptyChecker, String group, @SerializedName("default") JsonElement defaultValue) {
 	}
 
 	private static final java.lang.reflect.Type EDITABLE_COMPONENT_TYPE = new TypeToken<EditableComponentType>() {
@@ -112,29 +120,29 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	public static final Identifier TRINKETS_SLOTS = new Identifier("trinkets", "slots");
 	public static final Map<Identifier, EditableComponentType> DEFAULT_COMPONENTS = Map.ofEntries(
 		// minecraft
-		Map.entry(DIMENSION, new EditableComponentType(true, "identifier", "Dimension", "identifier", null, null, null, "location")),
-		Map.entry(FOOD, new EditableComponentType(true, "float", "foodLevel", "halves", "🍖x", null, null, "hunger")),
-		Map.entry(SATURATION, new EditableComponentType(true, "float", "foodSaturationLevel", "halves", "+🍖x", null, null, "hunger")),
-		Map.entry(EXHAUSTION, new EditableComponentType(true, "float", "foodExhaustionLevel", "halves", "-💨x", null, null, "hunger")),
-		Map.entry(HEALTH, new EditableComponentType(true, "float", "Health", "halves", "❤x", null, null, null)),
-		Map.entry(XP, new EditableComponentType(true, "float", "XpP", "percent", null, null, null, "xp")),
-		Map.entry(LEVEL, new EditableComponentType(true, "int", "XpLevel", null, "Lv.", null, null, "xp")),
-		Map.entry(POS, new EditableComponentType(true, "vec3d", "Pos", "vec3d", null, null, null, "location")),
-		Map.entry(SPAWN_X, new EditableComponentType(true, "int", "SpawnX", null, "X:", null, null, "spawn")),
-		Map.entry(SPAWN_Y, new EditableComponentType(true, "int", "SpawnY", null, "Y:", null, null, "spawn")),
-		Map.entry(SPAWN_Z, new EditableComponentType(true, "int", "SpawnZ", null, "Z:", null, null, "spawn")),
-		Map.entry(SPAWN_FORCED, new EditableComponentType(true, "int", "SpawnForced", null, "🛏:", null, null, "spawn")),
-		Map.entry(SPAWN_ANGLE, new EditableComponentType(true, "float", "SpawnAngle", "rounded", "°", null, null, "spawn")),
-		Map.entry(SPAWN_DIMENSION, new EditableComponentType(true, "identifier", "SpawnDimension", "identifier", null, null, null, "spawn")),
-		Map.entry(INVENTORY, new EditableComponentType(true, "inventory", "Inventory", "inventory", "🧰 ", null, "inventory", "inventory")),
-		Map.entry(ENDER_CHEST, new EditableComponentType(true, "inventory", "EnderItems", "inventory", "👁 ", null, "inventory", "inventory")),
+		Map.entry(DIMENSION, new EditableComponentType(true, "identifier", "Dimension", "identifier", null, null, null, "location",  new JsonPrimitive("overworld"))),
+		Map.entry(FOOD, new EditableComponentType(true, "float", "foodLevel", "halves", "🍖x", null, null, "hunger", new JsonPrimitive(20))),
+		Map.entry(SATURATION, new EditableComponentType(true, "float", "foodSaturationLevel", "halves", "+🍖x", null, null, "hunger", new JsonPrimitive(5.0F))),
+		Map.entry(EXHAUSTION, new EditableComponentType(true, "float", "foodExhaustionLevel", "halves", "-💨x", null, null, "hunger", new JsonPrimitive(0.0F))),
+		Map.entry(HEALTH, new EditableComponentType(true, "float", "Health", "halves", "❤x", null, null, null, new JsonPrimitive(20.0F))),
+		Map.entry(XP, new EditableComponentType(true, "float", "XpP", "percent", null, null, null, "xp", new JsonPrimitive(0.0F))),
+		Map.entry(LEVEL, new EditableComponentType(true, "int", "XpLevel", null, "Lv.", null, null, "xp", new JsonPrimitive(0))),
+		Map.entry(POS, new EditableComponentType(true, "vec3d", "Pos", "vec3d", null, null, null, "location", new JsonPrimitive("$spawn_pos"))),
+		Map.entry(SPAWN_X, new EditableComponentType(true, "int", "SpawnX", null, "X:", null, null, "spawn", null)),
+		Map.entry(SPAWN_Y, new EditableComponentType(true, "int", "SpawnY", null, "Y:", null, null, "spawn", null)),
+		Map.entry(SPAWN_Z, new EditableComponentType(true, "int", "SpawnZ", null, "Z:", null, null, "spawn", null)),
+		Map.entry(SPAWN_FORCED, new EditableComponentType(true, "int", "SpawnForced", null, "🛏:", null, null, "spawn", null)),
+		Map.entry(SPAWN_ANGLE, new EditableComponentType(true, "float", "SpawnAngle", "rounded", "°", null, null, "spawn", null)),
+		Map.entry(SPAWN_DIMENSION, new EditableComponentType(true, "identifier", "SpawnDimension", "identifier", null, null, null, "spawn", null)),
+		Map.entry(INVENTORY, new EditableComponentType(true, "inventory", "Inventory", "inventory", "🧰 ", null, "inventory", "inventory", new JsonArray())),
+		Map.entry(ENDER_CHEST, new EditableComponentType(true, "inventory", "EnderItems", "inventory", "👁 ", null, "inventory", "inventory", new JsonArray())),
 		// origins
-		Map.entry(ORIGINS_ORIGIN, new EditableComponentType(true, "nbt", "cardinal_components.origins:origin", "nbt", null, null, null, "origins:origin")),
-		Map.entry(ORIGINS_POWERS, new EditableComponentType(true, "nbt", "cardinal_components.apoli:powers.Powers", "nbt", null, null, null, "origins:origin")),
+		Map.entry(ORIGINS_ORIGIN, new EditableComponentType(true, "nbt", "cardinal_components.origins:origin", "nbt", null, null, null, "origins:origin", null)),
+		Map.entry(ORIGINS_POWERS, new EditableComponentType(true, "nbt", "cardinal_components.apoli:powers.Powers", "nbt", null, null, null, "origins:origin", null)),
 		// fabric tailor
-		Map.entry(TAILOR_SKIN, new EditableComponentType(true, "nbt", "fabrictailor:skin_data", "nbt", null, null, null, null)),
+		Map.entry(TAILOR_SKIN, new EditableComponentType(true, "nbt", "fabrictailor:skin_data", "nbt", null, null, null, null, null)),
 		// trinkets
-		Map.entry(TRINKETS_SLOTS, new EditableComponentType(true, "nbt", "cardinal_components.trinkets:trinkets", "nbt", "💍 ", null, null, "inventory"))
+		Map.entry(TRINKETS_SLOTS, new EditableComponentType(true, "nbt", "cardinal_components.trinkets:trinkets", "nbt", "💍 ", null, null, "inventory", null))
 	);
 
 	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -190,13 +198,23 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	public static <T> void registerConfig(Codec<T> codec, Identifier id, EditableComponentType config) {
 		SwitchyComponentType.TextProvider<T> provider = config.preview == null ? null :  (SwitchyComponentType.TextProvider<T>) TEXT_PROVIDERS.get(Identifier.tryParse(config.preview));
 		SwitchyComponentType.ArgumentEditor<T> editor = config.editor == null ? null : (SwitchyComponentType.ArgumentEditor<T>) ARGUMENT_EDITORS.get(Identifier.tryParse(config.editor));
-		SwitchyComponentType.EmptyChecker<T> checker = config.emptyChecker == null ? null :  (SwitchyComponentType.EmptyChecker<T>) EMPTY_CHECKERS.get(Identifier.tryParse(config.emptyChecker));
+		SwitchyComponentType.EmptyChecker<T> checker = config.emptyChecker == null ? null : (SwitchyComponentType.EmptyChecker<T>) EMPTY_CHECKERS.get(Identifier.tryParse(config.emptyChecker));
+		SwitchyComponentType.Initializer<T> initializer;
+		if (config.defaultValue == null) {
+			initializer = (nbt, player, pId) -> null;
+		} else if (config.defaultValue.isJsonPrimitive() && config.defaultValue.getAsJsonPrimitive().isString() && config.defaultValue.getAsJsonPrimitive().getAsString().startsWith("$")) {
+			initializer = (SwitchyComponentType.Initializer<T>) INITIALIZERS.get(Identifier.tryParse(config.defaultValue.getAsString().substring(1)));
+		} else {
+			T defaultValue = codec.parse(JsonOps.INSTANCE, config.defaultValue).getOrThrow(false, Switchy.LOGGER::error);
+			initializer = (nbt, player, pId) -> defaultValue;
+		}
 		register(id, codec, b -> b
 			.nbtSwitcher(config.path)
 			.textProvider(v -> Text.empty().append(Text.literal(Objects.requireNonNullElse(config.prefix, "")).formatted(Formatting.GRAY)).append(provider != null ? provider.toText(v) : Text.of(Objects.toString(v))))
 			.argumentEditor(editor)
 			.emptyChecker(checker)
 			.group(config.group == null ? null : Identifier.tryParse(config.group))
+			.initializer(initializer)
 		);
 	}
 

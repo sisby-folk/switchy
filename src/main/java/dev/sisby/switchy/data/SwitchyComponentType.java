@@ -1,6 +1,5 @@
 package dev.sisby.switchy.data;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -28,7 +27,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -171,30 +169,6 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		}
 	}
 
-	class DefaultPlayerInitializer<T> implements Initializer<T> {
-		private final NbtReader<T> nbtReader;
-
-		public DefaultPlayerInitializer(NbtReader<T> nbtReader) {
-			this.nbtReader = nbtReader;
-		}
-
-		@Override
-		public T initialize(NbtCompound playerNbt, ServerPlayerEntity player, String profileId) throws ComponentFailedInitializeException {
-			ServerPlayerEntity defaultPlayer = new ServerPlayerEntity(player.getServer(), player.getServer().getOverworld(), new GameProfile(UUID.randomUUID(), player.getGameProfile().getName()));
-			NbtCompound defaultNbt = new NbtCompound();
-			defaultPlayer.writeNbt(defaultNbt);
-			try {
-				return nbtReader.read(defaultNbt);
-			} catch (Exception ignored) {
-				try {
-					return nbtReader.read(playerNbt);
-				} catch (Exception e) {
-					throw new ComponentFailedInitializeException("", e);
-				}
-			}
-		}
-	}
-
 	class NbtSwitcher<T> implements NbtMutator<T>, NbtReader<T> {
 		private final NbtPathArgumentType.NbtPath nbtPath;
 		private final Codec<T> codec;
@@ -316,7 +290,6 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 			}
 			this.nbtReader = switcher;
 			this.nbtMutator = switcher;
-			this.initializer = new DefaultPlayerInitializer<>(switcher);
 			return this;
 		}
 
