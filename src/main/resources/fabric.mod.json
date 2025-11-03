@@ -27,9 +27,9 @@
 	},
 	"breaks": {
 		"switchy-core": "*",
-		"switchy-inventories": "*",
+		"switchy_inventories": "*",
 		"switchy-proxy": "*",
-		"switchy-teleport": "*",
+		"switchy_teleport": "*",
 		"switchy-status": "*",
 		"switchykit": "*"
 	},
