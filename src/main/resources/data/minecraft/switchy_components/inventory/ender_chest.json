@@ -5,6 +5,5 @@
 	"preview": "inventory",
 	"prefix": "👁 ",
 	"emptyChecker": "inventory",
-	"group": "inventory",
 	"default": []
 }
