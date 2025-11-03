@@ -123,24 +123,28 @@ public class SwitchyCommands {
 
 	public record PlayerImportData(@Nullable String name, List<SwitchyPlayerData.ProfileImportData> members) {}
 
-	private static int importProfiles(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String url) {
+	private static int importProfiles(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String url, boolean allowNew) {
 		int beforeSize = data.size();
 		PlayerImportData importData;
+		int updated = 0;
 		try {
 			importData = new Gson().fromJson(new InputStreamReader(new URL(url).openStream()), PlayerImportData.class);
-			data.importProfiles(importData.members(), player, importData.name());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		updated = data.importProfiles(importData.members(), player, importData.name(), allowNew);
 		feedback.accept(prefix()
-			.append(Text.literal("imported ").formatted(Formatting.GRAY))
-			.append(Text.literal("%s".formatted(data.size() - beforeSize)).formatted(Formatting.WHITE))
-			.append(Text.literal(" new and updated ").formatted(Formatting.GRAY))
-			.append(Text.literal("%s".formatted(importData.members().size() - (data.size() - beforeSize))).formatted(Formatting.WHITE))
+			.append(allowNew ? Text.empty()
+				.append(Text.literal("imported ").formatted(Formatting.GRAY))
+				.append(Text.literal("%s".formatted(data.size() - beforeSize)).formatted(Formatting.WHITE))
+				.append(Text.literal(" new and ").formatted(Formatting.GRAY)) : Text.empty()
+			)
+			.append(Text.literal("updated ").formatted(Formatting.GRAY))
+			.append(Text.literal("%s".formatted(updated - (data.size() - beforeSize))).formatted(Formatting.WHITE))
 			.append(Text.literal(" existing profiles. ").formatted(Formatting.GRAY))
 			.append(clickable("list", "/switchy", true))
 		);
-		return data.size();
+		return data.size() - beforeSize;
 	}
 
 
@@ -240,9 +244,6 @@ public class SwitchyCommands {
 		} catch (ProfileCurrentException e) {
 			feedback.accept(prefix().append(Text.literal("can't delete current profile!").formatted(Formatting.YELLOW)));
 			return 0;
-		} catch (ProfileMissingException e) {
-			feedback.accept(prefix().append(Text.literal("profile doesn't exist!").formatted(Formatting.YELLOW)));
-			return 0;
 		} catch (ProfilePreciousException e) {
 			feedback.accept(prefix()
 				.append(Text.literal("profile ").formatted(Formatting.YELLOW))
@@ -331,7 +332,12 @@ public class SwitchyCommands {
 				)
 				.then(CommandManager.literal("import")
 					.then(CommandManager.argument("url", StringArgumentType.greedyString())
-						.executes(c -> execute(c, (i, p, d, f) -> importProfiles(p, d, f, c.getArgument("url", String.class))))
+						.executes(c -> execute(c, (i, p, d, f) -> importProfiles(p, d, f, c.getArgument("url", String.class), true)))
+					)
+				)
+				.then(CommandManager.literal("update")
+					.then(CommandManager.argument("url", StringArgumentType.greedyString())
+						.executes(c -> execute(c, (i, p, d, f) -> importProfiles(p, d, f, c.getArgument("url", String.class), false)))
 					)
 				)
 				.then(CommandManager.literal("components")
@@ -397,6 +403,9 @@ public class SwitchyCommands {
 		SwitchyPlayerData data = SwitchyPlayerData.of(player);
 		try {
 			return executor.execute(context.getInput(), player, data, t -> context.getSource().sendFeedback(() -> t, false));
+		} catch (ProfileMissingException e) {
+			context.getSource().sendFeedback(() -> prefix().append(Text.literal("profile doesn't exist!").formatted(Formatting.YELLOW)), false);
+			return null;
 		} catch (Exception e) {
 			if (feedback) context.getSource().sendFeedback(() -> prefix().append(Text.literal("Command \"/%s...\" failed! Check log for details.".formatted(context.getInput().substring(0, Math.min(context.getInput().length(), 20)))).formatted(Formatting.RED)), false);
 			if (feedback) Switchy.LOGGER.error("[Switchy] Error while executing command: {}", context.getInput(), e);

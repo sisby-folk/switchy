@@ -258,9 +258,12 @@ public class SwitchyPlayerData {
 
 	private static final Pattern PARENTHESES = Pattern.compile("([<(\\[][^>)\\]]*[)>\\]])");
 
-	public void importProfiles(List<ProfileImportData> profileData, ServerPlayerEntity player, @Nullable String name) {
+	public int importProfiles(List<ProfileImportData> profileData, ServerPlayerEntity player, @Nullable String name, boolean allowNew) {
+		int updated = 0;
 		for (ProfileImportData data : profileData) {
 			String id = data.name().toLowerCase();
+			if (!allowNew && !keySet().contains(id)) continue;
+			updated++;
 			SwitchyProfile profile = getOrCreateProfile(id, player);
 			StringBuilder bracketed = new StringBuilder();
 			if (data.display_name() != null) { // discord is better with long names. let's put it in the bio instead
@@ -277,6 +280,7 @@ public class SwitchyPlayerData {
 				Objects.requireNonNullElse(data.display_name(), id).replace(bracketed, "")).trim()
 			);
 		}
+		return updated;
 	}
 
 	private NbtCompound updateFromPlayer(SwitchyProfile profile, ServerPlayerEntity player) throws NbtException {
