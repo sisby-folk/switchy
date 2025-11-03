@@ -300,7 +300,7 @@ public class SwitchyCommands {
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registries, CommandManager.RegistrationEnvironment environment) {
 		RequiredArgumentBuilder<ServerCommandSource, String> editBuilder = profile(true);
-		for (SwitchyComponentType<?> type : SwitchyComponentTypes.instance().values()) {
+		for (SwitchyComponentType<?> type : SwitchyComponentTypes.getStatic().values()) {
 			type.tryCreateEditor(arg -> editBuilder.then(CommandManager.literal(type.id().toString().replace("switchy:", "")).then(arg)));
 		}
 

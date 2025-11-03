@@ -1,18 +1,12 @@
 package dev.sisby.switchy.data;
 
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.compat.StyledNicknamesCompat;
+import dev.sisby.switchy.util.DispatchMapCodec;
 import dev.sisby.switchy.util.FormatUtils;
 import dev.sisby.switchy.util.SwitchyCodecs;
 import dev.sisby.switchy.util.TypeRegistry;
@@ -24,34 +18,30 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.UnaryOperator;
-import java.util.stream.Stream;
 
 @SuppressWarnings("unused")
 public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>> {
-	private static final SwitchyComponentTypes INSTANCE = new SwitchyComponentTypes();
+	private static SwitchyComponentTypes INSTANCE = null;
+	private static final SwitchyComponentTypes STATIC = new SwitchyComponentTypes();
+	public final Codec<Set<SwitchyComponentType<?>>> SET_CODEC = Codec.list(codec()).xmap(LinkedHashSet::new, ArrayList::new);
+	public final Codec<Map<SwitchyComponentType<?>, Object>> TYPE_TO_VALUE_MAP_CODEC = DispatchMapCodec.of(codec(), t -> (Codec<Object>) t.codec());
 
 	public static final Map<Identifier, Codec<?>> CODECS = new HashMap<>(Map.of(
 		new Identifier("nbt"), SwitchyCodecs.NBT,
@@ -86,12 +76,6 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	));
 	private static final Identifier ORIGINS_POWERS = new Identifier("origins", "powers");
 
-	public record EditableComponentType(boolean enabled, String codec, String path, String preview, String prefix, String editor, String emptyChecker, String group, @SerializedName("default") JsonElement defaultValue) {
-	}
-
-	private static final java.lang.reflect.Type EDITABLE_COMPONENT_TYPE = new TypeToken<EditableComponentType>() {
-	}.getType();
-
 	public static final Identifier NAME_ID = Switchy.id("name");
 	public static final Identifier DIMENSION = new Identifier("minecraft", "location/dimension");
 	public static final Identifier FOOD = new Identifier("minecraft", "hunger/food");
@@ -113,39 +97,12 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	public static final Identifier TAILOR_SKIN = new Identifier("fabrictailor", "skin");
 	public static final Identifier TRINKETS_SLOTS = new Identifier("trinkets", "slots");
 
-	public static final SwitchyComponentType<String> NAME = register(NAME_ID, Codec.STRING, builder -> {
+	public static final SwitchyComponentType<String> NAME = registerStatic(NAME_ID, Codec.STRING, builder -> {
 		builder = builder
 			.textProvider(s -> s != null ? Text.literal(s) : Text.empty())
 			.argumentEditor(e -> CommandManager.argument("name", StringArgumentType.greedyString()).executes(c -> e.execute(c, c.getArgument("name", String.class))));
 		return FabricLoader.getInstance().isModLoaded("styled-nicknames") ? StyledNicknamesCompat.nicknameComponent(builder) : builder;
 	});
-
-	public static final Map<Identifier, EditableComponentType> DEFAULT_COMPONENTS = Map.ofEntries(
-		// minecraft
-		Map.entry(DIMENSION, new EditableComponentType(true, "identifier", "Dimension", "identifier", null, null, null, "location",  new JsonPrimitive("overworld"))),
-		Map.entry(FOOD, new EditableComponentType(true, "float", "foodLevel", "halves", "🍖x", null, null, "hunger", new JsonPrimitive(20))),
-		Map.entry(SATURATION, new EditableComponentType(true, "float", "foodSaturationLevel", "halves", "+🍖x", null, null, "hunger", new JsonPrimitive(5.0F))),
-		Map.entry(EXHAUSTION, new EditableComponentType(true, "float", "foodExhaustionLevel", "halves", "-💨x", null, null, "hunger", new JsonPrimitive(0.0F))),
-		Map.entry(HEALTH, new EditableComponentType(true, "float", "Health", "halves", "❤x", null, null, null, new JsonPrimitive(20.0F))),
-		Map.entry(XP, new EditableComponentType(true, "float", "XpP", "percent", null, null, null, "xp", new JsonPrimitive(0.0F))),
-		Map.entry(LEVEL, new EditableComponentType(true, "int", "XpLevel", null, "Lv.", null, null, "xp", new JsonPrimitive(0))),
-		Map.entry(POS, new EditableComponentType(true, "vec3d", "Pos", "vec3d", null, null, null, "location", new JsonPrimitive("$spawn_pos"))),
-		Map.entry(SPAWN_X, new EditableComponentType(true, "int", "SpawnX", null, "X:", null, null, "spawn", null)),
-		Map.entry(SPAWN_Y, new EditableComponentType(true, "int", "SpawnY", null, "Y:", null, null, "spawn", null)),
-		Map.entry(SPAWN_Z, new EditableComponentType(true, "int", "SpawnZ", null, "Z:", null, null, "spawn", null)),
-		Map.entry(SPAWN_FORCED, new EditableComponentType(true, "int", "SpawnForced", null, "🛏:", null, null, "spawn", null)),
-		Map.entry(SPAWN_ANGLE, new EditableComponentType(true, "float", "SpawnAngle", "rounded", "°", null, null, "spawn", null)),
-		Map.entry(SPAWN_DIMENSION, new EditableComponentType(true, "identifier", "SpawnDimension", "identifier", null, null, null, "spawn", null)),
-		Map.entry(INVENTORY, new EditableComponentType(true, "inventory", "Inventory", "inventory", "🧰 ", null, "inventory", "inventory", new JsonArray())),
-		Map.entry(ENDER_CHEST, new EditableComponentType(true, "inventory", "EnderItems", "inventory", "👁 ", null, "inventory", "inventory", new JsonArray())),
-		// origins
-		Map.entry(ORIGINS_ORIGIN, new EditableComponentType(true, "nbt", "cardinal_components.origins:origin", "nbt", null, null, null, "origins:origin", null)),
-		Map.entry(ORIGINS_POWERS, new EditableComponentType(true, "nbt", "cardinal_components.apoli:powers.Powers", "nbt", null, null, null, "origins:origin", null)),
-		// fabric tailor
-		Map.entry(TAILOR_SKIN, new EditableComponentType(true, "nbt", "fabrictailor:skin_data", "nbt", null, null, null, null, null)),
-		// trinkets
-		Map.entry(TRINKETS_SLOTS, new EditableComponentType(true, "nbt", "cardinal_components.trinkets:trinkets", "nbt", "💍 ", null, null, "inventory", null))
-	);
 
 	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -158,75 +115,24 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 		return grouped;
 	}
 
-	public static void init() {
-		File componentsFolder = FabricLoader.getInstance().getConfigDir().resolve(Switchy.ID).resolve("components").toFile();
-		try {
-			// Create missing defaults
-			for (Map.Entry<Identifier, EditableComponentType> entry : DEFAULT_COMPONENTS.entrySet()) {
-				Identifier key = entry.getKey();
-				EditableComponentType config = entry.getValue();
-				if (!FabricLoader.getInstance().isModLoaded(key.getNamespace())) continue;
-				File componentFile = componentsFolder.toPath().resolve(key.toString().replace(":", "/") + ".json").toFile();
-				if (!componentFile.exists()) {
-					componentFile.getParentFile().mkdirs();
-					try (Writer writer = new FileWriter(componentFile)) {
-						GSON.toJson(config, writer);
-					}
-				}
-			}
-			try (Stream<Path> paths = Files.walk(componentsFolder.toPath())) {
-				for (Path path : paths.toList()) {
-					for (String fileName : Objects.requireNonNullElse(path.toFile().list((dir, name) -> name.endsWith(".json")), new String[]{})) {
-						File file = path.resolve(fileName).toFile();
-						Identifier id = new Identifier(componentsFolder.toPath().relativize(file.toPath()).toString().replace("\\", "/").replace(".json", "").replaceFirst("/", ":"));
-						if (!FabricLoader.getInstance().isModLoaded(id.getNamespace())) {
-							Switchy.LOGGER.warn("[Switchy] Skipping loading enabled module {} as mod {} is not loaded", id, id.getNamespace());
-							continue;
-						}
-						EditableComponentType config = GSON.fromJson(new JsonReader(new FileReader(file)), EDITABLE_COMPONENT_TYPE);
-						if (!config.enabled) continue;
-						Codec<?> codec = CODECS.get(config.codec != null && CODECS.containsKey(Identifier.tryParse(config.codec)) ? Identifier.tryParse(config.codec) : Identifier.tryParse("nbt"));
-						registerConfig(codec, id, config);
-					}
-				}
-			}
-		} catch (IOException e) {
-			// do something
-			throw new RuntimeException(e);
-		}
-		Switchy.LOGGER.info("[Switchy] Initialized {} component types: {}", INSTANCE.keys().size(), INSTANCE.keys().stream().sorted().toList());
+	public static <T> SwitchyComponentType<T> registerStatic(Identifier id, Codec<T> codec, UnaryOperator<SwitchyComponentType.Builder<T>> operations) {
+		return STATIC.register(id, i -> operations.apply(SwitchyComponentType.builder(i, codec)).build());
 	}
 
-	public static <T> void registerConfig(Codec<T> codec, Identifier id, EditableComponentType config) {
-		SwitchyComponentType.TextProvider<T> provider = config.preview == null ? null :  (SwitchyComponentType.TextProvider<T>) TEXT_PROVIDERS.get(Identifier.tryParse(config.preview));
-		SwitchyComponentType.ArgumentEditor<T> editor = config.editor == null ? null : (SwitchyComponentType.ArgumentEditor<T>) ARGUMENT_EDITORS.get(Identifier.tryParse(config.editor));
-		SwitchyComponentType.EmptyChecker<T> checker = config.emptyChecker == null ? null : (SwitchyComponentType.EmptyChecker<T>) EMPTY_CHECKERS.get(Identifier.tryParse(config.emptyChecker));
-		SwitchyComponentType.Initializer<T> initializer;
-		if (config.defaultValue == null) {
-			initializer = (nbt, player, pId) -> null;
-		} else if (config.defaultValue.toString().equals("\"$copy\"")) { // lazy
-			initializer = null;
-		} else if (config.defaultValue.isJsonPrimitive() && config.defaultValue.getAsJsonPrimitive().isString() && config.defaultValue.getAsJsonPrimitive().getAsString().startsWith("$")) {
-			initializer = (SwitchyComponentType.Initializer<T>) INITIALIZERS.get(Identifier.tryParse(config.defaultValue.getAsString().substring(1)));
-		} else {
-			T defaultValue = codec.parse(JsonOps.INSTANCE, config.defaultValue).getOrThrow(false, Switchy.LOGGER::error);
-			initializer = (nbt, player, pId) -> defaultValue;
-		}
-		register(id, codec, b -> b
-			.nbtSwitcher(config.path)
-			.textProvider(v -> Text.empty().append(Text.literal(Objects.requireNonNullElse(config.prefix, "")).formatted(Formatting.GRAY)).append(provider != null ? provider.toText(v) : Text.of(Objects.toString(v))))
-			.argumentEditor(editor)
-			.emptyChecker(checker)
-			.group(config.group == null ? null : Identifier.tryParse(config.group))
-			.initializer(initializer) // overrides switcher
-		);
+	public static void setInstance(SwitchyComponentTypes types) {
+		INSTANCE = types;
 	}
 
-	public static <T> SwitchyComponentType<T> register(Identifier id, Codec<T> codec, UnaryOperator<SwitchyComponentType.Builder<T>> operations) {
-		return instance().register(id, i -> operations.apply(SwitchyComponentType.builder(i, codec)).build());
+	public <T> SwitchyComponentType<T> register(Identifier id, Codec<T> codec, UnaryOperator<SwitchyComponentType.Builder<T>> operations) {
+		return register(id, i -> operations.apply(SwitchyComponentType.builder(i, codec)).build());
 	}
 
+	@Nullable
 	public static SwitchyComponentTypes instance() {
 		return INSTANCE;
+	}
+
+	public static SwitchyComponentTypes getStatic() {
+		return STATIC;
 	}
 }

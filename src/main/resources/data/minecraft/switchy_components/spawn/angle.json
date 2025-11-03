@@ -1,0 +1,8 @@
+{
+	"enabled": true,
+	"codec": "float",
+	"path": "SpawnAngle",
+	"preview": "rounded",
+	"prefix": "°",
+	"group": "spawn"
+}

@@ -10,7 +10,7 @@ Serverside player profiles for hotseat multiplayer, adventure maps, and plural s
 
 **Switchy** allows players to create **profiles**, which have their own partial player data, and can be switched between.
 
-Data components are player-toggleable and config-driven, including:
+Profile data is defined by player-toggleable _components_, including:
 - Vanilla health, hunger, inventory, ender chest, location, spawn point, and xp
 - [Fabric Tailor](https://modrinth.com/mod/fabrictailor) skins
 - [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) nicknames
@@ -29,12 +29,10 @@ Note that on **1.20 and below**, switching profiles requires manually reconnecti
 
 ## Compatibility
 
-Components are defined by json files in `config/switchy/components`.
-
-Mod presence is checked by file location, so `components/origins/origin.json` creates an `origins:origin` component if `origins` is loaded.
+Components are fully data-driven using a mix-and-match system of codecs, previewers, etc.
 
 ```json5
-// config/components/minecraft/inventory/ender_chest.json (minecraft:inventory/ender_chest)
+// data/minecraft/switchy_components/inventory/ender_chest.json (minecraft:inventory/ender_chest)
 {
   "enabled": true, // whether to load the component at all. use this instead of deleting default files, as they'll regenerate.
   "codec": "inventory", // which codec (from the registry in SwitchyComponentTypes) to use to deserialize the data. defaults to "nbt" (passthrough)

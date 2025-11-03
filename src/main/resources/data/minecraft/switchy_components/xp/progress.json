@@ -1,0 +1,8 @@
+{
+	"enabled": true,
+	"codec": "float",
+	"path": "XpP",
+	"preview": "percent",
+	"group": "xp",
+	"default": 0.0
+}

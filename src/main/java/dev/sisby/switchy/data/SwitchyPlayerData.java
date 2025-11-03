@@ -12,7 +12,6 @@ import dev.sisby.switchy.exception.ProfileMissingException;
 import dev.sisby.switchy.exception.ProfilePreciousException;
 import dev.sisby.switchy.exception.ProfileExistsException;
 import dev.sisby.switchy.util.DispatchMapCodec;
-import dev.sisby.switchy.util.SwitchyCodecs;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
@@ -45,12 +44,14 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class SwitchyPlayerData {
-	public static final Codec<SwitchyPlayerData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-		Codec.STRING.fieldOf("current").forGetter(SwitchyPlayerData::current),
-		Codec.STRING.fieldOf("previous").forGetter(SwitchyPlayerData::previous),
-		SwitchyCodecs.COMPONENT_TYPE_SET_CODEC.fieldOf("componentTypes").forGetter(p -> p.componentTypes),
-		DispatchMapCodec.of(Codecs.NON_EMPTY_STRING, SwitchyProfile::codec).fieldOf("profiles").xmap(a -> (Map<String, SwitchyProfile>) new HashMap<>(a), b -> b).forGetter(p -> p.profiles)
-	).apply(instance, SwitchyPlayerData::new));
+	public static Codec<SwitchyPlayerData> codec(SwitchyComponentTypes types) {
+		return RecordCodecBuilder.create(instance -> instance.group(
+			Codec.STRING.fieldOf("current").forGetter(SwitchyPlayerData::current),
+			Codec.STRING.fieldOf("previous").forGetter(SwitchyPlayerData::previous),
+			types.SET_CODEC.fieldOf("componentTypes").forGetter(p -> p.componentTypes),
+			DispatchMapCodec.of(Codecs.NON_EMPTY_STRING, id -> SwitchyProfile.codec(types, id)).fieldOf("profiles").xmap(a -> (Map<String, SwitchyProfile>) new HashMap<>(a), b -> b).forGetter(p -> p.profiles)
+		).apply(instance, SwitchyPlayerData::new));
+	}
 
 	private String current;
 	private String previous;
@@ -334,7 +335,7 @@ public class SwitchyPlayerData {
 
 	public void writeNbt(NbtCompound nbt) {
 		if (size() > 1) {
-			nbt.put(Switchy.ID, SwitchyPlayerData.CODEC.encodeStart(NbtOps.INSTANCE, this).getOrThrow(true, Switchy.LOGGER::error));
+			nbt.put(Switchy.ID, SwitchyPlayerData.codec(SwitchyComponentTypes.instance()).encodeStart(NbtOps.INSTANCE, this).getOrThrow(true, Switchy.LOGGER::error));
 		}
 	}
 

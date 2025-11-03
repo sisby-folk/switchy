@@ -1,0 +1,7 @@
+{
+	"enabled": true,
+	"codec": "int",
+	"path": "SpawnZ",
+	"prefix": "Z:",
+	"group": "spawn"
+}

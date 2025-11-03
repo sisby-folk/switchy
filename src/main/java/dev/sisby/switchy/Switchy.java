@@ -1,16 +1,14 @@
 package dev.sisby.switchy;
 
-import dev.sisby.switchy.data.SwitchyComponentTypes;
-import dev.sisby.switchy.data.SwitchyPlayerData;
+import dev.sisby.switchy.data.ComponentTypeLoader;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtOps;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 public class Switchy implements ModInitializer {
 	public static final String ID = "switchy";
@@ -23,8 +21,8 @@ public class Switchy implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		LOGGER.info("[Switchy] Twitcha-twitch! A-twitcha-twitch!");
-		SwitchyComponentTypes.init();
 		ServerPlayConnectionEvents.JOIN.register(SwitchyCommands::greet);
 		CommandRegistrationCallback.EVENT.register(SwitchyCommands::register);
+		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new ComponentTypeLoader());
 	}
 }

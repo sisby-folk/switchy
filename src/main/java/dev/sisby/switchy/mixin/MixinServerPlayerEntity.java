@@ -1,6 +1,7 @@
 package dev.sisby.switchy.mixin;
 
 import dev.sisby.switchy.Switchy;
+import dev.sisby.switchy.data.SwitchyComponentTypes;
 import dev.sisby.switchy.data.SwitchyPlayerData;
 import dev.sisby.switchy.duck.SwitchyPlayer;
 import net.minecraft.nbt.NbtCompound;
@@ -50,7 +51,7 @@ public class MixinServerPlayerEntity implements SwitchyPlayer {
 	public void readPlayerData(NbtCompound nbt, CallbackInfo ci) {
 		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
 		if (nbt.contains(Switchy.ID)) {
-			switchy$playerData = SwitchyPlayerData.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound(Switchy.ID)).getOrThrow(true, Switchy.LOGGER::error);
+			switchy$playerData = SwitchyPlayerData.codec(SwitchyComponentTypes.instance()).parse(NbtOps.INSTANCE, nbt.getCompound(Switchy.ID)).getOrThrow(true, Switchy.LOGGER::error);
 			switchy$playerData.validate(self, nbt);
 		} else if (nbt.contains("switchy:presets")) {
 			switchy$playerData = SwitchyPlayerData.create(self, nbt);

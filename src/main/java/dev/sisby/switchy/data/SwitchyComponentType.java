@@ -10,7 +10,6 @@ import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.SwitchyCommands;
 import dev.sisby.switchy.exception.ComponentFailedInitializeException;
 import dev.sisby.switchy.exception.NbtException;
-import dev.sisby.switchy.util.DispatchMapCodec;
 import dev.sisby.switchy.util.TypeRegistry;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.nbt.NbtCompound;
@@ -25,15 +24,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public interface SwitchyComponentType<T> extends TypeRegistry.Type {
-	Codec<Map<SwitchyComponentType<?>, Object>> TYPE_TO_VALUE_MAP_CODEC = DispatchMapCodec.of(SwitchyComponentTypes.instance().codec(), t -> (Codec<Object>) t.codec());
-
 	static <T> SwitchyComponentType.Builder<T> builder(@NotNull Identifier id, @NotNull Codec<T> codec) {
 		return new SwitchyComponentType.Builder<>(id, codec);
 	}

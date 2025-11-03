@@ -1,0 +1,10 @@
+{
+	"enabled": true,
+	"codec": "inventory",
+	"path": "EnderItems",
+	"preview": "inventory",
+	"prefix": "👁 ",
+	"emptyChecker": "inventory",
+	"group": "inventory",
+	"default": []
+}

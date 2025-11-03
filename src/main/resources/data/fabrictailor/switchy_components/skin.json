@@ -1,0 +1,14 @@
+{
+	"fabric:load_conditions": [
+		{
+			"condition": "fabric:all_mods_loaded",
+			"values": [
+				"fabrictailor"
+			]
+		}
+	],
+	"enabled": true,
+	"codec": "nbt",
+	"path": "fabrictailor:skin_data",
+	"preview": "nbt"
+}

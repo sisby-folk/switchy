@@ -10,8 +10,8 @@ import java.util.Collection;
 import java.util.List;
 
 public record SwitchyProfile(String id, SwitchyComponentMap components) implements SwitchyComponentHolder<SwitchyProfile> {
-	public static Codec<SwitchyProfile> codec(String id) {
-		return SwitchyComponentMap.CODEC.xmap(m -> new SwitchyProfile(id, m), SwitchyProfile::components);
+	public static Codec<SwitchyProfile> codec(SwitchyComponentTypes types, String id) {
+		return SwitchyComponentMap.codec(types).xmap(m -> new SwitchyProfile(id, m), SwitchyProfile::components);
 	}
 
 	@Override

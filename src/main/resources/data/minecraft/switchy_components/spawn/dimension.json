@@ -1,0 +1,7 @@
+{
+	"enabled": true,
+	"codec": "identifier",
+	"path": "SpawnDimension",
+	"preview": "identifier",
+	"group": "spawn"
+}

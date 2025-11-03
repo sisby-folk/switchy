@@ -1,0 +1,9 @@
+{
+	"enabled": true,
+	"codec": "float",
+	"path": "foodSaturationLevel",
+	"preview": "halves",
+	"prefix": "+🍖x",
+	"group": "hunger",
+	"default": 5.0
+}

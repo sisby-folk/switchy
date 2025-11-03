@@ -17,7 +17,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SwitchyComponentMap {
-	public static final Codec<SwitchyComponentMap> CODEC = SwitchyComponentType.TYPE_TO_VALUE_MAP_CODEC.flatComapMap(SwitchyComponentMap::create, map -> DataResult.success(new Reference2ObjectArrayMap<>(map.map)));
+	public static Codec<SwitchyComponentMap> codec(SwitchyComponentTypes types) {
+		return types.TYPE_TO_VALUE_MAP_CODEC.flatComapMap(SwitchyComponentMap::create, map -> DataResult.success(new Reference2ObjectArrayMap<>(map.map)));
+	}
+
 	private final Reference2ObjectMap<SwitchyComponentType<?>, Object> map;
 
 	public static SwitchyComponentMap empty() {

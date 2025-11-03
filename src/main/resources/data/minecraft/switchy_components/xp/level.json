@@ -1,0 +1,8 @@
+{
+	"enabled": true,
+	"codec": "int",
+	"path": "XpLevel",
+	"prefix": "Lv.",
+	"group": "xp",
+	"default": 0
+}

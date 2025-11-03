@@ -1,0 +1,8 @@
+{
+	"enabled": true,
+	"codec": "vec3d",
+	"path": "Pos",
+	"preview": "vec3d",
+	"group": "location",
+	"default": "$spawn_pos"
+}

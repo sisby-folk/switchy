@@ -1,0 +1,8 @@
+{
+	"enabled": true,
+	"codec": "identifier",
+	"path": "Dimension",
+	"preview": "identifier",
+	"group": "location",
+	"default": "overworld"
+}

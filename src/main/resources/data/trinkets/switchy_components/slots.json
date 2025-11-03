@@ -1,0 +1,16 @@
+{
+	"fabric:load_conditions": [
+		{
+			"condition": "fabric:all_mods_loaded",
+			"values": [
+				"trinkets"
+			]
+		}
+	],
+	"enabled": true,
+	"codec": "nbt",
+	"path": "cardinal_components.trinkets:trinkets",
+	"preview": "nbt",
+	"prefix": "💍 ",
+	"group": "inventory"
+}

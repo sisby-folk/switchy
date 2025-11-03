@@ -9,8 +9,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.sisby.switchy.data.SwitchyComponentType;
-import dev.sisby.switchy.data.SwitchyComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -30,7 +28,6 @@ import java.util.stream.Stream;
 
 public interface SwitchyCodecs {
 	Codec<Set<Identifier>> IDENTIFIER_SET_CODEC = Codec.list(Identifier.CODEC).xmap(LinkedHashSet::new, ArrayList::new);
-	Codec<Set<SwitchyComponentType<?>>> COMPONENT_TYPE_SET_CODEC = Codec.list(SwitchyComponentTypes.instance().codec()).xmap(LinkedHashSet::new, ArrayList::new);
 	Codec<NbtElement> NBT = Codec.PASSTHROUGH.comapFlatMap(dynamic -> DataResult.success(dynamic.convert(NbtOps.INSTANCE).getValue()), nbt -> new Dynamic<>(NbtOps.INSTANCE, nbt));
 	MapCodec<ItemStack> ITEM_STACK_MAP_CODEC = new RecursiveMapCodec<>(
 		codec -> RecordCodecBuilder.mapCodec(
