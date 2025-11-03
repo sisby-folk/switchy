@@ -1,0 +1,6 @@
+{
+	"enabled": true,
+	"codec": "nbt",
+	"path": "ActiveEffects",
+	"preview": "nbt"
+}

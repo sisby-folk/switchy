@@ -1,0 +1,9 @@
+{
+	"enabled": true,
+	"codec": "float",
+	"path": "Rotation[0]",
+	"preview": "rounded",
+	"prefix": "°",
+	"group": "location",
+	"default": 0
+}

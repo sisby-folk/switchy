@@ -74,26 +74,29 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	public static final Map<Identifier, SwitchyComponentType.Initializer<?>> INITIALIZERS = new HashMap<>(Map.of(
 		new Identifier("spawn_pos"), (nbt, player, id) -> player.getServer().getOverworld().getSpawnPos().toCenterPos()
 	));
-	private static final Identifier ORIGINS_POWERS = new Identifier("origins", "powers");
 
 	public static final Identifier NAME_ID = Switchy.id("name");
 	public static final Identifier DIMENSION = new Identifier("minecraft", "location/dimension");
-	public static final Identifier FOOD = new Identifier("minecraft", "hunger/food");
-	public static final Identifier SATURATION = new Identifier("minecraft", "hunger/saturation");
-	public static final Identifier EXHAUSTION = new Identifier("minecraft", "hunger/exhaustion");
-	public static final Identifier HEALTH = new Identifier("minecraft", "health");
-	public static final Identifier XP = new Identifier("minecraft", "xp/progress");
-	public static final Identifier LEVEL = new Identifier("minecraft", "xp/level");
 	public static final Identifier POS = new Identifier("minecraft", "location/pos");
+	public static final Identifier YAW = new Identifier("minecraft", "location/yaw");
+	public static final Identifier PITCH = new Identifier("minecraft", "location/pitch");
 	public static final Identifier SPAWN_X = new Identifier("minecraft", "spawn/x");
 	public static final Identifier SPAWN_Y = new Identifier("minecraft", "spawn/y");
 	public static final Identifier SPAWN_Z = new Identifier("minecraft", "spawn/z");
 	public static final Identifier SPAWN_FORCED = new Identifier("minecraft", "spawn/forced");
 	public static final Identifier SPAWN_ANGLE = new Identifier("minecraft", "spawn/angle");
 	public static final Identifier SPAWN_DIMENSION = new Identifier("minecraft", "spawn/dimension");
+	public static final Identifier EFFECTS = new Identifier("minecraft", "effects");
+	public static final Identifier HEALTH = new Identifier("minecraft", "health");
+	public static final Identifier FOOD = new Identifier("minecraft", "hunger/food");
+	public static final Identifier SATURATION = new Identifier("minecraft", "hunger/saturation");
+	public static final Identifier EXHAUSTION = new Identifier("minecraft", "hunger/exhaustion");
+	public static final Identifier XP = new Identifier("minecraft", "xp/progress");
+	public static final Identifier LEVEL = new Identifier("minecraft", "xp/level");
 	public static final Identifier INVENTORY = new Identifier("minecraft", "inventory/inventory");
 	public static final Identifier ENDER_CHEST = new Identifier("minecraft", "inventory/ender_chest");
 	public static final Identifier ORIGINS_ORIGIN = new Identifier("origins", "origin");
+	public static final Identifier ORIGINS_POWERS = new Identifier("origins", "powers");
 	public static final Identifier TAILOR_SKIN = new Identifier("fabrictailor", "skin");
 	public static final Identifier TRINKETS_SLOTS = new Identifier("trinkets", "slots");
 
