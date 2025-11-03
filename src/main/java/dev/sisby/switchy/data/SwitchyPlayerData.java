@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class SwitchyPlayerData {
-	public static Codec<SwitchyPlayerData> codec(SwitchyComponentTypes types) {
+	private static Codec<SwitchyPlayerData> codec(SwitchyComponentTypes types) {
 		return RecordCodecBuilder.create(instance -> instance.group(
 			Codec.STRING.fieldOf("current").forGetter(SwitchyPlayerData::current),
 			Codec.STRING.fieldOf("previous").forGetter(SwitchyPlayerData::previous),
@@ -337,9 +337,19 @@ public class SwitchyPlayerData {
 		);
 	}
 
-	public void writeNbt(NbtCompound nbt) {
+	public static SwitchyPlayerData fromNbt(NbtCompound playerNbt) {
+		if (SwitchyComponentTypes.instance() == null) {
+			throw new IllegalStateException("Can't load switchy data while the types aren't loaded!");
+		}
+		return SwitchyPlayerData.codec(SwitchyComponentTypes.instance()).parse(NbtOps.INSTANCE, playerNbt.getCompound(Switchy.ID)).getOrThrow(true, Switchy.LOGGER::error);
+	}
+
+	public void writeNbt(NbtCompound playerNbt) {
+		if (SwitchyComponentTypes.instance() == null) {
+			throw new IllegalStateException("Can't save switchy data while the types aren't loaded!");
+		}
 		if (size() > 1) {
-			nbt.put(Switchy.ID, SwitchyPlayerData.codec(SwitchyComponentTypes.instance()).encodeStart(NbtOps.INSTANCE, this).getOrThrow(true, Switchy.LOGGER::error));
+			playerNbt.put(Switchy.ID, SwitchyPlayerData.codec(SwitchyComponentTypes.instance()).encodeStart(NbtOps.INSTANCE, this).getOrThrow(true, Switchy.LOGGER::error));
 		}
 	}
 

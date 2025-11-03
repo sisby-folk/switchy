@@ -7,6 +7,10 @@ import net.minecraft.text.Text;
 public interface SwitchyPlayer {
 	NbtCompound switchy$hotSwapData();
 
+	void switchy$startReload();
+
+	void switchy$finishReload();
+
 	void switchy$hotSwap(NbtCompound nbt, Text reason);
 
 	SwitchyPlayerData switchy$getOrCreatePlayerData();
