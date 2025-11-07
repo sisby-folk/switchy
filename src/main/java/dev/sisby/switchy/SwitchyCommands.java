@@ -38,8 +38,10 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -119,6 +121,31 @@ public class SwitchyCommands {
 			);
 		});
 		return data.componentSet().size();
+	}
+
+	private static final Map<String, String> COMMANDS = new TreeMap<>(Map.of(
+		"/switchy", "switch profiles",
+		"/switchy components", "configure components",
+		"/switchy delete ", "delete a profile",
+		"/switchy import ", "add profiles from PK",
+		"/switchy update ", "update profiles from PK"
+	));
+
+	private static int help(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
+		feedback.accept(prefix()
+			.append(Text.literal("Switchy provides ").formatted(Formatting.GRAY))
+			.append(Text.literal("%s".formatted(COMMANDS.size())).formatted(Formatting.WHITE))
+			.append(Text.literal(" top-level commands:").formatted(Formatting.GRAY))
+		);
+		for (String command : COMMANDS.keySet()) {
+			String description = COMMANDS.get(command);
+			feedback.accept(indent()
+				.append(clickable(command.trim(), command, !command.endsWith(" "), Formatting.AQUA, "", ""))
+				.append(Text.literal(" - ").formatted(Formatting.GRAY))
+				.append(Text.literal(description).formatted(Formatting.WHITE))
+			);
+		}
+		return 1;
 	}
 
 	public record PlayerImportData(@Nullable String name, List<SwitchyPlayerData.ProfileImportData> members) {}
@@ -353,6 +380,9 @@ public class SwitchyCommands {
 					)
 					.executes(c -> execute(c, SwitchyCommands::components))
 				)
+				.then(CommandManager.literal("help")
+					.executes(c -> execute(c, SwitchyCommands::help))
+				)
 				.executes(c -> execute(c, SwitchyCommands::list))
 		);
 	}
@@ -380,15 +410,19 @@ public class SwitchyCommands {
 		return Text.empty().append(Text.literal("|| ").formatted(Formatting.DARK_PURPLE));
 	}
 
-	public static MutableText clickable(String name, String command, boolean instant) {
+	public static MutableText clickable(String name, String command, boolean instant, Formatting formatting, String prefix, String suffix) {
 		return Text.empty()
-			.append(Text.literal("<").formatted(Formatting.GRAY))
+			.append(Text.literal(prefix).formatted(Formatting.GRAY))
 			.append(Text.literal(name).setStyle(Style.EMPTY
-				.withFormatting(Formatting.AQUA)
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(command + (instant ? "" : "...")).formatted(Formatting.AQUA)))
+				.withFormatting(formatting)
+				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(command + (instant ? "" : "...")).formatted(formatting)))
 				.withClickEvent(new ClickEvent(instant ? ClickEvent.Action.RUN_COMMAND : ClickEvent.Action.SUGGEST_COMMAND, command))
 			))
-			.append(Text.literal(">").formatted(Formatting.GRAY));
+			.append(Text.literal(suffix).formatted(Formatting.GRAY));
+	}
+
+	public static MutableText clickable(String name, String command, boolean instant) {
+		return clickable(name, command, instant, Formatting.AQUA, "<", ">");
 	}
 
 	public static <T> T map(CommandContext<ServerCommandSource> context, SurveyorCommandExecutor<T> executor, boolean feedback) {
