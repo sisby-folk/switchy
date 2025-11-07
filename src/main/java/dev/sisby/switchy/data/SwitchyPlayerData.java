@@ -313,7 +313,7 @@ public class SwitchyPlayerData {
 		}
 	}
 
-	public record ProfileImportData(String name, @Nullable String display_name, @Nullable String color, @Nullable String pronouns) {}
+	public record ProfileImportData(String name, @Nullable String display_name, @Nullable String color, @Nullable String pronouns, @Nullable String description) {}
 
 	private static final Pattern PARENTHESES = Pattern.compile("([<(\\[][^>)\\]]*[)>\\]])");
 
@@ -331,10 +331,11 @@ public class SwitchyPlayerData {
 					bracketed.append(matcher.group());
 				}
 			}
-			profile.set(SwitchyComponentTypes.NAME, "<hover:'%s%s | %s'><#%s>%s".formatted(
+			profile.set(SwitchyComponentTypes.NAME, "<hover:'%s%s | %s%s'><#%s>%s".formatted(
 				bracketed.isEmpty() ? "" : bracketed + (data.pronouns() != null ? " - " : ""),
 				Objects.requireNonNullElse(data.pronouns(), ""),
 				Objects.requireNonNullElse(name, player.getGameProfile().getName()),
+				data.description() == null ? "" : " | " + data.description(),
 				Objects.requireNonNullElse(data.color(), "FFFFFF"),
 				Objects.requireNonNullElse(data.display_name(), id).replace(bracketed, "")).trim()
 			);
