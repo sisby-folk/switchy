@@ -60,10 +60,6 @@ jobs:
           files: 'build/libs/*.jar;!build/libs/*-sources.jar'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Maven Publish
-        if: github.event_name == 'release' && github.event.action == 'published'
-        run: ./gradlew publish
-        
       - name: Modrinth Publish
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}

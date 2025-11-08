@@ -63,11 +63,9 @@ java {
 publishing {
 	repositories {
 		maven {
-			credentials {
-				username = "$System.env.SLEEPING_USERNAME"
-				password = "$System.env.SLEEPING_PASSWORD"
-			}
-			url "https://repo-api.sleeping.town/"
+			name = "SleepingTown"
+			url = "https://repo-api.sleeping.town/"
+			credentials(PasswordCredentials)
 		}
 	}
 	publications {
