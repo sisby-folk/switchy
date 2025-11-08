@@ -17,6 +17,7 @@ import java.util.function.Function;
 
 /**
  * From ResourcefulLib
+ * Includes an additional edit to make encoding null-safe
  *
  * @author ThatGravyBoat
  */

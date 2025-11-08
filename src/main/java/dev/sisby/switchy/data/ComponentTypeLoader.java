@@ -60,7 +60,7 @@ public class ComponentTypeLoader extends JsonDataLoader implements IdentifiableR
 		} else if (type.defaultValue.isJsonPrimitive() && type.defaultValue.getAsJsonPrimitive().isString() && type.defaultValue.getAsJsonPrimitive().getAsString().startsWith("$")) {
 			initializer = (SwitchyComponentType.Initializer<T>) SwitchyComponentTypes.INITIALIZERS.get(Identifier.tryParse(type.defaultValue.getAsString().substring(1)));
 		} else {
-			T defaultValue = codec.parse(JsonOps.INSTANCE, type.defaultValue).getOrThrow(false, Switchy.LOGGER::error);
+			T defaultValue = codec.parse(JsonOps.INSTANCE, type.defaultValue).getOrThrow();
 			initializer = (nbt, player, pId) -> defaultValue;
 		}
 		try {

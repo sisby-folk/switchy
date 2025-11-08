@@ -22,6 +22,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
@@ -54,7 +55,7 @@ public class SwitchyPlayerData {
 	private static Codec<SwitchyPlayerData> codec(SwitchyComponentTypes types) {
 		return RecordCodecBuilder.create(instance -> instance.group(
 			Codec.STRING.fieldOf("current").forGetter(SwitchyPlayerData::current),
-			Codecs.TEXT.optionalFieldOf("greeting").forGetter(SwitchyPlayerData::greeting),
+			TextCodecs.CODEC.optionalFieldOf("greeting").forGetter(SwitchyPlayerData::greeting),
 			types.SET_CODEC.fieldOf("componentTypes").forGetter(p -> p.componentTypes),
 			DispatchMapCodec.of(Codecs.NON_EMPTY_STRING, id -> SwitchyProfile.codec(types, id)).fieldOf("profiles").xmap(a -> (Map<String, SwitchyProfile>) new HashMap<>(a), b -> b).forGetter(p -> p.profiles)
 		).apply(instance, (current, optionalGreeting, componentTypes, profiles) -> new SwitchyPlayerData(current, optionalGreeting.orElse(null), componentTypes, profiles)));
@@ -216,10 +217,10 @@ public class SwitchyPlayerData {
 		try {
 			File playerDataDir =  player.getServer().getSavePath(WorldSavePath.PLAYERDATA).toFile();
 			File file = File.createTempFile(player.getUuidAsString() + "-switchy" + "-", ".dat_old", playerDataDir);
-			NbtIo.writeCompressed(legacyData, file);
+			NbtIo.writeCompressed(legacyData, file.toPath());
 			File file2 = new File(playerDataDir, player.getUuidAsString() + "-switchy.dat_old");
 			File file3 = new File(playerDataDir, player.getUuidAsString() + "-switchy.dat_older");
-			Util.backupAndReplace(file2, file, file3);
+			Util.backupAndReplace(file2.toPath(), file.toPath(), file3.toPath());
 			Switchy.LOGGER.info("[Switchy] Backed up legacy switchy data for {} to {}", player.getGameProfile().getName(), file2.getName());
 		} catch (IOException e) { // allowing the game to keep running here would cause a data loss, so, don't
 			Switchy.LOGGER.error("[Switchy] Failed to save switchy data backup for {}! Please manually back up and remove switchy:presets from the player.dat", player.getGameProfile().getName(), e);
@@ -423,7 +424,7 @@ public class SwitchyPlayerData {
 		if (SwitchyComponentTypes.instance() == null) {
 			throw new IllegalStateException("Can't load switchy data while the types aren't loaded!");
 		}
-		return SwitchyPlayerData.codec(SwitchyComponentTypes.instance()).parse(NbtOps.INSTANCE, playerNbt.getCompound(Switchy.ID)).getOrThrow(true, Switchy.LOGGER::error);
+		return SwitchyPlayerData.codec(SwitchyComponentTypes.instance()).parse(NbtOps.INSTANCE, playerNbt.getCompound(Switchy.ID)).resultOrPartial(Switchy.LOGGER::error).orElse(null);
 	}
 
 	public void writeNbt(NbtCompound playerNbt) {
@@ -431,7 +432,7 @@ public class SwitchyPlayerData {
 			throw new IllegalStateException("Can't save switchy data while the types aren't loaded!");
 		}
 		if (size() > 1) {
-			playerNbt.put(Switchy.ID, SwitchyPlayerData.codec(SwitchyComponentTypes.instance()).encodeStart(NbtOps.INSTANCE, this).getOrThrow(true, Switchy.LOGGER::error));
+			playerNbt.put(Switchy.ID, SwitchyPlayerData.codec(SwitchyComponentTypes.instance()).encodeStart(NbtOps.INSTANCE, this).resultOrPartial(Switchy.LOGGER::error).orElse(null));
 		}
 	}
 

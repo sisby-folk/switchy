@@ -16,11 +16,11 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
@@ -48,7 +48,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 		Identifier.of("minecraft", "nbt"), SwitchyCodecs.NBT,
 		Identifier.of("minecraft", "boolean"), Codec.BOOL,
 		Identifier.of("minecraft", "string"), Codec.STRING,
-		Identifier.of("minecraft", "text"), Codecs.TEXT,
+		Identifier.of("minecraft", "text"), TextCodecs.CODEC,
 		Identifier.of("minecraft", "float"), Codec.FLOAT,
 		Identifier.of("minecraft", "int"), Codec.INT,
 		Identifier.of("minecraft", "vec3d"), Vec3d.CODEC,

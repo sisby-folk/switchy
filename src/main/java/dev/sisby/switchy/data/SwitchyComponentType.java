@@ -195,7 +195,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 				if (result.error().isPresent()) {
 					throw new NbtException("Failed to read from serialized player! %s".formatted(result.error().get().message()));
 				}
-				return result.getOrThrow(true, Switchy.LOGGER::error);
+				return result.resultOrPartial(Switchy.LOGGER::error).orElse(null);
 			} catch (CommandSyntaxException e) {
 				return null;
 			}
@@ -212,7 +212,12 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 				if (result.error().isPresent()) {
 					throw new NbtException("Failed to serialize component! %s".formatted(result.error().get().message()));
 				}
-				nbtPath.put(nbt, result.getOrThrow(true, Switchy.LOGGER::error));
+				NbtElement encoded = result.resultOrPartial(Switchy.LOGGER::error).orElse(null);
+				if (encoded == null) { // special case - erase the key.
+					nbtPath.remove(nbt);
+					return;
+				}
+				nbtPath.put(nbt, encoded);
 			} catch (CommandSyntaxException e) {
 				throw new NbtException("NBT path too deep!");
 			}
