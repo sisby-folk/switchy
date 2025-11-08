@@ -63,7 +63,8 @@ java {
 publishing {
 	repositories {
 		maven {
-			url "https://repo-api.sleeping.town/"
+			name = "SleepingTown"
+			url = "https://repo-api.sleeping.town/"
 			credentials(PasswordCredentials)
 		}
 	}
