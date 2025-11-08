@@ -5,5 +5,6 @@
 	"preview": "halves",
 	"prefix": "-💨x",
 	"group": "hunger",
-	"default": 0.0
+	"default": 0.0,
+	"hidden": true
 }

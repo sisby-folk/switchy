@@ -3,5 +3,6 @@
 	"codec": "int",
 	"path": "SpawnForced",
 	"prefix": "🛏:",
-	"group": "spawn"
+	"group": "spawn",
+	"hidden": true
 }

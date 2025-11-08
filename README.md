@@ -37,11 +37,12 @@ Components are fully data-driven using a mix-and-match system of codecs, preview
   "enabled": true, // whether to load the component at all. use this instead of deleting default files, as they'll regenerate.
   "codec": "inventory", // which codec (from the registry in SwitchyComponentTypes) to use to deserialize the data. defaults to "nbt" (passthrough)
   "path": "EnderItems", // NBT path targeting the part of player.dat to load from / modify to
-  "preview": "inventory", // which text previewer (from the registry in SwitchyComponentTypes) to use in chat. null = toString(), use "trunc" for long data.
+  "preview": "inventory", // which text previewer (from the registry in SwitchyComponentTypes) to use in chat. null = toString(), use "trunc" for long data. Start with $ to use an NBT path for passthrough components.
   "prefix": "👁 ", // a prefix to add to the text preview, for glanceability
   "emptyChecker": "inventory", // which empty checker (from the registry in SwitchyComponentTypes) to use to prevent profile deletion for precious data.
   "group": "inventory", // components with a matching group ID will be previewed and toggled as if they're one component
-  "default": [] // default value. JSON serialized. set to "$copy" to copy the value from previous. set to null or omit to delete the key from player data as the initial value.
+  "default": [], // default value. JSON serialized. set to "$copy" to copy the value from previous. set to null or omit to delete the key from player data as the initial value.
+  "hidden": false // hides the component preview in the profiles list (still shown in the components list)
 }
 ```
 

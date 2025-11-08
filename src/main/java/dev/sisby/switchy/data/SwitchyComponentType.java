@@ -1,6 +1,5 @@
 package dev.sisby.switchy.data;
 
-import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -53,6 +52,8 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 	@Nullable ArgumentEditor<T> argumentEditor();
 
 	@Nullable Identifier group();
+
+	boolean hidden();
 
 	default void tryInitialize(Collection<SwitchyComponentMap> consumer, NbtCompound nbt, ServerPlayerEntity player, String profileId) {
 		Initializer<T> initializer = initializer();
@@ -232,7 +233,8 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		@Nullable EmptyChecker<T> emptyChecker,
 		@Nullable TextProvider<T> textProvider,
 		@Nullable ArgumentEditor<T> argumentEditor,
-		@Nullable Identifier group
+		@Nullable Identifier group,
+		boolean hidden
 	) implements SwitchyComponentType<T> {
 		@Override
 		public String toString() {
@@ -252,6 +254,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		private @Nullable TextProvider<T> textProvider;
 		private @Nullable ArgumentEditor<T> argumentEditor;
 		private @Nullable Identifier group;
+		private boolean hidden = false;
 
 		public Builder(@NotNull Identifier id, @NotNull Codec<T> codec) {
 			this.id = id;
@@ -301,6 +304,11 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 			return this;
 		}
 
+		public Builder<T> hidden(boolean hidden) {
+			this.hidden = hidden;
+			return this;
+		}
+
 		public SwitchyComponentType<T> build() {
 			return new SwitchyComponentType.SimpleSwitchyComponentType<>(
 				this.id,
@@ -313,7 +321,8 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 				this.emptyChecker,
 				this.textProvider,
 				this.argumentEditor,
-				this.group
+				this.group,
+				this.hidden
 			);
 		}
 	}

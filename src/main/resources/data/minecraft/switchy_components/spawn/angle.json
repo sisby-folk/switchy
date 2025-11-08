@@ -4,5 +4,6 @@
 	"path": "SpawnAngle",
 	"preview": "rounded",
 	"prefix": "°",
-	"group": "spawn"
+	"group": "spawn",
+	"hidden": true
 }

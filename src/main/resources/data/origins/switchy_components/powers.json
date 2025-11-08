@@ -12,5 +12,6 @@
 	"path": "cardinal_components.apoli:powers.Powers",
 	"preview": "$[].Type",
 	"prefix": "✶",
-	"group": "origins:origin"
+	"group": "origins:origin",
+	"hidden": true
 }

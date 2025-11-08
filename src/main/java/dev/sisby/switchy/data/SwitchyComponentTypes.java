@@ -12,13 +12,12 @@ import dev.sisby.switchy.util.SwitchyCodecs;
 import dev.sisby.switchy.util.TypeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
@@ -62,7 +61,11 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 		new Identifier("percent"), new SwitchyComponentType.SimpleTextProvider<Float>(n -> Text.of("%.0f%%".formatted(n * 100.0))),
 		new Identifier("rounded"), new SwitchyComponentType.SimpleTextProvider<Float>(n -> Text.of("%.0f".formatted(n))),
 		new Identifier("halves"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::statText),
-		new Identifier("vec3d"), new SwitchyComponentType.SimpleTextProvider<Vec3d>(c -> Text.of(BlockPos.ofFloored(c).toShortString())),
+		new Identifier("vec3d"), new SwitchyComponentType.SimpleTextProvider<Vec3d>(c -> Texts.join(List.of(
+			Text.empty().append(Text.literal("X:").formatted(Formatting.GRAY)).append(Text.literal(String.valueOf(BlockPos.ofFloored(c).getX()))),
+			Text.empty().append(Text.literal("Y:").formatted(Formatting.GRAY)).append(Text.literal(String.valueOf(BlockPos.ofFloored(c).getY()))),
+			Text.empty().append(Text.literal("Z:").formatted(Formatting.GRAY)).append(Text.literal(String.valueOf(BlockPos.ofFloored(c).getZ())))
+		), Text.literal(", ").formatted(Formatting.GRAY))),
 		new Identifier("identifier"), new SwitchyComponentType.SimpleTextProvider<Identifier>(i -> Text.of(FormatUtils.prettify(i.getPath()))),
 		new Identifier("inventory"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::inventoryText)
 	));

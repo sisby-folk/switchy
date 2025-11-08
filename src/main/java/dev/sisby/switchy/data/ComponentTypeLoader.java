@@ -11,12 +11,9 @@ import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.util.FormatUtils;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.command.argument.NbtPathArgumentType;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -29,7 +26,7 @@ import java.util.Objects;
 public class ComponentTypeLoader extends JsonDataLoader implements IdentifiableResourceReloadListener {
 	public static final String PATH = "switchy_components";
 	public static final Gson GSON = new Gson();
-	public record EditableComponentType(boolean enabled, String codec, String path, String preview, String prefix, String editor, String emptyChecker, String group, @SerializedName("default") JsonElement defaultValue) { }
+	public record EditableComponentType(boolean enabled, String codec, String path, String preview, String prefix, String editor, String emptyChecker, String group, @SerializedName("default") JsonElement defaultValue, Boolean hidden) { }
 
 	public ComponentTypeLoader() {
 		super(GSON, PATH);
@@ -103,6 +100,7 @@ public class ComponentTypeLoader extends JsonDataLoader implements IdentifiableR
 				.argumentEditor(editor)
 				.emptyChecker(checker)
 				.group(type.group == null ? null : Identifier.tryParse(type.group))
+				.hidden(type.hidden != null && type.hidden)
 				.initializer(initializer) // overrides switcher
 			);
 		} catch (CommandSyntaxException e) {
