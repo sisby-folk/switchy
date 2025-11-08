@@ -19,11 +19,12 @@ Profile data is defined by player-toggleable _components_, including:
 
 ## Usage
 
-Use `/switchy` to view your profiles, alongside clickable shortcuts for `switch`, `edit id/name`, and `delete`.
+Switchy utilizes a command-based text interface with tooltips and clickable text. 
 
-Use `/switchy components` to view your components, and set them to switched or shared (`enable`/`disable`).
-
-Use `/switchy import [url].json` to import profiles from a [pluralkit export](https://pluralkit.me/guide/#exporting-your-pluralkit-data) (better with [Styled Nicknames](https://modrinth.com/mod/styled-nicknames)).
+Running `/switchy help` will provide a list of top-level commands, but in short:
+- Run `/switchy` to edit and switch between profiles
+- Run `/switchy components` to toggle components.
+- Run `/switchy import [url].json` to import named profiles from [pluralkit](https://pluralkit.me/guide/#exporting-your-pluralkit-data)
 
 Note that on **1.20 and below**, switching profiles requires manually reconnecting to the server / reloading the save, making it incompatible with `Open To LAN` worlds.
 
@@ -39,7 +40,7 @@ Components are fully data-driven using a mix-and-match system of codecs, preview
   "path": "EnderItems", // NBT path targeting the part of player.dat to load from / modify to
   "preview": "inventory", // which text previewer (from the registry in SwitchyComponentTypes) to use in chat. null = toString(), use "trunc" for long data. Start with $ to use an NBT path for passthrough components.
   "prefix": "👁 ", // a prefix to add to the text preview, for glanceability
-  "emptyChecker": "inventory", // which empty checker (from the registry in SwitchyComponentTypes) to use to prevent profile deletion for precious data.
+  "emptyChecker": "inventory", // which empty checker (from the registry in SwitchyComponentTypes) to use to prevent profile deletion for precious data. Start with $ to use an NBT path for passthrough components.
   "group": "inventory", // components with a matching group ID will be previewed and toggled as if they're one component
   "default": [], // default value. JSON serialized. set to "$copy" to copy the value from previous. set to null or omit to delete the key from player data as the initial value.
   "hidden": false // hides the component preview in the profiles list (still shown in the components list)
