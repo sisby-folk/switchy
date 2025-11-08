@@ -1,8 +1,10 @@
 package dev.sisby.switchy.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
 import dev.sisby.switchy.data.SwitchyPlayerData;
+import dev.sisby.switchy.duck.SwitchyPlayHandler;
 import dev.sisby.switchy.duck.SwitchyPlayer;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
@@ -44,7 +46,7 @@ public class MixinServerPlayerEntity implements SwitchyPlayer {
 	public void switchy$hotSwap(NbtCompound nbt, Text reason) {
 		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
 		switchy$hotSwap = nbt;
-		self.networkHandler.disconnect(reason);
+		((SwitchyPlayHandler) self.networkHandler).switchy$hotSwap();
 	}
 
 	@Override
@@ -84,5 +86,11 @@ public class MixinServerPlayerEntity implements SwitchyPlayer {
 	@Inject(method = "copyFrom", at = @At("TAIL"))
 	public void copyPlayerData(ServerPlayerEntity oldPlayer, boolean alive, CallbackInfo ci) {
 		switchy$playerData = ((MixinServerPlayerEntity) (Object) oldPlayer).switchy$playerData;
+	}
+
+	@ModifyReturnValue(method = "acceptsMessage", at = @At("RETURN"))
+	private boolean dontSendMessagesDuringHotswap(boolean original) {
+		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
+		return original && !((SwitchyPlayHandler) self.networkHandler).switchy$isHotSwap();
 	}
 }
