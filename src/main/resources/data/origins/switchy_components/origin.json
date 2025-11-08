@@ -10,6 +10,6 @@
 	"enabled": true,
 	"codec": "nbt",
 	"path": "cardinal_components.origins:origin",
-	"preview": "nbt",
+	"preview": "$OriginLayers[].Origin",
 	"group": "origins:origin"
 }

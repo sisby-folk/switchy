@@ -10,6 +10,7 @@
 	"enabled": true,
 	"codec": "nbt",
 	"path": "cardinal_components.apoli:powers.Powers",
-	"preview": "nbt",
+	"preview": "$[].Type",
+	"prefix": "✶",
 	"group": "origins:origin"
 }

@@ -288,13 +288,8 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 			return this;
 		}
 
-		public Builder<T> nbtSwitcher(String nbtPath) {
-			NbtSwitcher<T> switcher;
-			try {
-				switcher = new NbtSwitcher<>(NbtPathArgumentType.nbtPath().parse(new StringReader(nbtPath)), codec);
-			} catch (CommandSyntaxException e) {
-				throw new RuntimeException(e);
-			}
+		public Builder<T> nbtSwitcher(NbtPathArgumentType.NbtPath path) {
+			NbtSwitcher<T> switcher = new NbtSwitcher<>(path, codec);
 			this.nbtReader = switcher;
 			this.nbtMutator = switcher;
 			this.initializer = new CopyInitializer<>(switcher);

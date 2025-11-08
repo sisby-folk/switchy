@@ -10,7 +10,7 @@
 	"enabled": true,
 	"codec": "nbt",
 	"path": "cardinal_components.trinkets:trinkets",
-	"preview": "nbt",
-	"prefix": "💍 ",
+	"preview": "$**[][].Items[].id",
+	"prefix": "💍",
 	"group": "inventory"
 }
