@@ -7,6 +7,11 @@ Serverside player profiles for hotseat multiplayer, adventure maps, and plural s
 
 ---
 
+> _**Disclaimer**: All mods that manipulate player data have a save corruption risk!<br/>
+Always take backups of your worlds, especially when updating mods._
+
+---
+
 **Switchy** allows players to create **profiles**, which have their own partial player data, and can be switched between.
 
 Profile data is defined by player-toggleable _components_, including:
