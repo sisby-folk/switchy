@@ -11,6 +11,7 @@ import dev.sisby.switchy.data.SwitchyComponentType;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
 import dev.sisby.switchy.data.SwitchyPlayerData;
 import dev.sisby.switchy.data.SwitchyProfile;
+import dev.sisby.switchy.exception.NbtException;
 import dev.sisby.switchy.exception.ProfileCurrentException;
 import dev.sisby.switchy.exception.ProfileMissingException;
 import dev.sisby.switchy.exception.ProfilePreciousException;
@@ -43,6 +44,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,39 +52,26 @@ public class SwitchyCommands {
 	public static void greet(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
 		SwitchyPlayerData data = SwitchyPlayerData.ofEarly(handler.getPlayer());
 		if (data == null) return;
-		if (!data.previous().isEmpty()) {
-			handler.getPlayer().sendMessage(prefix()
-				.append(Text.literal("Switched from ").formatted(Formatting.GREEN))
-				.append(SwitchyComponentTypes.NAME.asText(data.getProfile(data.previous()).getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
-				.append(Text.literal(" to ").formatted(Formatting.GREEN))
-				.append(SwitchyComponentTypes.NAME.asText(data.getCurrentProfile().getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
-				.append(Text.literal("! ").formatted(Formatting.GREEN))
-				.append(clickable("list", "/switchy", true))
-			);
-			data.clearPrevious();
-		} else if (data.size() > 1) {
-			handler.getPlayer().sendMessage(prefix()
-				.append(Text.literal("welcome back! current profile: ").formatted(Formatting.GRAY))
-				.append(SwitchyComponentTypes.NAME.asText(data.getCurrentProfile().getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
-				.append(Text.literal(". ").formatted(Formatting.GRAY))
-				.append(clickable("list", "/switchy", true))
-			);
-		}
+		handler.getPlayer().sendMessage(data.greet());
 	}
 
 	private static int list(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
-		try {
-			data.updateCurrent(player);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 		feedback.accept(prefix()
 			.append(Text.literal("you have ").formatted(Formatting.GRAY))
 			.append(Text.literal("%s".formatted(data.size())).formatted(Formatting.WHITE))
 			.append(Text.literal(" profiles available. ").formatted(Formatting.GRAY))
 			.append(clickable("new", "/switchy switch ", false))
 		);
-		for (SwitchyProfile profile : Stream.concat(Sets.difference(data.keySet(), Set.of(data.current())).stream().sorted(), Stream.of(data.current())).map(data::getProfile).toList()) {
+
+		List<String> profiles = Stream.concat(Sets.difference(data.keySet(), Set.of(data.current())).stream().sorted(), Stream.of(data.current())).toList();
+
+		for (String id : profiles) {
+			SwitchyProfile profile;
+			try {
+				profile = data.getProfile(id, player);
+			} catch (NbtException e) {
+				throw new RuntimeException(e);
+			}
 			feedback.accept(indent()
 				.append(profile.id().equals(data.current()) ? Text.literal("current").formatted(Formatting.GRAY) : clickable("switch", "/switchy switch %s".formatted(profile.id()), true))
 				.append(" ")
@@ -145,6 +134,11 @@ public class SwitchyCommands {
 				.append(Text.literal(description).formatted(Formatting.WHITE))
 			);
 		}
+		feedback.accept(indent()
+			.append(Text.literal("(").formatted(Formatting.GRAY))
+			.append(clickable("aqua text", "a preview of the command appears here!", false, Formatting.AQUA, "", ""))
+			.append(Text.literal(" in command feedback is clickable)").formatted(Formatting.GRAY))
+		);
 		return 1;
 	}
 
@@ -153,14 +147,12 @@ public class SwitchyCommands {
 	private static int importProfiles(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String url, boolean allowNew) {
 		int beforeSize = data.size();
 		PlayerImportData importData;
-		int updated = 0;
 		try {
 			importData = new Gson().fromJson(new InputStreamReader(new URL(url).openStream()), PlayerImportData.class);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		updated = data.importProfiles(importData.members(), player, importData.name(), allowNew);
-		feedback.accept(prefix()
+		Function<Integer, Text> feedbackGetter = updated -> prefix()
 			.append(allowNew ? Text.empty()
 				.append(Text.literal("imported ").formatted(Formatting.GRAY))
 				.append(Text.literal("%s".formatted(data.size() - beforeSize)).formatted(Formatting.WHITE))
@@ -169,19 +161,30 @@ public class SwitchyCommands {
 			.append(Text.literal("updated ").formatted(Formatting.GRAY))
 			.append(Text.literal("%s".formatted(updated - (data.size() - beforeSize))).formatted(Formatting.WHITE))
 			.append(Text.literal(" existing profiles. ").formatted(Formatting.GRAY))
-			.append(clickable("list", "/switchy", true))
-		);
-		return data.size() - beforeSize;
+			.append(clickable("list", "/switchy", true));
+		try {
+			int updated = data.importProfiles(importData.members(), player, importData.name(), allowNew, feedbackGetter);
+			feedback.accept(feedbackGetter.apply(updated));
+			return data.size() - beforeSize;
+		} catch (Exception e) {
+			feedback.accept(prefix()
+				.append("Error while switching: ").formatted(Formatting.RED)
+				.append(Objects.requireNonNullElse(e.getMessage(), "???")).formatted(Formatting.GRAY)
+				.append(" See server logs for more info.").formatted(Formatting.RED)
+			);
+			Switchy.LOGGER.error("[Switchy] Error while switching to {} for player {}", data.current(), player.getGameProfile().getName(), e);
+			return 0;
+		}
 	}
 
 
 	private static int viewProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId) {
+		SwitchyProfile profile;
 		try {
-			if (profileId.equals(data.current())) data.updateCurrent(player);
-		} catch (Exception e) {
+			profile = data.getProfile(profileId, player);
+		} catch (NbtException e) {
 			throw new RuntimeException(e);
 		}
-		SwitchyProfile profile = data.getProfile(profileId);
 		if (profile == null) {
 			feedback.accept(prefix().append(Text.literal("profile doesn't exist!").formatted(Formatting.YELLOW)));
 			return 0;
@@ -199,10 +202,16 @@ public class SwitchyCommands {
 	}
 
 	private static int switchProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId) {
-		SwitchyProfile currentProfile = data.getCurrentProfile();
-		SwitchyProfile nextProfile;
 		try {
-			nextProfile = data.switchOrCreateProfile(profileId, player);
+			SwitchyProfile currentProfile = data.getCurrentProfile(player);
+			SwitchyProfile nextProfile = data.getOrCreateProfile(profileId, player);
+			data.switchOrCreateProfile(profileId, player, prefix()
+				.append(Text.literal("Switched from ").formatted(Formatting.GREEN))
+				.append(SwitchyComponentTypes.NAME.asText(currentProfile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
+				.append(Text.literal(" to ").formatted(Formatting.GREEN))
+				.append(SwitchyComponentTypes.NAME.asText(nextProfile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
+				.append(Text.literal("! ").formatted(Formatting.GREEN))
+				.append(clickable("list", "/switchy", true)));
 		} catch (Exception e) {
 			feedback.accept(prefix()
 				.append("Error while switching: ").formatted(Formatting.RED)
@@ -220,9 +229,14 @@ public class SwitchyCommands {
 			feedback.accept(prefix().append(Text.literal("can't edit a shared component!").formatted(Formatting.YELLOW)));
 			return 0;
 		}
-		SwitchyProfile profile = data.getProfile(profileId);
+		SwitchyProfile profile;
+		try {
+			profile = data.getProfile(profileId, player);
+		} catch (NbtException e) {
+			throw new RuntimeException(e);
+		}
 		T oldValue = profile.set(type, value);
-		feedback.accept(prefix()
+		Text feedbackText = prefix()
 			.append(Text.literal("edited ").formatted(Formatting.GREEN))
 			.append(profileId)
 			.append(Text.literal(":").formatted(Formatting.GRAY))
@@ -233,9 +247,24 @@ public class SwitchyCommands {
 			.append(type.asText(value))
 			.append(Text.literal("!").formatted(Formatting.GREEN))
 			.append(" ")
-			.append(clickable("list", "/switchy", true))
-		);
-		return 1;
+			.append(clickable("list", "/switchy", true));
+		if (profileId.equals(data.current())) {
+			try {
+				data.selfSwitch(profile, player, feedbackText);
+				return 2;
+			} catch (Exception e) {
+				feedback.accept(prefix()
+					.append("Error while self-switching: ").formatted(Formatting.RED)
+					.append(Objects.requireNonNullElse(e.getMessage(), "???")).formatted(Formatting.GRAY)
+					.append(" See server logs for more info.").formatted(Formatting.RED)
+				);
+				Switchy.LOGGER.error("[Switchy] Error while switching to {} for player {}", profileId, player.getGameProfile().getName(), e);
+				return 0;
+			}
+		} else {
+			feedback.accept(feedbackText);
+			return 1;
+		}
 	}
 
 	private static int renameProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId, String newId) {

@@ -43,7 +43,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -52,20 +54,20 @@ public class SwitchyPlayerData {
 	private static Codec<SwitchyPlayerData> codec(SwitchyComponentTypes types) {
 		return RecordCodecBuilder.create(instance -> instance.group(
 			Codec.STRING.fieldOf("current").forGetter(SwitchyPlayerData::current),
-			Codec.STRING.fieldOf("previous").forGetter(SwitchyPlayerData::previous),
+			Codecs.TEXT.optionalFieldOf("greeting").forGetter(SwitchyPlayerData::greeting),
 			types.SET_CODEC.fieldOf("componentTypes").forGetter(p -> p.componentTypes),
 			DispatchMapCodec.of(Codecs.NON_EMPTY_STRING, id -> SwitchyProfile.codec(types, id)).fieldOf("profiles").xmap(a -> (Map<String, SwitchyProfile>) new HashMap<>(a), b -> b).forGetter(p -> p.profiles)
-		).apply(instance, SwitchyPlayerData::new));
+		).apply(instance, (current, optionalGreeting, componentTypes, profiles) -> new SwitchyPlayerData(current, optionalGreeting.orElse(null), componentTypes, profiles)));
 	}
 
 	private String current;
-	private String previous;
+	private Text greeting;
 	private final Set<SwitchyComponentType<?>> componentTypes;
 	private final Map<String, SwitchyProfile> profiles;
 
-	public SwitchyPlayerData(String current, String previous, Set<SwitchyComponentType<?>> componentTypes, Map<String, SwitchyProfile> profiles) {
+	public SwitchyPlayerData(String current, Text greeting, Set<SwitchyComponentType<?>> componentTypes, Map<String, SwitchyProfile> profiles) {
 		this.current = current;
-		this.previous = previous;
+		this.greeting = greeting;
 		this.componentTypes = componentTypes;
 		this.profiles = profiles;
 	}
@@ -81,7 +83,7 @@ public class SwitchyPlayerData {
 	public static SwitchyPlayerData create(ServerPlayerEntity player, NbtCompound nbt) {
 		SwitchyPlayerData data = new SwitchyPlayerData(
 			"default",
-			"",
+			null,
 			new LinkedHashSet<>(),
 			new LinkedHashMap<>()
 		);
@@ -97,8 +99,8 @@ public class SwitchyPlayerData {
 		return profiles.containsKey(profileId);
 	}
 
-	public SwitchyProfile getCurrentProfile() {
-		return profiles.get(current());
+	public SwitchyProfile getCurrentProfile(ServerPlayerEntity player) throws NbtException {
+		return getProfile(current(), player);
 	}
 
 	public Set<String> keySet() {
@@ -121,11 +123,22 @@ public class SwitchyPlayerData {
 		return current;
 	}
 
-	public String previous() {
-		return previous;
+	public Optional<Text> greeting() {
+		return Optional.ofNullable(greeting);
 	}
 
-	public SwitchyProfile getProfile(String profileId) {
+	public Text greet() {
+		Text defaultedGreeting = Optional.ofNullable(greeting).orElseGet(() -> SwitchyCommands.prefix()
+			.append(Text.literal("welcome back! current profile: ").formatted(Formatting.GRAY))
+			.append(SwitchyComponentTypes.NAME.asText(profiles.get(current).getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
+			.append(Text.literal(". ").formatted(Formatting.GRAY))
+			.append(SwitchyCommands.clickable("list", "/switchy", true)));
+		greeting = null;
+		return defaultedGreeting;
+	}
+
+	public SwitchyProfile getProfile(String profileId, ServerPlayerEntity player) throws NbtException {
+		if (profileId.equals(current)) updateFromPlayer(profiles.get(profileId), player);
 		return profiles.get(profileId);
 	}
 
@@ -317,8 +330,9 @@ public class SwitchyPlayerData {
 
 	private static final Pattern PARENTHESES = Pattern.compile("([<(\\[][^>)\\]]*[)>\\]])");
 
-	public int importProfiles(List<ProfileImportData> profileData, ServerPlayerEntity player, @Nullable String name, boolean allowNew) {
+	public int importProfiles(List<ProfileImportData> profileData, ServerPlayerEntity player, @Nullable String name, boolean allowNew, Function<Integer, Text> greetingGetter) throws NbtException {
 		int updated = 0;
+		SwitchyProfile newCurrent = null;
 		for (ProfileImportData data : profileData) {
 			String id = data.name().toLowerCase();
 			if (!allowNew && !keySet().contains(id)) continue;
@@ -331,14 +345,20 @@ public class SwitchyPlayerData {
 					bracketed.append(matcher.group());
 				}
 			}
-			profile.set(SwitchyComponentTypes.NAME, "<hover:'%s%s | %s%s'><#%s>%s".formatted(
+			String newName = "<hover:'%s%s | %s%s'><#%s>%s".formatted(
 				bracketed.isEmpty() ? "" : bracketed + (data.pronouns() != null ? " - " : ""),
 				Objects.requireNonNullElse(data.pronouns(), ""),
 				Objects.requireNonNullElse(name, player.getGameProfile().getName()),
 				data.description() == null ? "" : " | " + data.description(),
 				Objects.requireNonNullElse(data.color(), "FFFFFF"),
-				Objects.requireNonNullElse(data.display_name(), id).replace(bracketed, "")).trim()
-			);
+				Objects.requireNonNullElse(data.display_name(), id).replace(bracketed, "")).trim();
+			if (!newName.equals(profile.get(SwitchyComponentTypes.NAME))) {
+				if (current.equals(id)) newCurrent = profile;
+				profile.set(SwitchyComponentTypes.NAME, newName);
+			}
+		}
+		if (newCurrent != null) {
+			selfSwitch(newCurrent, player, greetingGetter.apply(updated));
 		}
 		return updated;
 	}
@@ -356,10 +376,6 @@ public class SwitchyPlayerData {
 		return nbt;
 	}
 
-	public void updateCurrent(ServerPlayerEntity player) throws NbtException {
-		updateFromPlayer(getCurrentProfile(), player);
-	}
-
 	public void renameProfile(String oldId, String newId) throws IllegalArgumentException {
 		if (!profileExists(oldId)) throw new ProfileMissingException(oldId);
 		if (profileExists(newId)) throw new ProfileExistsException(newId);
@@ -370,28 +386,34 @@ public class SwitchyPlayerData {
 	public SwitchyProfile deleteProfile(String profileId) {
 		if (current.equals(profileId)) throw new ProfileCurrentException(profileId);
 		if (!profileExists(profileId)) throw new ProfileMissingException(profileId);
-		SwitchyProfile profile = getProfile(profileId);
+		SwitchyProfile profile = profiles.get(profileId);
 		var preciousComponents = profile.components().keySet().stream().filter(t -> t.isPrecious(profile.components())).collect(Collectors.toSet());
 		if (!preciousComponents.isEmpty()) throw new ProfilePreciousException(preciousComponents, profile.components());
 		profiles.remove(profileId);
 		return profile;
 	}
 
-	private void switchProfile(SwitchyProfile nextProfile, ServerPlayerEntity player) throws NbtException {
-		if (nextProfile.id().equals(current)) throw new ProfileCurrentException(nextProfile.id());
-		SwitchyProfile currentProfile = getCurrentProfile();
+	private void switchProfile(SwitchyProfile nextProfile, ServerPlayerEntity player, Text greeting) throws NbtException {
+		SwitchyProfile currentProfile = profiles.get(current); // about to update manually
+		boolean selfSwitch = currentProfile == nextProfile;
 		// Read Components
-		NbtCompound playerNbt = updateFromPlayer(currentProfile, player);
+		NbtCompound playerNbt;
+		if (selfSwitch) {
+			playerNbt = new NbtCompound();
+			player.writeNbt(playerNbt);
+		} else {
+			playerNbt = updateFromPlayer(currentProfile, player);
+		}
 		// Mutate NBT
 		for (SwitchyComponentType<?> componentType : nextProfile.components().keySet()) {
 			componentType.tryMutate(nextProfile.components(), playerNbt, player);
 		}
 
-		previous = current;
+		this.greeting = greeting;
 		current = nextProfile.id();
 
 		((SwitchyPlayer) player).switchy$hotSwap(playerNbt, SwitchyCommands.prefix()
-			.append(Text.literal("Switching to ").formatted(Formatting.GRAY))
+			.append(Text.literal(selfSwitch ? "Updated current profile " : "Switching to ").formatted(Formatting.GRAY))
 			.append(SwitchyComponentTypes.NAME.asText(nextProfile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
 			.append(Text.literal("! Please reconnect.").formatted(Formatting.GRAY))
 		);
@@ -413,12 +435,14 @@ public class SwitchyPlayerData {
 		}
 	}
 
-	public SwitchyProfile switchOrCreateProfile(String profileId, ServerPlayerEntity player) throws NbtException {
-		switchProfile(getOrCreateProfile(profileId.toLowerCase(), player), player);
-		return getCurrentProfile();
+	public void switchOrCreateProfile(String profileId, ServerPlayerEntity player, Text greeting) throws NbtException {
+		SwitchyProfile nextProfile = getOrCreateProfile(profileId.toLowerCase(), player);
+		if (nextProfile.id().equals(current)) throw new ProfileCurrentException(nextProfile.id());
+		switchProfile(nextProfile, player, greeting);
 	}
 
-	public void clearPrevious() {
-		previous = "";
+	public void selfSwitch(SwitchyProfile currentProfile, ServerPlayerEntity player, Text greeting) throws NbtException {
+		if (!currentProfile.id().equals(current)) throw new ProfileCurrentException(currentProfile.id()); // profile must be current to self-switch
+		switchProfile(currentProfile, player, greeting);
 	}
 }
