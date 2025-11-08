@@ -3,17 +3,20 @@ package dev.sisby.switchy.util;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.AbstractNbtList;
+import net.minecraft.nbt.AbstractNbtNumber;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.visitor.NbtTextFormatter;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.text.NumberFormat;
@@ -39,11 +42,34 @@ public class FormatUtils {
 	}
 
 	public static Text nbtPathResultText(List<NbtElement> results, boolean allowHover) {
-		if (results.isEmpty()) return Text.literal("(empty)").formatted(Formatting.GRAY);
+		if (results.isEmpty() || (results.size() == 1 && isEmpty(results.get(0)))) return Text.literal("x0").formatted(Formatting.GRAY);
 		if (results.size() > 1 && allowHover) return Text.literal("x%d".formatted(results.size())).styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, nbtPathResultText(results, false))));
 		if (results.size() == 1 && results.get(0) instanceof NbtList l && allowHover) return Text.literal("x%d".formatted(l.size())).styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, nbtPathResultText(l, false))));
 		if (results.size() == 1 && results.get(0) instanceof NbtCompound c && allowHover) return Text.literal("x%d".formatted(c.getKeys().size())).styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, nbtPathResultText(List.of(c), false))));
-		return Texts.join(results.stream().map(element -> allowHover ? Texts.join(NbtHelper.toPrettyPrintedText(element).withoutStyle(), Text.empty()) : NbtHelper.toPrettyPrintedText(element)).toList(), Text.of("\n"));
+		return Texts.join(results.stream().map(element -> allowHover ? Texts.join(minimalistPrettyPrint(element, 0).withoutStyle(), Text.empty()) : NbtHelper.toPrettyPrintedText(element)).toList(), Text.of("\n"));
+	}
+
+	public static Text minimalistPrettyPrint(NbtElement element, int indent) {
+		if (element instanceof NbtCompound compound) {
+			return Text.empty().append(Texts.join(compound.getKeys().stream().filter(k -> !isEmpty(compound.get(k))).map(k -> Text.empty().append(Text.literal(k + ": ").formatted(Formatting.GRAY)).append(minimalistPrettyPrint(compound.get(k), indent + 2))).toList(), Text.of("\n" + StringUtils.repeat(' ', indent))));
+		} else if (element instanceof AbstractNbtList<?> list) {
+			return Text.empty().append(Texts.join(list.stream().filter(e -> !isEmpty(e)).map(e -> Text.empty().append(Text.literal("- ").formatted(Formatting.GRAY)).append(minimalistPrettyPrint(e, indent + 2))).toList(), Text.of("\n" + StringUtils.repeat(' ', indent))));
+		} else if (element instanceof AbstractNbtNumber number) {
+			return Text.empty().append(Text.literal(NumberFormat.getNumberInstance(Locale.ROOT).format(number.doubleValue())));
+		} else if (element instanceof NbtString string) {
+			Identifier id = Identifier.tryParse(string.asString());
+			if (id != null) {
+				return Text.literal(id.getPath()).styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(id.toString()))));
+			}
+			return Text.literal(string.asString());
+		}
+		return Text.of(element.toString());
+	}
+
+	public static boolean isEmpty(NbtElement element) {
+		return (element instanceof NbtCompound c && c.isEmpty())
+			|| (element instanceof AbstractNbtList<?> l && l.isEmpty())
+			|| (element instanceof NbtString s && (s.asString().isBlank() || s.asString().equals("minecraft:air")));
 	}
 
 	public static NbtList decompose(NbtElement element) throws CommandSyntaxException {

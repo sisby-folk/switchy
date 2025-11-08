@@ -101,10 +101,10 @@ public class SwitchyCommands {
 				.append(" ")
 				.append(id.getPath()).setStyle(Style.EMPTY
 					.withColor(enabled ? Formatting.WHITE : Formatting.GRAY)
-					.withHoverEvent(!enabled ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(data.values().stream().sorted(Comparator.comparing(SwitchyProfile::id)).map(p -> Text.empty()
+					.withHoverEvent(!enabled ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(data.values().stream().sorted(Comparator.comparing(SwitchyProfile::id)).filter(p -> types.stream().anyMatch(t -> p.get(t) != null && (t.emptyChecker() == null || t.isPrecious(p.components())))).map(p -> Text.empty()
 						.append(Text.literal(p.id()).formatted(Formatting.GRAY))
 						.append(": ")
-						.append(Texts.join(types.stream().filter(p::contains).map(t -> t.asText(p.components())).toList(), Text.literal(", ").formatted(Formatting.GRAY)))
+						.append(Texts.join(types.stream().filter(t -> p.get(t) != null).map(t -> t.asText(p.components())).toList(), Text.literal(", ").formatted(Formatting.GRAY)))
 					).toList(), Text.of("\n"))))
 				)
 			);
