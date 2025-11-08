@@ -75,9 +75,9 @@ public class SwitchyComponentMap {
 	}
 
 	public List<MutableText> asTexts() {
-		return SwitchyComponentTypes.grouped(keySet()).entrySet().stream().map(e -> Text.empty()
+		return SwitchyComponentTypes.grouped(keySet()).entrySet().stream().filter(e -> !e.getValue().stream().allMatch(t -> this.get(t) == null || (t.emptyChecker() != null && !t.isPrecious(this)))).map(e -> Text.empty()
 				.append(Text.literal(e.getKey().getPath() + ": ").formatted(Formatting.GRAY))
-				.append(Texts.join(e.getValue().stream().map(t -> t.asText(this)).toList(), Text.literal(", ").formatted(Formatting.GRAY)))
+				.append(Texts.join(e.getValue().stream().filter(t -> this.get(t) != null && (t.emptyChecker() == null || t.isPrecious(this))).map(t -> t.asText(this)).toList(), Text.literal(", ").formatted(Formatting.GRAY)))
 		).toList();
 	}
 }
