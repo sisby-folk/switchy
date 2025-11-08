@@ -12,5 +12,6 @@
 	"path": "cardinal_components.trinkets:trinkets",
 	"preview": "$**[][].Items[].id",
 	"prefix": "💍",
+	"emptyChecker": "$**[][].Items[].id",
 	"group": "inventory"
 }

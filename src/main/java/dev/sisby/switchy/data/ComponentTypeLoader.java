@@ -91,14 +91,40 @@ public class ComponentTypeLoader extends JsonDataLoader implements IdentifiableR
 					provider = v -> Text.literal(Objects.toString(v));
 				}
 			}
+			if (checker == null) {
+				if (type.emptyChecker != null && type.emptyChecker.startsWith("$")) {
+					String nbtPath = type.emptyChecker.substring(1);
+					int decompositions = 0;
+					while (nbtPath.startsWith("*")) {
+						nbtPath = nbtPath.substring(1);
+						decompositions++;
+					}
+					NbtPathArgumentType.NbtPath checkerPath = NbtPathArgumentType.nbtPath().parse(new StringReader(nbtPath));
+					int finalDecompositions = decompositions;
+					checker = v -> {
+						try {
+							NbtElement element = (NbtElement) v;
+							int decomposed = 0;
+							while (decomposed < finalDecompositions) {
+								element = FormatUtils.decompose(element);
+								decomposed++;
+							}
+							return checkerPath.get(element).stream().allMatch(FormatUtils::isEmpty);
+						} catch (CommandSyntaxException e) {
+							return true;
+						}
+					};
+				}
+			}
 			SwitchyComponentType.TextProvider<T> finalProvider = provider;
 			SwitchyComponentType.TextProvider<T> prefixedPreviewer = v -> Text.empty().append(Text.literal(Objects.requireNonNullElse(type.prefix, "")).formatted(Formatting.GRAY)).append(finalProvider.toText(v));
 			NbtPathArgumentType.NbtPath path = NbtPathArgumentType.nbtPath().parse(new StringReader(type.path));
+			SwitchyComponentType.EmptyChecker<T> finalChecker = checker;
 			types.register(id, codec, b -> b
 				.nbtSwitcher(path)
 				.textProvider(prefixedPreviewer)
 				.argumentEditor(editor)
-				.emptyChecker(checker)
+				.emptyChecker(finalChecker)
 				.group(type.group == null ? null : Identifier.tryParse(type.group))
 				.hidden(type.hidden != null && type.hidden)
 				.previewPriority(type.priority == null ? 0 : type.priority)
