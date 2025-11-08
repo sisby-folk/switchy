@@ -2,5 +2,6 @@
 	"enabled": true,
 	"codec": "nbt",
 	"path": "ActiveEffects",
-	"preview": "nbt"
+	"preview": "nbt",
+	"group": "status"
 }

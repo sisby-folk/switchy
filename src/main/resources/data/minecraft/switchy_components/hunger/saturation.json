@@ -4,6 +4,6 @@
 	"path": "foodSaturationLevel",
 	"preview": "halves",
 	"prefix": "+🍖x",
-	"group": "hunger",
+	"group": "status",
 	"default": 5.0
 }

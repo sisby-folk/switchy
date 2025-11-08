@@ -4,5 +4,6 @@
 	"path": "Health",
 	"preview": "halves",
 	"prefix": "❤x",
+	"group": "status",
 	"default": 20.0
 }
