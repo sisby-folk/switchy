@@ -3,7 +3,7 @@
 	"codec": "inventory",
 	"path": "Inventory",
 	"preview": "inventory",
-	"prefix": "🧰 ",
+	"priority": 100,
 	"emptyChecker": "inventory",
 	"group": "inventory",
 	"default": []

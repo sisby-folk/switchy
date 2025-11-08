@@ -4,6 +4,7 @@
 	"path": "foodSaturationLevel",
 	"preview": "halves",
 	"prefix": "+🍖x",
+	"priority": 45,
 	"group": "status",
 	"default": 5.0
 }

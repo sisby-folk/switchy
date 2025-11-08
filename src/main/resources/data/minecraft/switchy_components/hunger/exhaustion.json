@@ -4,6 +4,7 @@
 	"path": "foodExhaustionLevel",
 	"preview": "halves",
 	"prefix": "-💨x",
+	"priority": 40,
 	"group": "status",
 	"default": 0.0,
 	"hidden": true

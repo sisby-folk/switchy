@@ -55,6 +55,8 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	boolean hidden();
 
+	int previewPriority();
+
 	default void tryInitialize(Collection<SwitchyComponentMap> consumer, NbtCompound nbt, ServerPlayerEntity player, String profileId) {
 		Initializer<T> initializer = initializer();
 		if (initializer == null) return;
@@ -234,7 +236,8 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		@Nullable TextProvider<T> textProvider,
 		@Nullable ArgumentEditor<T> argumentEditor,
 		@Nullable Identifier group,
-		boolean hidden
+		boolean hidden,
+		int previewPriority
 	) implements SwitchyComponentType<T> {
 		@Override
 		public String toString() {
@@ -255,6 +258,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		private @Nullable ArgumentEditor<T> argumentEditor;
 		private @Nullable Identifier group;
 		private boolean hidden = false;
+		private int previewPriority = 0;
 
 		public Builder(@NotNull Identifier id, @NotNull Codec<T> codec) {
 			this.id = id;
@@ -309,6 +313,11 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 			return this;
 		}
 
+		public Builder<T> previewPriority(int priority) {
+			this.previewPriority = priority;
+			return this;
+		}
+
 		public SwitchyComponentType<T> build() {
 			return new SwitchyComponentType.SimpleSwitchyComponentType<>(
 				this.id,
@@ -322,7 +331,8 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 				this.textProvider,
 				this.argumentEditor,
 				this.group,
-				this.hidden
+				this.hidden,
+				this.previewPriority
 			);
 		}
 	}

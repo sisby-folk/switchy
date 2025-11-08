@@ -4,6 +4,7 @@
 	"path": "foodLevel",
 	"preview": "halves",
 	"prefix": "🍖x",
+	"priority": 50,
 	"group": "status",
 	"default": 20
 }

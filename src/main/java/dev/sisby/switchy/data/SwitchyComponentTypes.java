@@ -28,12 +28,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 @SuppressWarnings("unused")
@@ -114,8 +115,13 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
 	public static Map<Identifier, List<SwitchyComponentType<?>>> grouped(Set<SwitchyComponentType<?>> keyset) {
-		Map<Identifier, List<SwitchyComponentType<?>>> grouped = new LinkedHashMap<>();
-		for (SwitchyComponentType<?> t : keyset.stream().sorted(Comparator.comparing(t -> t.id().toString())).toList()) {
+		Comparator<Identifier> prioritizedIdComparator = Comparator.comparing((Function<Identifier, Boolean>) id -> !id.getNamespace().equals("switchy"))
+			.thenComparing(id -> !id.getNamespace().equals("minecraft"))
+			.thenComparing(id -> id);
+		Map<Identifier, List<SwitchyComponentType<?>>> grouped = new TreeMap<>(prioritizedIdComparator);
+		Comparator<SwitchyComponentType<?>> comparator = Comparator.comparing((Function<SwitchyComponentType<?>, Integer>) SwitchyComponentType::previewPriority, Comparator.reverseOrder())
+			.thenComparing(t -> Objects.requireNonNullElse(t.group(), t.id()), prioritizedIdComparator);
+		for (SwitchyComponentType<?> t : keyset.stream().sorted(comparator).toList()) {
 			Identifier group = t.group();
 			grouped.computeIfAbsent(group != null ? group : t.id(), k -> new ArrayList<>()).add(t);
 		}

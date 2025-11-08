@@ -3,5 +3,6 @@
 	"codec": "nbt",
 	"path": "ActiveEffects",
 	"preview": "nbt",
+	"priority": -100,
 	"group": "status"
 }
