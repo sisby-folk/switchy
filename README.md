@@ -2,7 +2,8 @@
 <center><img alt="mod preview" src="https://github.com/user-attachments/assets/213a47e5-55d1-4f46-a109-c1a05f47ced4"/></center>
 
 <center>
-Serverside player profiles for hotseat multiplayer, adventure maps, and plural systems.
+Serverside player profiles for hotseat multiplayer, adventure maps, and plural systems.<br/>
+<b>Requires <a href="https://modrinth.com/mod/connector">Connector</a> and <a href="https://modrinth.com/mod/forgified-fabric-api">FFAPI</a> on (neo)forge.<br/></b>
 </center>
 
 ---
