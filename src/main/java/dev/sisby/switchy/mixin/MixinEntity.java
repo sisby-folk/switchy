@@ -18,9 +18,12 @@ public class MixinEntity {
 			NbtCompound hotSwap = sp.switchy$hotSwapData();
 			if (hotSwap != null) {
 				if (self.getServer().isHost(spe.getGameProfile())) { // hosts don't support reconfiguration unless we patch this
-					self.getServer().getSaveProperties().getPlayerData().getKeys().clear();
-					self.getServer().getSaveProperties().getPlayerData().copyFrom(hotSwap);
-					sp.switchy$getPlayerData().writeNbt(self.getServer().getSaveProperties().getPlayerData());
+					NbtCompound levelDat = self.getServer().getSaveProperties().getPlayerData();
+					if (levelDat != null) {
+						levelDat.getKeys().clear();
+						levelDat.copyFrom(hotSwap);
+						sp.switchy$getPlayerData().writeNbt(levelDat);
+					}
 				}
 				nbt.copyFrom(hotSwap);
 				sp.switchy$getPlayerData().writeNbt(nbt);
