@@ -1,0 +1,16 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "pehkui"
+      ]
+    }
+  ],
+  "enabled": true,
+  "codec": "nbt",
+  "path": "pehkui:scale_data_types.pehkui:width",
+  "preview": "$scale",
+  "prefix": "↔️x",
+  "group": "pehkui:scale"
+}
