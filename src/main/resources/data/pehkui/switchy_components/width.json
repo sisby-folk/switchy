@@ -11,6 +11,6 @@
   "codec": "nbt",
   "path": "pehkui:scale_data_types.pehkui:width",
   "preview": "$scale",
-  "prefix": "↔️x",
+  "prefix": "↔x",
   "group": "pehkui:scale"
 }
