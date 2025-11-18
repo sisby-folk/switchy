@@ -18,21 +18,18 @@ public class MixinClientPlayNetworkHandler {
 	@WrapOperation(method = "onDisconnected", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;setScreen(Lnet/minecraft/client/gui/screen/Screen;)V"))
 	private void reconnectOnSwitch(MinecraftClient client, Screen screen, Operation<Void> original, Text reason) {
 		ClientPlayNetworkHandler self = (ClientPlayNetworkHandler) (Object) this;
-		if (reason.getString().startsWith("[Switchy]")) {
-			if (self.getServerInfo() != null) {
-				ConnectScreen.connect(new TitleScreen(false), MinecraftClient.getInstance(), ServerAddress.parse(self.getServerInfo().address), self.getServerInfo(), false);
-			} else {
-				((SwitchyClient) client).switchy$hotReconnect();
-			}
+		if (reason.getString().startsWith("[Switchy]") && self.getServerInfo() != null) {
+			ConnectScreen.connect(new TitleScreen(false), MinecraftClient.getInstance(), ServerAddress.parse(self.getServerInfo().address), self.getServerInfo(), false);
+		} else if (reason.getString().startsWith("[Switchy]") && ((SwitchyClient) client).switchy$hotReconnect()) {
+			// pass
 		} else {
 			original.call(client, screen);
 		}
 	}
 
 	@WrapOperation(method = "onDisconnected", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;disconnect()V"))
-	private void singleplayerHotDisconnect(MinecraftClient client, Operation<Void> original, Text reason) {
-		ClientPlayNetworkHandler self = (ClientPlayNetworkHandler) (Object) this;
-		if (reason.getString().startsWith("[Switchy]") && self.getServerInfo() == null) {
+	private void noShutdownOnSwitchyDisconnect(MinecraftClient client, Operation<Void> original, Text reason) {
+		if (reason.getString().startsWith("[Switchy]")) {
 			((SwitchyClient) client).switchy$hotDisconnect();
 		} else {
 			original.call(client);

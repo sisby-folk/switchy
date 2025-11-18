@@ -32,10 +32,12 @@ public class MixinMinecraftClient implements SwitchyClient {
 		MinecraftClient self = (MinecraftClient) (Object) this;
 		switchy$hotSwapping = true;
 		self.disconnect();
+		switchy$hotSwapping = false;
 	}
 
 	@Override
-	public void switchy$hotReconnect() {
+	public boolean switchy$hotReconnect() {
+		if (switchy$hotSwap == null) return false;
 		MinecraftClient client = (MinecraftClient) (Object) this;
 		integratedServerRunning = true;
 		Duration duration = Duration.ZERO;
@@ -47,13 +49,13 @@ public class MixinMinecraftClient implements SwitchyClient {
 		integratedServerConnection = clientConnection;
 		server = switchy$hotSwap;
 		switchy$hotSwap = null;
+		return true;
 	}
 
 	@WrapOperation(method = "disconnect(Lnet/minecraft/client/gui/screen/Screen;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/integrated/IntegratedServer;isStopping()Z"))
 	public boolean skipWaitingForShutdown(IntegratedServer instance, Operation<Boolean> original) {
 		if (switchy$hotSwapping) {
 			switchy$hotSwap = instance;
-			switchy$hotSwapping = false;
 			return true;
 		}
 		return original.call(instance);
