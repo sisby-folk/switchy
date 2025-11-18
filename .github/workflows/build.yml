@@ -52,20 +52,3 @@ jobs:
           path: |
             build/libs/*.jar
             !build/libs/*-sources.jar
-
-      - name: Github Publish
-        if: github.event_name == 'release' && github.event.action == 'published'
-        uses: AButler/upload-release-assets@v3.0
-        with:
-          files: 'build/libs/*.jar;!build/libs/*-sources.jar'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Modrinth Publish
-        env:
-          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
-          CHANGELOG: ${{ github.event.release.body }}
-        if: ${{ github.event_name == 'release' && github.event.action == 'published' && env.MODRINTH_TOKEN != '' }}
-        run: |
-          ./gradlew --no-configuration-cache modrinth
-          ./gradlew --no-configuration-cache modrinthSyncBody
-
