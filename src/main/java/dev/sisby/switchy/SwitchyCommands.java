@@ -224,6 +224,14 @@ public class SwitchyCommands {
 		return 1;
 	}
 
+	private static int switchNextProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
+		return switchProfile(player, data, feedback, data.profileAfter(data.current()));
+	}
+
+	private static int switchRandomProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
+		return switchProfile(player, data, feedback, data.randomBesides(data.current(), player.getRandom()));
+	}
+
 	public static <T> int editComponent(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId, SwitchyComponentType<T> type, T value) {
 		if (!data.componentSet().contains(type)) {
 			feedback.accept(prefix().append(Text.literal("can't edit a shared component!").formatted(Formatting.YELLOW)));
@@ -367,6 +375,10 @@ public class SwitchyCommands {
 					.then(profile(false)
 						.executes(c -> execute(c, (i, p, d, f) -> switchProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase())))
 					)
+					.executes(c -> execute(c, (i, p, d, f) -> switchNextProfile(p, d, f)))
+				)
+				.then(CommandManager.literal("switch?")
+					.executes(c -> execute(c, (i, p, d, f) -> switchRandomProfile(p, d, f)))
 				)
 				.then(CommandManager.literal("view")
 					.then(profile(true)

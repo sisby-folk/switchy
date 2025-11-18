@@ -31,10 +31,12 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -324,6 +326,19 @@ public class SwitchyPlayerData {
 				}
 			}
 		}
+	}
+
+	public String profileAfter(String current) {
+		if (!profileExists(current)) throw new ProfileMissingException(current);
+		List<String> orderedProfiles = profiles.keySet().stream().sorted().toList();
+		return orderedProfiles.get((orderedProfiles.indexOf(current) + 1) % orderedProfiles.size());
+	}
+
+	public String randomBesides(String current, Random random) {
+		if (!profileExists(current)) throw new ProfileMissingException(current);
+		List<String> orderedProfiles = new ArrayList<>(profiles.keySet().stream().sorted().toList());
+		orderedProfiles.remove(current);
+		return orderedProfiles.get(random.nextInt(orderedProfiles.size()));
 	}
 
 	public record ProfileImportData(String name, @Nullable String display_name, @Nullable String color, @Nullable String pronouns, @Nullable String description) {}
