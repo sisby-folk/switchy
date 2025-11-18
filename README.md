@@ -22,6 +22,8 @@ Profile data is defined by player-toggleable _components_, including:
 - [Trinkets](modrinth.com/mod/trinkets) slots
 - [Origins](https://modrinth.com/mod/origins) origins
 
+This means you can adjust profiles to only contain some of the above, e.g. just nicknames, skins, and origins.
+
 ## Usage
 
 Switchy utilizes a command-based text interface with tooltips and clickable text. 
@@ -31,11 +33,9 @@ Running `/switchy help` will provide a list of top-level commands, but in short:
 - Run `/switchy components` to toggle components.
 - Run `/switchy import [url].json` to import named profiles from [pluralkit](https://pluralkit.me/guide/#exporting-your-pluralkit-data)
 
-Note that on **1.20 and below**, switching profiles requires manually reconnecting to the server / reloading the save, making it incompatible with `Open To LAN` worlds.
-
 ## Compatibility
 
-Components are fully data-driven using a mix-and-match system of codecs, previewers, etc.
+Switchy can be used to switch modded data in a modpack by setting up **switchy components** in a datapack:
 
 ```json5
 // data/minecraft/switchy_components/inventory/ender_chest.json (minecraft:inventory/ender_chest)
@@ -52,10 +52,11 @@ Components are fully data-driven using a mix-and-match system of codecs, preview
 }
 ```
 
-Feel free to PR additional generic codecs, previewers, and empty checkers.
+Feel free to browse the [included components](https://github.com/sisby-folk/switchy/tree/1.20/src/main/resources/data) for examples.
 
-Switching data that isn't stored in player NBT (as is done for `switchy:name` for Styled Nicknames compat) is not possible without a custom addon.<br/> 
-API TBD - Let us know if you're a mod developer seeking API features for integration on the [issues page](https://github.com/sisby-folk/switchy/issues).
+You're welcome to PR datapack components (with load conditions), along with any additional previewers etc.
+
+Switching data outside player NBT requires an addon. API TBD - Reach out if you're a dev seeking API integration on the [issues page](https://github.com/sisby-folk/switchy/issues).
 
 ## Afterword
 
