@@ -3,7 +3,6 @@ package dev.sisby.switchy.mixin;
 import dev.sisby.switchy.duck.SwitchyPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,17 +13,9 @@ public class MixinEntity {
 	@Inject(method = "writeNbt", at = @At("HEAD"), cancellable = true)
 	public void applyHotSwapData(NbtCompound nbt, CallbackInfoReturnable<NbtCompound> cir) {
 		Entity self = (Entity) (Object) this;
-		if (self instanceof SwitchyPlayer sp && self instanceof ServerPlayerEntity spe) { // mods will overwrite our hotswap data if we don't do this up here.
+		if (self instanceof SwitchyPlayer sp) { // mods will overwrite our hotswap data if we don't do this up here.
 			NbtCompound hotSwap = sp.switchy$hotSwapData();
 			if (hotSwap != null) {
-				if (self.getServer().isHost(spe.getGameProfile())) { // hosts don't support reconfiguration unless we patch this
-					NbtCompound levelDat = self.getServer().getSaveProperties().getPlayerData();
-					if (levelDat != null) {
-						levelDat.getKeys().clear();
-						levelDat.copyFrom(hotSwap);
-						sp.switchy$getPlayerData().writeNbt(levelDat);
-					}
-				}
 				nbt.copyFrom(hotSwap);
 				sp.switchy$getPlayerData().writeNbt(nbt);
 				cir.setReturnValue(nbt);
