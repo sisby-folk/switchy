@@ -3,6 +3,7 @@
 plugins {
 	id "maven-publish"
 	alias libs.plugins.loom
+	alias libs.plugins.githubRelease
 	alias libs.plugins.minotaur
 }
 
@@ -75,6 +76,19 @@ publishing {
 	}
 }
 
+githubRelease {
+	token = "$System.env.GITHUB_TOKEN"
+	owner = project.user
+	repo = slug
+	tagName = "v${modVersion}+${tagBranch}"
+	targetCommitish = tagBranch
+	releaseAssets = remapJar
+	releaseName = "v${modVersion}"
+	allowUploadToExisting = true
+	generateReleaseNotes = true
+	body = !file("CHANGELOG.md").exists() ? "" : rootProject.file("CHANGELOG.md").text
+}
+
 modrinth {
 	token = "$System.env.MODRINTH_TOKEN"
 	projectId = slug
@@ -82,9 +96,16 @@ modrinth {
 	uploadFile = remapJar
 	gameVersions = compatibleVersions.split(", ").toList()
 	loaders = compatibleLoaders.split(", ").toList()
-	changelog = "$System.env.CHANGELOG"
-	syncBodyFrom = "<!--DO NOT EDIT MANUALLY: synced from gh readme-->\n" + rootProject.file("README.md").text
+	changelog = !file("CHANGELOG.md").exists() ? "" : rootProject.file("CHANGELOG.md").text + "\n\nChangelog: https://github.com/${user}/${slug}/releases/tag/v${modVersion}+${tagBranch}"
+	syncBodyFrom = rootProject.file("README.md").text
 	dependencies {
-		required.version "fabric-api", libs.versions.fapi.get()
+		required.version libs.fapi.get().getName(), libs.versions.fapi.get()
 	}
+}
+
+tasks.register("fullRelease") {
+	group "publishing"
+	dependsOn "githubRelease"
+	dependsOn "modrinth"
+	dependsOn "publish"
 }
