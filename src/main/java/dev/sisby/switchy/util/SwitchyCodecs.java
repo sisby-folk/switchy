@@ -8,26 +8,34 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
+import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public interface SwitchyCodecs {
-	Codec<Set<Identifier>> IDENTIFIER_SET_CODEC = Codec.list(Identifier.CODEC).xmap(LinkedHashSet::new, ArrayList::new);
+	PrimitiveCodec<Byte> BYTE = new PrimitiveCodec<>() {
+		@Override
+		public <T> DataResult<Byte> read(final DynamicOps<T> ops, final T input) {
+			return ops.getNumberValue(input).map(Number::byteValue);
+		}
+
+		@Override
+		public <T> T write(final DynamicOps<T> ops, final Byte value) {
+			return ops.createByte(value);
+		}
+	};
 	Codec<NbtElement> NBT = Codec.PASSTHROUGH.comapFlatMap(dynamic -> DataResult.success(dynamic.convert(NbtOps.INSTANCE).getValue()), nbt -> new Dynamic<>(NbtOps.INSTANCE, nbt));
 	MapCodec<ItemStack> ITEM_STACK_MAP_CODEC = new RecursiveMapCodec<>(
 		codec -> RecordCodecBuilder.mapCodec(
@@ -84,7 +92,7 @@ public interface SwitchyCodecs {
 	record StackWithSlot(int slot, ItemStack stack) {
 		public static final Codec<StackWithSlot> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-				Codec.intRange(0, 255).fieldOf("Slot").orElse(0).forGetter(StackWithSlot::slot),
+				BYTE.fieldOf("Slot").xmap(b -> b & 0xFF, Integer::byteValue).forGetter(StackWithSlot::slot),
 				ITEM_STACK_MAP_CODEC.forGetter(StackWithSlot::stack)
 			).apply(instance, StackWithSlot::new)
 		);
