@@ -3,7 +3,9 @@ package dev.sisby.switchy.util;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.component.ComponentChanges;
 import net.minecraft.item.ItemStack;
@@ -20,7 +22,17 @@ import java.util.List;
 import java.util.Set;
 
 public interface SwitchyCodecs {
-	Codec<Set<Identifier>> IDENTIFIER_SET_CODEC = Codec.list(Identifier.CODEC).xmap(LinkedHashSet::new, ArrayList::new);
+	PrimitiveCodec<Byte> BYTE = new PrimitiveCodec<>() {
+		@Override
+		public <T> DataResult<Byte> read(final DynamicOps<T> ops, final T input) {
+			return ops.getNumberValue(input).map(Number::byteValue);
+		}
+
+		@Override
+		public <T> T write(final DynamicOps<T> ops, final Byte value) {
+			return ops.createByte(value);
+		}
+	};
 	Codec<NbtElement> NBT = Codec.PASSTHROUGH.comapFlatMap(dynamic -> DataResult.success(dynamic.convert(NbtOps.INSTANCE).getValue()), nbt -> new Dynamic<>(NbtOps.INSTANCE, nbt));
 	MapCodec<ItemStack> ITEM_STACK_MAP_CODEC = MapCodec.recursive(
 		"ItemStack",
@@ -51,7 +63,7 @@ public interface SwitchyCodecs {
 	record StackWithSlot(int slot, ItemStack stack) {
 		public static final Codec<StackWithSlot> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-				Codec.intRange(0, 255).fieldOf("Slot").orElse(0).forGetter(StackWithSlot::slot),
+				BYTE.fieldOf("Slot").xmap(b -> b & 0xFF, Integer::byteValue).forGetter(StackWithSlot::slot),
 				ITEM_STACK_MAP_CODEC.forGetter(StackWithSlot::stack)
 			).apply(instance, StackWithSlot::new)
 		);
