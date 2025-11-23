@@ -73,11 +73,11 @@ public class SwitchyCommands {
 				throw new RuntimeException(e);
 			}
 			feedback.accept(indent()
-				.append(profile.id().equals(data.current()) ? Text.literal("current").formatted(Formatting.GRAY) : clickable("switch", "/switchy switch %s".formatted(profile.id()), true))
+				.append(profile.id().equals(data.current()) ? Text.literal("current").formatted(Formatting.GRAY) : clickable("switch", "/switchy switch %s".formatted(StringArgumentType.escapeIfRequired(profile.id())), true))
 				.append(" ")
-				.append(clickable("view", "/switchy view %s".formatted(profile.id()), true))
+				.append(clickable("view", "/switchy view %s".formatted(StringArgumentType.escapeIfRequired(profile.id())), true))
 				.append(" ")
-				.append(clickable("edit", "/switchy edit %s ".formatted(profile.id()), false))
+				.append(clickable("edit", "/switchy edit %s ".formatted(StringArgumentType.escapeIfRequired(profile.id())), false))
 				.append(" ")
 				.append(SwitchyComponentTypes.NAME.asText(profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)).setStyle(Style.EMPTY
 					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(profile.asTexts(player), Text.of("\n"))))))
@@ -195,7 +195,7 @@ public class SwitchyCommands {
 			.append(Text.literal(" contains ").formatted(Formatting.GRAY))
 			.append("%d".formatted(profile.components().size()))
 			.append(Text.literal(" components. ").formatted(Formatting.GRAY))
-			.append(profileId.equals(data.current()) ? Text.empty() : clickable("switch", "/switchy switch %s".formatted(profileId), true))
+			.append(profileId.equals(data.current()) ? Text.empty() : clickable("switch", "/switchy switch %s".formatted(StringArgumentType.escapeIfRequired(profileId)), true))
 		);
 		profile.components().asTexts().forEach(componentText -> feedback.accept(indent().append(componentText)));
 		return profile.components().size();
@@ -429,7 +429,7 @@ public class SwitchyCommands {
 	}
 
 	private static RequiredArgumentBuilder<ServerCommandSource, String> profile(boolean includeCurrent) {
-		return CommandManager.argument("profile", StringArgumentType.word()).suggests((c, b) -> CommandSource.suggestMatching(
+		return CommandManager.argument("profile", StringArgumentType.string()).suggests((c, b) -> CommandSource.suggestMatching(
 			(Iterable<String>) map(c, (i, p, d, f) -> includeCurrent ? d.keySet() : Sets.difference(d.keySet(), Set.of(d.current())) , false), b));
 	}
 
