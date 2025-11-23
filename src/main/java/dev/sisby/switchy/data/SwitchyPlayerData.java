@@ -1,9 +1,11 @@
 package dev.sisby.switchy.data;
 
 import com.google.common.collect.Sets;
+import com.google.gson.JsonElement;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.SwitchyCommands;
@@ -342,7 +344,9 @@ public class SwitchyPlayerData {
 		return orderedProfiles.get(random.nextInt(orderedProfiles.size()));
 	}
 
-	public record ProfileImportData(String name, @Nullable String display_name, @Nullable String color, @Nullable String pronouns, @Nullable String description) {}
+	public record ProxyTag(@Nullable String prefix, @Nullable String suffix) {}
+
+	public record ProfileImportData(String name, @Nullable String display_name, @Nullable String color, @Nullable String pronouns, @Nullable String description, @Nullable String avatar_url, @Nullable List<ProxyTag> proxy_tags, @Nullable Map<String, JsonElement> components) {}
 
 	private static final Pattern PARENTHESES = Pattern.compile("([<(\\[][^>)\\]]*[)>\\]])");
 
@@ -358,7 +362,7 @@ public class SwitchyPlayerData {
 			if (data.display_name() != null) { // discord is better with long names. let's put it in the bio instead
 				Matcher matcher = PARENTHESES.matcher(data.display_name());
 				while (matcher.find()) {
-					bracketed.append(matcher.group());
+					bracketed.append(matcher.group(1));
 				}
 			}
 			String newName = "<hover:'%s%s | %s%s'><#%s>%s".formatted(
@@ -371,6 +375,15 @@ public class SwitchyPlayerData {
 			if (!newName.equals(profile.get(SwitchyComponentTypes.NAME))) {
 				if (current.equals(id)) newCurrent = profile;
 				profile.set(SwitchyComponentTypes.NAME, newName);
+			}
+			if (data.components() != null) {
+				for (String componentKey : data.components().keySet()) {
+					SwitchyComponentType<?> type = profile.components().keySet().stream().filter(t -> t.id().toString().equals(componentKey)).findFirst().orElse(null);
+					if (type != null && type.importable()) {
+						if (current.equals(id)) newCurrent = profile;
+						type.decode(JsonOps.INSTANCE, data.components.get(componentKey), profile.components());
+					}
+				}
 			}
 		}
 		if (newCurrent != null) {

@@ -5,6 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.SwitchyCommands;
 import dev.sisby.switchy.exception.ComponentFailedInitializeException;
@@ -24,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -55,7 +57,17 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	boolean hidden();
 
+	boolean importable();
+
 	int previewPriority();
+
+	default <S> Optional<S> encode(DynamicOps<S> ops, SwitchyComponentMap components) {
+		return codec().encodeStart(ops, components.get(this)).resultOrPartial(Switchy.LOGGER::error);
+	}
+
+	default <S> void decode(DynamicOps<S> ops, S input, SwitchyComponentMap components) {
+		codec().decode(ops, input).resultOrPartial(Switchy.LOGGER::error).ifPresent(p -> components.set(this, p.getFirst()));
+	}
 
 	default void tryInitialize(Collection<SwitchyComponentMap> consumer, NbtCompound nbt, ServerPlayerEntity player, String profileId) {
 		Initializer<T> initializer = initializer();
@@ -242,6 +254,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		@Nullable ArgumentEditor<T> argumentEditor,
 		@Nullable Identifier group,
 		boolean hidden,
+		boolean importable,
 		int previewPriority
 	) implements SwitchyComponentType<T> {
 		@Override
@@ -263,6 +276,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		private @Nullable ArgumentEditor<T> argumentEditor;
 		private @Nullable Identifier group;
 		private boolean hidden = false;
+		private boolean importable = false;
 		private int previewPriority = 0;
 
 		public Builder(@NotNull Identifier id, @NotNull Codec<T> codec) {
@@ -318,6 +332,11 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 			return this;
 		}
 
+		public Builder<T> importable(boolean importable) {
+			this.importable = importable;
+			return this;
+		}
+
 		public Builder<T> previewPriority(int priority) {
 			this.previewPriority = priority;
 			return this;
@@ -337,6 +356,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 				this.argumentEditor,
 				this.group,
 				this.hidden,
+				this.importable,
 				this.previewPriority
 			);
 		}
