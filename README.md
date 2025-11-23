@@ -56,7 +56,7 @@ Feel free to browse the [included components](https://github.com/sisby-folk/swit
 
 You're welcome to PR datapack components (with load conditions), along with any additional previewers etc.
 
-Switching data outside player NBT requires an addon. API TBD - Reach out if you're a dev seeking API integration on the [issues page](https://github.com/sisby-folk/switchy/issues).
+Switching data outside player NBT requires an addon. API TBD - Interested addon devs can hit up the [issues page](https://github.com/sisby-folk/switchy/issues).
 
 ## Afterword
 
