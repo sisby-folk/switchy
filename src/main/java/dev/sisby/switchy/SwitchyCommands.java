@@ -526,7 +526,7 @@ public class SwitchyCommands {
 
 	private static RequiredArgumentBuilder<ServerCommandSource, String> profile(boolean includeCurrent) {
 		return CommandManager.argument("profile", StringArgumentType.string()).suggests((c, b) -> CommandSource.suggestMatching(
-			(Iterable<String>) map(c, (i, p, d, f) -> includeCurrent ? d.keySet() : Sets.difference(d.keySet(), Set.of(d.current())).stream().map(StringArgumentType::escapeIfRequired).toList(), false), b));
+			(Iterable<String>) map(c, (i, p, d, f) -> (includeCurrent ? d.keySet() : Sets.difference(d.keySet(), Set.of(d.current()))).stream().map(StringArgumentType::escapeIfRequired).toList(), false), b));
 	}
 
 	private static RequiredArgumentBuilder<ServerCommandSource, Identifier> groupedComponent(Boolean enabled) {
