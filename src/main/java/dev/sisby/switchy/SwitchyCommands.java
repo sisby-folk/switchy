@@ -135,7 +135,8 @@ public class SwitchyCommands {
 		"/switchy", "switch profiles",
 		"/switchy components", "configure components",
 		"/switchy delete ", "delete a profile",
-		"/switchy import ", "add profiles from PK",
+		"/switchy import ", "add profiles from PK.JSON",
+		"/switchy export", "export profiles to PK.JSON",
 		"/switchy update ", "update profiles from PK"
 	));
 

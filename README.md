@@ -30,8 +30,10 @@ Switchy utilizes a command-based text interface with tooltips and clickable text
 
 Running `/switchy help` will provide a list of top-level commands, but in short:
 - Run `/switchy` to edit and switch between profiles
-- Run `/switchy components` to toggle components.
-- Run `/switchy import [url].json` to import named profiles from [pluralkit](https://pluralkit.me/guide/#exporting-your-pluralkit-data)
+- Run `/switchy components` to toggle components
+- Run `/switchy import [url].json` to import profiles from a Switchy/[PK](https://pluralkit.me/guide/#exporting-your-pluralkit-data) export
+- Run `/switchy export` to export name/skin data to the clipboard (upload somewhere to import)
+  - Switchy exports can also be created/edited using [Utter](https://utter.y2k.diy/), which preserves exported skin data.
 
 ## Compatibility
 
