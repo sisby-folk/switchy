@@ -345,7 +345,7 @@ public class SwitchyPlayerData {
 
 	public record ProxyTag(@Nullable String prefix, @Nullable String suffix) {}
 
-	public record ProfileImportData(String name, @Nullable String display_name, @Nullable String color, @Nullable String pronouns, @Nullable String description, @Nullable List<ProxyTag> proxy_tags, @Nullable Map<String, JsonElement> components) {}
+	public record ProfileImportData(String name, @Nullable String display_name, @Nullable String color, @Nullable String pronouns, @Nullable String description, @Nullable String avatar_url, @Nullable List<ProxyTag> proxy_tags, @Nullable Map<String, JsonElement> components) {}
 
 	private static final Pattern PARENTHESES = Pattern.compile("([<(\\[][^>)\\]]*[)>\\]])");
 

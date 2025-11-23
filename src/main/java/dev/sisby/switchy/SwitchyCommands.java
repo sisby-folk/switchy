@@ -2,13 +2,17 @@ package dev.sisby.switchy;
 
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.mojang.authlib.minecraft.MinecraftProfileTexture;
+import com.mojang.authlib.yggdrasil.response.MinecraftTexturesPayload;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.JsonOps;
+import com.mojang.util.UUIDTypeAdapter;
 import dev.sisby.switchy.data.SwitchyComponentType;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
 import dev.sisby.switchy.data.SwitchyPlayerData;
@@ -22,6 +26,8 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.IdentifierArgumentType;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -41,6 +47,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +55,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -201,7 +209,7 @@ public class SwitchyCommands {
 						type.encode(JsonOps.INSTANCE, profile.components()).ifPresent(e -> components.put(type.id().toString(), e));
 					}
 				}
-				// attempt to rip PK data
+				// attempt to rip PK name data
 				String name = profile.get(SwitchyComponentTypes.NAME);
 				String color = null;
 				String description = null;
@@ -234,7 +242,22 @@ public class SwitchyCommands {
 					}
 					name = (SwitchyComponentTypes.NAME.asText(name).getString() + bracketed).trim(); // strip tags
 				}
-				members.add(new SwitchyPlayerData.ProfileImportData(profileId, name, color, pronouns, description, List.of(new SwitchyPlayerData.ProxyTag(profileId + ":", null)), components));
+				// bodge player renderer avatar from skin
+				String avatarUrl = null;
+				if (Switchy.CONFIG.exportAvatarUrl.contains("%s")) {
+					String key = player.getGameProfile().getName();
+					Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = player.getServer().getSessionService().getTextures(player.getGameProfile(), false);
+					SwitchyComponentType<?> skinComponent = SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN);
+					if (skinComponent != null && profile.contains(skinComponent) && profile.get(skinComponent) instanceof NbtCompound skinCompound && skinCompound.get("value") instanceof NbtString valueString) {
+						Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
+						MinecraftTexturesPayload payload = gson.fromJson(new String(Base64.getDecoder().decode(valueString.asString())), MinecraftTexturesPayload.class);
+						textures = payload.getTextures();
+					}
+					MinecraftProfileTexture skin = textures.get(MinecraftProfileTexture.Type.SKIN);
+					if (skin != null) key = skin.getHash();
+					avatarUrl = Switchy.CONFIG.exportAvatarUrl.formatted(key);
+				}
+				members.add(new SwitchyPlayerData.ProfileImportData(profileId, name, color, pronouns, description, avatarUrl, List.of(new SwitchyPlayerData.ProxyTag(profileId + ":", null)), components));
 			}
 			feedback.accept(prefix()
 				.append(Text.literal("Exported ").formatted(Formatting.GRAY))

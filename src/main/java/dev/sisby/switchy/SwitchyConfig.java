@@ -8,4 +8,7 @@ public class SwitchyConfig extends WrappedConfig {
 	@Comment("May cause compatibility issues - if you crash when switching in singleplayer, turn this off.")
 	@Comment("Must be enabled to switch as a LAN host.")
 	public boolean fastSingleplayerReconnect = true;
+
+	@Comment("The texture ID avatar renderer to use in exports (for use in e.g. Utter)")
+	public String exportAvatarUrl = "https://vzge.me/bust/256/%s";
 }
