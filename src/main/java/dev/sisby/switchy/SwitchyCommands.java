@@ -247,14 +247,13 @@ public class SwitchyCommands {
 				String avatarUrl = null;
 				if (Switchy.CONFIG.exportAvatarUrl.contains("%s")) {
 					String key = player.getGameProfile().getName();
-					Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = player.getServer().getSessionService().getTextures(player.getGameProfile(), false);
+					MinecraftProfileTexture skin = player.getServer().getSessionService().getTextures(player.getGameProfile()).skin();
 					SwitchyComponentType<?> skinComponent = SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN);
 					if (skinComponent != null && profile.contains(skinComponent) && profile.get(skinComponent) instanceof NbtCompound skinCompound && skinCompound.get("value") instanceof NbtString valueString) {
 						Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
 						MinecraftTexturesPayload payload = gson.fromJson(new String(Base64.getDecoder().decode(valueString.asString())), MinecraftTexturesPayload.class);
-						textures = payload.getTextures();
+						skin = payload.textures().get(MinecraftProfileTexture.Type.SKIN) != null ? payload.textures().get(MinecraftProfileTexture.Type.SKIN) : skin;
 					}
-					MinecraftProfileTexture skin = textures.get(MinecraftProfileTexture.Type.SKIN);
 					if (skin != null) key = skin.getHash();
 					avatarUrl = Switchy.CONFIG.exportAvatarUrl.formatted(key);
 				}
