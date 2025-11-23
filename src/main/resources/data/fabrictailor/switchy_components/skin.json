@@ -8,6 +8,7 @@
 		}
 	],
 	"enabled": true,
+	"importable": true,
 	"codec": "nbt",
 	"path": "fabrictailor:skin_data",
 	"preview": "nbt"

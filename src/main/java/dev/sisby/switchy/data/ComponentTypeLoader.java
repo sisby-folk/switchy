@@ -26,7 +26,7 @@ import java.util.Objects;
 public class ComponentTypeLoader extends JsonDataLoader implements IdentifiableResourceReloadListener {
 	public static final String PATH = "switchy_components";
 	public static final Gson GSON = new Gson();
-	public record EditableComponentType(boolean enabled, String codec, String path, String preview, String prefix, String editor, String emptyChecker, String group, @SerializedName("default") JsonElement defaultValue, Boolean hidden, Integer priority) { }
+	public record EditableComponentType(boolean enabled, String codec, String path, String preview, String prefix, String editor, String emptyChecker, String group, @SerializedName("default") JsonElement defaultValue, Boolean hidden, Boolean importable, Integer priority) { }
 
 	public ComponentTypeLoader() {
 		super(GSON, PATH);
@@ -127,6 +127,7 @@ public class ComponentTypeLoader extends JsonDataLoader implements IdentifiableR
 				.emptyChecker(finalChecker)
 				.group(type.group == null ? null : Identifier.tryParse(type.group))
 				.hidden(type.hidden != null && type.hidden)
+				.importable(type.importable != null && type.importable)
 				.previewPriority(type.priority == null ? 0 : type.priority)
 				.initializer(initializer) // overrides switcher
 			);

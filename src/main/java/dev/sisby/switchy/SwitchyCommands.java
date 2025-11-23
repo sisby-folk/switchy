@@ -2,11 +2,13 @@ package dev.sisby.switchy;
 
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.JsonOps;
 import dev.sisby.switchy.data.SwitchyComponentType;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
 import dev.sisby.switchy.data.SwitchyPlayerData;
@@ -37,7 +39,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -45,10 +50,16 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SwitchyCommands {
+	private static final Pattern COLOR_PATTERN = Pattern.compile("<(?:color:)?#([0-9a-fA-f]{6})>", Pattern.CASE_INSENSITIVE);
+	private static final Pattern BIO_PATTERN = Pattern.compile("<hover:'?([^<'>]+)'?>", Pattern.CASE_INSENSITIVE);
+	private static final Pattern BRACKETED_PATTERN = Pattern.compile("(\\([^()]+\\))", Pattern.CASE_INSENSITIVE);
+
 	public static void greet(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
 		SwitchyPlayerData data = SwitchyPlayerData.ofEarly(handler.getPlayer());
 		if (data == null) return;
@@ -177,6 +188,65 @@ public class SwitchyCommands {
 		}
 	}
 
+	private static int export(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
+		String sysName = null;
+		List<SwitchyPlayerData.ProfileImportData> members = new ArrayList<>();
+		try {
+			for (String profileId : data.keySet()) {
+				SwitchyProfile profile = data.getProfile(profileId, player);
+				Map<String, JsonElement> components = new HashMap<>();
+				// encode importables
+				for (SwitchyComponentType<?> type : profile.components().keySet()) {
+					if (type.importable()) {
+						type.encode(JsonOps.INSTANCE, profile.components()).ifPresent(e -> components.put(type.id().toString(), e));
+					}
+				}
+				// attempt to rip PK data
+				String name = profile.get(SwitchyComponentTypes.NAME);
+				String color = null;
+				String description = null;
+				String pronouns = null;
+				StringBuilder bracketed = new StringBuilder(" ");
+				if (name != null) {
+					Matcher colorMatcher = COLOR_PATTERN.matcher(name);
+					if (colorMatcher.find()) {
+						color = colorMatcher.group(1);
+					}
+					String bio = "";
+					Matcher bioMatcher = BIO_PATTERN.matcher(name);
+					if (bioMatcher.find()) {
+						bio = bioMatcher.group(1);
+					}
+					List<String> splitBio = Arrays.stream(bio.split(" \\| ")).toList();
+					if (splitBio.size() > 1) {
+						String remainder = splitBio.get(0);
+						Matcher bracketedMatcher = BRACKETED_PATTERN.matcher(splitBio.get(0));
+						while (bracketedMatcher.find()) {
+							String group = bracketedMatcher.group(1);
+							remainder = remainder.replace(group, "").trim();
+							bracketed.append(group);
+						}
+						if (!remainder.isEmpty()) pronouns = remainder;
+						if (!player.getGameProfile().getName().equals(splitBio.get(1))) sysName = splitBio.get(1);
+					}
+					if (splitBio.size() > 2) {
+						description = splitBio.get(2);
+					}
+					name = (SwitchyComponentTypes.NAME.asText(name).getString() + bracketed).trim(); // strip tags
+				}
+				members.add(new SwitchyPlayerData.ProfileImportData(profileId, name, color, pronouns, description, List.of(new SwitchyPlayerData.ProxyTag(profileId + ":", null)), components));
+			}
+			feedback.accept(prefix()
+				.append(Text.literal("Exported ").formatted(Formatting.GRAY))
+				.append(Text.literal("%d".formatted(data.size())).formatted(Formatting.GRAY))
+				.append(Text.literal(" profiles. ").formatted(Formatting.GRAY))
+				.append(clickable("copy", SwitchyComponentTypes.GSON.toJson(new PlayerImportData(sysName, members)), ClickEvent.Action.COPY_TO_CLIPBOARD, Formatting.AQUA, "<", ">"))
+			);
+		} catch (NbtException e) {
+			throw new RuntimeException(e);
+		}
+		return data.size();
+	}
 
 	private static int viewProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId) {
 		SwitchyProfile profile;
@@ -408,6 +478,9 @@ public class SwitchyCommands {
 						.executes(c -> execute(c, (i, p, d, f) -> importProfiles(p, d, f, c.getArgument("url", String.class), false)))
 					)
 				)
+				.then(CommandManager.literal("export")
+					.executes(c -> execute(c, SwitchyCommands::export))
+				)
 				.then(CommandManager.literal("components")
 					.then(CommandManager.literal("disable")
 						.then(groupedComponent(true)
@@ -430,7 +503,7 @@ public class SwitchyCommands {
 
 	private static RequiredArgumentBuilder<ServerCommandSource, String> profile(boolean includeCurrent) {
 		return CommandManager.argument("profile", StringArgumentType.string()).suggests((c, b) -> CommandSource.suggestMatching(
-			(Iterable<String>) map(c, (i, p, d, f) -> includeCurrent ? d.keySet() : Sets.difference(d.keySet(), Set.of(d.current())) , false), b));
+			(Iterable<String>) map(c, (i, p, d, f) -> includeCurrent ? d.keySet() : Sets.difference(d.keySet(), Set.of(d.current())).stream().map(StringArgumentType::escapeIfRequired).toList(), false), b));
 	}
 
 	private static RequiredArgumentBuilder<ServerCommandSource, Identifier> groupedComponent(Boolean enabled) {
@@ -451,15 +524,19 @@ public class SwitchyCommands {
 		return Text.empty().append(Text.literal("|| ").formatted(Formatting.DARK_PURPLE));
 	}
 
-	public static MutableText clickable(String name, String command, boolean instant, Formatting formatting, String prefix, String suffix) {
+	public static MutableText clickable(String name, String contents, ClickEvent.Action action, Formatting formatting, String prefix, String suffix) {
 		return Text.empty()
 			.append(Text.literal(prefix).formatted(Formatting.GRAY))
 			.append(Text.literal(name).setStyle(Style.EMPTY
 				.withFormatting(formatting)
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(command + (instant ? "" : "...")).formatted(formatting)))
-				.withClickEvent(new ClickEvent(instant ? ClickEvent.Action.RUN_COMMAND : ClickEvent.Action.SUGGEST_COMMAND, command))
+				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(contents + (action == ClickEvent.Action.SUGGEST_COMMAND ? "..." : "")).formatted(formatting)))
+				.withClickEvent(new ClickEvent(action, contents))
 			))
 			.append(Text.literal(suffix).formatted(Formatting.GRAY));
+	}
+
+	public static MutableText clickable(String name, String contents, boolean instant, Formatting formatting, String prefix, String suffix) {
+		return clickable(name, contents, instant ? ClickEvent.Action.RUN_COMMAND : ClickEvent.Action.SUGGEST_COMMAND, formatting, prefix, suffix);
 	}
 
 	public static MutableText clickable(String name, String command, boolean instant) {
