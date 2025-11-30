@@ -15,6 +15,7 @@ import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
@@ -80,7 +81,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		NbtMutator<T> nbtMutator = nbtMutator();
 		PlayerMutator<T> playerMutator = playerMutator();
 		if (nbtMutator != null) {
-			nbtMutator.mutate(components.get(this), playerData);
+			nbtMutator.mutate(player.getServer().getRegistryManager(), components.get(this), playerData);
 		} else if (playerMutator != null) {
 			playerMutator.mutate(components.get(this), player);
 		}
@@ -121,12 +122,12 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	@FunctionalInterface
 	interface NbtReader<T> {
-		T read(NbtCompound nbt) throws NbtException;
+		T read(DynamicRegistryManager registryManager, NbtCompound nbt) throws NbtException;
 	}
 
 	@FunctionalInterface
 	interface NbtMutator<T> {
-		void mutate(T value, NbtCompound nbt) throws NbtException;
+		void mutate(DynamicRegistryManager registryManager, T value, NbtCompound nbt) throws NbtException;
 	}
 
 	@FunctionalInterface
@@ -184,7 +185,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		@Override
 		public T initialize(NbtCompound playerNbt, ServerPlayerEntity player, String profileId) throws ComponentFailedInitializeException {
 			try {
-				return nbtReader.read(playerNbt);
+				return nbtReader.read(player.getServer().getRegistryManager(), playerNbt);
 			} catch (Exception e) {
 				throw new ComponentFailedInitializeException("", e);
 			}
@@ -201,7 +202,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		}
 
 		@Override
-		public T read(NbtCompound nbt) throws NbtException {
+		public T read(DynamicRegistryManager registryManager, NbtCompound nbt) throws NbtException {
 			try {
 				DataResult<T> result = codec.parse(NbtOps.INSTANCE, nbtPath.get(nbt).get(0));
 				if (result.error().isPresent()) {
@@ -214,7 +215,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		}
 
 		@Override
-		public void mutate(T value, NbtCompound nbt) throws NbtException {
+		public void mutate(DynamicRegistryManager registryManager, T value, NbtCompound nbt) throws NbtException {
 			try {
 				if (value == null) { // special case - erase the key.
 					nbtPath.remove(nbt);

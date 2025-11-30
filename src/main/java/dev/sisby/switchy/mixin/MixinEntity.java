@@ -22,11 +22,11 @@ public class MixinEntity {
 					if (levelDat != null) {
 						levelDat.getKeys().clear();
 						levelDat.copyFrom(hotSwap);
-						sp.switchy$getPlayerData().writeNbt(levelDat);
+						sp.switchy$getPlayerData().writeNbt(spe.getServer().getRegistryManager(), levelDat);
 					}
 				}
 				nbt.copyFrom(hotSwap);
-				sp.switchy$getPlayerData().writeNbt(nbt);
+				sp.switchy$getPlayerData().writeNbt(spe.getServer().getRegistryManager(), nbt);
 				cir.setReturnValue(nbt);
 				cir.cancel();
 			}

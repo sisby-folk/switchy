@@ -1,11 +1,9 @@
 package dev.sisby.switchy.mixin;
 
 import dev.sisby.switchy.Switchy;
-import dev.sisby.switchy.data.SwitchyComponentTypes;
 import dev.sisby.switchy.data.SwitchyPlayerData;
 import dev.sisby.switchy.duck.SwitchyPlayer;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,16 +24,18 @@ public class MixinServerPlayerEntity implements SwitchyPlayer {
 
 	@Override
 	public void switchy$startReload() {
+		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
 		if (switchy$playerData != null) {
 			switchy$reloadData = new NbtCompound();
-			switchy$playerData.writeNbt(switchy$reloadData);
+			switchy$playerData.writeNbt(self.getServer().getRegistryManager(), switchy$reloadData);
 		}
 	}
 
 	@Override
 	public void switchy$finishReload() {
+		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
 		if (switchy$reloadData != null) {
-			switchy$playerData = SwitchyPlayerData.fromNbt(switchy$reloadData);
+			switchy$playerData = SwitchyPlayerData.fromNbt(self.getServer().getRegistryManager(), switchy$reloadData);
 			switchy$reloadData = null;
 		}
 	}
@@ -68,7 +68,7 @@ public class MixinServerPlayerEntity implements SwitchyPlayer {
 	public void readPlayerData(NbtCompound nbt, CallbackInfo ci) {
 		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
 		if (nbt.contains(Switchy.ID)) {
-			switchy$playerData = SwitchyPlayerData.fromNbt(nbt);
+			switchy$playerData = SwitchyPlayerData.fromNbt(self.getServer().getRegistryManager(), nbt);
 			switchy$playerData.validate(self, nbt);
 		} else if (nbt.contains("switchy:presets")) {
 			switchy$playerData = SwitchyPlayerData.create(self, nbt);
@@ -78,7 +78,8 @@ public class MixinServerPlayerEntity implements SwitchyPlayer {
 
 	@Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
 	public void writePlayerData(NbtCompound nbt, CallbackInfo ci) {
-		if (switchy$playerData != null && switchy$reloadData == null) switchy$playerData.writeNbt(nbt);
+		ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
+		if (switchy$playerData != null && switchy$reloadData == null) switchy$playerData.writeNbt(self.getServer().getRegistryManager(), nbt);
 	}
 
 	@Inject(method = "copyFrom", at = @At("TAIL"))
