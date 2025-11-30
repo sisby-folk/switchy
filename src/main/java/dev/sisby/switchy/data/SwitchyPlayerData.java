@@ -22,6 +22,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
@@ -401,7 +402,7 @@ public class SwitchyPlayerData {
 		player.writeNbt(nbt);
 		for (SwitchyComponentType<?> componentType : componentTypes) {
 			if (componentType.nbtReader() != null) {
-				profile.components().set(componentType, componentType.nbtReader().read(nbt));
+				profile.components().set(componentType, componentType.nbtReader().read(player.getServer().getRegistryManager(), nbt));
 			} else if (componentType.playerReader() != null) {
 				profile.components().set(componentType, componentType.playerReader().read(player, profile.id()));
 			}
@@ -452,14 +453,14 @@ public class SwitchyPlayerData {
 		);
 	}
 
-	public static SwitchyPlayerData fromNbt(NbtCompound playerNbt) {
+	public static SwitchyPlayerData fromNbt(DynamicRegistryManager registryManager, NbtCompound playerNbt) {
 		if (SwitchyComponentTypes.instance() == null) {
 			throw new IllegalStateException("Can't load switchy data while the types aren't loaded!");
 		}
 		return SwitchyPlayerData.codec(SwitchyComponentTypes.instance()).parse(NbtOps.INSTANCE, playerNbt.getCompound(Switchy.ID)).resultOrPartial(Switchy.LOGGER::error).orElse(null);
 	}
 
-	public void writeNbt(NbtCompound playerNbt) {
+	public void writeNbt(DynamicRegistryManager registryManager, NbtCompound playerNbt) {
 		if (SwitchyComponentTypes.instance() == null) {
 			throw new IllegalStateException("Can't save switchy data while the types aren't loaded!");
 		}
