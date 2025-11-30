@@ -347,7 +347,11 @@ public class SwitchyPlayerData {
 
 	public record ProfileImportData(String name, @Nullable String display_name, @Nullable String color, @Nullable String pronouns, @Nullable String description, @Nullable String avatar_url, @Nullable List<ProxyTag> proxy_tags, @Nullable Map<String, JsonElement> components) {}
 
-	private static final Pattern PARENTHESES = Pattern.compile("([<(\\[][^>)\\]]*[)>\\]])");
+	private static final Pattern PARENTHESES = Pattern.compile("\\S.*([<(\\[][^>)\\]]*[)>\\]])");
+
+	private static String quickTextEscape(String input) {
+		return input.replace("<", "\\<").replace("'", "\\'");
+	}
 
 	public int importProfiles(List<ProfileImportData> profileData, ServerPlayerEntity player, @Nullable String name, boolean allowNew, Function<Integer, Text> greetingGetter) throws NbtException {
 		int updated = 0;
@@ -365,12 +369,12 @@ public class SwitchyPlayerData {
 				}
 			}
 			String newName = "<hover:'%s%s | %s%s'><#%s>%s".formatted(
-				bracketed.isEmpty() ? "" : bracketed + (data.pronouns() != null ? " - " : ""),
-				Objects.requireNonNullElse(data.pronouns(), ""),
-				Objects.requireNonNullElse(name, player.getGameProfile().getName()),
-				data.description() == null ? "" : " | " + data.description(),
-				Objects.requireNonNullElse(data.color(), "FFFFFF"),
-				Objects.requireNonNullElse(data.display_name(), id).replace(bracketed, "")).trim();
+				bracketed.isEmpty() ? "" : quickTextEscape(bracketed.toString()) + (data.pronouns() != null ? " - " : ""),
+				quickTextEscape(Objects.requireNonNullElse(data.pronouns(), "")),
+				quickTextEscape(Objects.requireNonNullElse(name, player.getGameProfile().getName())),
+				quickTextEscape(data.description() == null ? "" : " | " + data.description()),
+				quickTextEscape(Objects.requireNonNullElse(data.color(), "FFFFFF")),
+				quickTextEscape(Objects.requireNonNullElse(data.display_name(), id).replace(bracketed, "")).trim());
 			if (!newName.equals(profile.get(SwitchyComponentTypes.NAME))) {
 				if (current.equals(id)) newCurrent = profile;
 				profile.set(SwitchyComponentTypes.NAME, newName);

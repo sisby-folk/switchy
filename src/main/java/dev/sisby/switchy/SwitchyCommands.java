@@ -65,7 +65,7 @@ import java.util.stream.Stream;
 
 public class SwitchyCommands {
 	private static final Pattern COLOR_PATTERN = Pattern.compile("<(?:color:)?#([0-9a-fA-f]{6})>", Pattern.CASE_INSENSITIVE);
-	private static final Pattern BIO_PATTERN = Pattern.compile("<hover:'?([^<'>]+)'?>", Pattern.CASE_INSENSITIVE);
+	private static final Pattern BIO_PATTERN = Pattern.compile("<hover:'?((?:\\\\'|.)*?)'?>", Pattern.CASE_INSENSITIVE);
 	private static final Pattern BRACKETED_PATTERN = Pattern.compile("(\\([^()]+\\))", Pattern.CASE_INSENSITIVE);
 
 	public static void greet(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
@@ -197,6 +197,10 @@ public class SwitchyCommands {
 		}
 	}
 
+	private static String quickTextInscape(String input) {
+		return input.replace("\\<", "<").replace("\\'", "'");
+	}
+
 	private static int export(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
 		String sysName = null;
 		List<SwitchyPlayerData.ProfileImportData> members = new ArrayList<>();
@@ -219,12 +223,12 @@ public class SwitchyCommands {
 				if (name != null) {
 					Matcher colorMatcher = COLOR_PATTERN.matcher(name);
 					if (colorMatcher.find()) {
-						color = colorMatcher.group(1);
+						color = quickTextInscape(colorMatcher.group(1));
 					}
 					String bio = "";
 					Matcher bioMatcher = BIO_PATTERN.matcher(name);
 					if (bioMatcher.find()) {
-						bio = bioMatcher.group(1);
+						bio = quickTextInscape(bioMatcher.group(1));
 					}
 					List<String> splitBio = Arrays.stream(bio.split(" \\| ")).toList();
 					if (splitBio.size() > 1) {
