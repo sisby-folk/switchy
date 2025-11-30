@@ -250,7 +250,7 @@ public class SwitchyPlayerData {
 					NbtPathArgumentType.NbtPath path = NbtPathArgumentType.nbtPath().parse(new StringReader((LEGACY_RECOVERIES.get(typeId).getRight())));
 					try {
 						NbtElement element = path.get(moduleCompound).get(0);
-						type.codec().parse(NbtOps.INSTANCE, element).result().ifPresent(v -> profile.set(type, v));
+						type.codec().parse(player.getServer().getRegistryManager().getOps(NbtOps.INSTANCE), element).result().ifPresent(v -> profile.set(type, v));
 						recovered++;
 					} catch (CommandSyntaxException e) {
 						skippedTypeIds.add(typeId);
@@ -386,7 +386,7 @@ public class SwitchyPlayerData {
 					SwitchyComponentType<?> type = profile.components().keySet().stream().filter(t -> t.id().toString().equals(componentKey)).findFirst().orElse(null);
 					if (type != null && type.importable()) {
 						if (current.equals(id)) newCurrent = profile;
-						type.decode(JsonOps.INSTANCE, data.components.get(componentKey), profile.components());
+						type.decode(player.getServer().getRegistryManager().getOps(JsonOps.INSTANCE), data.components.get(componentKey), profile.components());
 					}
 				}
 			}
@@ -457,7 +457,7 @@ public class SwitchyPlayerData {
 		if (SwitchyComponentTypes.instance() == null) {
 			throw new IllegalStateException("Can't load switchy data while the types aren't loaded!");
 		}
-		return SwitchyPlayerData.codec(SwitchyComponentTypes.instance()).parse(NbtOps.INSTANCE, playerNbt.getCompound(Switchy.ID)).resultOrPartial(Switchy.LOGGER::error).orElse(null);
+		return SwitchyPlayerData.codec(SwitchyComponentTypes.instance()).parse(registryManager.getOps(NbtOps.INSTANCE), playerNbt.getCompound(Switchy.ID)).resultOrPartial(Switchy.LOGGER::error).orElse(null);
 	}
 
 	public void writeNbt(DynamicRegistryManager registryManager, NbtCompound playerNbt) {
@@ -465,7 +465,7 @@ public class SwitchyPlayerData {
 			throw new IllegalStateException("Can't save switchy data while the types aren't loaded!");
 		}
 		if (size() > 1) {
-			playerNbt.put(Switchy.ID, SwitchyPlayerData.codec(SwitchyComponentTypes.instance()).encodeStart(NbtOps.INSTANCE, this).resultOrPartial(Switchy.LOGGER::error).orElse(null));
+			playerNbt.put(Switchy.ID, SwitchyPlayerData.codec(SwitchyComponentTypes.instance()).encodeStart(registryManager.getOps(NbtOps.INSTANCE), this).resultOrPartial(Switchy.LOGGER::error).orElse(null));
 		}
 	}
 

@@ -204,7 +204,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		@Override
 		public T read(DynamicRegistryManager registryManager, NbtCompound nbt) throws NbtException {
 			try {
-				DataResult<T> result = codec.parse(NbtOps.INSTANCE, nbtPath.get(nbt).get(0));
+				DataResult<T> result = codec.parse(registryManager.getOps(NbtOps.INSTANCE), nbtPath.get(nbt).get(0));
 				if (result.error().isPresent()) {
 					throw new NbtException("Failed to read from serialized player! %s".formatted(result.error().get().message()));
 				}
@@ -221,7 +221,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 					nbtPath.remove(nbt);
 					return;
 				}
-				DataResult<NbtElement> result = codec.encodeStart(NbtOps.INSTANCE, value);
+				DataResult<NbtElement> result = codec.encodeStart(registryManager.getOps(NbtOps.INSTANCE), value);
 				if (result.error().isPresent()) {
 					throw new NbtException("Failed to serialize component! %s".formatted(result.error().get().message()));
 				}

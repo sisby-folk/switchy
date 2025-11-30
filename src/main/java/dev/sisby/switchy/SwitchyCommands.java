@@ -211,7 +211,7 @@ public class SwitchyCommands {
 				// encode importables
 				for (SwitchyComponentType<?> type : profile.components().keySet()) {
 					if (type.importable()) {
-						type.encode(JsonOps.INSTANCE, profile.components()).ifPresent(e -> components.put(type.id().toString(), e));
+						type.encode(player.getServer().getRegistryManager().getOps(JsonOps.INSTANCE), profile.components()).ifPresent(e -> components.put(type.id().toString(), e));
 					}
 				}
 				// attempt to rip PK name data
