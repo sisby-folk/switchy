@@ -463,7 +463,7 @@ public class SwitchyPlayerData {
 		if (SwitchyComponentTypes.instance() == null) {
 			throw new IllegalStateException("Can't save switchy data while the types aren't loaded!");
 		}
-		if (size() > 1) {
+		if (size() > 1 || componentTypes.size() != SwitchyComponentTypes.instance().keys().size() || !profiles.containsKey("default") || componentTypes.stream().filter(t -> t.nbtReader() == null && t.playerReader() == null).anyMatch(t -> profiles.values().stream().anyMatch(p -> p.contains(t)))) {
 			playerNbt.put(Switchy.ID, SwitchyPlayerData.codec(SwitchyComponentTypes.instance()).encodeStart(NbtOps.INSTANCE, this).getOrThrow(true, Switchy.LOGGER::error));
 		}
 	}
