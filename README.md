@@ -26,14 +26,20 @@ This means you can adjust profiles to only contain some of the above, e.g. just 
 
 ## Usage
 
-Switchy utilizes a command-based text interface with tooltips and clickable text. 
+You'll start with one profile (id `default`), which you can view by listing profiles (`/switchy`) and hovering over the name.
 
-Running `/switchy help` will provide a list of top-level commands, but in short:
-- Run `/switchy` to edit and switch between profiles
-- Run `/switchy components` to toggle components
-- Run `/switchy import [url].json` to import profiles from a Switchy/[PK](https://pluralkit.me/guide/#exporting-your-pluralkit-data) export
-- Run `/switchy export` to export name/skin data to the clipboard (upload somewhere to import)
-  - Switchy exports can also be created/edited using [Utter](https://utter.y2k.diy/), which preserves exported skin data.
+You'll likely want to rename it (`/switchy edit default id [newid]` - click `<edit>` as a shortcut)
+
+Then, you'll want to configure what is shared between profiles (`/switchy components`, then click the `<share>` texts) 
+
+You can check your new name and switched components look correct in the profile list (`/switchy`), then, when you're ready, you can switch to a new profile (`/switchy switch [newid]` - or click `<new>` as a shortcut)
+
+Switched profile data will he restored to **whatever state it was in when you switched out of that profile** - so to change e.g. a fabric tailor skin for a profile, switch into that profile and then set the skin normally.
+
+Profiles exist per-world, so to speed things up next time, run `/switchy export` to get a copy of your profile names/skins in JSON format (save this to a .json file!)
+
+To import it on the other end, upload the file somewhere (e.g. [tmpfiles.org](https://tmpfiles.org/)) and paste the link into `/switchy import [url]`. This also works with exports from [PK](https://pluralkit.me/guide/#exporting-your-pluralkit-data) (or  [Utter](https://utter.y2k.diy/), which supports switchy exports, too), and you can also use `/switchy update [url]` to only update existing profiles.
+
 
 ## Compatibility
 
