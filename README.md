@@ -24,15 +24,13 @@ Profile data is defined by player-toggleable _components_, including:
 
 This means you can adjust profiles to only contain some of the above, e.g. just nicknames, skins, and origins.
 
-## Usage
+## Getting Started
 
-You'll start with one profile (id `default`), which you can view by listing profiles (`/switchy`) and hovering over the name.
+By default, you have just one profile (id `default`). You'll likely want to rename it (`/switchy edit default id [newid]` - click `<edit>` for a shortcut)
 
-You'll likely want to rename it (`/switchy edit default id [newid]` - click `<edit>` as a shortcut)
+Before going any further, you should configure the data you'd like shared between profiles (i.e, unaffected by switchy). View your available components (`/switchy components`) and disable them as desired (`/switchy components disable [id]` - or click `<share>` as a shortcut). 
 
-Then, you'll want to configure what is shared between profiles (`/switchy components`, then click the `<share>` texts) 
-
-You can check your new name and switched components look correct in the profile list (`/switchy`), then, when you're ready, you can switch to a new profile (`/switchy switch [newid]` - or click `<new>` as a shortcut)
+Check your new ID and components look correct in the profile list (`/switchy`) by hovering over the profile name, then, when you're ready, you can switch to a new profile (`/switchy switch [newid]` - or click `<new>` as a shortcut)
 
 Switched profile data will he restored to **whatever state it was in when you switched out of that profile** - so to change e.g. a fabric tailor skin for a profile, switch into that profile and then set the skin normally.
 
