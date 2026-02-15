@@ -24,16 +24,20 @@ Profile data is defined by player-toggleable _components_, including:
 
 This means you can adjust profiles to only contain some of the above, e.g. just nicknames, skins, and origins.
 
-## Usage
+## Getting Started
 
-Switchy utilizes a command-based text interface with tooltips and clickable text. 
+By default, you have just one profile (id `default`). You'll likely want to rename it (`/switchy edit default id [newid]` - click `<edit>` for a shortcut)
 
-Running `/switchy help` will provide a list of top-level commands, but in short:
-- Run `/switchy` to edit and switch between profiles
-- Run `/switchy components` to toggle components
-- Run `/switchy import [url].json` to import profiles from a Switchy/[PK](https://pluralkit.me/guide/#exporting-your-pluralkit-data) export
-- Run `/switchy export` to export name/skin data to the clipboard (upload somewhere to import)
-  - Switchy exports can also be created/edited using [Utter](https://utter.y2k.diy/), which preserves exported skin data.
+Before going any further, you should configure the data you'd like shared between profiles (i.e, unaffected by switchy). View your available components (`/switchy components`) and disable them as desired (`/switchy components disable [id]` - or click `<share>` as a shortcut). 
+
+Check your new ID and components look correct in the profile list (`/switchy`) by hovering over the profile name, then, when you're ready, you can switch to a new profile (`/switchy switch [newid]` - or click `<new>` as a shortcut)
+
+Switched profile data will he restored to **whatever state it was in when you switched out of that profile** - so to change e.g. a fabric tailor skin for a profile, switch into that profile and then set the skin normally.
+
+Profiles exist per-world, so to speed things up next time, run `/switchy export` to get a copy of your profile names/skins in JSON format (save this to a .json file!)
+
+To import it on the other end, upload the file somewhere (e.g. [tmpfiles.org](https://tmpfiles.org/)) and paste the link into `/switchy import [url]`. This also works with exports from [PK](https://pluralkit.me/guide/#exporting-your-pluralkit-data) (or  [Utter](https://utter.y2k.diy/), which supports switchy exports, too), and you can also use `/switchy update [url]` to only update existing profiles.
+
 
 ## Compatibility
 
