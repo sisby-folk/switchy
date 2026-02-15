@@ -75,14 +75,15 @@ public class SwitchyCommands {
 	}
 
 	private static int list(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
+		List<String> profiles = Stream.concat(Sets.difference(data.keySet(), Set.of(data.current())).stream().sorted(), Stream.of(data.current())).toList();
+
 		feedback.accept(prefix()
 			.append(Text.literal("you have ").formatted(Formatting.GRAY))
 			.append(Text.literal("%s".formatted(data.size())).formatted(Formatting.WHITE))
 			.append(Text.literal(" profiles available. ").formatted(Formatting.GRAY))
 			.append(clickable("new", "/switchy switch ", false))
+			.append(profiles.size() > 1 ? Text.empty() : clickable("configure", "/switchy components", true))
 		);
-
-		List<String> profiles = Stream.concat(Sets.difference(data.keySet(), Set.of(data.current())).stream().sorted(), Stream.of(data.current())).toList();
 
 		for (String id : profiles) {
 			SwitchyProfile profile;
@@ -309,6 +310,9 @@ public class SwitchyCommands {
 				.append(SwitchyComponentTypes.NAME.asText(nextProfile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
 				.append(Text.literal("! ").formatted(Formatting.GREEN))
 				.append(clickable("list", "/switchy", true)));
+		} catch (ProfileCurrentException e) {
+			feedback.accept(prefix().append(Text.literal("profile '%s' already active! specify a different profile!".formatted(profileId)).formatted(Formatting.YELLOW)));
+			return 0;
 		} catch (Exception e) {
 			feedback.accept(prefix()
 				.append("Error while switching: ").formatted(Formatting.RED)
