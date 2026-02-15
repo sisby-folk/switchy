@@ -9,7 +9,7 @@
 	],
 	"enabled": true,
 	"codec": "nbt",
-	"path": "cardinal_components.apoli:powers.Powers",
+	"path": "cardinal_components.apoli:powers.powers",
 	"preview": "$[].Type",
 	"prefix": "✶",
 	"group": "origins:origin",
