@@ -597,6 +597,6 @@ public class SwitchyCommands {
 	}
 
     public interface SurveyorCommandExecutor<T> {
-		T execute(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback);
+		T execute(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) throws ProfileMissingException;
 	}
 }

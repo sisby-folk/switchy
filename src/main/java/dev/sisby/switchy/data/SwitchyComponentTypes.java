@@ -50,6 +50,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 		Identifier.of("minecraft", "string"), Codec.STRING,
 		Identifier.of("minecraft", "text"), TextCodecs.CODEC,
 		Identifier.of("minecraft", "float"), Codec.FLOAT,
+		Identifier.of("minecraft", "double"), Codec.DOUBLE,
 		Identifier.of("minecraft", "int"), Codec.INT,
 		Identifier.of("minecraft", "vec3d"), Vec3d.CODEC,
 		Identifier.of("minecraft", "identifier"), Identifier.CODEC,
@@ -59,8 +60,8 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 		Identifier.of("minecraft", "trunc"), new SwitchyComponentType.SimpleTextProvider<>(o -> Objects.toString(o).length() <= 10 ? Text.of(Objects.toString(o)) : Text.literal(Objects.toString(o).substring(0, 10) + "...").styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(Objects.toString(o)))))),
 		Identifier.of("minecraft", "nbt"), new SwitchyComponentType.SimpleTextProvider<NbtElement>(e -> FormatUtils.nbtPathResultText(List.of(e), true)),
 		Identifier.of("minecraft", "text"), new SwitchyComponentType.SimpleTextProvider<Text>(t -> t),
-		Identifier.of("minecraft", "percent"), new SwitchyComponentType.SimpleTextProvider<Float>(n -> Text.of("%.0f%%".formatted(n * 100.0))),
-		Identifier.of("minecraft", "rounded"), new SwitchyComponentType.SimpleTextProvider<Float>(n -> Text.of("%.0f".formatted(n))),
+		Identifier.of("minecraft", "percent"), new SwitchyComponentType.SimpleTextProvider<Number>(n -> Text.of("%.0f%%".formatted(n.floatValue() * 100.0))),
+		Identifier.of("minecraft", "rounded"), new SwitchyComponentType.SimpleTextProvider<Number>(n -> Text.of("%.0f".formatted(n.floatValue()))),
 		Identifier.of("minecraft", "halves"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::statText),
 		Identifier.of("minecraft", "vec3d"), new SwitchyComponentType.SimpleTextProvider<Vec3d>(c -> Texts.join(List.of(
 			Text.empty().append(Text.literal("X:").formatted(Formatting.GRAY)).append(Text.literal(String.valueOf(BlockPos.ofFloored(c).getX()))),
