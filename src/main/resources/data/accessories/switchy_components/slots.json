@@ -1,0 +1,15 @@
+{
+	"fabric:load_conditions": [
+		{
+			"condition": "fabric:all_mods_loaded",
+			"values": ["accessories"]
+		}
+	],
+	"enabled": true,
+	"codec": "nbt",
+	"path": "fabric:attachments.accessories:inventory_holder.AccessoriesContainers",
+	"preview": "$*[].Items[].id",
+	"prefix": "🧤",
+	"emptyChecker": "$*[].Items[].id",
+	"group": "inventory"
+}
