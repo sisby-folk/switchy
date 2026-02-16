@@ -82,6 +82,7 @@ public class SwitchyCommands {
 			.append(Text.literal("%s".formatted(data.size())).formatted(Formatting.WHITE))
 			.append(Text.literal(" profiles available. ").formatted(Formatting.GRAY))
 			.append(clickable("new", "/switchy switch ", false))
+			.append(" ")
 			.append(profiles.size() > 1 ? Text.empty() : clickable("configure", "/switchy components", true))
 		);
 
