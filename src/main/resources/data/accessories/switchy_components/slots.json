@@ -8,8 +8,8 @@
 	"enabled": true,
 	"codec": "nbt",
 	"path": "fabric:attachments.accessories:inventory_holder.AccessoriesContainers",
-	"preview": "$**[].Items[].id",
-	"prefix": "📿",
-	"emptyChecker": "$**[].Items[].id",
+	"preview": "$*[].Items[].id",
+	"prefix": "🧤",
+	"emptyChecker": "$*[].Items[].id",
 	"group": "inventory"
 }
