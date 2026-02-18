@@ -358,6 +358,7 @@ public class SwitchyPlayerData {
 
 	public int importProfiles(List<ProfileImportData> profileData, ServerPlayerEntity player, @Nullable String name, boolean allowNew, Function<Integer, Text> greetingGetter) throws NbtException {
 		int updated = 0;
+		boolean hadOneProfile = size() == 1;
 		SwitchyProfile newCurrent = null;
 		for (ProfileImportData data : profileData) {
 			String id = data.name().toLowerCase();
@@ -392,7 +393,8 @@ public class SwitchyPlayerData {
 				}
 			}
 		}
-		if (newCurrent != null) {
+		if (newCurrent != null || (hadOneProfile && size() > 1)) {
+			if (newCurrent == null) newCurrent = getCurrentProfile(player);
 			selfSwitch(newCurrent, player, greetingGetter.apply(updated));
 		}
 		return updated;
