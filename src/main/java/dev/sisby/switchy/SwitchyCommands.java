@@ -343,9 +343,8 @@ public class SwitchyCommands {
 			SwitchyProfile currentProfile = data.getCurrentProfile(player);
 			SwitchyProfile nextProfile = data.getOrCreateProfile(profileId, player);
 			data.switchOrCreateProfile(profileId, player, prefix()
-				.append(Text.literal("Switched from ").formatted(Formatting.GREEN))
 				.append(SwitchyComponentTypes.NAME.asText(currentProfile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
-				.append(Text.literal(" to ").formatted(Formatting.GREEN))
+				.append(Text.literal(" \uD83E\uDC46 ").formatted(Formatting.GREEN))
 				.append(SwitchyComponentTypes.NAME.asText(nextProfile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
 				.append(Text.literal("! ").formatted(Formatting.GREEN))
 				.append(clickable("list", "/switchy", true)));
