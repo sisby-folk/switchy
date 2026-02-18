@@ -54,7 +54,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -159,36 +158,6 @@ public class SwitchyCommands {
 			);
 		}
 		return data.componentSet().size();
-	}
-
-	private static final Map<String, String> COMMANDS = new TreeMap<>(Map.of(
-		"/switchy", "switch profiles",
-		"/switchy components", "configure components",
-		"/switchy delete ", "delete a profile",
-		"/switchy import ", "add profiles from PK.JSON",
-		"/switchy export", "export profiles to PK.JSON"
-	));
-
-	private static int help(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
-		feedback.accept(prefix()
-			.append(Text.literal("Switchy provides ").formatted(Formatting.GRAY))
-			.append(Text.literal("%s".formatted(COMMANDS.size())).formatted(Formatting.WHITE))
-			.append(Text.literal(" top-level commands:").formatted(Formatting.GRAY))
-		);
-		for (String command : COMMANDS.keySet()) {
-			String description = COMMANDS.get(command);
-			feedback.accept(indent()
-				.append(clickable(command.trim(), command, !command.endsWith(" "), Formatting.AQUA, "", ""))
-				.append(Text.literal(" - ").formatted(Formatting.GRAY))
-				.append(Text.literal(description).formatted(Formatting.WHITE))
-			);
-		}
-		feedback.accept(indent()
-			.append(Text.literal("(").formatted(Formatting.GRAY))
-			.append(clickable("aqua text", "a preview of the command appears here!", false, Formatting.AQUA, "", ""))
-			.append(Text.literal(" in command feedback is clickable)").formatted(Formatting.GRAY))
-		);
-		return 1;
 	}
 
 	public record PlayerImportData(@Nullable String name, List<SwitchyPlayerData.ProfileImportData> members, @Nullable List<SwitchyPlayerData.GroupImportData> groups) {}
@@ -603,9 +572,6 @@ public class SwitchyCommands {
 						)
 					)
 					.executes(c -> execute(c, SwitchyCommands::components))
-				)
-				.then(CommandManager.literal("help")
-					.executes(c -> execute(c, SwitchyCommands::help))
 				)
 				.executes(c -> execute(c, SwitchyCommands::list))
 		);
