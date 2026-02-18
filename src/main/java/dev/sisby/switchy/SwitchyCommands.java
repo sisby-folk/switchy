@@ -82,8 +82,6 @@ public class SwitchyCommands {
 			.append(Text.literal("%s".formatted(data.size())).formatted(Formatting.WHITE))
 			.append(Text.literal(" profiles available. ").formatted(Formatting.GRAY))
 			.append(clickable("new", "/switchy new ", false))
-			.append(" ")
-			.append(profiles.size() > 1 ? Text.empty() : clickable("configure", "/switchy components", true))
 		);
 
 		for (String id : profiles) {
@@ -104,6 +102,21 @@ public class SwitchyCommands {
 				))
 			);
 		}
+
+		if (data.size() == 1 && data.current().equals("default")) {
+			feedback.accept(indent()
+				.append(Text.literal("HINT: ").formatted(Formatting.LIGHT_PURPLE))
+				.append(Text.literal("rename your first profile: ").formatted(Formatting.GRAY))
+				.append(clickable("/switchy edit default id [...]", "/switchy edit default id ", false, Formatting.AQUA, "", ""))
+			);
+		} else if (data.size() == 1) {
+			feedback.accept(indent()
+				.append(Text.literal("HINT: ").formatted(Formatting.LIGHT_PURPLE))
+				.append(Text.literal("configure profile shared data via ").formatted(Formatting.GRAY))
+				.append(clickable("/switchy components", "/switchy components", true, Formatting.AQUA, "", ""))
+			);
+		}
+
 		return data.size();
 	}
 
@@ -130,6 +143,13 @@ public class SwitchyCommands {
 				)
 			);
 		});
+		if (data.size() == 1) {
+			feedback.accept(indent()
+				.append(Text.literal("HINT: ").formatted(Formatting.LIGHT_PURPLE))
+				.append(Text.literal("create your second profile via ").formatted(Formatting.GRAY))
+				.append(clickable("/switchy new [name]", "/switchy new ", false, Formatting.AQUA, "", ""))
+			);
+		}
 		return data.componentSet().size();
 	}
 
@@ -373,11 +393,11 @@ public class SwitchyCommands {
 	}
 
 	private static int switchNextProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
-		return switchProfile(player, data, feedback, data.profileAfter(data.current()), false);
+		return switchProfile(player, data, feedback, data.profileAfter(data.current()), true);
 	}
 
 	private static int switchRandomProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
-		return switchProfile(player, data, feedback, data.randomBesides(data.current(), player.getRandom()), false);
+		return switchProfile(player, data, feedback, data.randomBesides(data.current(), player.getRandom()), true);
 	}
 
 	public static <T> int editComponent(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId, SwitchyComponentType<T> type, T value) {
