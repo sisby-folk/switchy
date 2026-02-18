@@ -347,7 +347,9 @@ public class SwitchyPlayerData {
 
 	public record ProxyTag(@Nullable String prefix, @Nullable String suffix) {}
 
-	public record ProfileImportData(String name, @Nullable String display_name, @Nullable String color, @Nullable String pronouns, @Nullable String description, @Nullable String avatar_url, @Nullable List<ProxyTag> proxy_tags, @Nullable Map<String, JsonElement> components) {}
+	public record ProfileImportData(@Nullable String id, String name, @Nullable String display_name, @Nullable String color, @Nullable String pronouns, @Nullable String description, @Nullable String avatar_url, @Nullable List<ProxyTag> proxy_tags, @Nullable Map<String, JsonElement> components) {}
+
+	public record GroupImportData(String name, List<String> members) {}
 
 	private static final Pattern PARENTHESES = Pattern.compile("\\S.*([<(\\[][^>)\\]]*[)>\\]])");
 
@@ -357,6 +359,7 @@ public class SwitchyPlayerData {
 
 	public int importProfiles(List<ProfileImportData> profileData, ServerPlayerEntity player, @Nullable String name, boolean allowNew, Function<Integer, Text> greetingGetter) throws NbtException {
 		int updated = 0;
+		boolean hadOneProfile = size() == 1;
 		SwitchyProfile newCurrent = null;
 		for (ProfileImportData data : profileData) {
 			String id = data.name().toLowerCase();
@@ -391,7 +394,8 @@ public class SwitchyPlayerData {
 				}
 			}
 		}
-		if (newCurrent != null) {
+		if (newCurrent != null || (hadOneProfile && size() > 1)) {
+			if (newCurrent == null) newCurrent = getCurrentProfile(player);
 			selfSwitch(newCurrent, player, greetingGetter.apply(updated));
 		}
 		return updated;
