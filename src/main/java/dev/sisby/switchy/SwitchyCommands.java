@@ -81,7 +81,7 @@ public class SwitchyCommands {
 			.append(Text.literal("you have ").formatted(Formatting.GRAY))
 			.append(Text.literal("%s".formatted(data.size())).formatted(Formatting.WHITE))
 			.append(Text.literal(" profiles available. ").formatted(Formatting.GRAY))
-			.append(clickable("new", "/switchy switch ", false))
+			.append(clickable("new", "/switchy new ", false))
 			.append(" ")
 			.append(profiles.size() > 1 ? Text.empty() : clickable("configure", "/switchy components", true))
 		);
@@ -94,14 +94,14 @@ public class SwitchyCommands {
 				throw new RuntimeException(e);
 			}
 			feedback.accept(indent()
-				.append(profile.id().equals(data.current()) ? Text.literal("current").formatted(Formatting.GRAY) : clickable("switch", "/switchy switch %s".formatted(StringArgumentType.escapeIfRequired(profile.id())), true))
-				.append(" ")
-				.append(clickable("view", "/switchy view %s".formatted(StringArgumentType.escapeIfRequired(profile.id())), true))
+				.append(profile.id().equals(data.current()) ? Text.literal("current").formatted(Formatting.GRAY) : clickable("switch", "/switch %s".formatted(StringArgumentType.escapeIfRequired(profile.id())), true))
 				.append(" ")
 				.append(clickable("edit", "/switchy edit %s ".formatted(StringArgumentType.escapeIfRequired(profile.id())), false))
 				.append(" ")
 				.append(SwitchyComponentTypes.NAME.asText(profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)).setStyle(Style.EMPTY
-					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(profile.asTexts(player), Text.of("\n"))))))
+					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(profile.asTexts(player), Text.of("\n")).copy().append("\n").append(Text.literal("... /switchy view %s".formatted(StringArgumentType.escapeIfRequired(profile.id()))).formatted(Formatting.AQUA))))
+					.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/switchy view %s".formatted(StringArgumentType.escapeIfRequired(profile.id()))))
+				))
 			);
 		}
 		return data.size();
@@ -164,9 +164,9 @@ public class SwitchyCommands {
 		return 1;
 	}
 
-	public record PlayerImportData(@Nullable String name, List<SwitchyPlayerData.ProfileImportData> members) {}
+	public record PlayerImportData(@Nullable String name, List<SwitchyPlayerData.ProfileImportData> members, @Nullable List<SwitchyPlayerData.GroupImportData> groups) {}
 
-	private static int importProfiles(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String url, boolean allowNew) {
+	private static int importProfiles(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String url, String scope) {
 		int beforeSize = data.size();
 		PlayerImportData importData;
 		try {
@@ -175,7 +175,7 @@ public class SwitchyCommands {
 			throw new RuntimeException(e);
 		}
 		Function<Integer, Text> feedbackGetter = updated -> prefix()
-			.append(allowNew ? Text.empty()
+			.append(!"exists".equals(scope) ? Text.empty()
 				.append(Text.literal("imported ").formatted(Formatting.GRAY))
 				.append(Text.literal("%s".formatted(data.size() - beforeSize)).formatted(Formatting.WHITE))
 				.append(Text.literal(" new and ").formatted(Formatting.GRAY)) : Text.empty()
@@ -184,8 +184,20 @@ public class SwitchyCommands {
 			.append(Text.literal("%s".formatted(updated - (data.size() - beforeSize))).formatted(Formatting.WHITE))
 			.append(Text.literal(" existing profiles. ").formatted(Formatting.GRAY))
 			.append(clickable("list", "/switchy", true));
+		List<SwitchyPlayerData.ProfileImportData> profilesToImport = importData.members();
+		if (!"exists".equals(scope) && !"all".equals(scope)) {
+			SwitchyPlayerData.GroupImportData group = Objects.requireNonNullElse(importData.groups, new ArrayList<SwitchyPlayerData.GroupImportData>()).stream().filter(g -> g.name().equals(scope)).findAny().orElse(null);
+			SwitchyPlayerData.ProfileImportData profile = importData.members().stream().filter(p -> p.name().equals(scope)).findAny().orElse(null);
+			if (group != null) {
+				profilesToImport = importData.members().stream().filter(p -> group.members().contains(p.id())).toList();
+			} else if (profile != null) {
+				profilesToImport = List.of(profile);
+			} else {
+				profilesToImport = List.of();
+			}
+		}
 		try {
-			int updated = data.importProfiles(importData.members(), player, importData.name(), allowNew, feedbackGetter);
+			int updated = data.importProfiles(profilesToImport, player, importData.name(), !"exists".equals(scope), feedbackGetter);
 			feedback.accept(feedbackGetter.apply(updated));
 			return data.size() - beforeSize;
 		} catch (Exception e) {
@@ -264,13 +276,13 @@ public class SwitchyCommands {
 					if (skin != null) key = skin.getHash();
 					avatarUrl = Switchy.CONFIG.exportAvatarUrl.formatted(key);
 				}
-				members.add(new SwitchyPlayerData.ProfileImportData(profileId, name, color, pronouns, description, avatarUrl, List.of(new SwitchyPlayerData.ProxyTag(profileId + ":", null)), components));
+				members.add(new SwitchyPlayerData.ProfileImportData(null, profileId, name, color, pronouns, description, avatarUrl, List.of(new SwitchyPlayerData.ProxyTag(profileId + ":", null)), components));
 			}
 			feedback.accept(prefix()
 				.append(Text.literal("Exported ").formatted(Formatting.GRAY))
 				.append(Text.literal("%d".formatted(data.size())).formatted(Formatting.GRAY))
 				.append(Text.literal(" profiles. ").formatted(Formatting.GRAY))
-				.append(clickable("copy", SwitchyComponentTypes.GSON.toJson(new PlayerImportData(sysName, members)), ClickEvent.Action.COPY_TO_CLIPBOARD, Formatting.AQUA, "<", ">"))
+				.append(clickable("copy", SwitchyComponentTypes.GSON.toJson(new PlayerImportData(sysName, members, null)), ClickEvent.Action.COPY_TO_CLIPBOARD, Formatting.AQUA, "<", ">"))
 			);
 		} catch (NbtException e) {
 			throw new RuntimeException(e);
@@ -295,13 +307,42 @@ public class SwitchyCommands {
 			.append(Text.literal(" contains ").formatted(Formatting.GRAY))
 			.append("%d".formatted(profile.components().size()))
 			.append(Text.literal(" components. ").formatted(Formatting.GRAY))
-			.append(profileId.equals(data.current()) ? Text.empty() : clickable("switch", "/switchy switch %s".formatted(StringArgumentType.escapeIfRequired(profileId)), true))
+			.append(profileId.equals(data.current()) ? Text.empty() : clickable("switch", "/switch %s".formatted(StringArgumentType.escapeIfRequired(profileId)), true))
 		);
 		profile.components().asTexts().forEach(componentText -> feedback.accept(indent().append(componentText)));
 		return profile.components().size();
 	}
 
-	private static int switchProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId) {
+	private static int switchProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId, Boolean exists) {
+		boolean reallyExists = data.profileExists(profileId);
+		if (data.current().equals(profileId)) {
+			feedback.accept(prefix()
+				.append(Text.literal("profile '").formatted(Formatting.YELLOW))
+				.append(profileId)
+				.append(Text.literal("' already active! specify a different profile!").formatted(Formatting.YELLOW))
+			);
+			return 0;
+		}
+		if (exists == false && reallyExists) {
+			feedback.accept(prefix()
+				.append("That profile already exists! Try ").formatted(Formatting.YELLOW)
+				.append(clickable("/switch %s".formatted(profileId), "/switch %s".formatted(profileId), true, Formatting.AQUA, "", ""))
+			);
+			return 0;
+		}
+		if (exists && !reallyExists) {
+			feedback.accept(prefix()
+				.append(Text.literal("profile ").formatted(Formatting.YELLOW))
+				.append(profileId)
+				.append(Text.literal(" hasn't been made yet!").formatted(Formatting.YELLOW))
+			);
+			feedback.accept(indent()
+				.append(Text.literal("Use ").formatted(Formatting.YELLOW))
+				.append(clickable("/switchy new %s".formatted(profileId), "/switchy new %s".formatted(profileId), true, Formatting.AQUA, "", ""))
+				.append(Text.literal(" to create it.").formatted(Formatting.YELLOW))
+			);
+			return 0;
+		}
 		try {
 			SwitchyProfile currentProfile = data.getCurrentProfile(player);
 			SwitchyProfile nextProfile = data.getOrCreateProfile(profileId, player);
@@ -313,7 +354,11 @@ public class SwitchyCommands {
 				.append(Text.literal("! ").formatted(Formatting.GREEN))
 				.append(clickable("list", "/switchy", true)));
 		} catch (ProfileCurrentException e) {
-			feedback.accept(prefix().append(Text.literal("profile '%s' already active! specify a different profile!".formatted(profileId)).formatted(Formatting.YELLOW)));
+			feedback.accept(prefix()
+				.append(Text.literal("profile '").formatted(Formatting.YELLOW))
+				.append(profileId)
+				.append(Text.literal("' already active! specify a different profile!").formatted(Formatting.YELLOW))
+			);
 			return 0;
 		} catch (Exception e) {
 			feedback.accept(prefix()
@@ -328,11 +373,11 @@ public class SwitchyCommands {
 	}
 
 	private static int switchNextProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
-		return switchProfile(player, data, feedback, data.profileAfter(data.current()));
+		return switchProfile(player, data, feedback, data.profileAfter(data.current()), false);
 	}
 
 	private static int switchRandomProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
-		return switchProfile(player, data, feedback, data.randomBesides(data.current(), player.getRandom()));
+		return switchProfile(player, data, feedback, data.randomBesides(data.current(), player.getRandom()), false);
 	}
 
 	public static <T> int editComponent(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId, SwitchyComponentType<T> type, T value) {
@@ -473,15 +518,22 @@ public class SwitchyCommands {
 		}
 
 		dispatcher.register(
-			CommandManager.literal("switchy")
-				.then(CommandManager.literal("switch")
-					.then(profile(false)
-						.executes(c -> execute(c, (i, p, d, f) -> switchProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase())))
-					)
-					.executes(c -> execute(c, (i, p, d, f) -> switchNextProfile(p, d, f)))
-				)
-				.then(CommandManager.literal("switch?")
+			CommandManager.literal("switch")
+				.requires(c -> c.getPlayer() != null && SwitchyPlayerData.ofEarly(c.getPlayer()) != null && SwitchyPlayerData.ofEarly(c.getPlayer()).size() > 1)
+				.then(CommandManager.literal("?")
 					.executes(c -> execute(c, (i, p, d, f) -> switchRandomProfile(p, d, f)))
+				)
+				.then(profile(false)
+					.executes(c -> execute(c, (i, p, d, f) -> switchProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase(), true)))
+				)
+				.executes(c -> execute(c, (i, p, d, f) -> switchNextProfile(p, d, f)))
+		);
+		dispatcher.register(
+			CommandManager.literal("switchy")
+				.then(CommandManager.literal("new")
+					.then(CommandManager.argument("name", StringArgumentType.string())
+						.executes(c -> execute(c, (i, p, d, f) -> switchProfile(p, d, f, c.getArgument("name", String.class).toLowerCase(), false)))
+					)
 				)
 				.then(CommandManager.literal("view")
 					.then(profile(true)
@@ -502,13 +554,11 @@ public class SwitchyCommands {
 					)
 				)
 				.then(CommandManager.literal("import")
-					.then(CommandManager.argument("url", StringArgumentType.greedyString())
-						.executes(c -> execute(c, (i, p, d, f) -> importProfiles(p, d, f, c.getArgument("url", String.class), true)))
-					)
-				)
-				.then(CommandManager.literal("update")
-					.then(CommandManager.argument("url", StringArgumentType.greedyString())
-						.executes(c -> execute(c, (i, p, d, f) -> importProfiles(p, d, f, c.getArgument("url", String.class), false)))
+					.then(CommandManager.argument("scope", StringArgumentType.word())
+						.suggests((c, b) -> CommandSource.suggestMatching(List.of("all", "existing"), b))
+						.then(CommandManager.argument("url", StringArgumentType.greedyString())
+							.executes(c -> execute(c, (i, p, d, f) -> importProfiles(p, d, f, c.getArgument("url", String.class), c.getArgument("scope", String.class))))
+						)
 					)
 				)
 				.then(CommandManager.literal("export")
