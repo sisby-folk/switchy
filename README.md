@@ -24,19 +24,17 @@ Profile data is defined by player-toggleable _components_, including:
 
 This means you can adjust profiles to only contain some of the above, e.g. just nicknames, skins, and origins.
 
-## Getting Started
+## Usage
 
-By default, you have just one profile (id `default`). You'll likely want to rename it (`/switchy edit default id [newid]` - click `<edit>` for a shortcut)
+**Just run `/switchy` and follow the hints!** This covers renaming, toggling components, and making new profiles.
 
-Before going any further, you should configure the data you'd like shared between profiles (i.e, unaffected by switchy). View your available components (`/switchy components`) and disable them as desired (`/switchy components disable [id]` - or click `<share>` as a shortcut). 
+After this, you can freely switch profiles via `/switch <name>` or by clicking `<switch>` in the profile list.<br/>
+Switching into a profile restores component data to **the state it was in was when you last switched out of that profile**.<br/> 
+So to change e.g. a fabric tailor skin for a profile, switch into the profile first, then set the skin as you normally would.
 
-Check your new ID and components look correct in the profile list (`/switchy`) by hovering over the profile name, then, when you're ready, you can switch to a new profile (`/switchy switch [newid]` - or click `<new>` as a shortcut)
-
-Switched profile data will he restored to **whatever state it was in when you switched out of that profile** - so to change e.g. a fabric tailor skin for a profile, switch into that profile and then set the skin normally.
-
-Profiles exist per-world, so to speed things up next time, run `/switchy export` to get a copy of your profile names/skins in JSON format (save this to a .json file!)
-
-To import it on the other end, upload the file somewhere (e.g. [tmpfiles.org](https://tmpfiles.org/)) and paste the link into `/switchy import [url]`. This also works with exports from [PK](https://pluralkit.me/guide/#exporting-your-pluralkit-data) (or  [Utter](https://utter.y2k.diy/), which supports switchy exports, too), and you can also use `/switchy update [url]` to only update existing profiles.
+Profiles are per-world, so speed things up by running `/switchy export` to get your name/skin data to save to a .json file.<br/>
+To import, upload the file (e.g. to [tmpfiles.org](https://tmpfiles.org/)) and paste the link into `/switchy import all <url>`.<br/>
+You can also import from [PK](https://pluralkit.me/guide/#exporting-your-pluralkit-data) (and import from / export to [Utter](https://utter.y2k.diy/)) - use `/switchy import <member/group>` to filter imports.
 
 
 ## Compatibility
