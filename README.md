@@ -19,8 +19,9 @@ Profile data is defined by player-toggleable _components_, including:
 - Vanilla health, hunger, status effects, inventory, ender chest, location, spawn point, and xp
 - [Fabric Tailor](https://modrinth.com/mod/fabrictailor) skins
 - [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) nicknames
-- [Trinkets](modrinth.com/mod/trinkets) slots
+- [Trinkets](modrinth.com/mod/trinkets) and [Accessories](https://modrinth.com/mod/accessories) slots
 - [Origins](https://modrinth.com/mod/origins) origins
+- [Pehkui](https://modrinth.com/mod/pehkui) height and width
 
 This means you can adjust profiles to only contain some of the above, e.g. just nicknames, skins, and origins.
 
