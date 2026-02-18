@@ -80,7 +80,7 @@ public class SwitchyCommands {
 		feedback.accept(prefix()
 			.append(Text.literal("you have ").formatted(Formatting.GRAY))
 			.append(Text.literal("%s".formatted(data.size())).formatted(Formatting.WHITE))
-			.append(Text.literal(" profiles available. ").formatted(Formatting.GRAY))
+			.append(Text.literal(" profile%s available. ".formatted(data.size() == 1 ? "" : "s")).formatted(Formatting.GRAY))
 			.append(clickable("new", "/switchy new ", false))
 		);
 
@@ -121,21 +121,27 @@ public class SwitchyCommands {
 	}
 
 	private static int components(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
+		Map<Identifier, List<SwitchyComponentType<?>>> grouped = SwitchyComponentTypes.grouped(SwitchyComponentTypes.instance().values());
+		long numEnabled = grouped.values().stream().filter(g -> data.componentSet().contains(g.get(0))).count();
 		feedback.accept(prefix()
 			.append(Text.literal("You're switching ").formatted(Formatting.GRAY))
-			.append(Text.literal("%s".formatted(data.componentSet().size())).formatted(Formatting.WHITE))
-			.append(Text.literal(" components and sharing ").formatted(Formatting.GRAY))
-			.append(Text.literal("%s".formatted(SwitchyComponentTypes.instance().keys().size() - data.componentSet().size())).formatted(Formatting.WHITE))
+			.append(Text.literal("%d".formatted(numEnabled).formatted(Formatting.WHITE)))
+			.append(Text.literal(" component%s and sharing ".formatted(numEnabled == 1 ? "" : "s")).formatted(Formatting.GRAY))
+			.append(Text.literal("%d".formatted(grouped.size() - numEnabled)).formatted(Formatting.WHITE))
 			.append(Text.literal(".").formatted(Formatting.GRAY))
 		);
-		SwitchyComponentTypes.grouped(SwitchyComponentTypes.instance().values()).forEach((id, types) -> {
+		grouped.forEach((id, types) -> {
 			boolean enabled = data.componentSet().contains(types.get(0));
+			List<SwitchyProfile> matchingProfiles = data.values().stream().sorted(Comparator.comparing(SwitchyProfile::id)).filter(p -> types.stream().anyMatch(t -> p.get(t) != null && (t.emptyChecker() == null || t.isPrecious(p.components())))).toList();
 			feedback.accept(indent()
-				.append(enabled ? clickable("share", "/switchy components disable %s".formatted(id), false) : clickable("switch", "/switchy components enable %s".formatted(id), true))
+				.append(enabled ?
+					clickable(Text.literal("enabled").formatted(Formatting.GREEN), "/switchy components disable %s".formatted(id), data.size() == 1 ? ClickEvent.Action.RUN_COMMAND : ClickEvent.Action.SUGGEST_COMMAND, Text.empty().append(Text.literal("Click to share ").formatted(Formatting.GRAY)).append(id.getPath()).append(Text.literal(" between profiles.").formatted(Formatting.GRAY)).append(data.size() == 1 ? Text.empty() : Text.literal("\n").append(Text.literal("This deletes data from other profiles!").formatted(Formatting.GOLD))), Formatting.RED, "[", "]") :
+					clickable(Text.literal("disabled").formatted(Formatting.RED), "/switchy components enable %s".formatted(id), ClickEvent.Action.RUN_COMMAND, Text.empty().append(Text.literal("Click to switch ").formatted(Formatting.GRAY)).append(id.getPath()).append(Text.literal(" per-profile.").formatted(Formatting.GRAY)), Formatting.GREEN, "[", "]")
+				)
 				.append(" ")
 				.append(id.getPath()).setStyle(Style.EMPTY
-					.withColor(enabled ? Formatting.WHITE : Formatting.GRAY)
-					.withHoverEvent(!enabled ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(data.values().stream().sorted(Comparator.comparing(SwitchyProfile::id)).filter(p -> types.stream().anyMatch(t -> p.get(t) != null && (t.emptyChecker() == null || t.isPrecious(p.components())))).map(p -> Text.empty()
+					.withColor(enabled ? Formatting.WHITE : Formatting.DARK_GRAY)
+					.withHoverEvent(!enabled ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, matchingProfiles.isEmpty() ? Text.literal("<no %s data yet>".formatted(id.getPath().replace("_", " "))).formatted(Formatting.GRAY) : Texts.join(matchingProfiles.stream().map(p -> Text.empty()
 						.append(Text.literal(p.id()).formatted(Formatting.GRAY))
 						.append(": ")
 						.append(Texts.join(types.stream().filter(t -> p.get(t) != null).map(t -> t.asText(p.components())).toList(), Text.literal(", ").formatted(Formatting.GRAY)))
@@ -158,8 +164,7 @@ public class SwitchyCommands {
 		"/switchy components", "configure components",
 		"/switchy delete ", "delete a profile",
 		"/switchy import ", "add profiles from PK.JSON",
-		"/switchy export", "export profiles to PK.JSON",
-		"/switchy update ", "update profiles from PK"
+		"/switchy export", "export profiles to PK.JSON"
 	));
 
 	private static int help(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
@@ -196,13 +201,13 @@ public class SwitchyCommands {
 		}
 		Function<Integer, Text> feedbackGetter = updated -> prefix()
 			.append(!"exists".equals(scope) ? Text.empty()
-				.append(Text.literal("imported ").formatted(Formatting.GRAY))
+				.append(Text.literal("create ").formatted(Formatting.GRAY))
 				.append(Text.literal("%s".formatted(data.size() - beforeSize)).formatted(Formatting.WHITE))
-				.append(Text.literal(" new and ").formatted(Formatting.GRAY)) : Text.empty()
+				.append(Text.literal(" profile%s and ".formatted((data.size() - beforeSize) == 1 ? "" : "s")).formatted(Formatting.GRAY)) : Text.empty()
 			)
 			.append(Text.literal("updated ").formatted(Formatting.GRAY))
 			.append(Text.literal("%s".formatted(updated - (data.size() - beforeSize))).formatted(Formatting.WHITE))
-			.append(Text.literal(" existing profiles. ").formatted(Formatting.GRAY))
+			.append(Text.literal(" %s profile%s. ".formatted(!"exists".equals(scope) ? "existing" : "", (updated - (data.size() - beforeSize)) == 1 ? "" : "s")).formatted(Formatting.GRAY))
 			.append(clickable("list", "/switchy", true));
 		List<SwitchyPlayerData.ProfileImportData> profilesToImport = importData.members();
 		if (!"exists".equals(scope) && !"all".equals(scope)) {
@@ -301,7 +306,7 @@ public class SwitchyCommands {
 			feedback.accept(prefix()
 				.append(Text.literal("Exported ").formatted(Formatting.GRAY))
 				.append(Text.literal("%d".formatted(data.size())).formatted(Formatting.GRAY))
-				.append(Text.literal(" profiles. ").formatted(Formatting.GRAY))
+				.append(Text.literal(" profile%s. ".formatted(data.size() == 1 ? "" : "s")).formatted(Formatting.GRAY))
 				.append(clickable("copy", SwitchyComponentTypes.GSON.toJson(new PlayerImportData(sysName, members, null)), ClickEvent.Action.COPY_TO_CLIPBOARD, Formatting.AQUA, "<", ">"))
 			);
 		} catch (NbtException e) {
@@ -326,7 +331,7 @@ public class SwitchyCommands {
 			.append(profileId)
 			.append(Text.literal(" contains ").formatted(Formatting.GRAY))
 			.append("%d".formatted(profile.components().size()))
-			.append(Text.literal(" components. ").formatted(Formatting.GRAY))
+			.append(Text.literal(" component%s. ".formatted(profile.components().size() == 1 ? "" : "s")).formatted(Formatting.GRAY))
 			.append(profileId.equals(data.current()) ? Text.empty() : clickable("switch", "/switch %s".formatted(StringArgumentType.escapeIfRequired(profileId)), true))
 		);
 		profile.components().asTexts().forEach(componentText -> feedback.accept(indent().append(componentText)));
@@ -506,7 +511,7 @@ public class SwitchyCommands {
 			return 0;
 		}
 		components("", player, data, feedback);
-		feedback.accept(prefix().append(Text.literal(id.getPath())).append(Text.literal(" will now be switched between profiles. ").formatted(Formatting.GREEN)).append(clickable("list", "/switchy", true)));
+		feedback.accept(prefix().append(Text.literal(id.getPath())).append(Text.literal(" is now switched per-profile. ").formatted(Formatting.GREEN)).append(clickable("list", "/switchy", true)));
 		return changed;
 	}
 
@@ -527,7 +532,7 @@ public class SwitchyCommands {
 			return 0;
 		}
 		components("", player, data, feedback);
-		feedback.accept(prefix().append(Text.literal(id.getPath())).append(Text.literal(" will now be shared between profiles. ").formatted(Formatting.GREEN)).append(clickable("list", "/switchy", true)));
+		feedback.accept(prefix().append(Text.literal(id.getPath())).append(Text.literal(" is now shared between profiles. ").formatted(Formatting.GREEN)).append(clickable("list", "/switchy", true)));
 		return changed;
 	}
 
@@ -628,11 +633,14 @@ public class SwitchyCommands {
 	}
 
 	public static MutableText clickable(String name, String contents, ClickEvent.Action action, Formatting formatting, String prefix, String suffix) {
+		return clickable(Text.literal(name).formatted(formatting), contents, action, null, formatting, prefix, suffix);
+	}
+
+	public static MutableText clickable(Text name, String contents, ClickEvent.Action action, Text hint, Formatting formatting, String prefix, String suffix) {
 		return Text.empty()
 			.append(Text.literal(prefix).formatted(Formatting.GRAY))
-			.append(Text.literal(name).setStyle(Style.EMPTY
-				.withFormatting(formatting)
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(contents + (action == ClickEvent.Action.SUGGEST_COMMAND ? "..." : "")).formatted(formatting)))
+			.append(name.copy().styled(s -> s
+				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.empty().append(hint == null ? Text.empty() : hint.copy().append("\n")).append(Text.literal(contents + (action == ClickEvent.Action.SUGGEST_COMMAND ? "..." : "")).formatted(formatting))))
 				.withClickEvent(new ClickEvent(action, contents))
 			))
 			.append(Text.literal(suffix).formatted(Formatting.GRAY));
