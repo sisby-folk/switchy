@@ -125,7 +125,7 @@ public class SwitchyCommands {
 		Map<Identifier, List<SwitchyComponentType<?>>> grouped = SwitchyComponentTypes.grouped(SwitchyComponentTypes.instance().values());
 		long numEnabled = grouped.values().stream().filter(g -> data.componentSet().contains(g.get(0))).count();
 		feedback.accept(prefix()
-			.append(Text.literal("You're switching ").formatted(Formatting.GRAY))
+			.append(Text.literal("you're switching ").formatted(Formatting.GRAY))
 			.append(Text.literal("%d".formatted(numEnabled).formatted(Formatting.WHITE)))
 			.append(Text.literal(" component%s and sharing ".formatted(numEnabled == 1 ? "" : "s")).formatted(Formatting.GRAY))
 			.append(Text.literal("%d".formatted(grouped.size() - numEnabled)).formatted(Formatting.WHITE))
@@ -136,8 +136,8 @@ public class SwitchyCommands {
 			List<SwitchyProfile> matchingProfiles = data.values().stream().sorted(Comparator.comparing(SwitchyProfile::id)).filter(p -> types.stream().anyMatch(t -> p.get(t) != null && (t.emptyChecker() == null || t.isPrecious(p.components())))).toList();
 			feedback.accept(indent()
 				.append(enabled ?
-					clickable(Text.literal("enabled").formatted(Formatting.GREEN), "/switchy components disable %s".formatted(id), data.size() == 1 ? ClickEvent.Action.RUN_COMMAND : ClickEvent.Action.SUGGEST_COMMAND, Text.empty().append(Text.literal("Click to share ").formatted(Formatting.GRAY)).append(id.getPath()).append(Text.literal(" between profiles.").formatted(Formatting.GRAY)).append(data.size() == 1 ? Text.empty() : Text.literal("\n").append(Text.literal("This deletes data from other profiles!").formatted(Formatting.GOLD))), Formatting.RED, "[", "]") :
-					clickable(Text.literal("disabled").formatted(Formatting.RED), "/switchy components enable %s".formatted(id), ClickEvent.Action.RUN_COMMAND, Text.empty().append(Text.literal("Click to switch ").formatted(Formatting.GRAY)).append(id.getPath()).append(Text.literal(" per-profile.").formatted(Formatting.GRAY)), Formatting.GREEN, "[", "]")
+					clickable(Text.literal("enabled").formatted(Formatting.GREEN), "/switchy components disable %s".formatted(id), data.size() == 1 ? ClickEvent.Action.RUN_COMMAND : ClickEvent.Action.SUGGEST_COMMAND, Text.empty().append(Text.literal("Click to share ").formatted(Formatting.GRAY)).append(id.getPath()).append(Text.literal(" between profiles.").formatted(Formatting.GRAY)).append(data.size() == 1 ? Text.empty() : Text.literal("\n").append(Text.literal("this deletes data from other profiles!").formatted(Formatting.GOLD))), Formatting.RED, "[", "]") :
+					clickable(Text.literal("disabled").formatted(Formatting.RED), "/switchy components enable %s".formatted(id), ClickEvent.Action.RUN_COMMAND, Text.empty().append(Text.literal("click to switch ").formatted(Formatting.GRAY)).append(id.getPath()).append(Text.literal(" per-profile.").formatted(Formatting.GRAY)), Formatting.GREEN, "[", "]")
 				)
 				.append(" ")
 				.append(id.getPath()).setStyle(Style.EMPTY
@@ -198,9 +198,9 @@ public class SwitchyCommands {
 			return data.size() - beforeSize;
 		} catch (Exception e) {
 			feedback.accept(prefix()
-				.append("Error while switching: ").formatted(Formatting.RED)
+				.append("error while switching: ").formatted(Formatting.RED)
 				.append(Objects.requireNonNullElse(e.getMessage(), "???")).formatted(Formatting.GRAY)
-				.append(" See server logs for more info.").formatted(Formatting.RED)
+				.append(" see server logs for more info.").formatted(Formatting.RED)
 			);
 			Switchy.LOGGER.error("[Switchy] Error while switching to {} for player {}", data.current(), player.getGameProfile().getName(), e);
 			return 0;
@@ -274,7 +274,7 @@ public class SwitchyCommands {
 				members.add(new SwitchyPlayerData.ProfileImportData(null, profileId, name, color, pronouns, description, avatarUrl, List.of(new SwitchyPlayerData.ProxyTag(profileId + ":", null)), components));
 			}
 			feedback.accept(prefix()
-				.append(Text.literal("Exported ").formatted(Formatting.GREEN))
+				.append(Text.literal("exported ").formatted(Formatting.GREEN))
 				.append(Text.literal("%d".formatted(data.size())))
 				.append(Text.literal(" profile%s. ".formatted(data.size() == 1 ? "" : "s")).formatted(Formatting.GREEN))
 				.append(clickable("copy", SwitchyComponentTypes.GSON.toJson(new PlayerImportData(sysName, members, null)), ClickEvent.Action.COPY_TO_CLIPBOARD, Formatting.AQUA, "<", ">"))
@@ -320,7 +320,7 @@ public class SwitchyCommands {
 		}
 		if (exists == false && reallyExists) {
 			feedback.accept(prefix()
-				.append("That profile already exists! Try ").formatted(Formatting.YELLOW)
+				.append("that profile already exists! try ").formatted(Formatting.YELLOW)
 				.append(clickable("/switch %s".formatted(profileId), "/switch %s".formatted(profileId), true, Formatting.AQUA, "", ""))
 			);
 			return 0;
@@ -332,7 +332,7 @@ public class SwitchyCommands {
 				.append(Text.literal(" hasn't been made yet!").formatted(Formatting.YELLOW))
 			);
 			feedback.accept(indent()
-				.append(Text.literal("Use ").formatted(Formatting.YELLOW))
+				.append(Text.literal("use ").formatted(Formatting.YELLOW))
 				.append(clickable("/switchy new %s".formatted(profileId), "/switchy new %s".formatted(profileId), true, Formatting.AQUA, "", ""))
 				.append(Text.literal(" to create it.").formatted(Formatting.YELLOW))
 			);
@@ -342,9 +342,8 @@ public class SwitchyCommands {
 			SwitchyProfile currentProfile = data.getCurrentProfile(player);
 			SwitchyProfile nextProfile = data.getOrCreateProfile(profileId, player);
 			data.switchOrCreateProfile(profileId, player, prefix()
-				.append(Text.literal("Switched from ").formatted(Formatting.GREEN))
 				.append(SwitchyComponentTypes.NAME.asText(currentProfile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
-				.append(Text.literal(" to ").formatted(Formatting.GREEN))
+				.append(Text.literal(" \uD83E\uDC46 ").formatted(Formatting.GREEN))
 				.append(SwitchyComponentTypes.NAME.asText(nextProfile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
 				.append(Text.literal("! ").formatted(Formatting.GREEN))
 				.append(clickable("list", "/switchy", true)));
@@ -357,9 +356,9 @@ public class SwitchyCommands {
 			return 0;
 		} catch (Exception e) {
 			feedback.accept(prefix()
-				.append("Error while switching: ").formatted(Formatting.RED)
+				.append("error while switching: ").formatted(Formatting.RED)
 				.append(Objects.requireNonNullElse(e.getMessage(), "???")).formatted(Formatting.GRAY)
-				.append(" See server logs for more info.").formatted(Formatting.RED)
+				.append(" see server logs for more info.").formatted(Formatting.RED)
 			);
 			Switchy.LOGGER.error("[Switchy] Error while switching to {} for player {}", profileId, player.getGameProfile().getName(), e);
 			return 0;
@@ -405,7 +404,7 @@ public class SwitchyCommands {
 				return 2;
 			} catch (Exception e) {
 				feedback.accept(prefix()
-					.append("Error while self-switching: ").formatted(Formatting.RED)
+					.append("error while self-switching: ").formatted(Formatting.RED)
 					.append(Objects.requireNonNullElse(e.getMessage(), "???")).formatted(Formatting.GRAY)
 					.append(" See server logs for more info.").formatted(Formatting.RED)
 				);
@@ -637,7 +636,7 @@ public class SwitchyCommands {
 			context.getSource().sendFeedback(() -> prefix().append(Text.literal("profile doesn't exist!").formatted(Formatting.YELLOW)), false);
 			return null;
 		} catch (Exception e) {
-			if (feedback) context.getSource().sendFeedback(() -> prefix().append(Text.literal("Command \"/%s...\" failed! Check log for details.".formatted(context.getInput().substring(0, Math.min(context.getInput().length(), 20)))).formatted(Formatting.RED)), false);
+			if (feedback) context.getSource().sendFeedback(() -> prefix().append(Text.literal("command \"/%s...\" failed! Check log for details.".formatted(context.getInput().substring(0, Math.min(context.getInput().length(), 20)))).formatted(Formatting.RED)), false);
 			if (feedback) Switchy.LOGGER.error("[Switchy] Error while executing command: {}", context.getInput(), e);
 			return null;
 		}
