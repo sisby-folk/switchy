@@ -67,6 +67,8 @@ public class SwitchyCommands {
 	private static final Pattern COLOR_PATTERN = Pattern.compile("<(?:color:)?#([0-9a-fA-f]{6})>", Pattern.CASE_INSENSITIVE);
 	private static final Pattern BIO_PATTERN = Pattern.compile("<hover:'?((?:\\\\'|.)*?)'?>", Pattern.CASE_INSENSITIVE);
 	private static final Pattern BRACKETED_PATTERN = Pattern.compile("(\\([^()]+\\))", Pattern.CASE_INSENSITIVE);
+	private static final String EXISTING = "existing";
+	private static final String ALL = "all";
 
 	public static void greet(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
 		SwitchyPlayerData data = SwitchyPlayerData.ofEarly(handler.getPlayer());
@@ -200,17 +202,17 @@ public class SwitchyCommands {
 			throw new RuntimeException(e);
 		}
 		Function<Integer, Text> feedbackGetter = updated -> prefix()
-			.append(!"exists".equals(scope) ? Text.empty()
-				.append(Text.literal("create ").formatted(Formatting.GRAY))
-				.append(Text.literal("%s".formatted(data.size() - beforeSize)).formatted(Formatting.WHITE))
-				.append(Text.literal(" profile%s and ".formatted((data.size() - beforeSize) == 1 ? "" : "s")).formatted(Formatting.GRAY)) : Text.empty()
+			.append(!EXISTING.equals(scope) ? Text.empty()
+				.append(Text.literal("created ").formatted(Formatting.GREEN))
+				.append(Text.literal("%d".formatted(data.size() - beforeSize)).formatted(Formatting.WHITE))
+				.append(Text.literal(" profile%s and ".formatted((data.size() - beforeSize) == 1 ? "" : "s")).formatted(Formatting.GREEN)) : Text.empty()
 			)
-			.append(Text.literal("updated ").formatted(Formatting.GRAY))
-			.append(Text.literal("%s".formatted(updated - (data.size() - beforeSize))).formatted(Formatting.WHITE))
-			.append(Text.literal(" %s profile%s. ".formatted(!"exists".equals(scope) ? "existing" : "", (updated - (data.size() - beforeSize)) == 1 ? "" : "s")).formatted(Formatting.GRAY))
+			.append(Text.literal("updated ").formatted(Formatting.GREEN))
+			.append(Text.literal("%d".formatted(updated - (data.size() - beforeSize))).formatted(Formatting.WHITE))
+			.append(Text.literal("%s profile%s. ".formatted(!EXISTING.equals(scope) ? " existing" : "", (updated - (data.size() - beforeSize)) == 1 ? "" : "s")).formatted(Formatting.GREEN))
 			.append(clickable("list", "/switchy", true));
 		List<SwitchyPlayerData.ProfileImportData> profilesToImport = importData.members();
-		if (!"exists".equals(scope) && !"all".equals(scope)) {
+		if (!EXISTING.equals(scope) && !ALL.equals(scope)) {
 			SwitchyPlayerData.GroupImportData group = Objects.requireNonNullElse(importData.groups, new ArrayList<SwitchyPlayerData.GroupImportData>()).stream().filter(g -> g.name().equals(scope)).findAny().orElse(null);
 			SwitchyPlayerData.ProfileImportData profile = importData.members().stream().filter(p -> p.name().equals(scope)).findAny().orElse(null);
 			if (group != null) {
@@ -222,7 +224,7 @@ public class SwitchyCommands {
 			}
 		}
 		try {
-			int updated = data.importProfiles(profilesToImport, player, importData.name(), !"exists".equals(scope), feedbackGetter);
+			int updated = data.importProfiles(profilesToImport, player, importData.name(), !EXISTING.equals(scope), feedbackGetter);
 			feedback.accept(feedbackGetter.apply(updated));
 			return data.size() - beforeSize;
 		} catch (Exception e) {
@@ -304,9 +306,9 @@ public class SwitchyCommands {
 				members.add(new SwitchyPlayerData.ProfileImportData(null, profileId, name, color, pronouns, description, avatarUrl, List.of(new SwitchyPlayerData.ProxyTag(profileId + ":", null)), components));
 			}
 			feedback.accept(prefix()
-				.append(Text.literal("Exported ").formatted(Formatting.GRAY))
-				.append(Text.literal("%d".formatted(data.size())).formatted(Formatting.GRAY))
-				.append(Text.literal(" profile%s. ".formatted(data.size() == 1 ? "" : "s")).formatted(Formatting.GRAY))
+				.append(Text.literal("Exported ").formatted(Formatting.GREEN))
+				.append(Text.literal("%d".formatted(data.size())))
+				.append(Text.literal(" profile%s. ".formatted(data.size() == 1 ? "" : "s")).formatted(Formatting.GREEN))
 				.append(clickable("copy", SwitchyComponentTypes.GSON.toJson(new PlayerImportData(sysName, members, null)), ClickEvent.Action.COPY_TO_CLIPBOARD, Formatting.AQUA, "<", ">"))
 			);
 		} catch (NbtException e) {
@@ -580,7 +582,7 @@ public class SwitchyCommands {
 				)
 				.then(CommandManager.literal("import")
 					.then(CommandManager.argument("scope", StringArgumentType.word())
-						.suggests((c, b) -> CommandSource.suggestMatching(List.of("all", "existing"), b))
+						.suggests((c, b) -> CommandSource.suggestMatching(List.of(ALL, EXISTING), b))
 						.then(CommandManager.argument("url", StringArgumentType.greedyString())
 							.executes(c -> execute(c, (i, p, d, f) -> importProfiles(p, d, f, c.getArgument("url", String.class), c.getArgument("scope", String.class))))
 						)
