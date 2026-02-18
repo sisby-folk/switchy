@@ -110,6 +110,7 @@ public class SwitchyCommands {
 				.append(Text.literal("rename your first profile: ").formatted(Formatting.GRAY))
 				.append(clickable("/switchy edit default id [...]", "/switchy edit default id ", false, Formatting.AQUA, "", ""))
 			);
+			hintClickables(feedback);
 		} else if (data.size() == 1) {
 			feedback.accept(indent()
 				.append(Text.literal("HINT: ").formatted(Formatting.LIGHT_PURPLE))
@@ -119,6 +120,19 @@ public class SwitchyCommands {
 		}
 
 		return data.size();
+	}
+
+	private static void hintClickables(Consumer<Text> feedback) {
+		feedback.accept(indent()
+			.append(Text.literal("note: switchy output is ").formatted(Formatting.ITALIC).formatted(Formatting.GRAY))
+			.append(Text.literal("hoverable").formatted(Formatting.ITALIC).styled(s -> s
+				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("like this!")))))
+			.append(Text.literal(" and <[/").formatted(Formatting.ITALIC).formatted(Formatting.GRAY))
+			.append(Text.literal("clickable").formatted(Formatting.ITALIC).formatted(Formatting.AQUA).styled(s -> s
+				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("switchy-switch! ...")))
+				.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "switchy-switch!"))))
+			.append(Text.literal("]>!").formatted(Formatting.ITALIC).formatted(Formatting.GRAY))
+		);
 	}
 
 	private static int components(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
@@ -136,7 +150,7 @@ public class SwitchyCommands {
 			List<SwitchyProfile> matchingProfiles = data.values().stream().sorted(Comparator.comparing(SwitchyProfile::id)).filter(p -> types.stream().anyMatch(t -> p.get(t) != null && (t.emptyChecker() == null || t.isPrecious(p.components())))).toList();
 			feedback.accept(indent()
 				.append(enabled ?
-					clickable(Text.literal("enabled").formatted(Formatting.GREEN), "/switchy components disable %s".formatted(id), data.size() == 1 ? ClickEvent.Action.RUN_COMMAND : ClickEvent.Action.SUGGEST_COMMAND, Text.empty().append(Text.literal("Click to share ").formatted(Formatting.GRAY)).append(id.getPath()).append(Text.literal(" between profiles.").formatted(Formatting.GRAY)).append(data.size() == 1 ? Text.empty() : Text.literal("\n").append(Text.literal("this deletes data from other profiles!").formatted(Formatting.GOLD))), Formatting.RED, "[", "]") :
+					clickable(Text.literal("enabled").formatted(Formatting.GREEN), "/switchy components disable %s".formatted(id), data.size() == 1 ? ClickEvent.Action.RUN_COMMAND : ClickEvent.Action.SUGGEST_COMMAND, Text.empty().append(Text.literal("click to share ").formatted(Formatting.GRAY)).append(id.getPath()).append(Text.literal(" between profiles.").formatted(Formatting.GRAY)).append(data.size() == 1 ? Text.empty() : Text.literal("\n").append(Text.literal("this deletes data from other profiles!").formatted(Formatting.GOLD))), Formatting.RED, "[", "]") :
 					clickable(Text.literal("disabled").formatted(Formatting.RED), "/switchy components enable %s".formatted(id), ClickEvent.Action.RUN_COMMAND, Text.empty().append(Text.literal("click to switch ").formatted(Formatting.GRAY)).append(id.getPath()).append(Text.literal(" per-profile.").formatted(Formatting.GRAY)), Formatting.GREEN, "[", "]")
 				)
 				.append(" ")
@@ -150,7 +164,14 @@ public class SwitchyCommands {
 				)
 			);
 		});
-		if (data.size() == 1) {
+		if (data.size() == 1 && data.current().equals("default")) {
+			feedback.accept(indent()
+				.append(Text.literal("HINT: ").formatted(Formatting.LIGHT_PURPLE))
+				.append(Text.literal("view the profile list via ").formatted(Formatting.GRAY))
+				.append(clickable("/switchy", "/switchy", true, Formatting.AQUA, "", ""))
+			);
+			hintClickables(feedback);
+		} else if (data.size() == 1) {
 			feedback.accept(indent()
 				.append(Text.literal("HINT: ").formatted(Formatting.LIGHT_PURPLE))
 				.append(Text.literal("create your second profile via ").formatted(Formatting.GRAY))
@@ -302,9 +323,12 @@ public class SwitchyCommands {
 			.append(Text.literal(" contains ").formatted(Formatting.GRAY))
 			.append("%d".formatted(profile.components().size()))
 			.append(Text.literal(" component%s. ".formatted(profile.components().size() == 1 ? "" : "s")).formatted(Formatting.GRAY))
-			.append(profileId.equals(data.current()) ? Text.empty() : clickable("switch", "/switch %s".formatted(StringArgumentType.escapeIfRequired(profileId)), true))
+			.append(profileId.equals(data.current()) ? clickable("list", "/switchy", true) : clickable("switch", "/switch %s".formatted(StringArgumentType.escapeIfRequired(profileId)), true))
 		);
 		profile.components().asTexts().forEach(componentText -> feedback.accept(indent().append(componentText)));
+		if (data.size() == 1 && data.current().equals("default")) {
+			hintClickables(feedback);
+		}
 		return profile.components().size();
 	}
 
@@ -515,6 +539,7 @@ public class SwitchyCommands {
 			CommandManager.literal("switch")
 				.requires(c -> c.getPlayer() != null && SwitchyPlayerData.ofEarly(c.getPlayer()) != null && SwitchyPlayerData.ofEarly(c.getPlayer()).size() > 1)
 				.then(CommandManager.literal("?")
+					.requires(c -> c.getPlayer() != null && SwitchyPlayerData.ofEarly(c.getPlayer()) != null && SwitchyPlayerData.ofEarly(c.getPlayer()).size() > 2)
 					.executes(c -> execute(c, (i, p, d, f) -> switchRandomProfile(p, d, f)))
 				)
 				.then(profile(false)
@@ -535,6 +560,7 @@ public class SwitchyCommands {
 					)
 				)
 				.then(CommandManager.literal("delete")
+					.requires(c -> c.getPlayer() != null && SwitchyPlayerData.ofEarly(c.getPlayer()) != null && SwitchyPlayerData.ofEarly(c.getPlayer()).size() > 1)
 					.then(profile(false)
 						.executes(c -> execute(c, (i, p, d, f) -> deleteProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase())))
 					)
@@ -556,6 +582,7 @@ public class SwitchyCommands {
 					)
 				)
 				.then(CommandManager.literal("export")
+					.requires(c -> c.getPlayer() != null && SwitchyPlayerData.ofEarly(c.getPlayer()) != null && SwitchyPlayerData.ofEarly(c.getPlayer()).size() > 1)
 					.executes(c -> execute(c, SwitchyCommands::export))
 				)
 				.then(CommandManager.literal("components")
