@@ -57,7 +57,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 		Identifier.of("minecraft", "inventory"), SwitchyCodecs.INVENTORY_CODEC
 	));
 	public static final Map<Identifier, SwitchyComponentType.TextProvider<?>> TEXT_PROVIDERS = new HashMap<>(Map.of(
-		Identifier.of("minecraft", "trunc"), new SwitchyComponentType.SimpleTextProvider<>(o -> Objects.toString(o).length() <= 10 ? Text.of(Objects.toString(o)) : Text.literal(Objects.toString(o).substring(0, 10) + "...").styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(Objects.toString(o)))))),
+		Identifier.of("minecraft", "trunc"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::truncate),
 		Identifier.of("minecraft", "nbt"), new SwitchyComponentType.SimpleTextProvider<NbtElement>(e -> FormatUtils.nbtPathResultText(List.of(e), true)),
 		Identifier.of("minecraft", "text"), new SwitchyComponentType.SimpleTextProvider<Text>(t -> t),
 		Identifier.of("minecraft", "percent"), new SwitchyComponentType.SimpleTextProvider<Number>(n -> Text.of("%.0f%%".formatted(n.floatValue() * 100.0))),
@@ -69,8 +69,10 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 			Text.empty().append(Text.literal("Z:").formatted(Formatting.GRAY)).append(Text.literal(String.valueOf(BlockPos.ofFloored(c).getZ())))
 		), Text.literal(", ").formatted(Formatting.GRAY))),
 		Identifier.of("minecraft", "identifier"), new SwitchyComponentType.SimpleTextProvider<Identifier>(i -> Text.of(FormatUtils.prettify(i.getPath()))),
-		Identifier.of("minecraft", "inventory"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::inventoryText)
+		Identifier.of("minecraft", "inventory"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::inventoryText),
+		Identifier.of("minecraft", "skin"), new SwitchyComponentType.SimpleServerTextProvider<>(FormatUtils::skin)
 	));
+
 	public static final Map<Identifier, SwitchyComponentType.ArgumentEditor<?>> ARGUMENT_EDITORS = new HashMap<>(Map.of(
 		Identifier.of("minecraft", "text"), new SwitchyComponentType.SimpleArgumentEditor<Text>(e -> CommandManager.argument("name", StringArgumentType.greedyString()).executes(c -> e.execute(c, Text.of(c.getArgument("name", String.class)))))
 	));
@@ -109,7 +111,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	public static final SwitchyComponentType<String> NAME = registerStatic(NAME_ID, Codec.STRING, builder -> {
 		builder = builder
 			.importable(true)
-			.textProvider(s -> Text.literal(s.replaceAll("<?((?:\\\\>|.)*?)>", "")).styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(s)))))
+			.textProvider((server, s) -> Text.literal(s.replaceAll("<?((?:\\\\>|.)*?)>", "")).styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(s)))))
 			.argumentEditor(e -> CommandManager.argument("name", StringArgumentType.greedyString()).executes(c -> e.execute(c, c.getArgument("name", String.class))));
 		return FabricLoader.getInstance().isModLoaded("styled-nicknames") ? StyledNicknamesCompat.nicknameComponent(builder) : builder;
 	});

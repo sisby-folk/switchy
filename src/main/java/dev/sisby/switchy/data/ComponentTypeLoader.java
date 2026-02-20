@@ -74,7 +74,7 @@ public class ComponentTypeLoader extends JsonDataLoader implements IdentifiableR
 					}
 					NbtPathArgumentType.NbtPath previewPath = NbtPathArgumentType.nbtPath().parse(new StringReader(nbtPath));
 					int finalDecompositions = decompositions;
-					provider = v -> {
+					provider = (server, v) -> {
 						try {
 							NbtElement element = (NbtElement) v;
 							int decomposed = 0;
@@ -88,7 +88,7 @@ public class ComponentTypeLoader extends JsonDataLoader implements IdentifiableR
 						}
 					};
 				} else {
-					provider = v -> Text.literal(Objects.toString(v));
+					provider = (server, v) -> Text.literal(Objects.toString(v));
 				}
 			}
 			if (checker == null) {
@@ -117,7 +117,7 @@ public class ComponentTypeLoader extends JsonDataLoader implements IdentifiableR
 				}
 			}
 			SwitchyComponentType.TextProvider<T> finalProvider = provider;
-			SwitchyComponentType.TextProvider<T> prefixedPreviewer = v -> Text.empty().append(Text.literal(Objects.requireNonNullElse(type.prefix, "")).formatted(Formatting.GRAY)).append(finalProvider.toText(v));
+			SwitchyComponentType.TextProvider<T> prefixedPreviewer = (server, v) -> Text.empty().append(Text.literal(Objects.requireNonNullElse(type.prefix, "")).formatted(Formatting.GRAY)).append(finalProvider.toText(server, v));
 			NbtPathArgumentType.NbtPath path = NbtPathArgumentType.nbtPath().parse(new StringReader(type.path));
 			SwitchyComponentType.EmptyChecker<T> finalChecker = checker;
 			types.register(id, codec, b -> b

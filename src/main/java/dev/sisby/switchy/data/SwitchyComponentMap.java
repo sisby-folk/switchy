@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
@@ -74,10 +75,10 @@ public class SwitchyComponentMap {
 		return (T) this.map.remove(type);
 	}
 
-	public List<MutableText> asTexts() {
+	public List<MutableText> asTexts(MinecraftServer server) {
 		return SwitchyComponentTypes.grouped(keySet()).entrySet().stream().filter(e -> !e.getValue().stream().allMatch(t -> t.hidden() || this.get(t) == null || (t.emptyChecker() != null && !t.isPrecious(this)))).map(e -> Text.empty()
 				.append(Text.literal(e.getKey().getPath() + ": ").formatted(Formatting.GRAY))
-				.append(Texts.join(e.getValue().stream().filter(t -> !t.hidden() && this.get(t) != null && (t.emptyChecker() == null || t.isPrecious(this))).map(t -> t.asText(this)).toList(), Text.literal(", ").formatted(Formatting.GRAY)))
+				.append(Texts.join(e.getValue().stream().filter(t -> !t.hidden() && this.get(t) != null && (t.emptyChecker() == null || t.isPrecious(this))).map(t -> t.asText(server, this)).toList(), Text.literal(", ").formatted(Formatting.GRAY)))
 		).toList();
 	}
 }
