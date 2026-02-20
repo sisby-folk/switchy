@@ -1,6 +1,13 @@
 package dev.sisby.switchy.util;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.mojang.authlib.minecraft.MinecraftProfileTexture;
+import com.mojang.authlib.yggdrasil.response.MinecraftTexturesPayload;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.util.UUIDTypeAdapter;
+import eu.pb4.placeholders.api.PlaceholderContext;
+import eu.pb4.placeholders.api.Placeholders;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.AbstractNbtList;
@@ -9,6 +16,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
@@ -19,8 +27,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.text.NumberFormat;
+import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 public class FormatUtils {
 	@SuppressWarnings("deprecation")
@@ -94,5 +104,13 @@ public class FormatUtils {
 			return decomposed;
 		}
 		throw NbtPathArgumentType.INVALID_PATH_NODE_EXCEPTION.create();
+	}
+
+	public static Text skin(MinecraftServer server, NbtCompound compound) {
+		Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
+		MinecraftTexturesPayload payload = gson.fromJson(new String(Base64.getDecoder().decode(compound.getString("value"))), MinecraftTexturesPayload.class);
+		MinecraftProfileTexture skinTexture = payload.getTextures().get(MinecraftProfileTexture.Type.SKIN);
+		String skinHash = skinTexture.getHash();
+		return Placeholders.getPlaceholders().containsKey(Identifier.of("chatheads", "player")) ? Placeholders.parseText(Text.of("%chatheads:player " + skinHash + "%"), PlaceholderContext.of(server))  : Text.literal(skinHash);
 	}
 }

@@ -72,7 +72,7 @@ public class SwitchyCommands {
 	public static void greet(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
 		SwitchyPlayerData data = SwitchyPlayerData.ofEarly(handler.getPlayer());
 		if (data == null) return;
-		handler.getPlayer().sendMessage(data.greet());
+		handler.getPlayer().sendMessage(data.greet(server));
 	}
 
 	private static int list(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
@@ -97,7 +97,7 @@ public class SwitchyCommands {
 				.append(" ")
 				.append(clickable("edit", "/switchy edit %s ".formatted(StringArgumentType.escapeIfRequired(profile.id())), false))
 				.append(" ")
-				.append(SwitchyComponentTypes.NAME.asText(profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)).setStyle(Style.EMPTY
+				.append(SwitchyComponentTypes.NAME.asText(player.getServer(), profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)).setStyle(Style.EMPTY
 					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(profile.asTexts(player), Text.of("\n")).copy().append("\n").append(Text.literal("... /switchy view %s".formatted(StringArgumentType.escapeIfRequired(profile.id()))).formatted(Formatting.AQUA))))
 					.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/switchy view %s".formatted(StringArgumentType.escapeIfRequired(profile.id()))))
 				))
@@ -159,7 +159,7 @@ public class SwitchyCommands {
 					.withHoverEvent(!enabled ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, matchingProfiles.isEmpty() ? Text.literal("<no %s data yet>".formatted(id.getPath().replace("_", " "))).formatted(Formatting.GRAY) : Texts.join(matchingProfiles.stream().map(p -> Text.empty()
 						.append(Text.literal(p.id()).formatted(Formatting.GRAY))
 						.append(": ")
-						.append(Texts.join(types.stream().filter(t -> p.get(t) != null).map(t -> t.asText(p.components())).toList(), Text.literal(", ").formatted(Formatting.GRAY)))
+						.append(Texts.join(types.stream().filter(t -> p.get(t) != null).map(t -> t.asText(player.getServer(), p.components())).toList(), Text.literal(", ").formatted(Formatting.GRAY)))
 					).toList(), Text.of("\n"))))
 				)
 			);
@@ -276,7 +276,7 @@ public class SwitchyCommands {
 					if (splitBio.size() > 2) {
 						description = splitBio.get(2);
 					}
-					name = (SwitchyComponentTypes.NAME.asText(name).getString() + bracketed).trim(); // strip tags
+					name = (SwitchyComponentTypes.NAME.asText(player.getServer(), name).getString() + bracketed).trim(); // strip tags
 				}
 				// bodge player renderer avatar from skin
 				String avatarUrl = null;
@@ -326,7 +326,7 @@ public class SwitchyCommands {
 			.append(Text.literal(" component%s. ".formatted(profile.components().size() == 1 ? "" : "s")).formatted(Formatting.GRAY))
 			.append(profileId.equals(data.current()) ? clickable("list", "/switchy", true) : clickable("switch", "/switch %s".formatted(StringArgumentType.escapeIfRequired(profileId)), true))
 		);
-		profile.components().asTexts().forEach(componentText -> feedback.accept(indent().append(componentText)));
+		profile.components().asTexts(player.getServer()).forEach(componentText -> feedback.accept(indent().append(componentText)));
 		if (data.size() == 1 && data.current().equals("default")) {
 			hintClickables(feedback);
 		}
@@ -367,9 +367,9 @@ public class SwitchyCommands {
 			SwitchyProfile currentProfile = data.getCurrentProfile(player);
 			SwitchyProfile nextProfile = data.getOrCreateProfile(profileId, player);
 			data.switchOrCreateProfile(profileId, player, prefix()
-				.append(SwitchyComponentTypes.NAME.asText(currentProfile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
+				.append(SwitchyComponentTypes.NAME.asText(player.getServer(), currentProfile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
 				.append(Text.literal(" \uD83E\uDC46 ").formatted(Formatting.GREEN))
-				.append(SwitchyComponentTypes.NAME.asText(nextProfile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
+				.append(SwitchyComponentTypes.NAME.asText(player.getServer(), nextProfile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
 				.append(Text.literal("! ").formatted(Formatting.GREEN))
 				.append(clickable("list", "/switchy", true)));
 		} catch (ProfileCurrentException e) {
@@ -417,9 +417,9 @@ public class SwitchyCommands {
 			.append(Text.literal(":").formatted(Formatting.GRAY))
 			.append(type.id().getPath())
 			.append(Text.literal(" - ").formatted(Formatting.GREEN))
-			.append(oldValue == null ? Text.of("empty") : type.asText(oldValue))
+			.append(oldValue == null ? Text.of("empty") : type.asText(player.getServer(), oldValue))
 			.append(Text.literal(" \uD83E\uDC46 ").formatted(Formatting.GREEN))
-			.append(type.asText(value))
+			.append(type.asText(player.getServer(), value))
 			.append(Text.literal("!").formatted(Formatting.GREEN))
 			.append(" ")
 			.append(clickable("list", "/switchy", true));
@@ -483,7 +483,7 @@ public class SwitchyCommands {
 				.append(String.valueOf(e.getPreciousComponents().size()))
 				.append(Text.literal("x precious components!").formatted(Formatting.YELLOW))
 			);
-			e.getPreciousComponents().asTexts().forEach(componentText -> feedback.accept(indent().append(componentText)));
+			e.getPreciousComponents().asTexts(player.getServer()).forEach(componentText -> feedback.accept(indent().append(componentText)));
 			return 0;
 		}
 	}
