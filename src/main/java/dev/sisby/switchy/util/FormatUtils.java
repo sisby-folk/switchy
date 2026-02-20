@@ -30,9 +30,13 @@ import java.text.NumberFormat;
 import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
 public class FormatUtils {
+
+	private static final Identifier CHAT_HEADS = Identifier.of("chatheads", "player");
+
 	@SuppressWarnings("deprecation")
 	public static String prettify(String s) {
 		return WordUtils.capitalize(s.replace("_", " "));
@@ -40,6 +44,10 @@ public class FormatUtils {
 
 	public static Text statText(float f) {
 		return Text.empty().append(NumberFormat.getNumberInstance(Locale.ROOT).format(Math.ceil(f) / 2F));
+	}
+
+	public static Text truncate(Object o) {
+		return Objects.toString(o).length() <= 10 ? Text.of(Objects.toString(o)) : Text.literal(Objects.toString(o).substring(0, 10) + "...").styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(Objects.toString(o)))));
 	}
 
 	public static Text inventoryText(DefaultedList<ItemStack> inventory) {
@@ -109,8 +117,8 @@ public class FormatUtils {
 	public static Text skin(MinecraftServer server, NbtCompound compound) {
 		Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
 		MinecraftTexturesPayload payload = gson.fromJson(new String(Base64.getDecoder().decode(compound.getString("value"))), MinecraftTexturesPayload.class);
-		MinecraftProfileTexture skinTexture = payload.getTextures().get(MinecraftProfileTexture.Type.SKIN);
+		MinecraftProfileTexture skinTexture = payload.textures().get(MinecraftProfileTexture.Type.SKIN);
 		String skinHash = skinTexture.getHash();
-		return Placeholders.getPlaceholders().containsKey(Identifier.of("chatheads", "player")) ? Placeholders.parseText(Text.of("%chatheads:player " + skinHash + "%"), PlaceholderContext.of(server))  : Text.literal(skinHash);
+		return Placeholders.getPlaceholders().containsKey(CHAT_HEADS) ? Placeholders.parseText(Text.of("%chatheads:player " + skinHash + "%"), PlaceholderContext.of(server)) : truncate(skinHash);
 	}
 }
