@@ -7,7 +7,6 @@ import net.minecraft.nbt.AbstractNbtList;
 import net.minecraft.nbt.AbstractNbtNumber;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.text.HoverEvent;
@@ -43,10 +42,14 @@ public class FormatUtils {
 
 	public static Text nbtPathResultText(List<NbtElement> results, boolean allowHover) {
 		if (results.isEmpty() || (results.size() == 1 && isEmpty(results.get(0)))) return Text.literal("x0").formatted(Formatting.GRAY);
-		if (results.size() > 1 && allowHover) return Text.literal("x%d".formatted(results.size())).styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, nbtPathResultText(results, false))));
-		if (results.size() == 1 && results.get(0) instanceof NbtList l && allowHover) return Text.literal("x%d".formatted(l.size())).styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, nbtPathResultText(l, false))));
+		if (results.size() > 1 && allowHover) {
+			var shortList = Texts.join(results.stream().map(e -> minimalistPrettyPrint(e, 0)).toList(), Text.literal(", "));
+			if (shortList.getString().length() < 30) return shortList;
+			return Text.literal("x%d".formatted(results.size())).styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, nbtPathResultText(results, false))));
+		}
+		if (results.size() == 1 && results.get(0) instanceof NbtList l && allowHover) return nbtPathResultText(l.stream().toList(), true);
 		if (results.size() == 1 && results.get(0) instanceof NbtCompound c && allowHover) return Text.literal("x%d".formatted(c.getKeys().size())).styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, nbtPathResultText(List.of(c), false))));
-		return Texts.join(results.stream().map(element -> allowHover ? Texts.join(minimalistPrettyPrint(element, 0).withoutStyle(), Text.empty()) : NbtHelper.toPrettyPrintedText(element)).toList(), Text.of("\n"));
+		return Texts.join(results.stream().map(element -> minimalistPrettyPrint(element, 0)).toList(), Text.of("\n"));
 	}
 
 	public static Text minimalistPrettyPrint(NbtElement element, int indent) {
