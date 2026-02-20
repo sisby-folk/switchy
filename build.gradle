@@ -22,6 +22,8 @@ dependencies {
 	minecraft libs.mc
 	mappings variantOf(libs.yarn) { classifier "v2" }
 
+	modImplementation include("eu.pb4:placeholder-api:2.1.1+1.20")
+
 	modCompileOnly "eu.pb4:player-data-api:0.2.2+1.19.3"
 
 	modImplementation libs.fl

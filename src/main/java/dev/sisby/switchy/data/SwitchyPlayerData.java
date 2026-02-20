@@ -23,6 +23,7 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
@@ -133,10 +134,10 @@ public class SwitchyPlayerData {
 		return Optional.ofNullable(greeting);
 	}
 
-	public Text greet() {
+	public Text greet(MinecraftServer server) {
 		Text defaultedGreeting = Optional.ofNullable(greeting).orElseGet(() -> SwitchyCommands.prefix()
 			.append(Text.literal("welcome back! current profile: ").formatted(Formatting.GRAY))
-			.append(SwitchyComponentTypes.NAME.asText(profiles.get(current).getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
+			.append(SwitchyComponentTypes.NAME.asText(server, profiles.get(current).getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
 			.append(Text.literal(". ").formatted(Formatting.GRAY))
 			.append(SwitchyCommands.clickable("list", "/switchy", true)));
 		greeting = null;
@@ -452,7 +453,7 @@ public class SwitchyPlayerData {
 
 		((SwitchyPlayer) player).switchy$hotSwap(playerNbt, SwitchyCommands.prefix()
 			.append(Text.literal(selfSwitch ? "Updated current profile " : "Switching to ").formatted(Formatting.GRAY))
-			.append(SwitchyComponentTypes.NAME.asText(nextProfile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
+			.append(SwitchyComponentTypes.NAME.asText(player.getServer(), nextProfile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
 			.append(Text.literal("! Please reconnect.").formatted(Formatting.GRAY))
 		);
 	}

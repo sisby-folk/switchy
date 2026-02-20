@@ -16,6 +16,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
@@ -27,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -87,10 +89,10 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		}
 	}
 
-	default MutableText asText(T value) {
+	default MutableText asText(MinecraftServer server, T value) {
 		TextProvider<T> textProvider = textProvider();
 		if (textProvider != null) {
-			return textProvider.toText(value).copy();
+			return textProvider.toText(server, value).copy();
 		} else {
 			return Text.literal(Objects.toString(value));
 		}
@@ -103,8 +105,8 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		}
 	}
 
-	default MutableText asText(SwitchyComponentMap components) {
-		return asText(components.get(this));
+	default MutableText asText(MinecraftServer server, SwitchyComponentMap components) {
+		return asText(server, components.get(this));
 	}
 
 	default boolean isPrecious(SwitchyComponentMap components) {
@@ -147,7 +149,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	@FunctionalInterface
 	interface TextProvider<T> {
-		Text toText(T value);
+		Text toText(MinecraftServer server, T value);
 	}
 
 	@FunctionalInterface
@@ -162,8 +164,15 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	record SimpleTextProvider<T>(Function<T, Text> provider) implements TextProvider<T> {
 		@Override
-		public Text toText(T value) {
+		public Text toText(MinecraftServer server, T value) {
 			return value == null ? Text.empty() : provider.apply(value);
+		}
+	}
+
+	record SimpleServerTextProvider<T>(BiFunction<MinecraftServer, T, Text> provider) implements TextProvider<T> {
+		@Override
+		public Text toText(MinecraftServer server, T value) {
+			return value == null ? Text.empty() : provider.apply(server, value);
 		}
 	}
 
