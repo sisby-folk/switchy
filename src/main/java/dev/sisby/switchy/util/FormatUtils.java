@@ -34,8 +34,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class FormatUtils {
-
-	private static final Identifier CHAT_HEADS = Identifier.of("chatheads", "player");
+	public static final Identifier CHAT_HEADS = Identifier.of("chatheads", "player");
 
 	@SuppressWarnings("deprecation")
 	public static String prettify(String s) {
@@ -117,7 +116,7 @@ public class FormatUtils {
 	public static Text skin(MinecraftServer server, NbtCompound compound) {
 		Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
 		MinecraftTexturesPayload payload = gson.fromJson(new String(Base64.getDecoder().decode(compound.getString("value"))), MinecraftTexturesPayload.class);
-		MinecraftProfileTexture skinTexture = payload.textures().get(MinecraftProfileTexture.Type.SKIN);
+		MinecraftProfileTexture skinTexture = payload.getTextures().get(MinecraftProfileTexture.Type.SKIN);
 		String skinHash = skinTexture.getHash();
 		return Placeholders.getPlaceholders().containsKey(CHAT_HEADS) ? Placeholders.parseText(Text.of("%chatheads:player " + skinHash + "%"), PlaceholderContext.of(server)) : truncate(skinHash);
 	}
