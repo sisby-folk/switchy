@@ -18,6 +18,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.HoverEvent;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
@@ -119,5 +120,17 @@ public class FormatUtils {
 		MinecraftProfileTexture skinTexture = payload.getTextures().get(MinecraftProfileTexture.Type.SKIN);
 		String skinHash = skinTexture.getHash();
 		return Placeholders.getPlaceholders().containsKey(CHAT_HEADS) ? Placeholders.parseText(Text.of("%chatheads:player " + skinHash + "%"), PlaceholderContext.of(server)) : truncate(skinHash);
+	}
+
+	public static Text stripInteraction(Text text) {
+		MutableText mutable = text.copy();
+		List<Text> siblings = mutable.getSiblings().stream().map(FormatUtils::stripInteraction).toList();
+		mutable.getSiblings().clear();
+		mutable.getSiblings().addAll(siblings);
+		return stripInteractionNonRecursively(mutable);
+	}
+
+	public static Text stripInteractionNonRecursively(Text text) {
+		return text.copy().styled(s -> s.withHoverEvent(null).withClickEvent(null).withInsertion(null));
 	}
 }

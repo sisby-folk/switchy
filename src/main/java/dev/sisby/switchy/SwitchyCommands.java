@@ -38,7 +38,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
@@ -74,7 +73,7 @@ public class SwitchyCommands {
 	public static void greet(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
 		SwitchyPlayerData data = SwitchyPlayerData.ofEarly(handler.getPlayer());
 		if (data == null) return;
-		handler.getPlayer().sendMessage(data.greet(server));
+		handler.getPlayer().sendMessage(data.greet(handler.getPlayer()));
 	}
 
 	private static int list(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
@@ -100,7 +99,7 @@ public class SwitchyCommands {
 				.append(" ")
 				.append(clickable("edit", "/switchy edit %s ".formatted(StringArgumentType.escapeIfRequired(profile.id())), false))
 				.append(" ")
-				.append(getNameText(player, profile).setStyle(Style.EMPTY
+				.append(getNameText(player, profile, false).styled(s -> s
 					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(profile.asTexts(player), Text.of("\n")).copy().append("\n").append(Text.literal("... /switchy view %s".formatted(StringArgumentType.escapeIfRequired(profile.id()))).formatted(Formatting.AQUA))))
 					.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/switchy view %s".formatted(StringArgumentType.escapeIfRequired(profile.id()))))
 				))
@@ -157,7 +156,7 @@ public class SwitchyCommands {
 					clickable(Text.literal("disabled").formatted(Formatting.RED), "/switchy components enable %s".formatted(id), ClickEvent.Action.RUN_COMMAND, Text.empty().append(Text.literal("click to switch ").formatted(Formatting.GRAY)).append(id.getPath()).append(Text.literal(" per-profile.").formatted(Formatting.GRAY)), Formatting.GREEN, "[", "]")
 				)
 				.append(" ")
-				.append(id.getPath()).setStyle(Style.EMPTY
+				.append(id.getPath()).styled(s -> s
 					.withColor(enabled ? Formatting.WHITE : Formatting.DARK_GRAY)
 					.withHoverEvent(!enabled ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, matchingProfiles.isEmpty() ? Text.literal("<no %s data yet>".formatted(id.getPath().replace("_", " "))).formatted(Formatting.GRAY) : Texts.join(matchingProfiles.stream().map(p -> Text.empty()
 						.append(Text.literal(p.id()).formatted(Formatting.GRAY))
@@ -394,9 +393,14 @@ public class SwitchyCommands {
 		return 1;
 	}
 
-	private static MutableText getNameText(ServerPlayerEntity player, SwitchyProfile profile) {
+	public static MutableText getNameText(ServerPlayerEntity player, SwitchyProfile profile) {
+		return getNameText(player, profile, true);
+	}
+
+	public static MutableText getNameText(ServerPlayerEntity player, SwitchyProfile profile, boolean allowBio) {
 		SwitchyComponentType<?> skin = Placeholders.getPlaceholders().containsKey(FormatUtils.CHAT_HEADS) ? SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN) : null;
-		return Text.empty().append(skin != null && profile.contains(skin) ? skin.asText(player.getServer(), profile.components()).append(" ") : Text.empty()).append(SwitchyComponentTypes.NAME.asText(player.getServer(), profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)));
+		MutableText name = SwitchyComponentTypes.NAME.asText(player.getServer(), profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id));
+		return Text.empty().append(skin == null || !profile.contains(skin) ? Text.empty() : skin.asText(player.getServer(), profile.components()).append(" ")).append(allowBio ? name : FormatUtils.stripInteraction(name));
 	}
 
 	private static int switchNextProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
