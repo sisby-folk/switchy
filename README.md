@@ -17,7 +17,7 @@ Always take backups of your worlds, especially when updating mods._
 
 Profile data is defined by player-toggleable _components_, including:
 - Vanilla health, hunger, status effects, inventory, ender chest, location, spawn point, and xp
-- [Fabric Tailor](https://modrinth.com/mod/fabrictailor) skins
+- [Fabric Tailor](https://modrinth.com/mod/fabrictailor) skins (previewable by adding our [ServerChatHeads fork](https://github.com/sisby-folk/ServerChatHeads/releases/tag/1.0.0))
 - [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) nicknames
 - [Trinkets](modrinth.com/mod/trinkets) and [Accessories](https://modrinth.com/mod/accessories) slots
 - [Origins](https://modrinth.com/mod/origins) origins

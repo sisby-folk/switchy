@@ -134,10 +134,10 @@ public class SwitchyPlayerData {
 		return Optional.ofNullable(greeting);
 	}
 
-	public Text greet(MinecraftServer server) {
+	public Text greet(ServerPlayerEntity player) {
 		Text defaultedGreeting = Optional.ofNullable(greeting).orElseGet(() -> SwitchyCommands.prefix()
 			.append(Text.literal("welcome back! current profile: ").formatted(Formatting.GRAY))
-			.append(SwitchyComponentTypes.NAME.asText(server, profiles.get(current).getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
+			.append(SwitchyCommands.getNameText(player, profiles.get(current)))
 			.append(Text.literal(". ").formatted(Formatting.GRAY))
 			.append(SwitchyCommands.clickable("list", "/switchy", true)));
 		greeting = null;
@@ -453,7 +453,7 @@ public class SwitchyPlayerData {
 
 		((SwitchyPlayer) player).switchy$hotSwap(playerNbt, SwitchyCommands.prefix()
 			.append(Text.literal(selfSwitch ? "Updated current profile " : "Switching to ").formatted(Formatting.GRAY))
-			.append(SwitchyComponentTypes.NAME.asText(player.getServer(), nextProfile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
+			.append(SwitchyCommands.getNameText(player, nextProfile))
 			.append(Text.literal("! Please reconnect.").formatted(Formatting.GRAY))
 		);
 	}
