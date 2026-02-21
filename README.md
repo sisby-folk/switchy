@@ -1,5 +1,5 @@
 <!--suppress HtmlDeprecatedTag, XmlDeprecatedElement -->
-<center><img alt="mod preview" src="https://cdn.modrinth.com/data/ss0QuCRx/images/2f25d56010c8651b3f0ac9632a53a8eaffd7b0aa.png"/></center>
+<center><img alt="mod preview" src="https://cdn.modrinth.com/data/ss0QuCRx/images/ab4966384894566ec534df785e3066052a7ab4ea.png"/></center>
 
 <center>
 Serverside player profiles for hotseat multiplayer, adventure maps, and plural systems.<br/>
