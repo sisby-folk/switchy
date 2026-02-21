@@ -1,12 +1,14 @@
 package dev.sisby.switchy.mixin;
 
 import dev.sisby.switchy.duck.SwitchyPlayer;
+import dev.sisby.switchy.exception.NbtException;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
@@ -29,6 +31,22 @@ public class MixinEntity {
 				sp.switchy$getPlayerData().writeNbt(spe.getServer().getRegistryManager(), nbt);
 				cir.setReturnValue(nbt);
 				cir.cancel();
+			}
+		}
+	}
+
+	@Inject(method = "readNbt", at = @At("TAIL"))
+	public void cacheDisplayData(NbtCompound nbt, CallbackInfo ci) {
+		Entity self = (Entity) (Object) this;
+		if (self instanceof SwitchyPlayer sp && self instanceof ServerPlayerEntity spe) {
+			if (sp.switchy$getPlayerData() != null) {
+				for (String profile : sp.switchy$getPlayerData().keySet()) {
+					try {
+						sp.switchy$getPlayerData().getProfile(profile, spe).asTexts(spe);
+					} catch (NbtException e) {
+						// pass
+					}
+				}
 			}
 		}
 	}

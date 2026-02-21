@@ -21,7 +21,9 @@ import dev.sisby.switchy.exception.NbtException;
 import dev.sisby.switchy.exception.ProfileCurrentException;
 import dev.sisby.switchy.exception.ProfileMissingException;
 import dev.sisby.switchy.exception.ProfilePreciousException;
+import dev.sisby.switchy.util.FormatUtils;
 import dev.sisby.switchy.util.TypeRegistry;
+import eu.pb4.placeholders.api.Placeholders;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
@@ -92,13 +94,13 @@ public class SwitchyCommands {
 			} catch (NbtException e) {
 				throw new RuntimeException(e);
 			}
-			SwitchyComponentType<?> skin = SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN);
+
 			feedback.accept(indent()
 				.append(profile.id().equals(data.current()) ? Text.literal("current").formatted(Formatting.GRAY) : clickable("switch", "/switch %s".formatted(StringArgumentType.escapeIfRequired(profile.id())), true))
 				.append(" ")
 				.append(clickable("edit", "/switchy edit %s ".formatted(StringArgumentType.escapeIfRequired(profile.id())), false))
 				.append(" ")
-				.append(Text.empty().append(skin != null && profile.contains(skin) ? skin.asText(player.getServer(), profile.components()) : Text.empty()).append(SwitchyComponentTypes.NAME.asText(player.getServer(), profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id))).setStyle(Style.EMPTY
+				.append(getNameText(player, profile).setStyle(Style.EMPTY
 					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(profile.asTexts(player), Text.of("\n")).copy().append("\n").append(Text.literal("... /switchy view %s".formatted(StringArgumentType.escapeIfRequired(profile.id()))).formatted(Formatting.AQUA))))
 					.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/switchy view %s".formatted(StringArgumentType.escapeIfRequired(profile.id()))))
 				))
@@ -368,9 +370,9 @@ public class SwitchyCommands {
 			SwitchyProfile currentProfile = data.getCurrentProfile(player);
 			SwitchyProfile nextProfile = data.getOrCreateProfile(profileId, player);
 			data.switchOrCreateProfile(profileId, player, prefix()
-				.append(SwitchyComponentTypes.NAME.asText(player.getServer(), currentProfile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
+				.append(getNameText(player, currentProfile))
 				.append(Text.literal(" \uD83E\uDC46 ").formatted(Formatting.GREEN))
-				.append(SwitchyComponentTypes.NAME.asText(player.getServer(), nextProfile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)))
+				.append(getNameText(player, nextProfile))
 				.append(Text.literal("! ").formatted(Formatting.GREEN))
 				.append(clickable("list", "/switchy", true)));
 		} catch (ProfileCurrentException e) {
@@ -390,6 +392,11 @@ public class SwitchyCommands {
 			return 0;
 		}
 		return 1;
+	}
+
+	private static MutableText getNameText(ServerPlayerEntity player, SwitchyProfile profile) {
+		SwitchyComponentType<?> skin = Placeholders.getPlaceholders().containsKey(FormatUtils.CHAT_HEADS) ? SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN) : null;
+		return Text.empty().append(skin != null && profile.contains(skin) ? skin.asText(player.getServer(), profile.components()).append(" ") : Text.empty()).append(SwitchyComponentTypes.NAME.asText(player.getServer(), profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id)));
 	}
 
 	private static int switchNextProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
