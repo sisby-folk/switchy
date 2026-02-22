@@ -336,6 +336,8 @@ public class SwitchyCommands {
 	}
 
 	private static int switchProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId, Boolean exists) {
+		String casedName = profileId;
+		profileId = profileId.toLowerCase();
 		boolean reallyExists = data.profileExists(profileId);
 		if (data.current().equals(profileId)) {
 			feedback.accept(prefix()
@@ -360,7 +362,7 @@ public class SwitchyCommands {
 			);
 			feedback.accept(indent()
 				.append(Text.literal("use ").formatted(Formatting.YELLOW))
-				.append(clickable("/switchy new %s".formatted(profileId), "/switchy new %s".formatted(profileId), true, Formatting.AQUA, "", ""))
+				.append(clickable("/switchy new %s".formatted(casedName), "/switchy new %s".formatted(casedName), true, Formatting.AQUA, "", ""))
 				.append(Text.literal(" to create it.").formatted(Formatting.YELLOW))
 			);
 			return 0;
@@ -368,6 +370,7 @@ public class SwitchyCommands {
 		try {
 			SwitchyProfile currentProfile = data.getCurrentProfile(player);
 			SwitchyProfile nextProfile = data.getOrCreateProfile(profileId, player);
+			if (!exists && !casedName.equals(profileId)) nextProfile.set(SwitchyComponentTypes.NAME, casedName);
 			data.switchOrCreateProfile(profileId, player, prefix()
 				.append(getNameText(player, currentProfile))
 				.append(Text.literal(" \uD83E\uDC46 ").formatted(Formatting.GREEN))
@@ -556,7 +559,7 @@ public class SwitchyCommands {
 					.executes(c -> execute(c, (i, p, d, f) -> switchRandomProfile(p, d, f)))
 				)
 				.then(profile(false)
-					.executes(c -> execute(c, (i, p, d, f) -> switchProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase(), true)))
+					.executes(c -> execute(c, (i, p, d, f) -> switchProfile(p, d, f, c.getArgument("profile", String.class), true)))
 				)
 				.executes(c -> execute(c, (i, p, d, f) -> switchNextProfile(p, d, f)))
 		);
@@ -564,7 +567,7 @@ public class SwitchyCommands {
 			CommandManager.literal("switchy")
 				.then(CommandManager.literal("new")
 					.then(CommandManager.argument("name", StringArgumentType.string())
-						.executes(c -> execute(c, (i, p, d, f) -> switchProfile(p, d, f, c.getArgument("name", String.class).toLowerCase(), false)))
+						.executes(c -> execute(c, (i, p, d, f) -> switchProfile(p, d, f, c.getArgument("name", String.class), false)))
 					)
 				)
 				.then(CommandManager.literal("view")
