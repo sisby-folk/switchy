@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 import java.util.Objects;
 
 public class StyledNicknamesCompat {
-	public static SwitchyComponentType.Builder<String> nicknameComponent(SwitchyComponentType.Builder<String> b) {
+	public static SwitchyComponentType.Builder<String> nameComponent(SwitchyComponentType.Builder<String> b) {
 		return b
 			.playerReader((p, id) -> Objects.requireNonNullElse(PlayerDataApi.getGlobalDataFor(p, Identifier.of("stylednicknames", "nickname"), NbtString.TYPE), NbtString.of(id)).asString())
 			.playerMutator((v, p) -> {

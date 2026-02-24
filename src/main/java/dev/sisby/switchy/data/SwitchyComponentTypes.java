@@ -6,16 +6,17 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sisby.switchy.Switchy;
+import dev.sisby.switchy.compat.StyledChatCompat;
 import dev.sisby.switchy.compat.StyledNicknamesCompat;
 import dev.sisby.switchy.util.DispatchMapCodec;
 import dev.sisby.switchy.util.FormatUtils;
 import dev.sisby.switchy.util.SwitchyCodecs;
 import dev.sisby.switchy.util.TypeRegistry;
-import eu.pb4.placeholders.api.TextParserUtils;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.command.CommandManager;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
@@ -113,9 +114,11 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	public static final SwitchyComponentType<String> NAME = registerStatic(NAME_ID, Codec.STRING, builder -> {
 		builder = builder
 			.importable(true)
-			.textProvider((server, s) -> TextParserUtils.formatTextSafe(s))
+			.textProvider((server, s) -> Text.literal(s.replaceAll("<?((?:\\\\>|.)*?)>", "")).styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(s)))))
 			.argumentEditor(e -> CommandManager.argument("name", StringArgumentType.greedyString()).executes(c -> e.execute(c, c.getArgument("name", String.class))));
-		return FabricLoader.getInstance().isModLoaded("styled-nicknames") ? StyledNicknamesCompat.nicknameComponent(builder) : builder;
+		builder = FabricLoader.getInstance().isModLoaded("styled-nicknames") ? StyledNicknamesCompat.nameComponent(builder) : builder;
+		builder = FabricLoader.getInstance().isModLoaded("styled-chat") ? StyledChatCompat.nameComponent(builder) : builder;
+		return builder;
 	});
 
 	public record Tag(String prefix, String suffix) {
