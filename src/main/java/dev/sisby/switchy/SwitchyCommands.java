@@ -17,6 +17,7 @@ import dev.sisby.switchy.data.SwitchyComponentType;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
 import dev.sisby.switchy.data.SwitchyPlayerData;
 import dev.sisby.switchy.data.SwitchyProfile;
+import dev.sisby.switchy.duck.SwitchyPlayer;
 import dev.sisby.switchy.exception.NbtException;
 import dev.sisby.switchy.exception.ProfileCurrentException;
 import dev.sisby.switchy.exception.ProfileMissingException;
@@ -351,11 +352,13 @@ public class SwitchyCommands {
 		}
 		try {
 			MessageArgumentType.getSignedMessage(context, "message", (message) -> {
-				ServerCommandSource source = new ServerCommandSource(player, player.getPos(), player.getRotationClient(), player.getServerWorld(),
-					context.getSource().hasPermissionLevel(4) ? 4 : context.getSource().hasPermissionLevel(3) ? 3 : context.getSource().hasPermissionLevel(2) ? 2 : 1,
-					player.getName().getString(), getNameText(player, profile), player.getWorld().getServer(), player
-				);
-				source.getServer().getPlayerManager().broadcast(message, source, MessageType.params(MessageType.CHAT, source));
+				try {
+					((SwitchyPlayer) player).switchy$setSayProfile(profile);
+					ServerCommandSource source = player.getCommandSource(); // display name hooked here
+					source.getServer().getPlayerManager().broadcast(message, source, MessageType.params(MessageType.CHAT, source)); // skin ID might be hooked here?
+				} finally {
+					((SwitchyPlayer) player).switchy$setSayProfile(null);
+				}
 			});
 		} catch (CommandSyntaxException e) {
 			throw new RuntimeException(e);
