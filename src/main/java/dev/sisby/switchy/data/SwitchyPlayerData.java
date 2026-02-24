@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -23,13 +24,11 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashException;
@@ -195,27 +194,27 @@ public class SwitchyPlayerData {
 	}
 
 	private static final Map<Identifier, Pair<String, String>> LEGACY_RECOVERIES = Map.ofEntries(
-		Map.entry(SwitchyComponentTypes.INVENTORY, new Pair<>("switchy_inventories:inventories", "inventory")),
-		Map.entry(SwitchyComponentTypes.ENDER_CHEST, new Pair<>("switchy_inventories:ender_chests", "inventory")),
-		Map.entry(SwitchyComponentTypes.LEVEL, new Pair<>("switchy_inventories:experience", "experienceLevel")),
-		Map.entry(SwitchyComponentTypes.XP, new Pair<>("switchy_inventories:experience", "experienceProgress")),
-		Map.entry(SwitchyComponentTypes.TRINKETS_SLOTS, new Pair<>("switchy_inventories:trinkets", "trinkets:trinkets")),
-		Map.entry(SwitchyComponentTypes.NAME_ID, new Pair<>("switchy:styled_nicknames", "styled_nickname")),
-		Map.entry(SwitchyComponentTypes.TAILOR_SKIN, new Pair<>("switchy:fabric_tailor", "")),
-		Map.entry(SwitchyComponentTypes.DIMENSION, new Pair<>("switchy_teleport:last_location", "last_location.dimension")),
-		Map.entry(SwitchyComponentTypes.YAW, new Pair<>("switchy_teleport:last_location", "last_location.yaw")),
-		Map.entry(SwitchyComponentTypes.PITCH, new Pair<>("switchy_teleport:last_location", "last_location.pitch")),
-		Map.entry(SwitchyComponentTypes.SPAWN_X, new Pair<>("switchy_teleport:spawn_point", "respawn_point.x")),
-		Map.entry(SwitchyComponentTypes.SPAWN_Y, new Pair<>("switchy_teleport:spawn_point", "respawn_point.y")),
-		Map.entry(SwitchyComponentTypes.SPAWN_Z, new Pair<>("switchy_teleport:spawn_point", "respawn_point.z")),
-		Map.entry(SwitchyComponentTypes.SPAWN_DIMENSION, new Pair<>("switchy_teleport:spawn_point", "respawn_point.dimension")),
-		Map.entry(SwitchyComponentTypes.SPAWN_ANGLE, new Pair<>("switchy_teleport:spawn_point", "respawn_point.dimension")),
-		Map.entry(SwitchyComponentTypes.SPAWN_FORCED, new Pair<>("switchy_teleport:spawn_point", "respawn_point.setSpawn")),
-		Map.entry(SwitchyComponentTypes.HEALTH, new Pair<>("switchy_status:health", "healthValue")),
-		Map.entry(SwitchyComponentTypes.EFFECTS, new Pair<>("switchy_status:status_effects", "status_effects")),
-		Map.entry(SwitchyComponentTypes.FOOD, new Pair<>("switchy_status:hunger", "foodLevel")),
-		Map.entry(SwitchyComponentTypes.SATURATION, new Pair<>("switchy_status:hunger", "foodSaturationLevel")),
-		Map.entry(SwitchyComponentTypes.EXHAUSTION, new Pair<>("switchy_status:hunger", "exhaustion"))
+		Map.entry(SwitchyComponentTypes.INVENTORY, Pair.of("switchy_inventories:inventories", "inventory")),
+		Map.entry(SwitchyComponentTypes.ENDER_CHEST, Pair.of("switchy_inventories:ender_chests", "inventory")),
+		Map.entry(SwitchyComponentTypes.LEVEL, Pair.of("switchy_inventories:experience", "experienceLevel")),
+		Map.entry(SwitchyComponentTypes.XP, Pair.of("switchy_inventories:experience", "experienceProgress")),
+		Map.entry(SwitchyComponentTypes.TRINKETS_SLOTS, Pair.of("switchy_inventories:trinkets", "trinkets:trinkets")),
+		Map.entry(SwitchyComponentTypes.NAME_ID, Pair.of("switchy:styled_nicknames", "styled_nickname")),
+		Map.entry(SwitchyComponentTypes.TAILOR_SKIN, Pair.of("switchy:fabric_tailor", "")),
+		Map.entry(SwitchyComponentTypes.DIMENSION, Pair.of("switchy_teleport:last_location", "last_location.dimension")),
+		Map.entry(SwitchyComponentTypes.YAW, Pair.of("switchy_teleport:last_location", "last_location.yaw")),
+		Map.entry(SwitchyComponentTypes.PITCH, Pair.of("switchy_teleport:last_location", "last_location.pitch")),
+		Map.entry(SwitchyComponentTypes.SPAWN_X, Pair.of("switchy_teleport:spawn_point", "respawn_point.x")),
+		Map.entry(SwitchyComponentTypes.SPAWN_Y, Pair.of("switchy_teleport:spawn_point", "respawn_point.y")),
+		Map.entry(SwitchyComponentTypes.SPAWN_Z, Pair.of("switchy_teleport:spawn_point", "respawn_point.z")),
+		Map.entry(SwitchyComponentTypes.SPAWN_DIMENSION, Pair.of("switchy_teleport:spawn_point", "respawn_point.dimension")),
+		Map.entry(SwitchyComponentTypes.SPAWN_ANGLE, Pair.of("switchy_teleport:spawn_point", "respawn_point.dimension")),
+		Map.entry(SwitchyComponentTypes.SPAWN_FORCED, Pair.of("switchy_teleport:spawn_point", "respawn_point.setSpawn")),
+		Map.entry(SwitchyComponentTypes.HEALTH, Pair.of("switchy_status:health", "healthValue")),
+		Map.entry(SwitchyComponentTypes.EFFECTS, Pair.of("switchy_status:status_effects", "status_effects")),
+		Map.entry(SwitchyComponentTypes.FOOD, Pair.of("switchy_status:hunger", "foodLevel")),
+		Map.entry(SwitchyComponentTypes.SATURATION, Pair.of("switchy_status:hunger", "foodSaturationLevel")),
+		Map.entry(SwitchyComponentTypes.EXHAUSTION, Pair.of("switchy_status:hunger", "exhaustion"))
 	);
 
 	public void recoverLegacyData(ServerPlayerEntity player, NbtCompound legacyData) {
@@ -246,9 +245,9 @@ public class SwitchyPlayerData {
 				// simple cases
 				for (Identifier typeId : LEGACY_RECOVERIES.keySet()) {
 					SwitchyComponentType<?> type = SwitchyComponentTypes.instance().get(typeId);
-					NbtCompound moduleCompound = modules.getCompound(LEGACY_RECOVERIES.get(typeId).getLeft());
+					NbtCompound moduleCompound = modules.getCompound(LEGACY_RECOVERIES.get(typeId).getFirst());
 					if (type == null /* || moduleCompound == null */) continue;
-					NbtPathArgumentType.NbtPath path = NbtPathArgumentType.nbtPath().parse(new StringReader((LEGACY_RECOVERIES.get(typeId).getRight())));
+					NbtPathArgumentType.NbtPath path = NbtPathArgumentType.nbtPath().parse(new StringReader((LEGACY_RECOVERIES.get(typeId).getSecond())));
 					try {
 						NbtElement element = path.get(moduleCompound).get(0);
 						type.codec().parse(player.getServer().getRegistryManager().getOps(NbtOps.INSTANCE), element).result().ifPresent(v -> profile.set(type, v));
@@ -381,9 +380,12 @@ public class SwitchyPlayerData {
 				quickTextEscape(data.description() == null ? "" : " | " + data.description()),
 				quickTextEscape(Objects.requireNonNullElse(data.color(), "FFFFFF")),
 				quickTextEscape(Objects.requireNonNullElse(data.display_name(), id).replace(bracketed, "")).trim());
-			if (!newName.equals(profile.get(SwitchyComponentTypes.NAME))) {
+			if (componentSet().contains(SwitchyComponentTypes.NAME) && !newName.equals(profile.get(SwitchyComponentTypes.NAME))) {
 				if (current.equals(id)) newCurrent = profile;
 				profile.set(SwitchyComponentTypes.NAME, newName);
+			}
+			if (componentSet().contains(SwitchyComponentTypes.TAG) && data.proxy_tags() != null && !data.proxy_tags().isEmpty()) {
+				profile.set(SwitchyComponentTypes.TAG, data.proxy_tags().stream().map(t -> new SwitchyComponentTypes.Tag(Objects.requireNonNullElse(t.prefix(), ""), Objects.requireNonNullElse(t.suffix(), ""))).toList());
 			}
 			if (data.components() != null) {
 				for (String componentKey : data.components().keySet()) {

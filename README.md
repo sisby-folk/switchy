@@ -1,5 +1,5 @@
 <!--suppress HtmlDeprecatedTag, XmlDeprecatedElement -->
-<center><img alt="mod preview" src="https://cdn.modrinth.com/data/ss0QuCRx/images/2f25d56010c8651b3f0ac9632a53a8eaffd7b0aa.png"/></center>
+<center><img alt="mod preview" src="https://cdn.modrinth.com/data/ss0QuCRx/images/ab4966384894566ec534df785e3066052a7ab4ea.png"/></center>
 
 <center>
 Serverside player profiles for hotseat multiplayer, adventure maps, and plural systems.<br/>
@@ -33,10 +33,13 @@ After this, you can freely switch profiles via `/switch <name>` or by clicking `
 Switching into a profile restores component data to **the state it was in was when you last switched out of that profile**.<br/> 
 So to change e.g. a fabric tailor skin for a profile, switch into the profile first, then set the skin as you normally would.
 
+You can use `/switchy say` to send a chat message as if you were switched into a specific profile.<br/>
+Use `/switchy edit <name> tag <prefix>text<suffix>` to match regular chat messages based on a pattern.<br/>
+Display names will be formatted slightly differently to styled nicknames/chat, but you can adjust their configs to match.
+
 Profiles are per-world, so speed things up by running `/switchy export` to get your name/skin data to save to a .json file.<br/>
 To import, upload the file (e.g. to [tmpfiles.org](https://tmpfiles.org/)) and paste the link into `/switchy import all <url>`.<br/>
 You can also import from [PK](https://pluralkit.me/guide/#exporting-your-pluralkit-data) (and import from / export to [Utter](https://utter.y2k.diy/)) - use `/switchy import <member/group>` to filter imports.
-
 
 ## Compatibility
 

@@ -6,8 +6,9 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.yggdrasil.response.MinecraftTexturesPayload;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.util.UUIDTypeAdapter;
-import eu.pb4.placeholders.api.PlaceholderContext;
-import eu.pb4.placeholders.api.Placeholders;
+import dev.sisby.switchy.compat.StyledChatCompat;
+import dev.sisby.switchy.data.SwitchyComponentTypes;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.AbstractNbtList;
@@ -87,6 +88,10 @@ public class FormatUtils {
 		return Text.of(element.toString());
 	}
 
+	public static Text tag(List<SwitchyComponentTypes.Tag> pairs, String between) {
+		return Texts.join(pairs.stream().map(p -> Text.empty().append(Text.literal(p.prefix())).append(Text.literal(between).formatted(Formatting.GRAY)).append(Text.literal(p.suffix()))).toList(), Text.literal(", ").formatted(Formatting.GRAY));
+	}
+
 	public static boolean isEmpty(NbtElement element) {
 		return (element instanceof NbtCompound c && c.isEmpty())
 			|| (element instanceof AbstractNbtList<?> l && l.isEmpty())
@@ -119,7 +124,7 @@ public class FormatUtils {
 		MinecraftTexturesPayload payload = gson.fromJson(new String(Base64.getDecoder().decode(compound.getString("value"))), MinecraftTexturesPayload.class);
 		MinecraftProfileTexture skinTexture = payload.textures().get(MinecraftProfileTexture.Type.SKIN);
 		String skinHash = skinTexture.getHash();
-		return Placeholders.getPlaceholders().containsKey(CHAT_HEADS) ? Placeholders.parseText(Text.of("%chatheads:player " + skinHash + "%"), PlaceholderContext.of(server)) : truncate(skinHash);
+		return FabricLoader.getInstance().isModLoaded("styled-chat") && StyledChatCompat.hasHeads() ? StyledChatCompat.head(server, skinHash) : truncate(skinHash);
 	}
 
 	public static Text stripInteraction(Text text) {

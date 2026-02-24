@@ -13,23 +13,28 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.JsonOps;
 import com.mojang.util.UUIDTypeAdapter;
+import dev.sisby.switchy.compat.StyledChatCompat;
 import dev.sisby.switchy.data.SwitchyComponentType;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
 import dev.sisby.switchy.data.SwitchyPlayerData;
 import dev.sisby.switchy.data.SwitchyProfile;
+import dev.sisby.switchy.duck.SwitchyPlayer;
 import dev.sisby.switchy.exception.NbtException;
 import dev.sisby.switchy.exception.ProfileCurrentException;
 import dev.sisby.switchy.exception.ProfileMissingException;
 import dev.sisby.switchy.exception.ProfilePreciousException;
 import dev.sisby.switchy.util.FormatUtils;
 import dev.sisby.switchy.util.TypeRegistry;
-import eu.pb4.placeholders.api.Placeholders;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.IdentifierArgumentType;
+import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -294,7 +299,8 @@ public class SwitchyCommands {
 					if (skin != null) key = skin.getHash();
 					avatarUrl = Switchy.CONFIG.exportAvatarUrl.formatted(key);
 				}
-				members.add(new SwitchyPlayerData.ProfileImportData(null, profileId, name, color, pronouns, description, avatarUrl, List.of(new SwitchyPlayerData.ProxyTag(profileId + ":", null)), components));
+				List<SwitchyPlayerData.ProxyTag> proxyTags = profile.getOrDefault(SwitchyComponentTypes.TAG, new ArrayList<SwitchyComponentTypes.Tag>()).stream().map(t -> new SwitchyPlayerData.ProxyTag(t.prefix(), t.suffix())).toList();
+				members.add(new SwitchyPlayerData.ProfileImportData(null, profileId, name, color, pronouns, description, avatarUrl, proxyTags, components));
 			}
 			feedback.accept(prefix()
 				.append(Text.literal("exported ").formatted(Formatting.GREEN))
@@ -334,7 +340,41 @@ public class SwitchyCommands {
 		return profile.components().size();
 	}
 
+
+	private static int say(CommandContext<ServerCommandSource> context, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId) {
+		SwitchyProfile profile;
+		try {
+			profile = data.getProfile(profileId, player);
+		} catch (NbtException e) {
+			throw new RuntimeException(e);
+		}
+		if (profile == null) {
+			feedback.accept(prefix().append(Text.literal("profile doesn't exist!").formatted(Formatting.YELLOW)));
+			return 0;
+		}
+		try {
+			MessageArgumentType.getSignedMessage(context, "message", message -> say(message, player, profile));
+		} catch (CommandSyntaxException e) {
+			throw new RuntimeException(e);
+		}
+		return 1;
+	}
+
+	public static void say(SignedMessage message, ServerPlayerEntity player, SwitchyProfile profile) {
+		try {
+			((SwitchyPlayer) player).switchy$setSayProfile(profile);
+			ServerCommandSource source = player.getCommandSource(); // display name hooked here
+			source.getServer().getPlayerManager().broadcast(message, source, MessageType.params(MessageType.CHAT, source)); // skin ID might be hooked here?
+		} catch (Exception e) {
+			Switchy.LOGGER.error("[Switchy] Error while performing say");
+		} finally {
+			((SwitchyPlayer) player).switchy$setSayProfile(null);
+		}
+	}
+
 	private static int switchProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId, Boolean exists) {
+		String casedName = profileId;
+		profileId = profileId.toLowerCase();
 		boolean reallyExists = data.profileExists(profileId);
 		if (data.current().equals(profileId)) {
 			feedback.accept(prefix()
@@ -359,7 +399,7 @@ public class SwitchyCommands {
 			);
 			feedback.accept(indent()
 				.append(Text.literal("use ").formatted(Formatting.YELLOW))
-				.append(clickable("/switchy new %s".formatted(profileId), "/switchy new %s".formatted(profileId), true, Formatting.AQUA, "", ""))
+				.append(clickable("/switchy new %s".formatted(casedName), "/switchy new %s".formatted(casedName), true, Formatting.AQUA, "", ""))
 				.append(Text.literal(" to create it.").formatted(Formatting.YELLOW))
 			);
 			return 0;
@@ -367,6 +407,9 @@ public class SwitchyCommands {
 		try {
 			SwitchyProfile currentProfile = data.getCurrentProfile(player);
 			SwitchyProfile nextProfile = data.getOrCreateProfile(profileId, player);
+			if (!exists) { // creation affordances
+				if (!casedName.equals(profileId) && data.componentSet().contains(SwitchyComponentTypes.NAME)) nextProfile.set(SwitchyComponentTypes.NAME, casedName);
+			}
 			data.switchOrCreateProfile(profileId, player, prefix()
 				.append(getNameText(player, currentProfile))
 				.append(Text.literal(" \uD83E\uDC46 ").formatted(Formatting.GREEN))
@@ -397,7 +440,7 @@ public class SwitchyCommands {
 	}
 
 	public static MutableText getNameText(ServerPlayerEntity player, SwitchyProfile profile, boolean allowBio) {
-		SwitchyComponentType<?> skin = Placeholders.getPlaceholders().containsKey(FormatUtils.CHAT_HEADS) ? SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN) : null;
+		SwitchyComponentType<?> skin = FabricLoader.getInstance().isModLoaded("styled-chat") && StyledChatCompat.hasHeads() ? SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN) : null;
 		MutableText name = SwitchyComponentTypes.NAME.asText(player.getServer(), profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id));
 		return Text.empty().append(skin == null || !profile.contains(skin) ? Text.empty() : skin.asText(player.getServer(), profile.components()).append(" ")).append(allowBio ? name : FormatUtils.stripInteraction(name));
 	}
@@ -434,7 +477,7 @@ public class SwitchyCommands {
 			.append(Text.literal("!").formatted(Formatting.GREEN))
 			.append(" ")
 			.append(clickable("list", "/switchy", true));
-		if (profileId.equals(data.current())) {
+		if (profileId.equals(data.current()) && (type.nbtMutator() != null || type.playerMutator() != null)) {
 			try {
 				data.selfSwitch(profile, player, feedbackText);
 				return 2;
@@ -555,7 +598,7 @@ public class SwitchyCommands {
 					.executes(c -> execute(c, (i, p, d, f) -> switchRandomProfile(p, d, f)))
 				)
 				.then(profile(false)
-					.executes(c -> execute(c, (i, p, d, f) -> switchProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase(), true)))
+					.executes(c -> execute(c, (i, p, d, f) -> switchProfile(p, d, f, c.getArgument("profile", String.class), true)))
 				)
 				.executes(c -> execute(c, (i, p, d, f) -> switchNextProfile(p, d, f)))
 		);
@@ -563,12 +606,20 @@ public class SwitchyCommands {
 			CommandManager.literal("switchy")
 				.then(CommandManager.literal("new")
 					.then(CommandManager.argument("name", StringArgumentType.string())
-						.executes(c -> execute(c, (i, p, d, f) -> switchProfile(p, d, f, c.getArgument("name", String.class).toLowerCase(), false)))
+						.executes(c -> execute(c, (i, p, d, f) -> switchProfile(p, d, f, c.getArgument("name", String.class), false)))
 					)
 				)
 				.then(CommandManager.literal("view")
 					.then(profile(true)
 						.executes(c -> execute(c, (i, p, d, f) -> viewProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase())))
+					)
+				)
+				.then(CommandManager.literal("say")
+					.requires(c -> c.getPlayer() != null && SwitchyPlayerData.ofEarly(c.getPlayer()) != null && SwitchyPlayerData.ofEarly(c.getPlayer()).size() > 1)
+					.then(profile(true)
+						.then(CommandManager.argument("message", MessageArgumentType.message())
+							.executes(c -> execute(c, (i, p, d, f) -> say(c, p, d, f, c.getArgument("profile", String.class).toLowerCase())))
+						)
 					)
 				)
 				.then(CommandManager.literal("delete")

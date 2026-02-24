@@ -4,18 +4,20 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sisby.switchy.Switchy;
+import dev.sisby.switchy.compat.StyledChatCompat;
 import dev.sisby.switchy.compat.StyledNicknamesCompat;
 import dev.sisby.switchy.util.DispatchMapCodec;
 import dev.sisby.switchy.util.FormatUtils;
 import dev.sisby.switchy.util.SwitchyCodecs;
 import dev.sisby.switchy.util.TypeRegistry;
-import eu.pb4.placeholders.api.TextParserUtils;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.command.CommandManager;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.text.Texts;
@@ -85,6 +87,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	));
 
 	public static final Identifier NAME_ID = Switchy.id("name");
+	public static final Identifier TAG_ID = Switchy.id("tag");
 	public static final Identifier DIMENSION = Identifier.of("minecraft", "location/dimension");
 	public static final Identifier POS = Identifier.of("minecraft", "location/pos");
 	public static final Identifier YAW = Identifier.of("minecraft", "location/yaw");
@@ -112,10 +115,30 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	public static final SwitchyComponentType<String> NAME = registerStatic(NAME_ID, Codec.STRING, builder -> {
 		builder = builder
 			.importable(true)
-			.textProvider((server, s) -> TextParserUtils.formatTextSafe(s))
+			.textProvider((server, s) -> Text.literal(s.replaceAll("<?((?:\\\\>|.)*?)>", "")).styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(s)))))
 			.argumentEditor(e -> CommandManager.argument("name", StringArgumentType.greedyString()).executes(c -> e.execute(c, c.getArgument("name", String.class))));
-		return FabricLoader.getInstance().isModLoaded("styled-nicknames") ? StyledNicknamesCompat.nicknameComponent(builder) : builder;
+		builder = FabricLoader.getInstance().isModLoaded("styled-nicknames") ? StyledNicknamesCompat.nameComponent(builder) : builder;
+		builder = FabricLoader.getInstance().isModLoaded("styled-chat") ? StyledChatCompat.nameComponent(builder) : builder;
+		return builder;
 	});
+
+	public record Tag(String prefix, String suffix) {
+		public static final Codec<Tag> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+				Codec.STRING.fieldOf("prefix").forGetter(Tag::prefix),
+				Codec.STRING.fieldOf("suffix").forGetter(Tag::suffix)
+			).apply(instance, Tag::new)
+		);
+	}
+
+	public static final SwitchyComponentType<List<Tag>> TAG = registerStatic(TAG_ID, Codec.list(Tag.CODEC), builder -> builder
+			.importable(true)
+			.textProvider((server, s) -> FormatUtils.tag(s, "text"))
+			.argumentEditor(e -> CommandManager.argument("prefix_text_suffix", StringArgumentType.greedyString()).executes(c -> {
+				String[] rawInput = c.getArgument("prefix_text_suffix", String.class).trim().split("text");
+				return e.execute(c, List.of(new Tag(rawInput[0], rawInput.length > 1 ? rawInput[1] : "")));
+			}))
+	);
 
 	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 

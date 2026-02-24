@@ -1,6 +1,7 @@
 package dev.sisby.switchy.duck;
 
 import dev.sisby.switchy.data.SwitchyPlayerData;
+import dev.sisby.switchy.data.SwitchyProfile;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 
@@ -16,4 +17,8 @@ public interface SwitchyPlayer {
 	SwitchyPlayerData switchy$getOrCreatePlayerData();
 
 	SwitchyPlayerData switchy$getPlayerData();
+
+    SwitchyProfile switchy$getSayProfile();
+
+	void switchy$setSayProfile(SwitchyProfile profile);
 }
