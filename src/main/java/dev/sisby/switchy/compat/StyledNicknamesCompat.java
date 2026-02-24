@@ -1,6 +1,7 @@
 package dev.sisby.switchy.compat;
 
 import dev.sisby.switchy.data.SwitchyComponentType;
+import eu.pb4.placeholders.api.TextParserUtils;
 import eu.pb4.playerdata.api.PlayerDataApi;
 import net.minecraft.nbt.NbtByte;
 import net.minecraft.nbt.NbtString;
@@ -11,6 +12,7 @@ import java.util.Objects;
 public class StyledNicknamesCompat {
 	public static SwitchyComponentType.Builder<String> nameComponent(SwitchyComponentType.Builder<String> b) {
 		return b
+			.textProvider((s, v) -> TextParserUtils.formatTextSafe(v))
 			.playerReader((p, id) -> Objects.requireNonNullElse(PlayerDataApi.getGlobalDataFor(p, Identifier.of("stylednicknames", "nickname"), NbtString.TYPE), NbtString.of(id)).asString())
 			.playerMutator((v, p) -> {
 				PlayerDataApi.setGlobalDataFor(p, Identifier.of("stylednicknames", "nickname"), NbtString.of(v));

@@ -13,7 +13,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.JsonOps;
 import com.mojang.util.UUIDTypeAdapter;
-import dev.sisby.switchy.compat.StyledChatCompat;
+import dev.sisby.switchy.compat.PlaceholderApiCompat;
 import dev.sisby.switchy.data.SwitchyComponentType;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
 import dev.sisby.switchy.data.SwitchyPlayerData;
@@ -26,7 +26,6 @@ import dev.sisby.switchy.exception.ProfilePreciousException;
 import dev.sisby.switchy.util.FormatUtils;
 import dev.sisby.switchy.util.TypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.IdentifierArgumentType;
@@ -440,7 +439,7 @@ public class SwitchyCommands {
 	}
 
 	public static MutableText getNameText(ServerPlayerEntity player, SwitchyProfile profile, boolean allowBio) {
-		SwitchyComponentType<?> skin = Switchy.STYLED_CHAT && StyledChatCompat.hasHeads() ? SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN) : null;
+		SwitchyComponentType<?> skin = Switchy.PLACEHOLDER_API && PlaceholderApiCompat.hasHeads() ? SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN) : null;
 		MutableText name = SwitchyComponentTypes.NAME.asText(player.getServer(), profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id));
 		return Text.empty().append(skin == null || !profile.contains(skin) ? Text.empty() : skin.asText(player.getServer(), profile.components()).append(" ")).append(allowBio ? name : FormatUtils.stripInteraction(name));
 	}

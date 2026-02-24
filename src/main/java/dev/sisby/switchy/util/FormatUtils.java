@@ -7,7 +7,7 @@ import com.mojang.authlib.yggdrasil.response.MinecraftTexturesPayload;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.util.UUIDTypeAdapter;
 import dev.sisby.switchy.Switchy;
-import dev.sisby.switchy.compat.StyledChatCompat;
+import dev.sisby.switchy.compat.PlaceholderApiCompat;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.item.ItemStack;
@@ -123,7 +123,7 @@ public class FormatUtils {
 		MinecraftTexturesPayload payload = gson.fromJson(new String(Base64.getDecoder().decode(compound.getString("value"))), MinecraftTexturesPayload.class);
 		MinecraftProfileTexture skinTexture = payload.textures().get(MinecraftProfileTexture.Type.SKIN);
 		String skinHash = skinTexture.getHash();
-		return Switchy.STYLED_CHAT && StyledChatCompat.hasHeads() ? StyledChatCompat.head(server, skinHash) : truncate(skinHash);
+		return Switchy.PLACEHOLDER_API && PlaceholderApiCompat.hasHeads() ? PlaceholderApiCompat.head(server, skinHash) : truncate(skinHash);
 	}
 
 	public static Text stripInteraction(Text text) {

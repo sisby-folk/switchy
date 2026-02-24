@@ -6,7 +6,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sisby.switchy.Switchy;
-import dev.sisby.switchy.compat.StyledChatCompat;
 import dev.sisby.switchy.compat.StyledNicknamesCompat;
 import dev.sisby.switchy.util.DispatchMapCodec;
 import dev.sisby.switchy.util.FormatUtils;
@@ -116,9 +115,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 			.importable(true)
 			.textProvider((server, s) -> Text.literal(s.replaceAll("<?((?:\\\\>|.)*?)>", "")).styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(s)))))
 			.argumentEditor(e -> CommandManager.argument("name", StringArgumentType.greedyString()).executes(c -> e.execute(c, c.getArgument("name", String.class))));
-		builder = Switchy.STYLED_NICKNAMES ? StyledNicknamesCompat.nameComponent(builder) : builder;
-		builder = Switchy.STYLED_CHAT ? StyledChatCompat.nameComponent(builder) : builder;
-		return builder;
+		return Switchy.STYLED_NICKNAMES ? StyledNicknamesCompat.nameComponent(builder) : builder;
 	});
 
 	public record Tag(String prefix, String suffix) {
