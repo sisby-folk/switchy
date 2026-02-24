@@ -613,6 +613,7 @@ public class SwitchyCommands {
 					)
 				)
 				.then(CommandManager.literal("say")
+					.requires(c -> c.getPlayer() != null && SwitchyPlayerData.ofEarly(c.getPlayer()) != null && SwitchyPlayerData.ofEarly(c.getPlayer()).size() > 1)
 					.then(profile(true)
 						.then(CommandManager.argument("message", MessageArgumentType.message())
 							.executes(c -> execute(c, (i, p, d, f) -> say(c, p, d, f, c.getArgument("profile", String.class).toLowerCase())))
