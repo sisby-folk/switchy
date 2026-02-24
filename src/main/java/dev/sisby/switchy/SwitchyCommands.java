@@ -18,7 +18,7 @@ import dev.sisby.switchy.data.SwitchyComponentType;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
 import dev.sisby.switchy.data.SwitchyPlayerData;
 import dev.sisby.switchy.data.SwitchyProfile;
-import dev.sisby.switchy.duck.SwitchyPlayer;
+import dev.sisby.switchy.duck.SwitchyGameProfile;
 import dev.sisby.switchy.exception.NbtException;
 import dev.sisby.switchy.exception.ProfileCurrentException;
 import dev.sisby.switchy.exception.ProfileMissingException;
@@ -361,13 +361,13 @@ public class SwitchyCommands {
 
 	public static void say(SignedMessage message, ServerPlayerEntity player, SwitchyProfile profile) {
 		try {
-			((SwitchyPlayer) player).switchy$setSayProfile(profile);
+			((SwitchyGameProfile) player.getGameProfile()).switchy$setSayProfile(profile);
 			ServerCommandSource source = player.getCommandSource(); // display name hooked here
 			source.getServer().getPlayerManager().broadcast(message, source, MessageType.params(MessageType.CHAT, source)); // skin ID might be hooked here?
 		} catch (Exception e) {
 			Switchy.LOGGER.error("[Switchy] Error while performing say");
 		} finally {
-			((SwitchyPlayer) player).switchy$setSayProfile(null);
+			((SwitchyGameProfile) player.getGameProfile()).switchy$setSayProfile(null);
 		}
 	}
 

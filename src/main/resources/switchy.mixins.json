@@ -5,6 +5,7 @@
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 		"MixinEntity",
+		"MixinGameProfile",
 		"MixinPlayerEntity",
 		"MixinServerPlayerEntity",
 		"MixinServerPlayNetworkHandler"
