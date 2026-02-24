@@ -33,10 +33,13 @@ After this, you can freely switch profiles via `/switch <name>` or by clicking `
 Switching into a profile restores component data to **the state it was in was when you last switched out of that profile**.<br/> 
 So to change e.g. a fabric tailor skin for a profile, switch into the profile first, then set the skin as you normally would.
 
+You can use `/switchy say` to send a chat message as if you were switched into a specific profile.<br/>
+Use `/switchy edit <name> tag <prefix>text<suffix>` to match regular chat messages based on a pattern.<br/>
+Display names will be formatted slightly differently to styled nicknames/chat, but you can adjust their configs to match.
+
 Profiles are per-world, so speed things up by running `/switchy export` to get your name/skin data to save to a .json file.<br/>
 To import, upload the file (e.g. to [tmpfiles.org](https://tmpfiles.org/)) and paste the link into `/switchy import all <url>`.<br/>
 You can also import from [PK](https://pluralkit.me/guide/#exporting-your-pluralkit-data) (and import from / export to [Utter](https://utter.y2k.diy/)) - use `/switchy import <member/group>` to filter imports.
-
 
 ## Compatibility
 
