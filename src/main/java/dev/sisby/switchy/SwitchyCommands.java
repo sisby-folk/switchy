@@ -329,7 +329,7 @@ public class SwitchyCommands {
 			.append(Text.literal("profile ").formatted(Formatting.GRAY))
 			.append(profileId)
 			.append(Text.literal(" contains ").formatted(Formatting.GRAY))
-			.append("%d".formatted(profile.components().size()))
+			.append("%d".formatted(SwitchyComponentTypes.grouped(profile.components().keySet()).size()))
 			.append(Text.literal(" component%s. ".formatted(profile.components().size() == 1 ? "" : "s")).formatted(Formatting.GRAY))
 			.append(profileId.equals(data.current()) ? clickable("list", "/switchy", true) : clickable("switch", "/switch %s".formatted(StringArgumentType.escapeIfRequired(profileId)), true))
 		);

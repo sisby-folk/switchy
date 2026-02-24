@@ -1,5 +1,5 @@
 <!--suppress HtmlDeprecatedTag, XmlDeprecatedElement -->
-<center><img alt="mod preview" src="https://cdn.modrinth.com/data/ss0QuCRx/images/ab4966384894566ec534df785e3066052a7ab4ea.png"/></center>
+<center><img alt="mod preview" src="https://cdn.modrinth.com/data/ss0QuCRx/images/07265dba2d427ecfadc8c0c919389b81e3173c52.gif"/></center>
 
 <center>
 Serverside player profiles for hotseat multiplayer, adventure maps, and plural systems.<br/>
@@ -13,9 +13,7 @@ Always take backups of your worlds, especially when updating mods._
 
 ---
 
-**Switchy** allows players to create **profiles** that hold partial player save data, and then switch between them.
-
-Profile data is defined by player-toggleable _components_, including:
+**Switchy** lets you switch between **player profiles**, which can save data like:
 - Vanilla health, hunger, status effects, inventory, ender chest, location, spawn point, and xp
 - [Fabric Tailor](https://modrinth.com/mod/fabrictailor) skins (previewable by adding our [ServerChatHeads fork](https://github.com/sisby-folk/ServerChatHeads/releases/tag/1.0.0))
 - [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) nicknames
@@ -23,19 +21,19 @@ Profile data is defined by player-toggleable _components_, including:
 - [Origins](https://modrinth.com/mod/origins) origins
 - [Pehkui](https://modrinth.com/mod/pehkui) height and width
 
-This means you can adjust profiles to only contain some of the above, e.g. just nicknames, skins, and origins.
+Players can customise which of the above switches with profiles, and even send in-profile chat messages.
 
 ## Usage
 
 **Just run `/switchy` and follow the hints!** This covers renaming, toggling components, and making new profiles.
 
 After this, you can freely switch profiles via `/switch <name>` or by clicking `<switch>` in the profile list.<br/>
-Switching into a profile restores component data to **the state it was in was when you last switched out of that profile**.<br/> 
-So to change e.g. a fabric tailor skin for a profile, switch into the profile first, then set the skin as you normally would.
+Switching into a profile restores component data to **the state it was in was when the profile was last used**.<br/> 
+So to change e.g. a fabric tailor skin for a profile, switch into the profile first, set the skin, and switch out.
 
 You can use `/switchy say` to send a chat message as if you were switched into a specific profile.<br/>
 Use `/switchy edit <name> tag <prefix>text<suffix>` to match regular chat messages based on a pattern.<br/>
-Display names will be formatted slightly differently to styled nicknames/chat, but you can adjust their configs to match.
+Display names look slightly different to styled nicknames/chat, so just adjust their configs to match.
 
 Profiles are per-world, so speed things up by running `/switchy export` to get your name/skin data to save to a .json file.<br/>
 To import, upload the file (e.g. to [tmpfiles.org](https://tmpfiles.org/)) and paste the link into `/switchy import all <url>`.<br/>
@@ -43,7 +41,9 @@ You can also import from [PK](https://pluralkit.me/guide/#exporting-your-pluralk
 
 ## Compatibility
 
-Switchy can be used to switch modded data in a modpack by setting up **switchy components** in a datapack:
+> Note: If Switchy crashes your 1.20 modpack in singleplayer, set `fastSingleplayerReconnect` to `false` in `config/switchy.toml`
+
+Switchy components are data-driven and based on where data is stored in the player save:
 
 ```json5
 // data/minecraft/switchy_components/inventory/ender_chest.json (minecraft:inventory/ender_chest)
@@ -62,7 +62,7 @@ Switchy can be used to switch modded data in a modpack by setting up **switchy c
 
 Feel free to browse the [included components](https://github.com/sisby-folk/switchy/tree/1.20/src/main/resources/data) for examples.
 
-You're welcome to PR datapack components (with load conditions), along with any additional previewers etc.
+You're welcome to PR components for mods (with load conditions), along with any non-dependent previewers and so on.
 
 Switching data outside player NBT requires an addon. API TBD - Interested addon devs can hit up the [issues page](https://github.com/sisby-folk/switchy/issues).
 
