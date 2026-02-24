@@ -127,7 +127,6 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	}
 
 	public static final SwitchyComponentType<List<Tag>> TAG = registerStatic(TAG_ID, Codec.list(Tag.CODEC), builder -> builder
-			.importable(true)
 			.textProvider((server, s) -> FormatUtils.tag(s, "text"))
 			.argumentEditor(e -> CommandManager.argument("prefix_text_suffix", StringArgumentType.greedyString()).executes(c -> {
 				String[] rawInput = c.getArgument("prefix_text_suffix", String.class).trim().split("text");
