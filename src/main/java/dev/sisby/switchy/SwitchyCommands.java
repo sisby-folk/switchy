@@ -441,7 +441,7 @@ public class SwitchyCommands {
 	}
 
 	public static MutableText getNameText(ServerPlayerEntity player, SwitchyProfile profile, boolean allowBio) {
-		SwitchyComponentType<?> skin = FabricLoader.getInstance().isModLoaded("styled-chat") && StyledChatCompat.hasHeads() ? SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN) : null;
+		SwitchyComponentType<?> skin = Switchy.STYLED_CHAT && StyledChatCompat.hasHeads() ? SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN) : null;
 		MutableText name = SwitchyComponentTypes.NAME.asText(player.getServer(), profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id));
 		return Text.empty().append(skin == null || !profile.contains(skin) ? Text.empty() : skin.asText(player.getServer(), profile.components()).append(" ")).append(allowBio ? name : FormatUtils.stripInteraction(name));
 	}

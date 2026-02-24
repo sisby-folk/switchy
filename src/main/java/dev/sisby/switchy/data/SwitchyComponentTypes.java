@@ -12,7 +12,6 @@ import dev.sisby.switchy.util.DispatchMapCodec;
 import dev.sisby.switchy.util.FormatUtils;
 import dev.sisby.switchy.util.SwitchyCodecs;
 import dev.sisby.switchy.util.TypeRegistry;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.command.CommandManager;
@@ -116,8 +115,8 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 			.importable(true)
 			.textProvider((server, s) -> Text.literal(s.replaceAll("<?((?:\\\\>|.)*?)>", "")).styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(s)))))
 			.argumentEditor(e -> CommandManager.argument("name", StringArgumentType.greedyString()).executes(c -> e.execute(c, c.getArgument("name", String.class))));
-		builder = FabricLoader.getInstance().isModLoaded("styled-nicknames") ? StyledNicknamesCompat.nameComponent(builder) : builder;
-		builder = FabricLoader.getInstance().isModLoaded("styled-chat") ? StyledChatCompat.nameComponent(builder) : builder;
+		builder = Switchy.STYLED_NICKNAMES ? StyledNicknamesCompat.nameComponent(builder) : builder;
+		builder = Switchy.STYLED_CHAT ? StyledChatCompat.nameComponent(builder) : builder;
 		return builder;
 	});
 

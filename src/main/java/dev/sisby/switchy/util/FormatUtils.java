@@ -6,9 +6,9 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.yggdrasil.response.MinecraftTexturesPayload;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.util.UUIDTypeAdapter;
+import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.compat.StyledChatCompat;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.AbstractNbtList;
@@ -36,7 +36,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class FormatUtils {
-	public static final Identifier CHAT_HEADS = Identifier.of("chatheads", "player");
 
 	@SuppressWarnings("deprecation")
 	public static String prettify(String s) {
@@ -124,7 +123,7 @@ public class FormatUtils {
 		MinecraftTexturesPayload payload = gson.fromJson(new String(Base64.getDecoder().decode(compound.getString("value"))), MinecraftTexturesPayload.class);
 		MinecraftProfileTexture skinTexture = payload.getTextures().get(MinecraftProfileTexture.Type.SKIN);
 		String skinHash = skinTexture.getHash();
-		return FabricLoader.getInstance().isModLoaded("styled-chat") && StyledChatCompat.hasHeads() ? StyledChatCompat.head(server, skinHash) : truncate(skinHash);
+		return Switchy.STYLED_CHAT && StyledChatCompat.hasHeads() ? StyledChatCompat.head(server, skinHash) : truncate(skinHash);
 	}
 
 	public static Text stripInteraction(Text text) {
