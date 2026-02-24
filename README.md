@@ -1,5 +1,5 @@
 <!--suppress HtmlDeprecatedTag, XmlDeprecatedElement -->
-<center><img alt="mod preview" src="https://cdn.modrinth.com/data/ss0QuCRx/images/07265dba2d427ecfadc8c0c919389b81e3173c52.gif"/></center>
+<center><img alt="mod preview" src="https://cdn.modrinth.com/data/ss0QuCRx/images/0fd2d9d7ccb66e457f7604e09803c1b6457418c6.png"/></center>
 
 <center>
 Serverside player profiles for hotseat multiplayer, adventure maps, and plural systems.<br/>
@@ -13,15 +13,18 @@ Always take backups of your worlds, especially when updating mods._
 
 ---
 
-**Switchy** lets you switch between **player profiles**, which can save data like:
-- Vanilla health, hunger, status effects, inventory, ender chest, location, spawn point, and xp
-- [Fabric Tailor](https://modrinth.com/mod/fabrictailor) skins (previewable by adding our [ServerChatHeads fork](https://github.com/sisby-folk/ServerChatHeads/releases/tag/1.0.0))
-- [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) nicknames
-- [Trinkets](modrinth.com/mod/trinkets) and [Accessories](https://modrinth.com/mod/accessories) slots
-- [Origins](https://modrinth.com/mod/origins) origins
-- [Pehkui](https://modrinth.com/mod/pehkui) height and width
+**Switchy** allows players to create and switch between **player profiles**, which save specified parts of their player data.
 
-Players can customise which of the above switches with profiles, and even send in-profile chat messages.
+What profiles save is both **data-driven** and **player-customizeable**.<br/>
+Here's an out-of the box example with [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) and [Fabric Tailor](https://modrinth.com/mod/fabrictailor) (+[SCH](https://github.com/sisby-folk/ServerChatHeads/releases/tag/1.0.0)):
+
+![components](https://cdn.modrinth.com/data/ss0QuCRx/images/23cde9633791796124d060c13133428f67c3c662.png)
+
+Support is also built-in (via data) for for [Trinkets](modrinth.com/mod/trinkets)/[Accessories](https://modrinth.com/mod/accessories), [Pehkui](https://modrinth.com/mod/pehkui) (width/height), and [Origins](https://modrinth.com/mod/origins).
+
+Additionally, players can fluently chat using the display names of other profiles, just like [PluralKit](https://pluralkit.me/).
+
+![chat tags](https://cdn.modrinth.com/data/ss0QuCRx/images/07265dba2d427ecfadc8c0c919389b81e3173c52.gif)
 
 ## Usage
 
