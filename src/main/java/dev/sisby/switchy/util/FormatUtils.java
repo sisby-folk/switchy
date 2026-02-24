@@ -6,6 +6,7 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.yggdrasil.response.MinecraftTexturesPayload;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.util.UUIDTypeAdapter;
+import dev.sisby.switchy.data.SwitchyComponentTypes;
 import eu.pb4.placeholders.api.PlaceholderContext;
 import eu.pb4.placeholders.api.Placeholders;
 import net.minecraft.command.argument.NbtPathArgumentType;
@@ -85,6 +86,10 @@ public class FormatUtils {
 			return Text.literal(string.asString());
 		}
 		return Text.of(element.toString());
+	}
+
+	public static Text tag(List<SwitchyComponentTypes.Tag> pairs, String between) {
+		return Texts.join(pairs.stream().map(p -> Text.empty().append(Text.literal(p.prefix())).append(Text.literal(between).formatted(Formatting.GRAY)).append(Text.literal(p.suffix()))).toList(), Text.literal(", ").formatted(Formatting.GRAY));
 	}
 
 	public static boolean isEmpty(NbtElement element) {

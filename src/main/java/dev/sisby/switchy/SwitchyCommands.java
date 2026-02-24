@@ -33,6 +33,7 @@ import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -351,19 +352,23 @@ public class SwitchyCommands {
 			return 0;
 		}
 		try {
-			MessageArgumentType.getSignedMessage(context, "message", (message) -> {
-				try {
-					((SwitchyPlayer) player).switchy$setSayProfile(profile);
-					ServerCommandSource source = player.getCommandSource(); // display name hooked here
-					source.getServer().getPlayerManager().broadcast(message, source, MessageType.params(MessageType.CHAT, source)); // skin ID might be hooked here?
-				} finally {
-					((SwitchyPlayer) player).switchy$setSayProfile(null);
-				}
-			});
+			MessageArgumentType.getSignedMessage(context, "message", message -> say(message, player, profile));
 		} catch (CommandSyntaxException e) {
 			throw new RuntimeException(e);
 		}
 		return 1;
+	}
+
+	public static void say(SignedMessage message, ServerPlayerEntity player, SwitchyProfile profile) {
+		try {
+			((SwitchyPlayer) player).switchy$setSayProfile(profile);
+			ServerCommandSource source = player.getCommandSource(); // display name hooked here
+			source.getServer().getPlayerManager().broadcast(message, source, MessageType.params(MessageType.CHAT, source)); // skin ID might be hooked here?
+		} catch (Exception e) {
+			Switchy.LOGGER.error("[Switchy] Error while performing say");
+		} finally {
+			((SwitchyPlayer) player).switchy$setSayProfile(null);
+		}
 	}
 
 	private static int switchProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId, Boolean exists) {
@@ -469,7 +474,7 @@ public class SwitchyCommands {
 			.append(Text.literal("!").formatted(Formatting.GREEN))
 			.append(" ")
 			.append(clickable("list", "/switchy", true));
-		if (profileId.equals(data.current())) {
+		if (profileId.equals(data.current()) && (type.nbtMutator() != null || type.playerMutator() != null)) {
 			try {
 				data.selfSwitch(profile, player, feedbackText);
 				return 2;
