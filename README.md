@@ -8,25 +8,19 @@ Serverside player profiles for hotseat multiplayer, adventure maps, and plural s
 
 ---
 
-> _**Disclaimer**: All mods that manipulate player data have a save corruption risk!<br/>
-Always take backups of your worlds, especially when updating mods._
+**Switchy** allows players to create and switch between **player profiles**, which save part of their player data.
 
----
-
-**Switchy** allows players to create and switch between **player profiles**, which save specified parts of their player data.
-
-What profiles save is both **data-driven** and **player-customizeable**.<br/>
-Here's an out-of the box example with [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) and [Fabric Tailor](https://modrinth.com/mod/fabrictailor) (+[SCH](https://github.com/sisby-folk/ServerChatHeads/releases/tag/1.0.0)):
-
-![components](https://cdn.modrinth.com/data/ss0QuCRx/images/23cde9633791796124d060c13133428f67c3c662.png)
-
+This is both **data-driven** and **player-customizable**. Here's a profile with [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) and [Fabric Tailor](https://modrinth.com/mod/fabrictailor) (+[SCH](https://github.com/sisby-folk/ServerChatHeads/releases/tag/1.0.0)):</br>
+![components](https://cdn.modrinth.com/data/ss0QuCRx/images/23cde9633791796124d060c13133428f67c3c662.png)<br/>
 Support is also built-in (via data) for for [Trinkets](modrinth.com/mod/trinkets)/[Accessories](https://modrinth.com/mod/accessories), [Pehkui](https://modrinth.com/mod/pehkui) (width/height), and [Origins](https://modrinth.com/mod/origins).
 
-Additionally, players can fluently chat using the display names of other profiles, just like [PluralKit](https://pluralkit.me/).
-
+You can even fluently chat using the display names of other profiles, just like [PluralKit](https://pluralkit.me/):<br/>
 ![chat tags](https://cdn.modrinth.com/data/ss0QuCRx/images/07265dba2d427ecfadc8c0c919389b81e3173c52.gif)
 
 ## Usage
+
+> _**Disclaimer**: All mods that manipulate player data have a save corruption risk!<br/>
+Always take backups of your worlds, especially when updating mods._
 
 **Just run `/switchy` and follow the hints!** This covers renaming, toggling components, and making new profiles.
 
@@ -44,9 +38,9 @@ You can also import from [PK](https://pluralkit.me/guide/#exporting-your-pluralk
 
 ## Compatibility
 
-> Note: If Switchy crashes your 1.20 modpack in singleplayer, set `fastSingleplayerReconnect` to `false` in `config/switchy.toml`
+> Note: If Switchy crashes your 1.20 modpack, set `fastSingleplayerReconnect` to `false` in `config/switchy.toml`
 
-Switchy components are data-driven and based on where data is stored in the player save:
+For compatibility with new mods, components are defined like so:
 
 ```json5
 // data/minecraft/switchy_components/inventory/ender_chest.json (minecraft:inventory/ender_chest)
@@ -63,9 +57,7 @@ Switchy components are data-driven and based on where data is stored in the play
 }
 ```
 
-Feel free to browse the [included components](https://github.com/sisby-folk/switchy/tree/1.20/src/main/resources/data) for examples.
-
-You're welcome to PR components for mods (with load conditions), along with any non-dependent previewers and so on.
+Feel free to PR components (and previewers/etc with **no dependencies**) into the main mod - see [existing examples](https://github.com/sisby-folk/switchy/tree/1.20/src/main/resources/data).
 
 Switching data outside player NBT requires an addon. API TBD - Interested addon devs can hit up the [issues page](https://github.com/sisby-folk/switchy/issues).
 
