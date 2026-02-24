@@ -2,6 +2,7 @@ package dev.sisby.switchy.mixin;
 
 import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.data.SwitchyPlayerData;
+import dev.sisby.switchy.data.SwitchyProfile;
 import dev.sisby.switchy.duck.SwitchyPlayer;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -14,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerPlayerEntity.class)
 public class MixinServerPlayerEntity implements SwitchyPlayer {
 	private SwitchyPlayerData switchy$playerData = null;
+	private SwitchyProfile switchy$sayProfile = null;
 	private NbtCompound switchy$hotSwap = null;
 	private NbtCompound switchy$reloadData = null;
 
@@ -62,6 +64,16 @@ public class MixinServerPlayerEntity implements SwitchyPlayer {
 	@Override
 	public SwitchyPlayerData switchy$getPlayerData() {
 		return switchy$playerData;
+	}
+
+	@Override
+	public SwitchyProfile switchy$getSayProfile() {
+		return switchy$sayProfile;
+	}
+
+	@Override
+	public void switchy$setSayProfile(SwitchyProfile profile) {
+		switchy$sayProfile = profile;
 	}
 
 	@Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))

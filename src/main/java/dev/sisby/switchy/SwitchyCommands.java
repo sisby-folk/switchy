@@ -28,8 +28,10 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.IdentifierArgumentType;
+import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.network.message.MessageType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -335,6 +337,32 @@ public class SwitchyCommands {
 		return profile.components().size();
 	}
 
+
+	private static int say(CommandContext<ServerCommandSource> context, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId) {
+		SwitchyProfile profile;
+		try {
+			profile = data.getProfile(profileId, player);
+		} catch (NbtException e) {
+			throw new RuntimeException(e);
+		}
+		if (profile == null) {
+			feedback.accept(prefix().append(Text.literal("profile doesn't exist!").formatted(Formatting.YELLOW)));
+			return 0;
+		}
+		try {
+			MessageArgumentType.getSignedMessage(context, "message", (message) -> {
+				ServerCommandSource source = new ServerCommandSource(player, player.getPos(), player.getRotationClient(), player.getServerWorld(),
+					context.getSource().hasPermissionLevel(4) ? 4 : context.getSource().hasPermissionLevel(3) ? 3 : context.getSource().hasPermissionLevel(2) ? 2 : 1,
+					player.getName().getString(), getNameText(player, profile), player.getWorld().getServer(), player
+				);
+				source.getServer().getPlayerManager().broadcast(message, source, MessageType.params(MessageType.CHAT, source));
+			});
+		} catch (CommandSyntaxException e) {
+			throw new RuntimeException(e);
+		}
+		return 1;
+	}
+
 	private static int switchProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId, Boolean exists) {
 		String casedName = profileId;
 		profileId = profileId.toLowerCase();
@@ -573,6 +601,13 @@ public class SwitchyCommands {
 				.then(CommandManager.literal("view")
 					.then(profile(true)
 						.executes(c -> execute(c, (i, p, d, f) -> viewProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase())))
+					)
+				)
+				.then(CommandManager.literal("say")
+					.then(profile(true)
+						.then(CommandManager.argument("message", MessageArgumentType.message())
+							.executes(c -> execute(c, (i, p, d, f) -> say(c, p, d, f, c.getArgument("profile", String.class).toLowerCase())))
+						)
 					)
 				)
 				.then(CommandManager.literal("delete")
