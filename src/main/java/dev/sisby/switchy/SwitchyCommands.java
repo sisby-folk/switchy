@@ -324,15 +324,16 @@ public class SwitchyCommands {
 			feedback.accept(prefix().append(Text.literal("profile doesn't exist!").formatted(Formatting.YELLOW)));
 			return 0;
 		}
+		List<MutableText> texts = profile.components().asTexts(player.getServer());
 		feedback.accept(prefix()
 			.append(Text.literal("profile ").formatted(Formatting.GRAY))
 			.append(profileId)
 			.append(Text.literal(" contains ").formatted(Formatting.GRAY))
-			.append("%d".formatted(SwitchyComponentTypes.grouped(profile.components().keySet()).size()))
+			.append("%d".formatted(texts.size()))
 			.append(Text.literal(" component%s. ".formatted(profile.components().size() == 1 ? "" : "s")).formatted(Formatting.GRAY))
 			.append(profileId.equals(data.current()) ? clickable("list", "/switchy", true) : clickable("switch", "/switch %s".formatted(StringArgumentType.escapeIfRequired(profileId)), true))
 		);
-		profile.components().asTexts(player.getServer()).forEach(componentText -> feedback.accept(indent().append(componentText)));
+		texts.forEach(componentText -> feedback.accept(indent().append(componentText)));
 		if (data.size() == 1 && data.current().equals("default")) {
 			hintClickables(feedback);
 		}
