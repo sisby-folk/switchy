@@ -5,7 +5,6 @@ import dev.sisby.switchy.data.SwitchyComponentTypes;
 import dev.sisby.switchy.data.SwitchyPlayerData;
 import dev.sisby.switchy.data.SwitchyProfile;
 import dev.sisby.switchy.duck.SwitchyPlayer;
-import dev.sisby.switchy.exception.NbtException;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -48,7 +47,7 @@ public class Switchy implements ModInitializer {
 			for (SwitchyProfile profile : playerData.values()) {
 				for (SwitchyComponentTypes.Tag tag : profile.getOrDefault(SwitchyComponentTypes.TAG, new ArrayList<SwitchyComponentTypes.Tag>())) {
 					if (string.startsWith(tag.prefix()) && string.endsWith(tag.suffix())) {
-						String body = string.substring(tag.prefix().length(), string.length() - tag.suffix().length());
+						String body = string.substring(tag.prefix().length(), string.length() - tag.suffix().length()).trim();
 						SwitchyCommands.say(SignedMessage.ofUnsigned(body), sender, profile);
 						return false;
 					}

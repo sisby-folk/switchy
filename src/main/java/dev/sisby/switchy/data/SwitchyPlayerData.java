@@ -379,11 +379,11 @@ public class SwitchyPlayerData {
 				quickTextEscape(data.description() == null ? "" : " | " + data.description()),
 				quickTextEscape(Objects.requireNonNullElse(data.color(), "FFFFFF")),
 				quickTextEscape(Objects.requireNonNullElse(data.display_name(), id).replace(bracketed, "")).trim());
-			if (!newName.equals(profile.get(SwitchyComponentTypes.NAME))) {
+			if (componentSet().contains(SwitchyComponentTypes.NAME) && !newName.equals(profile.get(SwitchyComponentTypes.NAME))) {
 				if (current.equals(id)) newCurrent = profile;
 				profile.set(SwitchyComponentTypes.NAME, newName);
 			}
-			if (data.proxy_tags() != null && !data.proxy_tags().isEmpty()) {
+			if (componentSet().contains(SwitchyComponentTypes.TAG) && data.proxy_tags() != null && !data.proxy_tags().isEmpty()) {
 				profile.set(SwitchyComponentTypes.TAG, data.proxy_tags().stream().map(t -> new SwitchyComponentTypes.Tag(Objects.requireNonNullElse(t.prefix(), ""), Objects.requireNonNullElse(t.suffix(), ""))).toList());
 			}
 			if (data.components() != null) {

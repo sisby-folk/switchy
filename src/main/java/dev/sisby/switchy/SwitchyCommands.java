@@ -300,7 +300,8 @@ public class SwitchyCommands {
 					if (skin != null) key = skin.getHash();
 					avatarUrl = Switchy.CONFIG.exportAvatarUrl.formatted(key);
 				}
-				members.add(new SwitchyPlayerData.ProfileImportData(null, profileId, name, color, pronouns, description, avatarUrl, List.of(new SwitchyPlayerData.ProxyTag(profileId + ":", null)), components));
+				List<SwitchyPlayerData.ProxyTag> proxyTags = profile.getOrDefault(SwitchyComponentTypes.TAG, new ArrayList<SwitchyComponentTypes.Tag>()).stream().map(t -> new SwitchyPlayerData.ProxyTag(t.prefix(), t.suffix())).toList();
+				members.add(new SwitchyPlayerData.ProfileImportData(null, profileId, name, color, pronouns, description, avatarUrl, proxyTags, components));
 			}
 			feedback.accept(prefix()
 				.append(Text.literal("exported ").formatted(Formatting.GREEN))
@@ -407,7 +408,9 @@ public class SwitchyCommands {
 		try {
 			SwitchyProfile currentProfile = data.getCurrentProfile(player);
 			SwitchyProfile nextProfile = data.getOrCreateProfile(profileId, player);
-			if (!exists && !casedName.equals(profileId)) nextProfile.set(SwitchyComponentTypes.NAME, casedName);
+			if (!exists) { // creation affordances
+				if (!casedName.equals(profileId) && data.componentSet().contains(SwitchyComponentTypes.NAME)) nextProfile.set(SwitchyComponentTypes.NAME, casedName);
+			}
 			data.switchOrCreateProfile(profileId, player, prefix()
 				.append(getNameText(player, currentProfile))
 				.append(Text.literal(" \uD83E\uDC46 ").formatted(Formatting.GREEN))
