@@ -13,7 +13,7 @@ Always take backups of your worlds, especially when updating mods._
 
 ---
 
-**Switchy** allows players to create **profiles**, which have their own partial player data, and can be switched between.
+**Switchy** allows players to create **profiles** that hold partial player save data, and then switch between them.
 
 Profile data is defined by player-toggleable _components_, including:
 - Vanilla health, hunger, status effects, inventory, ender chest, location, spawn point, and xp
