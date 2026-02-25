@@ -23,10 +23,10 @@ dependencies {
 	minecraft libs.mc
 	mappings variantOf(libs.yarn) { classifier "v2" }
 
-	modCompileOnly "eu.pb4:placeholder-api:2.1.1+1.20"
-	modCompileOnly "eu.pb4:player-data-api:0.2.2+1.19.3"
-	modCompileOnly "maven.modrinth:styled-chat:pwr7uYCH"
-	modCompileOnly "maven.modrinth:styled-nicknames:9k8RQJkW"
+	modCompileOnly "eu.pb4:placeholder-api:2.4.2+1.21"
+	modCompileOnly "eu.pb4:player-data-api:0.6.0+1.21"
+	modCompileOnly "maven.modrinth:styled-chat:4e1xZSk3"
+	modCompileOnly "maven.modrinth:styled-nicknames:U9pXTyh2"
 
 	modImplementation libs.fl
 	modImplementation libs.fapi
