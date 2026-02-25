@@ -16,7 +16,7 @@ Support is also built-in (via data) for for [Trinkets](modrinth.com/mod/trinkets
 
 You can even fluently chat using the display names of other profiles, just like [PluralKit](https://pluralkit.me/):<br/>
 ![chat tags](https://cdn.modrinth.com/data/ss0QuCRx/images/07265dba2d427ecfadc8c0c919389b81e3173c52.gif)</br>
-This is fully compatible with well-behaved chat bridges, like [our cantilever fork](https://github.com/sisby-folk/cantilever/releases/tag/2.0-tailor)
+This is fully compatible with well-behaved chat bridges, like [our cantilever fork](https://github.com/sisby-folk/cantilever/releases/tag/2.0-tailor)!
 
 ## Usage
 
