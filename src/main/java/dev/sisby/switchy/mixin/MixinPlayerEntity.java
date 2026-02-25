@@ -1,9 +1,12 @@
 package dev.sisby.switchy.mixin;
 
+import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.SwitchyCommands;
+import dev.sisby.switchy.compat.StyledNicknamesCompat;
 import dev.sisby.switchy.duck.SwitchyGameProfile;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,7 +18,8 @@ public class MixinPlayerEntity {
 	private Text useProfileName(Text text) {
 		PlayerEntity self = (PlayerEntity) (Object) this;
 		if (self instanceof ServerPlayerEntity spe && spe.getGameProfile() instanceof SwitchyGameProfile sgp && sgp.switchy$getSayProfile() != null) {
-			return SwitchyCommands.getNameText(spe, sgp.switchy$getSayProfile());
+			MutableText name = SwitchyCommands.getNameText(spe, sgp.switchy$getSayProfile());
+			return Switchy.STYLED_NICKNAMES ? StyledNicknamesCompat.formatNickname(name) : name;
 		}
 		return text;
 	}
