@@ -136,7 +136,7 @@ public class SwitchyPlayerData {
 	public Text greet(ServerPlayerEntity player) {
 		Text defaultedGreeting = Optional.ofNullable(greeting).orElseGet(() -> SwitchyCommands.prefix()
 			.append(Text.literal("welcome back! current profile: ").formatted(Formatting.GRAY))
-			.append(SwitchyCommands.getNameText(player, profiles.get(current)))
+			.append(SwitchyCommands.getProfileText(player, profiles.get(current)))
 			.append(Text.literal(". ").formatted(Formatting.GRAY))
 			.append(SwitchyCommands.clickable("list", "/switchy", true)));
 		greeting = null;
@@ -455,7 +455,7 @@ public class SwitchyPlayerData {
 
 		((SwitchyPlayer) player).switchy$hotSwap(playerNbt, SwitchyCommands.prefix()
 			.append(Text.literal(selfSwitch ? "Updated current profile " : "Switching to ").formatted(Formatting.GRAY))
-			.append(SwitchyCommands.getNameText(player, nextProfile))
+			.append(SwitchyCommands.getProfileText(player, nextProfile))
 			.append(Text.literal("! Please reconnect.").formatted(Formatting.GRAY))
 		);
 	}

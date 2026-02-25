@@ -12,7 +12,8 @@ base.archivesName = project.slug
 
 repositories {
 	maven { url = "https://repo.sleeping.town/" }
-	maven { url = "https://maven.nucleoid.xyz" } // player data API
+	maven { url = "https://maven.nucleoid.xyz" }
+	maven { url = "https://api.modrinth.com/maven" }
 }
 
 dependencies {
@@ -24,6 +25,8 @@ dependencies {
 
 	modCompileOnly "eu.pb4:placeholder-api:2.1.1+1.20"
 	modCompileOnly "eu.pb4:player-data-api:0.2.2+1.19.3"
+	modCompileOnly "maven.modrinth:styled-chat:pwr7uYCH"
+	modCompileOnly "maven.modrinth:styled-nicknames:9k8RQJkW"
 
 	modImplementation libs.fl
 	modImplementation libs.fapi

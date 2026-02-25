@@ -25,6 +25,7 @@ public class Switchy implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
 	public static final SwitchyConfig CONFIG = SwitchyConfig.createToml(FabricLoader.getInstance().getConfigDir(), "", ID, SwitchyConfig.class);
 	public static final boolean STYLED_NICKNAMES = FabricLoader.getInstance().isModLoaded("styled-nicknames");
+	public static final boolean STYLED_CHAT = FabricLoader.getInstance().isModLoaded("styledchat");
 	public static final boolean PLACEHOLDER_API = FabricLoader.getInstance().isModLoaded("placeholder-api");
 
 	public static Identifier id(String path) {

@@ -14,6 +14,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.JsonOps;
 import com.mojang.util.UUIDTypeAdapter;
 import dev.sisby.switchy.compat.PlaceholderApiCompat;
+import dev.sisby.switchy.compat.StyledChatCompat;
 import dev.sisby.switchy.data.SwitchyComponentType;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
 import dev.sisby.switchy.data.SwitchyPlayerData;
@@ -103,7 +104,7 @@ public class SwitchyCommands {
 				.append(" ")
 				.append(clickable("edit", "/switchy edit %s ".formatted(StringArgumentType.escapeIfRequired(profile.id())), false))
 				.append(" ")
-				.append(getNameText(player, profile, false).styled(s -> s
+				.append(getProfileText(player, profile, false).styled(s -> s
 					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(profile.asTexts(player), Text.of("\n")).copy().append("\n").append(Text.literal("... /switchy view %s".formatted(StringArgumentType.escapeIfRequired(profile.id()))).formatted(Formatting.AQUA))))
 					.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/switchy view %s".formatted(StringArgumentType.escapeIfRequired(profile.id()))))
 				))
@@ -364,6 +365,7 @@ public class SwitchyCommands {
 		try {
 			((SwitchyGameProfile) player.getGameProfile()).switchy$setSayProfile(profile);
 			ServerCommandSource source = player.getCommandSource(); // display name hooked here
+			if (Switchy.STYLED_CHAT) StyledChatCompat.modifyForSending(message, source, MessageType.CHAT);
 			source.getServer().getPlayerManager().broadcast(message, source, MessageType.params(MessageType.CHAT, source)); // skin ID might be hooked here?
 		} catch (Exception e) {
 			Switchy.LOGGER.error("[Switchy] Error while performing say");
@@ -411,9 +413,9 @@ public class SwitchyCommands {
 				if (!casedName.equals(profileId) && data.componentSet().contains(SwitchyComponentTypes.NAME)) nextProfile.set(SwitchyComponentTypes.NAME, casedName);
 			}
 			data.switchOrCreateProfile(profileId, player, prefix()
-				.append(getNameText(player, currentProfile))
+				.append(getProfileText(player, currentProfile))
 				.append(Text.literal(" \uD83E\uDC46 ").formatted(Formatting.GREEN))
-				.append(getNameText(player, nextProfile))
+				.append(getProfileText(player, nextProfile))
 				.append(Text.literal("! ").formatted(Formatting.GREEN))
 				.append(clickable("list", "/switchy", true)));
 		} catch (ProfileCurrentException e) {
@@ -435,14 +437,18 @@ public class SwitchyCommands {
 		return 1;
 	}
 
-	public static MutableText getNameText(ServerPlayerEntity player, SwitchyProfile profile) {
-		return getNameText(player, profile, true);
+	public static MutableText getProfileText(ServerPlayerEntity player, SwitchyProfile profile) {
+		return getProfileText(player, profile, true);
 	}
 
-	public static MutableText getNameText(ServerPlayerEntity player, SwitchyProfile profile, boolean allowBio) {
+	public static MutableText getProfileText(ServerPlayerEntity player, SwitchyProfile profile, boolean allowBio) {
 		SwitchyComponentType<?> skin = Switchy.PLACEHOLDER_API && PlaceholderApiCompat.hasHeads() ? SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN) : null;
-		MutableText name = SwitchyComponentTypes.NAME.asText(player.getServer(), profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id));
+		MutableText name = getNameText(player, profile);
 		return Text.empty().append(skin == null || !profile.contains(skin) ? Text.empty() : skin.asText(player.getServer(), profile.components()).append(" ")).append(allowBio ? name : FormatUtils.stripInteraction(name));
+	}
+
+	public static MutableText getNameText(ServerPlayerEntity player, SwitchyProfile profile) {
+		return SwitchyComponentTypes.NAME.asText(player.getServer(), profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id));
 	}
 
 	private static int switchNextProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
