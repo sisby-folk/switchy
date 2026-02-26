@@ -15,7 +15,8 @@ This is both **data-driven** and **player-customizable**. Here's a profile with 
 Support is also built-in (via data) for for [Trinkets](modrinth.com/mod/trinkets)/[Accessories](https://modrinth.com/mod/accessories), [Pehkui](https://modrinth.com/mod/pehkui) (width/height), and [Origins](https://modrinth.com/mod/origins).
 
 You can even fluently chat using the display names of other profiles, just like [PluralKit](https://pluralkit.me/):<br/>
-![chat tags](https://cdn.modrinth.com/data/ss0QuCRx/images/07265dba2d427ecfadc8c0c919389b81e3173c52.gif)
+![chat tags](https://cdn.modrinth.com/data/ss0QuCRx/images/07265dba2d427ecfadc8c0c919389b81e3173c52.gif)</br>
+This is fully compatible with well-behaved chat bridges, like [our cantilever fork](https://github.com/sisby-folk/cantilever/releases/tag/2.0-tailor)!
 
 ## Usage
 

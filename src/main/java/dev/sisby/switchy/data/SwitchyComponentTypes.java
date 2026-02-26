@@ -1,5 +1,8 @@
 package dev.sisby.switchy.data;
 
+import com.google.common.primitives.Bytes;
+import com.google.common.primitives.Ints;
+import com.google.common.primitives.Longs;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -26,6 +29,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -37,6 +41,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 @SuppressWarnings("unused")
 public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>> {
@@ -45,17 +51,23 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	public final Codec<Set<SwitchyComponentType<?>>> SET_CODEC = Codec.list(codec()).xmap(LinkedHashSet::new, ArrayList::new);
 	public final Codec<Map<SwitchyComponentType<?>, Object>> TYPE_TO_VALUE_MAP_CODEC = DispatchMapCodec.of(codec(), t -> (Codec<Object>) t.codec());
 
-	public static final Map<Identifier, Codec<?>> CODECS = new HashMap<>(Map.of(
-		Identifier.of("minecraft", "nbt"), SwitchyCodecs.NBT,
-		Identifier.of("minecraft", "boolean"), Codec.BOOL,
-		Identifier.of("minecraft", "string"), Codec.STRING,
-		Identifier.of("minecraft", "text"), TextCodecs.CODEC,
-		Identifier.of("minecraft", "float"), Codec.FLOAT,
-		Identifier.of("minecraft", "double"), Codec.DOUBLE,
-		Identifier.of("minecraft", "int"), Codec.INT,
-		Identifier.of("minecraft", "vec3d"), Vec3d.CODEC,
-		Identifier.of("minecraft", "identifier"), Identifier.CODEC,
-		Identifier.of("minecraft", "inventory"), SwitchyCodecs.INVENTORY_CODEC
+	public static final Map<Identifier, Codec<?>> CODECS = new HashMap<>(Map.ofEntries(
+		Map.entry(Identifier.of("minecraft", "nbt"), SwitchyCodecs.NBT),
+		Map.entry(Identifier.of("minecraft", "byte"), Codec.BYTE),
+		Map.entry(Identifier.of("minecraft", "short"), Codec.SHORT),
+		Map.entry(Identifier.of("minecraft", "int"), Codec.INT),
+		Map.entry(Identifier.of("minecraft", "long"), Codec.LONG),
+		Map.entry(Identifier.of("minecraft", "float"), Codec.FLOAT),
+		Map.entry(Identifier.of("minecraft", "double"), Codec.DOUBLE),
+		Map.entry(Identifier.of("minecraft", "bytes"), Codec.BYTE_BUFFER.xmap(ByteBuffer::array, ByteBuffer::wrap).xmap(Bytes::asList, Bytes::toArray)),
+		Map.entry(Identifier.of("minecraft", "ints"), Codec.INT_STREAM.xmap(IntStream::toArray, IntStream::of).xmap(Ints::asList, Ints::toArray)),
+		Map.entry(Identifier.of("minecraft", "longs"), Codec.LONG_STREAM.xmap(LongStream::toArray, LongStream::of).xmap(Longs::asList, Longs::toArray)),
+		Map.entry(Identifier.of("minecraft", "boolean"), Codec.BOOL),
+		Map.entry(Identifier.of("minecraft", "string"), Codec.STRING),
+		Map.entry(Identifier.of("minecraft", "text"), TextCodecs.CODEC),
+		Map.entry(Identifier.of("minecraft", "vec3d"), Vec3d.CODEC),
+		Map.entry(Identifier.of("minecraft", "identifier"), Identifier.CODEC),
+		Map.entry(Identifier.of("minecraft", "inventory"), SwitchyCodecs.INVENTORY_CODEC)
 	));
 	public static final Map<Identifier, SwitchyComponentType.TextProvider<?>> TEXT_PROVIDERS = new HashMap<>(Map.of(
 		Identifier.of("minecraft", "trunc"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::truncate),
