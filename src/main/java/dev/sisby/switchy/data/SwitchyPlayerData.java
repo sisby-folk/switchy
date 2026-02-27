@@ -388,7 +388,7 @@ public class SwitchyPlayerData {
 			}
 			if (data.components() != null) {
 				for (String componentKey : data.components().keySet()) {
-					SwitchyComponentType<?> type = profile.components().keySet().stream().filter(t -> t.id().toString().equals(componentKey)).findFirst().orElse(null);
+					SwitchyComponentType<?> type = componentSet().stream().filter(t -> t.id().toString().equals(componentKey)).findFirst().orElse(null);
 					if (type != null && type.importable()) {
 						if (current.equals(id)) newCurrent = profile;
 						type.decode(JsonOps.INSTANCE, data.components.get(componentKey), profile.components());
