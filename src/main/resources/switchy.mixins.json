@@ -6,9 +6,9 @@
 	"mixins": [
 		"MixinEntity",
 		"MixinGameProfile",
-		"MixinPlayerEntity",
-		"MixinServerPlayerEntity",
-		"MixinServerPlayNetworkHandler"
+		"MixinPlayer",
+		"MixinServerPlayer",
+		"MixinServerGamePacketListenerImpl"
 	],
 	"client": [
 	],

@@ -12,9 +12,9 @@ import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.network.message.SignedMessage;
-import net.minecraft.resource.ResourceType;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.chat.PlayerChatMessage;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ public class Switchy implements ModInitializer {
 	public static final boolean PLACEHOLDER_API = FabricLoader.getInstance().isModLoaded("placeholder-api");
 
 	public static Identifier id(String path) {
-		return Identifier.of(ID, path);
+		return Identifier.fromNamespaceAndPath(ID, path);
 	}
 
 	@Override
@@ -37,11 +37,11 @@ public class Switchy implements ModInitializer {
 		LOGGER.info("[Switchy] Twitcha-twitch! A-twitcha-twitch!");
 		ServerPlayConnectionEvents.JOIN.register(SwitchyCommands::greet);
 		CommandRegistrationCallback.EVENT.register(SwitchyCommands::register);
-		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new ComponentTypeLoader());
-		ServerLifecycleEvents.START_DATA_PACK_RELOAD.register((server, manager) -> server.getPlayerManager().getPlayerList().forEach(p -> {
+		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new ComponentTypeLoader());
+		ServerLifecycleEvents.START_DATA_PACK_RELOAD.register((server, manager) -> server.getPlayerList().getPlayers().forEach(p -> {
 			if (p instanceof SwitchyPlayer sp) sp.switchy$startReload();
 		}));
-		ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, manager, success) -> server.getPlayerManager().getPlayerList().forEach(p -> {
+		ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, manager, success) -> server.getPlayerList().getPlayers().forEach(p -> {
 			if (p instanceof SwitchyPlayer sp) sp.switchy$finishReload();
 		}));
 		ServerMessageEvents.ALLOW_CHAT_MESSAGE.register(id("chat"), ((message, sender, params) -> {
@@ -51,7 +51,7 @@ public class Switchy implements ModInitializer {
 				for (SwitchyComponentTypes.Tag tag : profile.getOrDefault(SwitchyComponentTypes.TAG, new ArrayList<SwitchyComponentTypes.Tag>())) {
 					if (string.startsWith(tag.prefix()) && string.endsWith(tag.suffix())) {
 						String body = string.substring(tag.prefix().length(), string.length() - tag.suffix().length()).trim();
-						SwitchyCommands.say(SignedMessage.ofUnsigned(body), sender, profile);
+						SwitchyCommands.say(PlayerChatMessage.system(body), sender, profile);
 						return false;
 					}
 				}

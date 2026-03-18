@@ -1,9 +1,9 @@
 package dev.sisby.switchy.data;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,8 +19,8 @@ public record SwitchyProfile(String id, SwitchyComponentMap components) implemen
 		return id + "\n" + components.toString();
 	}
 
-	public Collection<Text> asTexts(ServerPlayerEntity player) {
-		List<Text> outList = new ArrayList<>(List.of(Text.empty().append(Text.literal("id: ").formatted(Formatting.GRAY)).append(id)));
+	public Collection<Component> asTexts(ServerPlayer player) {
+		List<Component> outList = new ArrayList<>(List.of(Component.empty().append(Component.literal("id: ").withStyle(ChatFormatting.GRAY)).append(id)));
 		outList.addAll(components().asTexts(player.getServer()));
 		return outList;
 	}
