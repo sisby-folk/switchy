@@ -21,7 +21,7 @@ public record SwitchyProfile(String id, SwitchyComponentMap components) implemen
 
 	public Collection<Component> asTexts(ServerPlayer player) {
 		List<Component> outList = new ArrayList<>(List.of(Component.empty().append(Component.literal("id: ").withStyle(ChatFormatting.GRAY)).append(id)));
-		outList.addAll(components().asTexts(player.getServer()));
+		outList.addAll(components().asTexts(player.createCommandSourceStack().getServer()));
 		return outList;
 	}
 

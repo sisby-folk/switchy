@@ -2,9 +2,6 @@ package dev.sisby.switchy.data;
 
 import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -17,29 +14,22 @@ import dev.sisby.switchy.exception.ProfileMissingException;
 import dev.sisby.switchy.exception.ProfilePreciousException;
 import dev.sisby.switchy.exception.ProfileExistsException;
 import dev.sisby.switchy.util.DispatchMapCodec;
-import net.minecraft.commands.arguments.NbtPathArgument;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.ChatFormatting;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.Util;
-import net.minecraft.world.level.storage.LevelResource;
-import net.minecraft.ReportedException;
-import net.minecraft.CrashReport;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -86,7 +76,7 @@ public class SwitchyPlayerData {
 		return ((SwitchyPlayer) player).switchy$getPlayerData();
 	}
 
-	public static SwitchyPlayerData create(ServerPlayer player, CompoundTag nbt) {
+	public static SwitchyPlayerData create(ServerPlayer player, ValueInput input) {
 		SwitchyPlayerData data = new SwitchyPlayerData(
 			"default",
 			null,
@@ -95,9 +85,8 @@ public class SwitchyPlayerData {
 		);
 		data.profiles.put("default", new SwitchyProfile("default", SwitchyComponentMap.empty()));
 		for (SwitchyComponentType<?> componentType : Sets.difference(SwitchyComponentTypes.instance().values(), data.componentTypes)) {
-			data.initComponent(componentType, player, nbt);
+			data.initComponent(componentType, player, input);
 		}
-		if (nbt.contains("switchy:presets", Tag.TAG_COMPOUND)) data.recoverLegacyData(player, nbt.getCompound("switchy:presets"));
 		return data;
 	}
 
@@ -149,10 +138,11 @@ public class SwitchyPlayerData {
 	}
 
 	public int initComponents(Set<SwitchyComponentType<?>> types, ServerPlayer player) {
-		CompoundTag compound = new CompoundTag();
-		player.saveWithoutId(compound);
+		TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, player.createCommandSourceStack().getServer().registryAccess());
+		player.saveWithoutId(output);
+		ValueInput input = TagValueInput.create(ProblemReporter.DISCARDING, player.createCommandSourceStack().getServer().registryAccess(), output.buildResult());
 		for (SwitchyComponentType<?> type : types) {
-			if (initComponent(type, player, compound)) {
+			if (initComponent(type, player, input)) {
 				types.add(type);
 			} else { // roll back
 				types.forEach(this::removeComponent);
@@ -162,11 +152,11 @@ public class SwitchyPlayerData {
 		return types.size();
 	}
 
-	public boolean initComponent(SwitchyComponentType<?> componentType, ServerPlayer player, CompoundTag nbt) {
+	public boolean initComponent(SwitchyComponentType<?> componentType, ServerPlayer player, ValueInput nbt) {
 		try {
-			componentType.tryInitialize(profiles.values().stream().map(SwitchyProfile::components).toList(), nbt, player, player.getGameProfile().getName());
+			componentType.tryInitialize(profiles.values().stream().map(SwitchyProfile::components).toList(), nbt, player, player.getGameProfile().name());
 		} catch (Exception e) {
-			Switchy.LOGGER.warn("Failed to initialize {} for {}", componentType.id(), player.getGameProfile().getName(), e);
+			Switchy.LOGGER.warn("Failed to initialize {} for {}", componentType.id(), player.getGameProfile().name(), e);
 			return false;
 		}
 		componentTypes.add(componentType);
@@ -193,122 +183,17 @@ public class SwitchyPlayerData {
 		return true;
 	}
 
-	private static final Map<Identifier, Pair<String, String>> LEGACY_RECOVERIES = Map.ofEntries(
-		Map.entry(SwitchyComponentTypes.INVENTORY, Pair.of("switchy_inventories:inventories", "inventory")),
-		Map.entry(SwitchyComponentTypes.ENDER_CHEST, Pair.of("switchy_inventories:ender_chests", "inventory")),
-		Map.entry(SwitchyComponentTypes.LEVEL, Pair.of("switchy_inventories:experience", "experienceLevel")),
-		Map.entry(SwitchyComponentTypes.XP, Pair.of("switchy_inventories:experience", "experienceProgress")),
-		Map.entry(SwitchyComponentTypes.TRINKETS_SLOTS, Pair.of("switchy_inventories:trinkets", "trinkets:trinkets")),
-		Map.entry(SwitchyComponentTypes.NAME_ID, Pair.of("switchy:styled_nicknames", "styled_nickname")),
-		Map.entry(SwitchyComponentTypes.TAILOR_SKIN, Pair.of("switchy:fabric_tailor", "")),
-		Map.entry(SwitchyComponentTypes.DIMENSION, Pair.of("switchy_teleport:last_location", "last_location.dimension")),
-		Map.entry(SwitchyComponentTypes.YAW, Pair.of("switchy_teleport:last_location", "last_location.yaw")),
-		Map.entry(SwitchyComponentTypes.PITCH, Pair.of("switchy_teleport:last_location", "last_location.pitch")),
-		Map.entry(SwitchyComponentTypes.SPAWN_X, Pair.of("switchy_teleport:spawn_point", "respawn_point.x")),
-		Map.entry(SwitchyComponentTypes.SPAWN_Y, Pair.of("switchy_teleport:spawn_point", "respawn_point.y")),
-		Map.entry(SwitchyComponentTypes.SPAWN_Z, Pair.of("switchy_teleport:spawn_point", "respawn_point.z")),
-		Map.entry(SwitchyComponentTypes.SPAWN_DIMENSION, Pair.of("switchy_teleport:spawn_point", "respawn_point.dimension")),
-		Map.entry(SwitchyComponentTypes.SPAWN_ANGLE, Pair.of("switchy_teleport:spawn_point", "respawn_point.dimension")),
-		Map.entry(SwitchyComponentTypes.SPAWN_FORCED, Pair.of("switchy_teleport:spawn_point", "respawn_point.setSpawn")),
-		Map.entry(SwitchyComponentTypes.HEALTH, Pair.of("switchy_status:health", "healthValue")),
-		Map.entry(SwitchyComponentTypes.EFFECTS, Pair.of("switchy_status:status_effects", "status_effects")),
-		Map.entry(SwitchyComponentTypes.FOOD, Pair.of("switchy_status:hunger", "foodLevel")),
-		Map.entry(SwitchyComponentTypes.SATURATION, Pair.of("switchy_status:hunger", "foodSaturationLevel")),
-		Map.entry(SwitchyComponentTypes.EXHAUSTION, Pair.of("switchy_status:hunger", "exhaustion"))
-	);
-
-	public void recoverLegacyData(ServerPlayer player, CompoundTag legacyData) {
-		Switchy.LOGGER.warn("[Switchy] Found legacy switchy profiles in {}, performing data recovery...", player.getGameProfile().getName());
-		try {
-			File playerDataDir =  player.getServer().getWorldPath(LevelResource.PLAYER_DATA_DIR).toFile();
-			File file = File.createTempFile(player.getStringUUID() + "-switchy" + "-", ".dat_old", playerDataDir);
-			NbtIo.writeCompressed(legacyData, file.toPath());
-			File file2 = new File(playerDataDir, player.getStringUUID() + "-switchy.dat_old");
-			File file3 = new File(playerDataDir, player.getStringUUID() + "-switchy.dat_older");
-			Util.safeReplaceFile(file2.toPath(), file.toPath(), file3.toPath());
-			Switchy.LOGGER.info("[Switchy] Backed up legacy switchy data for {} to {}", player.getGameProfile().getName(), file2.getName());
-		} catch (IOException e) { // allowing the game to keep running here would cause a data loss, so, don't
-			Switchy.LOGGER.error("[Switchy] Failed to save switchy data backup for {}! Please manually back up and remove switchy:presets from the player.dat", player.getGameProfile().getName(), e);
-			throw new ReportedException(CrashReport.forThrowable(e, "Failed to save switchy data backup for %s!".formatted(player.getGameProfile().getName())));
-		}
-		// we're backed up, so make our best attempt.
-		CompoundTag presets = legacyData.getCompound("list");
-		boolean containsDefault = false;
-		int recovered = 0;
-		Set<Identifier> skippedTypeIds = new HashSet<>();
-		for (String id : presets.getAllKeys()) {
-			// make sure every related profile exists
-			SwitchyProfile profile = getOrCreateProfile(id.toLowerCase(), player);
-			if (profile.id().equals("default")) containsDefault = true;
-			try { // try copy precious data for each
-				CompoundTag modules = presets.getCompound(id);
-				// simple cases
-				for (Identifier typeId : LEGACY_RECOVERIES.keySet()) {
-					SwitchyComponentType<?> type = SwitchyComponentTypes.instance().get(typeId);
-					CompoundTag moduleCompound = modules.getCompound(LEGACY_RECOVERIES.get(typeId).getFirst());
-					if (type == null /* || moduleCompound == null */) continue;
-					NbtPathArgument.NbtPath path = NbtPathArgument.nbtPath().parse(new StringReader((LEGACY_RECOVERIES.get(typeId).getSecond())));
-					try {
-						Tag element = path.get(moduleCompound).get(0);
-						type.codec().parse(player.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE), element).result().ifPresent(v -> profile.set(type, v));
-						recovered++;
-					} catch (CommandSyntaxException e) {
-						skippedTypeIds.add(typeId);
-					}
-				}
-				// origin different nesting
-				SwitchyComponentType<?> originType = SwitchyComponentTypes.instance().get(SwitchyComponentTypes.ORIGINS_ORIGIN);
-				if (originType != null) {
-					Tag layers = modules.getCompound("switchy:origins").get("OriginLayers");
-					if (layers instanceof ListTag list && !list.isEmpty()) {
-						CompoundTag originsCompound = new CompoundTag();
-						originsCompound.put("OriginLayers", list);
-						originsCompound.putBoolean("HadOriginBefore", true);
-						originsCompound.putBoolean("SelectingOrigin", false);
-						profile.set(originType, originsCompound);
-						recovered++;
-					}
-				}
-				// powers different naming
-				SwitchyComponentType<?> powersType = SwitchyComponentTypes.instance().get(SwitchyComponentTypes.ORIGINS_POWERS);
-				if (powersType != null) {
-					Tag layers = modules.getCompound("switchy:apoli").get("PowerData");
-					if (layers instanceof ListTag list && !list.isEmpty()) {
-						CompoundTag powersCompound = new CompoundTag();
-						powersCompound.put("Powers", list);
-						profile.set(powersType, powersCompound);
-						recovered++;
-					}
-				}
-				// pos vec3d structuring
-				SwitchyComponentType<?> positionType = SwitchyComponentTypes.instance().get(SwitchyComponentTypes.POS);
-				if (positionType != null) {
-					Tag layers = modules.getCompound("switchy_teleport:last_location").get("last_location");
-					if (layers instanceof CompoundTag compound && !compound.isEmpty()) {
-						Vec3 position = new Vec3(compound.getFloat("x"), compound.getFloat("y"), compound.getFloat("z"));
-						profile.set(positionType, position);
-						recovered++;
-					}
-				}
-			} catch (Exception e) {
-				Switchy.LOGGER.error("[Switchy] Failed to recover legacy precious data {} of {}, please manually recover via -switchy.dat_old", id, player.getGameProfile().getName(), e);
-			}
-		}
-		current = legacyData.getString("current").toLowerCase();
-		if (!containsDefault) profiles.remove("default");
-		Switchy.LOGGER.info("[Switchy] Finished recovering {} components from {} legacy switchy profiles for {}. Skipped: {}", recovered, presets.size(), player.getGameProfile().getName(), skippedTypeIds);
-	}
-
 	public SwitchyProfile getOrCreateProfile(String profileId, ServerPlayer player) {
 		if (profileExists(profileId)) return profiles.get(profileId);
-		CompoundTag nbt = new CompoundTag();
-		player.saveWithoutId(nbt);
+		TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, player.createCommandSourceStack().getServer().registryAccess());
+		player.saveWithoutId(output);
+		ValueInput input = TagValueInput.create(ProblemReporter.DISCARDING, player.createCommandSourceStack().getServer().registryAccess(), output.buildResult());
 		SwitchyComponentMap components = SwitchyComponentMap.empty();
 		for (SwitchyComponentType<?> componentType : componentTypes) {
 			try {
-				componentType.tryInitialize(List.of(components), nbt, player, profileId);
+				componentType.tryInitialize(List.of(components), input, player, profileId);
 			} catch (Exception e) {
-				Switchy.LOGGER.warn("Failed to initialize {} for {} profile {}", componentType.id(), player.getGameProfile().getName(), profileId, e);
+				Switchy.LOGGER.warn("Failed to initialize {} for {} profile {}", componentType.id(), player.getGameProfile().name(), profileId, e);
 			}
 		}
 		SwitchyProfile newProfile = new SwitchyProfile(profileId, components);
@@ -316,7 +201,7 @@ public class SwitchyPlayerData {
 		return newProfile;
 	}
 
-	public void validate(ServerPlayer self, CompoundTag nbt) {
+	public void validate(ServerPlayer self, ValueInput nbt) {
 		Set<Identifier> groupsChecked = new HashSet<>();
 		for (SwitchyComponentType<?> type : new HashSet<>(componentTypes)) {
 			Identifier group = type.group();
@@ -324,7 +209,7 @@ public class SwitchyPlayerData {
 				groupsChecked.add(group);
 				for (SwitchyComponentType<?> otherType : SwitchyComponentTypes.instance().values()) {
 					if (group.equals(otherType.group()) && !componentTypes.contains(otherType)) {
-						Switchy.LOGGER.info("[Switchy] Enabling component {} of partially enabled group {} for user {}", otherType.id(), group, self.getGameProfile().getName());
+						Switchy.LOGGER.info("[Switchy] Enabling component {} of partially enabled group {} for user {}", otherType.id(), group, self.getGameProfile().name());
 						initComponent(otherType, self, nbt);
 					}
 				}
@@ -376,7 +261,7 @@ public class SwitchyPlayerData {
 			String newName = "<hover:'%s%s | %s%s'><#%s>%s".formatted(
 				bracketed.isEmpty() ? "" : quickTextEscape(bracketed.toString()) + (data.pronouns() != null ? " - " : ""),
 				quickTextEscape(Objects.requireNonNullElse(data.pronouns(), "")),
-				quickTextEscape(Objects.requireNonNullElse(name, player.getGameProfile().getName())),
+				quickTextEscape(Objects.requireNonNullElse(name, player.getGameProfile().name())),
 				quickTextEscape(data.description() == null ? "" : " | " + data.description()),
 				quickTextEscape(Objects.requireNonNullElse(data.color(), "FFFFFF")),
 				quickTextEscape(Objects.requireNonNullElse(data.display_name(), id).replace(bracketed, "")).trim());
@@ -392,7 +277,7 @@ public class SwitchyPlayerData {
 					SwitchyComponentType<?> type = componentSet().stream().filter(t -> t.id().toString().equals(componentKey)).findFirst().orElse(null);
 					if (type != null && type.importable()) {
 						if (current.equals(id)) newCurrent = profile;
-						type.decode(player.getServer().registryAccess().createSerializationContext(JsonOps.INSTANCE), data.components.get(componentKey), profile.components());
+						type.decode(player.createCommandSourceStack().getServer().registryAccess().createSerializationContext(JsonOps.INSTANCE), data.components.get(componentKey), profile.components());
 					}
 				}
 			}
@@ -405,11 +290,13 @@ public class SwitchyPlayerData {
 	}
 
 	private CompoundTag updateFromPlayer(SwitchyProfile profile, ServerPlayer player) throws NbtException {
-		CompoundTag nbt = new CompoundTag();
-		player.saveWithoutId(nbt);
+		TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, player.createCommandSourceStack().getServer().registryAccess());
+		player.saveWithoutId(output);
+		CompoundTag nbt = output.buildResult();
+		ValueInput input = TagValueInput.create(ProblemReporter.DISCARDING, player.createCommandSourceStack().getServer().registryAccess(), nbt);
 		for (SwitchyComponentType<?> componentType : componentTypes) {
 			if (componentType.nbtReader() != null) {
-				profile.components().set(componentType, componentType.nbtReader().read(player.getServer().registryAccess(), nbt));
+				profile.components().set(componentType, componentType.nbtReader().read(player.createCommandSourceStack().getServer().registryAccess(), input));
 			} else if (componentType.playerReader() != null) {
 				profile.components().set(componentType, componentType.playerReader().read(player, profile.id()));
 			}
@@ -440,8 +327,9 @@ public class SwitchyPlayerData {
 		// Read Components
 		CompoundTag playerNbt;
 		if (selfSwitch) {
-			playerNbt = new CompoundTag();
-			player.saveWithoutId(playerNbt);
+			TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, player.createCommandSourceStack().getServer().registryAccess());
+			player.saveWithoutId(output);
+			playerNbt = output.buildResult();
 		} else {
 			playerNbt = updateFromPlayer(currentProfile, player);
 		}
@@ -460,19 +348,19 @@ public class SwitchyPlayerData {
 		);
 	}
 
-	public static SwitchyPlayerData fromNbt(RegistryAccess registryManager, CompoundTag playerNbt) {
+	public static SwitchyPlayerData fromNbt(RegistryAccess registryManager, ValueInput input) {
 		if (SwitchyComponentTypes.instance() == null) {
 			throw new IllegalStateException("Can't load switchy data while the types aren't loaded!");
 		}
-		return SwitchyPlayerData.codec(SwitchyComponentTypes.instance()).parse(registryManager.createSerializationContext(NbtOps.INSTANCE), playerNbt.getCompound(Switchy.ID)).resultOrPartial(Switchy.LOGGER::error).orElse(null);
+		return input.read(Switchy.ID, SwitchyPlayerData.codec(SwitchyComponentTypes.instance())).orElse(null);
 	}
 
-	public void writeNbt(RegistryAccess registryManager, CompoundTag playerNbt) {
+	public void writeNbt(RegistryAccess registryManager, ValueOutput playerNbt) {
 		if (SwitchyComponentTypes.instance() == null) {
 			throw new IllegalStateException("Can't save switchy data while the types aren't loaded!");
 		}
 		if (size() > 1 || componentTypes.size() != SwitchyComponentTypes.instance().keys().size() || !profiles.containsKey("default") || componentTypes.stream().filter(t -> t.nbtReader() == null && t.playerReader() == null).anyMatch(t -> profiles.values().stream().anyMatch(p -> p.contains(t)))) {
-			playerNbt.put(Switchy.ID, SwitchyPlayerData.codec(SwitchyComponentTypes.instance()).encodeStart(registryManager.createSerializationContext(NbtOps.INSTANCE), this).resultOrPartial(Switchy.LOGGER::error).orElse(null));
+			playerNbt.store(Switchy.ID, SwitchyPlayerData.codec(SwitchyComponentTypes.instance()), this);
 		}
 	}
 

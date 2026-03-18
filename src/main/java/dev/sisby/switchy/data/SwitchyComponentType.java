@@ -10,6 +10,7 @@ import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.SwitchyCommands;
 import dev.sisby.switchy.exception.ComponentFailedInitializeException;
 import dev.sisby.switchy.exception.NbtException;
+import dev.sisby.switchy.mixin.AccessTagValueInput;
 import dev.sisby.switchy.util.TypeRegistry;
 import net.minecraft.commands.arguments.NbtPathArgument;
 import net.minecraft.nbt.CompoundTag;
@@ -22,6 +23,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.storage.ValueInput;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -72,7 +74,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		codec().decode(ops, input).resultOrPartial(Switchy.LOGGER::error).ifPresent(p -> components.set(this, p.getFirst()));
 	}
 
-	default void tryInitialize(Collection<SwitchyComponentMap> consumer, CompoundTag nbt, ServerPlayer player, String profileId) {
+	default void tryInitialize(Collection<SwitchyComponentMap> consumer, ValueInput nbt, ServerPlayer player, String profileId) {
 		Initializer<T> initializer = initializer();
 		if (initializer == null) return;
 		T value = initializer.initialize(nbt, player, profileId); // value might be null (means "erase key")
@@ -83,7 +85,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		NbtMutator<T> nbtMutator = nbtMutator();
 		PlayerMutator<T> playerMutator = playerMutator();
 		if (nbtMutator != null) {
-			nbtMutator.mutate(player.getServer().registryAccess(), components.get(this), playerData);
+			nbtMutator.mutate(player.createCommandSourceStack().getServer().registryAccess(), components.get(this), playerData);
 		} else if (playerMutator != null) {
 			playerMutator.mutate(components.get(this), player);
 		}
@@ -119,12 +121,12 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	@FunctionalInterface
 	interface Initializer<T> {
-		T initialize(CompoundTag playerNbt, ServerPlayer player, String profileId) throws ComponentFailedInitializeException;
+		T initialize(ValueInput playerNbt, ServerPlayer player, String profileId) throws ComponentFailedInitializeException;
 	}
 
 	@FunctionalInterface
 	interface NbtReader<T> {
-		T read(RegistryAccess registryManager, CompoundTag nbt) throws NbtException;
+		T read(RegistryAccess registryManager, ValueInput nbt) throws NbtException;
 	}
 
 	@FunctionalInterface
@@ -192,9 +194,9 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	record CopyInitializer<T>(NbtReader<T> nbtReader) implements Initializer<T> {
 		@Override
-		public T initialize(CompoundTag playerNbt, ServerPlayer player, String profileId) throws ComponentFailedInitializeException {
+		public T initialize(ValueInput playerNbt, ServerPlayer player, String profileId) throws ComponentFailedInitializeException {
 			try {
-				return nbtReader.read(player.getServer().registryAccess(), playerNbt);
+				return nbtReader.read(player.createCommandSourceStack().getServer().registryAccess(), playerNbt);
 			} catch (Exception e) {
 				throw new ComponentFailedInitializeException("", e);
 			}
@@ -211,8 +213,10 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		}
 
 		@Override
-		public T read(RegistryAccess registryManager, CompoundTag nbt) throws NbtException {
+		public T read(RegistryAccess registryManager, ValueInput input) throws NbtException {
 			try {
+				// XXX: look girl lets just assume that mojang will fix NBTPaths for ValueInputs before they lock down ValueInputs.
+				CompoundTag nbt = ((AccessTagValueInput) input).getInput();
 				DataResult<T> result = codec.parse(registryManager.createSerializationContext(NbtOps.INSTANCE), nbtPath.get(nbt).get(0));
 				if (result.error().isPresent()) {
 					throw new NbtException("Failed to read from serialized player! %s".formatted(result.error().get().message()));

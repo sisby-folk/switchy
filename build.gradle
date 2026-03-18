@@ -14,28 +14,21 @@ repositories {
 	maven { url = "https://repo.sleeping.town/" }
 	maven { url = "https://maven.nucleoid.xyz" }
 	maven { url = "https://api.modrinth.com/maven" }
-	maven { url = "https://maven.gegy.dev/releases/" }
-	maven { url = "https://maven.parchmentmc.org" }
 }
 
 dependencies {
+	minecraft libs.mc
+
 	implementation libs.kaleidoConfig
 	include libs.kaleidoConfig
 
-	minecraft libs.mc
-	mappings(loom.layered {
-		officialMojangMappings()
-		parchment("org.parchmentmc.data:parchment-1.21.1:2024.11.17@zip")
-		mappings("dev.lambdaurora:yalmm-mojbackward:1.21.1+build.3")
-	})
+//	compileOnly "eu.pb4:placeholder-api:2.4.2+1.21"
+//	compileOnly "eu.pb4:player-data-api:0.6.0+1.21"
+//	compileOnly "maven.modrinth:styled-chat:4e1xZSk3"
+//	compileOnly "maven.modrinth:styled-nicknames:U9pXTyh2"
 
-	modCompileOnly "eu.pb4:placeholder-api:2.4.2+1.21"
-	modCompileOnly "eu.pb4:player-data-api:0.6.0+1.21"
-	modCompileOnly "maven.modrinth:styled-chat:4e1xZSk3"
-	modCompileOnly "maven.modrinth:styled-nicknames:U9pXTyh2"
-
-	modImplementation libs.fl
-	modImplementation libs.fapi
+	implementation libs.fl
+	implementation libs.fapi
 }
 
 processResources {
@@ -62,13 +55,13 @@ processResources {
 
 tasks.withType(JavaCompile).configureEach {
 	it.options.encoding = "UTF-8"
-	it.options.release = 21
+	it.options.release = 25
 }
 
 java {
 	withSourcesJar()
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
+	sourceCompatibility = JavaVersion.VERSION_25
+	targetCompatibility = JavaVersion.VERSION_25
 }
 
 publishing {
@@ -92,7 +85,7 @@ githubRelease {
 	repo = slug
 	tagName = "v${modVersion}+${tagBranch}"
 	targetCommitish = tagBranch
-	releaseAssets = remapJar
+	releaseAssets = jar
 	releaseName = "v${modVersion}"
 	allowUploadToExisting = true
 	generateReleaseNotes = true
@@ -103,7 +96,7 @@ modrinth {
 	token = "$System.env.MODRINTH_TOKEN"
 	projectId = slug
 	versionNumber = project.version
-	uploadFile = remapJar
+	uploadFile = jar
 	gameVersions = compatibleVersions.split(", ").toList()
 	loaders = compatibleLoaders.split(", ").toList()
 	changelog = !file("CHANGELOG.md").exists() ? "" : rootProject.file("CHANGELOG.md").text + "\n\nChangelog: https://github.com/${user}/${slug}/releases/tag/v${modVersion}+${tagBranch}"

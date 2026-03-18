@@ -91,7 +91,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 		Identifier.fromNamespaceAndPath("minecraft", "inventory"), new SwitchyComponentType.SimpleEmptyChecker<NonNullList<ItemStack>>(dl -> dl.stream().allMatch(ItemStack::isEmpty))
 	));
 	public static final Map<Identifier, SwitchyComponentType.Initializer<?>> INITIALIZERS = new HashMap<>(Map.of(
-		Identifier.fromNamespaceAndPath("minecraft", "spawn_pos"), (nbt, player, id) -> player.getServer().overworld().getSharedSpawnPos().getCenter()
+		Identifier.fromNamespaceAndPath("minecraft", "spawn_pos"), (nbt, player, id) -> player.createCommandSourceStack().getServer().overworld().getRespawnData().pos().getCenter()
 	));
 
 	public static final Identifier NAME_ID = Switchy.id("name");
@@ -123,7 +123,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	public static final SwitchyComponentType<String> NAME = registerStatic(NAME_ID, Codec.STRING, builder -> {
 		builder = builder
 			.importable(true)
-			.textProvider((server, s) -> Component.literal(s.replaceAll("<?((?:\\\\>|.)*?)>", "")).withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.nullToEmpty(s)))))
+			.textProvider((server, s) -> Component.literal(s.replaceAll("<?((?:\\\\>|.)*?)>", "")).withStyle(style -> style.withHoverEvent(new HoverEvent.ShowText(Component.nullToEmpty(s)))))
 			.argumentEditor(e -> Commands.argument("name", StringArgumentType.greedyString()).executes(c -> e.execute(c, c.getArgument("name", String.class))));
 		return Switchy.STYLED_NICKNAMES ? StyledNicknamesCompat.nameComponent(builder) : builder;
 	});

@@ -105,8 +105,8 @@ public class SwitchyCommands {
 				.append(clickable("edit", "/switchy edit %s ".formatted(StringArgumentType.escapeIfRequired(profile.id())), false))
 				.append(" ")
 				.append(getProfileText(player, profile, false).withStyle(s -> s
-					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, ComponentUtils.formatList(profile.asTexts(player), Component.nullToEmpty("\n")).copy().append("\n").append(Component.literal("... /switchy view %s".formatted(StringArgumentType.escapeIfRequired(profile.id()))).withStyle(ChatFormatting.AQUA))))
-					.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/switchy view %s".formatted(StringArgumentType.escapeIfRequired(profile.id()))))
+					.withHoverEvent(new HoverEvent.ShowText(ComponentUtils.formatList(profile.asTexts(player), Component.nullToEmpty("\n")).copy().append("\n").append(Component.literal("... /switchy view %s".formatted(StringArgumentType.escapeIfRequired(profile.id()))).withStyle(ChatFormatting.AQUA))))
+					.withClickEvent(new ClickEvent.RunCommand("/switchy view %s".formatted(StringArgumentType.escapeIfRequired(profile.id()))))
 				))
 			);
 		}
@@ -133,11 +133,11 @@ public class SwitchyCommands {
 		feedback.accept(indent()
 			.append(Component.literal("note: switchy output is ").withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.GRAY))
 			.append(Component.literal("hoverable").withStyle(ChatFormatting.ITALIC).withStyle(s -> s
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("like this!")))))
+				.withHoverEvent(new HoverEvent.ShowText(Component.literal("like this!")))))
 			.append(Component.literal(" and <[/").withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.GRAY))
 			.append(Component.literal("clickable").withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.AQUA).withStyle(s -> s
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("switchy-switch! ...")))
-				.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "switchy-switch!"))))
+				.withHoverEvent(new HoverEvent.ShowText(Component.literal("switchy-switch! ...")))
+				.withClickEvent(new ClickEvent.SuggestCommand("switchy-switch!"))))
 			.append(Component.literal("]>!").withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.GRAY))
 		);
 	}
@@ -157,16 +157,16 @@ public class SwitchyCommands {
 			List<SwitchyProfile> matchingProfiles = data.values().stream().sorted(Comparator.comparing(SwitchyProfile::id)).filter(p -> types.stream().anyMatch(t -> p.get(t) != null && (t.emptyChecker() == null || t.isPrecious(p.components())))).toList();
 			feedback.accept(indent()
 				.append(enabled ?
-					clickable(Component.literal("enabled").withStyle(ChatFormatting.GREEN), "/switchy components disable %s".formatted(id), data.size() == 1 ? ClickEvent.Action.RUN_COMMAND : ClickEvent.Action.SUGGEST_COMMAND, Component.empty().append(Component.literal("click to share ").withStyle(ChatFormatting.GRAY)).append(id.getPath()).append(Component.literal(" between profiles.").withStyle(ChatFormatting.GRAY)).append(data.size() == 1 ? Component.empty() : Component.literal("\n").append(Component.literal("this deletes data from other profiles!").withStyle(ChatFormatting.GOLD))), ChatFormatting.RED, "[", "]") :
-					clickable(Component.literal("disabled").withStyle(ChatFormatting.RED), "/switchy components enable %s".formatted(id), ClickEvent.Action.RUN_COMMAND, Component.empty().append(Component.literal("click to switch ").withStyle(ChatFormatting.GRAY)).append(id.getPath()).append(Component.literal(" per-profile.").withStyle(ChatFormatting.GRAY)), ChatFormatting.GREEN, "[", "]")
+					clickable(Component.literal("enabled").withStyle(ChatFormatting.GREEN), "/switchy components disable %s".formatted(id), data.size() == 1 ? ClickEvent.RunCommand::new : ClickEvent.SuggestCommand::new, Component.empty().append(Component.literal("click to share ").withStyle(ChatFormatting.GRAY)).append(id.getPath()).append(Component.literal(" between profiles.").withStyle(ChatFormatting.GRAY)).append(data.size() == 1 ? Component.empty() : Component.literal("\n").append(Component.literal("this deletes data from other profiles!").withStyle(ChatFormatting.GOLD))), ChatFormatting.RED, "[", "]") :
+					clickable(Component.literal("disabled").withStyle(ChatFormatting.RED), "/switchy components enable %s".formatted(id), ClickEvent.RunCommand::new, Component.empty().append(Component.literal("click to switch ").withStyle(ChatFormatting.GRAY)).append(id.getPath()).append(Component.literal(" per-profile.").withStyle(ChatFormatting.GRAY)), ChatFormatting.GREEN, "[", "]")
 				)
 				.append(" ")
 				.append(id.getPath()).withStyle(s -> s
 					.withColor(enabled ? ChatFormatting.WHITE : ChatFormatting.DARK_GRAY)
-					.withHoverEvent(!enabled ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, matchingProfiles.isEmpty() ? Component.literal("<no %s data yet>".formatted(id.getPath().replace("_", " "))).withStyle(ChatFormatting.GRAY) : ComponentUtils.formatList(matchingProfiles.stream().map(p -> Component.empty()
+					.withHoverEvent(!enabled ? null : new HoverEvent.ShowText(matchingProfiles.isEmpty() ? Component.literal("<no %s data yet>".formatted(id.getPath().replace("_", " "))).withStyle(ChatFormatting.GRAY) : ComponentUtils.formatList(matchingProfiles.stream().map(p -> Component.empty()
 						.append(Component.literal(p.id()).withStyle(ChatFormatting.GRAY))
 						.append(": ")
-						.append(ComponentUtils.formatList(types.stream().filter(t -> p.get(t) != null).map(t -> t.asText(player.getServer(), p.components())).toList(), Component.literal(", ").withStyle(ChatFormatting.GRAY)))
+						.append(ComponentUtils.formatList(types.stream().filter(t -> p.get(t) != null).map(t -> t.asText(player.createCommandSourceStack().getServer(), p.components())).toList(), Component.literal(", ").withStyle(ChatFormatting.GRAY)))
 					).toList(), Component.nullToEmpty("\n"))))
 				)
 			);
@@ -230,7 +230,7 @@ public class SwitchyCommands {
 				.append(Objects.requireNonNullElse(e.getMessage(), "???")).withStyle(ChatFormatting.GRAY)
 				.append(" see server logs for more info.").withStyle(ChatFormatting.RED)
 			);
-			Switchy.LOGGER.error("[Switchy] Error while switching to {} for player {}", data.current(), player.getGameProfile().getName(), e);
+			Switchy.LOGGER.error("[Switchy] Error while switching to {} for player {}", data.current(), player.getGameProfile().name(), e);
 			return 0;
 		}
 	}
@@ -249,7 +249,7 @@ public class SwitchyCommands {
 				// encode importables
 				for (SwitchyComponentType<?> type : profile.components().keySet()) {
 					if (type.importable()) {
-						type.encode(player.getServer().registryAccess().createSerializationContext(JsonOps.INSTANCE), profile.components()).ifPresent(e -> components.put(type.id().toString(), e));
+						type.encode(player.createCommandSourceStack().getServer().registryAccess().createSerializationContext(JsonOps.INSTANCE), profile.components()).ifPresent(e -> components.put(type.id().toString(), e));
 					}
 				}
 				// attempt to rip PK name data
@@ -278,22 +278,22 @@ public class SwitchyCommands {
 							bracketed.append(group);
 						}
 						if (!remainder.isEmpty()) pronouns = remainder;
-						if (!player.getGameProfile().getName().equals(splitBio.get(1))) sysName = splitBio.get(1);
+						if (!player.getGameProfile().name().equals(splitBio.get(1))) sysName = splitBio.get(1);
 					}
 					if (splitBio.size() > 2) {
 						description = splitBio.get(2);
 					}
-					name = (SwitchyComponentTypes.NAME.asText(player.getServer(), name).getString() + bracketed).trim(); // strip tags
+					name = (SwitchyComponentTypes.NAME.asText(player.createCommandSourceStack().getServer(), name).getString() + bracketed).trim(); // strip tags
 				}
 				// bodge player renderer avatar from skin
 				String avatarUrl = null;
 				if (Switchy.CONFIG.exportAvatarUrl.contains("%s")) {
-					String key = player.getGameProfile().getName();
-					MinecraftProfileTexture skin = player.getServer().getSessionService().getTextures(player.getGameProfile()).skin();
+					String key = player.getGameProfile().name();
+					MinecraftProfileTexture skin = player.createCommandSourceStack().getServer().services().sessionService().getTextures(player.getGameProfile()).skin();
 					SwitchyComponentType<?> skinComponent = SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN);
 					if (skinComponent != null && profile.contains(skinComponent) && profile.get(skinComponent) instanceof CompoundTag skinCompound && skinCompound.get("value") instanceof StringTag valueString) {
 						Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
-						MinecraftTexturesPayload payload = gson.fromJson(new String(Base64.getDecoder().decode(valueString.getAsString())), MinecraftTexturesPayload.class);
+						MinecraftTexturesPayload payload = gson.fromJson(new String(Base64.getDecoder().decode(valueString.asString().orElse(""))), MinecraftTexturesPayload.class);
 						skin = payload.textures().get(MinecraftProfileTexture.Type.SKIN) != null ? payload.textures().get(MinecraftProfileTexture.Type.SKIN) : skin;
 					}
 					if (skin != null) key = skin.getHash();
@@ -306,7 +306,7 @@ public class SwitchyCommands {
 				.append(Component.literal("exported ").withStyle(ChatFormatting.GREEN))
 				.append(Component.literal("%d".formatted(data.size())))
 				.append(Component.literal(" profile%s. ".formatted(data.size() == 1 ? "" : "s")).withStyle(ChatFormatting.GREEN))
-				.append(clickable("copy", SwitchyComponentTypes.GSON.toJson(new PlayerImportData(sysName, members, null)), ClickEvent.Action.COPY_TO_CLIPBOARD, ChatFormatting.AQUA, "<", ">"))
+				.append(clickable("copy", SwitchyComponentTypes.GSON.toJson(new PlayerImportData(sysName, members, null)), ClickEvent.CopyToClipboard::new, ChatFormatting.AQUA, "<", ">"))
 			);
 		} catch (NbtException e) {
 			throw new RuntimeException(e);
@@ -325,7 +325,7 @@ public class SwitchyCommands {
 			feedback.accept(prefix().append(Component.literal("profile doesn't exist!").withStyle(ChatFormatting.YELLOW)));
 			return 0;
 		}
-		List<MutableComponent> texts = profile.components().asTexts(player.getServer());
+		List<MutableComponent> texts = profile.components().asTexts(player.createCommandSourceStack().getServer());
 		feedback.accept(prefix()
 			.append(Component.literal("profile ").withStyle(ChatFormatting.GRAY))
 			.append(profileId)
@@ -363,14 +363,14 @@ public class SwitchyCommands {
 
 	public static void say(PlayerChatMessage message, ServerPlayer player, SwitchyProfile profile) {
 		try {
-			((SwitchyGameProfile) player.getGameProfile()).switchy$setSayProfile(profile);
+			((SwitchyGameProfile) (Object) player.getGameProfile()).switchy$setSayProfile(profile);
 			CommandSourceStack source = player.createCommandSourceStack(); // display name hooked here
 			if (Switchy.STYLED_CHAT) StyledChatCompat.modifyForSending(message, source, ChatType.CHAT);
 			source.getServer().getPlayerList().broadcastChatMessage(message, source, ChatType.bind(ChatType.CHAT, source)); // skin ID might be hooked here?
 		} catch (Exception e) {
 			Switchy.LOGGER.error("[Switchy] Error while performing say");
 		} finally {
-			((SwitchyGameProfile) player.getGameProfile()).switchy$setSayProfile(null);
+			((SwitchyGameProfile) (Object)  player.getGameProfile()).switchy$setSayProfile(null);
 		}
 	}
 
@@ -431,7 +431,7 @@ public class SwitchyCommands {
 				.append(Objects.requireNonNullElse(e.getMessage(), "???")).withStyle(ChatFormatting.GRAY)
 				.append(" see server logs for more info.").withStyle(ChatFormatting.RED)
 			);
-			Switchy.LOGGER.error("[Switchy] Error while switching to {} for player {}", profileId, player.getGameProfile().getName(), e);
+			Switchy.LOGGER.error("[Switchy] Error while switching to {} for player {}", profileId, player.getGameProfile().name(), e);
 			return 0;
 		}
 		return 1;
@@ -444,11 +444,11 @@ public class SwitchyCommands {
 	public static MutableComponent getProfileText(ServerPlayer player, SwitchyProfile profile, boolean allowBio) {
 		SwitchyComponentType<?> skin = Switchy.PLACEHOLDER_API && PlaceholderApiCompat.hasHeads() ? SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN) : null;
 		MutableComponent name = getNameText(player, profile);
-		return Component.empty().append(skin == null || !profile.contains(skin) ? Component.empty() : skin.asText(player.getServer(), profile.components()).append(" ")).append(allowBio ? name : FormatUtils.stripInteraction(name));
+		return Component.empty().append(skin == null || !profile.contains(skin) ? Component.empty() : skin.asText(player.createCommandSourceStack().getServer(), profile.components()).append(" ")).append(allowBio ? name : FormatUtils.stripInteraction(name));
 	}
 
 	public static MutableComponent getNameText(ServerPlayer player, SwitchyProfile profile) {
-		return SwitchyComponentTypes.NAME.asText(player.getServer(), profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id));
+		return SwitchyComponentTypes.NAME.asText(player.createCommandSourceStack().getServer(), profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id));
 	}
 
 	private static int switchNextProfile(ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback) {
@@ -477,9 +477,9 @@ public class SwitchyCommands {
 			.append(Component.literal(":").withStyle(ChatFormatting.GRAY))
 			.append(type.id().getPath())
 			.append(Component.literal(" - ").withStyle(ChatFormatting.GREEN))
-			.append(oldValue == null ? Component.nullToEmpty("empty") : type.asText(player.getServer(), oldValue))
+			.append(oldValue == null ? Component.nullToEmpty("empty") : type.asText(player.createCommandSourceStack().getServer(), oldValue))
 			.append(Component.literal(" \uD83E\uDC46 ").withStyle(ChatFormatting.GREEN))
-			.append(type.asText(player.getServer(), value))
+			.append(type.asText(player.createCommandSourceStack().getServer(), value))
 			.append(Component.literal("!").withStyle(ChatFormatting.GREEN))
 			.append(" ")
 			.append(clickable("list", "/switchy", true));
@@ -493,7 +493,7 @@ public class SwitchyCommands {
 					.append(Objects.requireNonNullElse(e.getMessage(), "???")).withStyle(ChatFormatting.GRAY)
 					.append(" See server logs for more info.").withStyle(ChatFormatting.RED)
 				);
-				Switchy.LOGGER.error("[Switchy] Error while switching to {} for player {}", profileId, player.getGameProfile().getName(), e);
+				Switchy.LOGGER.error("[Switchy] Error while switching to {} for player {}", profileId, player.getGameProfile().name(), e);
 				return 0;
 			}
 		} else {
@@ -543,7 +543,7 @@ public class SwitchyCommands {
 				.append(String.valueOf(e.getPreciousComponents().size()))
 				.append(Component.literal("x precious components!").withStyle(ChatFormatting.YELLOW))
 			);
-			e.getPreciousComponents().asTexts(player.getServer()).forEach(componentText -> feedback.accept(indent().append(componentText)));
+			e.getPreciousComponents().asTexts(player.createCommandSourceStack().getServer()).forEach(componentText -> feedback.accept(indent().append(componentText)));
 			return 0;
 		}
 	}
@@ -598,7 +598,6 @@ public class SwitchyCommands {
 
 		dispatcher.register(
 			Commands.literal("switch")
-				.requires(c -> c.getPlayer() != null && SwitchyPlayerData.ofEarly(c.getPlayer()) != null && SwitchyPlayerData.ofEarly(c.getPlayer()).size() > 1)
 				.then(Commands.literal("?")
 					.requires(c -> c.getPlayer() != null && SwitchyPlayerData.ofEarly(c.getPlayer()) != null && SwitchyPlayerData.ofEarly(c.getPlayer()).size() > 2)
 					.executes(c -> execute(c, (i, p, d, f) -> switchRandomProfile(p, d, f)))
@@ -694,22 +693,22 @@ public class SwitchyCommands {
 		return Component.empty().append(Component.literal("|| ").withStyle(ChatFormatting.DARK_PURPLE));
 	}
 
-	public static MutableComponent clickable(String name, String contents, ClickEvent.Action action, ChatFormatting formatting, String prefix, String suffix) {
+	public static MutableComponent clickable(String name, String contents, Function<String, ClickEvent> action, ChatFormatting formatting, String prefix, String suffix) {
 		return clickable(Component.literal(name).withStyle(formatting), contents, action, null, formatting, prefix, suffix);
 	}
 
-	public static MutableComponent clickable(Component name, String contents, ClickEvent.Action action, Component hint, ChatFormatting formatting, String prefix, String suffix) {
+	public static MutableComponent clickable(Component name, String contents, Function<String, ClickEvent> action, Component hint, ChatFormatting formatting, String prefix, String suffix) {
 		return Component.empty()
 			.append(Component.literal(prefix).withStyle(ChatFormatting.GRAY))
 			.append(name.copy().withStyle(s -> s
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.empty().append(hint == null ? Component.empty() : hint.copy().append("\n")).append(Component.literal(contents + (action == ClickEvent.Action.SUGGEST_COMMAND ? "..." : "")).withStyle(formatting))))
-				.withClickEvent(new ClickEvent(action, contents))
+				.withHoverEvent(new HoverEvent.ShowText(Component.empty().append(hint == null ? Component.empty() : hint.copy().append("\n")).append(Component.literal(contents + (action.apply(contents).action() == ClickEvent.Action.SUGGEST_COMMAND ? "..." : "")).withStyle(formatting))))
+				.withClickEvent(action.apply(contents))
 			))
 			.append(Component.literal(suffix).withStyle(ChatFormatting.GRAY));
 	}
 
 	public static MutableComponent clickable(String name, String contents, boolean instant, ChatFormatting formatting, String prefix, String suffix) {
-		return clickable(name, contents, instant ? ClickEvent.Action.RUN_COMMAND : ClickEvent.Action.SUGGEST_COMMAND, formatting, prefix, suffix);
+		return clickable(name, contents, instant ? ClickEvent.RunCommand::new : ClickEvent.SuggestCommand::new, formatting, prefix, suffix);
 	}
 
 	public static MutableComponent clickable(String name, String command, boolean instant) {

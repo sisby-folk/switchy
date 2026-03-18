@@ -47,13 +47,13 @@ public class FormatUtils {
 	}
 
 	public static Component truncate(Object o) {
-		return Objects.toString(o).length() <= 10 ? Component.nullToEmpty(Objects.toString(o)) : Component.literal(Objects.toString(o).substring(0, 10) + "...").withStyle(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.nullToEmpty(Objects.toString(o)))));
+		return Objects.toString(o).length() <= 10 ? Component.nullToEmpty(Objects.toString(o)) : Component.literal(Objects.toString(o).substring(0, 10) + "...").withStyle(s -> s.withHoverEvent(new HoverEvent.ShowText(Component.nullToEmpty(Objects.toString(o)))));
 	}
 
 	public static Component inventoryText(NonNullList<ItemStack> inventory) {
 		if (inventory == null || inventory.stream().allMatch(ItemStack::isEmpty)) return Component.literal("(empty)").withStyle(ChatFormatting.GRAY);
 		return Component.empty()
-			.withStyle(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.empty().append(Component.literal("Contents:\n").withStyle(ChatFormatting.GRAY)).append(ComponentUtils.formatList(inventory.stream().filter(i -> !i.isEmpty()).map(i -> Component.empty().append(Component.literal("- ").withStyle(ChatFormatting.GRAY)).append(String.valueOf(i.getCount())).append("x ").append(i.getHoverName())).toList(), Component.nullToEmpty("\n"))))))
+			.withStyle(s -> s.withHoverEvent(new HoverEvent.ShowText(Component.empty().append(Component.literal("Contents:\n").withStyle(ChatFormatting.GRAY)).append(ComponentUtils.formatList(inventory.stream().filter(i -> !i.isEmpty()).map(i -> Component.empty().append(Component.literal("- ").withStyle(ChatFormatting.GRAY)).append(String.valueOf(i.getCount())).append("x ").append(i.getHoverName())).toList(), Component.nullToEmpty("\n"))))))
 			.append(String.valueOf(inventory.stream().filter(i -> !i.isEmpty()).count()))
 			.append(Component.literal(" stacks").withStyle(ChatFormatting.GRAY));
 	}
@@ -63,26 +63,26 @@ public class FormatUtils {
 		if (results.size() > 1 && allowHover) {
 			var shortList = ComponentUtils.formatList(results.stream().map(e -> minimalistPrettyPrint(e, 0)).toList(), Component.literal(", "));
 			if (shortList.getString().length() < 30) return shortList;
-			return Component.literal("x%d".formatted(results.size())).withStyle(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, nbtPathResultText(results, false))));
+			return Component.literal("x%d".formatted(results.size())).withStyle(s -> s.withHoverEvent(new HoverEvent.ShowText(nbtPathResultText(results, false))));
 		}
 		if (results.size() == 1 && results.get(0) instanceof ListTag l && allowHover) return nbtPathResultText(l.stream().toList(), true);
-		if (results.size() == 1 && results.get(0) instanceof CompoundTag c && allowHover) return Component.literal("x%d".formatted(c.getAllKeys().size())).withStyle(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, nbtPathResultText(List.of(c), false))));
+		if (results.size() == 1 && results.get(0) instanceof CompoundTag c && allowHover) return Component.literal("x%d".formatted(c.keySet().size())).withStyle(s -> s.withHoverEvent(new HoverEvent.ShowText(nbtPathResultText(List.of(c), false))));
 		return ComponentUtils.formatList(results.stream().map(element -> minimalistPrettyPrint(element, 0)).toList(), Component.nullToEmpty("\n"));
 	}
 
 	public static Component minimalistPrettyPrint(Tag element, int indent) {
 		if (element instanceof CompoundTag compound) {
-			return Component.empty().append(ComponentUtils.formatList(compound.getAllKeys().stream().filter(k -> !isEmpty(compound.get(k))).map(k -> Component.empty().append(Component.literal(k + ": ").withStyle(ChatFormatting.GRAY)).append(minimalistPrettyPrint(compound.get(k), indent + 2))).toList(), Component.nullToEmpty("\n" + StringUtils.repeat(' ', indent))));
-		} else if (element instanceof CollectionTag<?> list) {
+			return Component.empty().append(ComponentUtils.formatList(compound.keySet().stream().filter(k -> !isEmpty(compound.get(k))).map(k -> Component.empty().append(Component.literal(k + ": ").withStyle(ChatFormatting.GRAY)).append(minimalistPrettyPrint(compound.get(k), indent + 2))).toList(), Component.nullToEmpty("\n" + StringUtils.repeat(' ', indent))));
+		} else if (element instanceof CollectionTag list) {
 			return Component.empty().append(ComponentUtils.formatList(list.stream().filter(e -> !isEmpty(e)).map(e -> Component.empty().append(Component.literal("- ").withStyle(ChatFormatting.GRAY)).append(minimalistPrettyPrint(e, indent + 2))).toList(), Component.nullToEmpty("\n" + StringUtils.repeat(' ', indent))));
 		} else if (element instanceof NumericTag number) {
-			return Component.empty().append(Component.literal(NumberFormat.getNumberInstance(Locale.ROOT).format(number.getAsDouble())));
+			return Component.empty().append(Component.literal(NumberFormat.getNumberInstance(Locale.ROOT).format(number.asDouble())));
 		} else if (element instanceof StringTag string) {
-			Identifier id = Identifier.tryParse(string.getAsString());
+			Identifier id = Identifier.tryParse(string.asString().orElse(""));
 			if (id != null) {
-				return Component.literal(id.getPath()).withStyle(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(id.toString()))));
+				return Component.literal(id.getPath()).withStyle(s -> s.withHoverEvent(new HoverEvent.ShowText(Component.literal(id.toString()))));
 			}
-			return Component.literal(string.getAsString());
+			return Component.literal(string.asString().orElse(""));
 		}
 		return Component.nullToEmpty(element.toString());
 	}
@@ -93,8 +93,8 @@ public class FormatUtils {
 
 	public static boolean isEmpty(Tag element) {
 		return (element instanceof CompoundTag c && c.isEmpty())
-			|| (element instanceof CollectionTag<?> l && l.isEmpty())
-			|| (element instanceof StringTag s && (s.getAsString().isBlank() || s.getAsString().equals("minecraft:air")));
+			|| (element instanceof CollectionTag l && l.isEmpty())
+			|| (element instanceof StringTag s && (s.asString().orElse("").isBlank() || s.asString().orElse("").equals("minecraft:air")));
 	}
 
 	public static ListTag decompose(Tag element) throws CommandSyntaxException {
@@ -106,8 +106,8 @@ public class FormatUtils {
 			return decomposed;
 		} else if (element instanceof CompoundTag compound) {
 			ListTag decomposed = new ListTag();
-			for (String key : compound.getAllKeys()) {
-				CompoundTag value = compound.getCompound(key).copy();
+			for (String key : compound.keySet()) {
+				CompoundTag value = compound.getCompoundOrEmpty(key).copy();
 				if (!value.isEmpty()) {
 					value.putString("key", key);
 					decomposed.add(value);
@@ -120,7 +120,7 @@ public class FormatUtils {
 
 	public static Component skin(MinecraftServer server, CompoundTag compound) {
 		Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
-		MinecraftTexturesPayload payload = gson.fromJson(new String(Base64.getDecoder().decode(compound.getString("value"))), MinecraftTexturesPayload.class);
+		MinecraftTexturesPayload payload = gson.fromJson(new String(Base64.getDecoder().decode(compound.getString("value").orElse(""))), MinecraftTexturesPayload.class);
 		MinecraftProfileTexture skinTexture = payload.textures().get(MinecraftProfileTexture.Type.SKIN);
 		String skinHash = skinTexture.getHash();
 		return Switchy.PLACEHOLDER_API && PlaceholderApiCompat.hasHeads() ? PlaceholderApiCompat.head(server, skinHash) : truncate(skinHash);

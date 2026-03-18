@@ -4,11 +4,12 @@
 	"package": "dev.sisby.switchy.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
+		"AccessTagValueInput",
 		"MixinEntity",
 		"MixinGameProfile",
 		"MixinPlayer",
-		"MixinServerPlayer",
-		"MixinServerGamePacketListenerImpl"
+		"MixinServerGamePacketListenerImpl",
+		"MixinServerPlayer"
 	],
 	"client": [
 	],
