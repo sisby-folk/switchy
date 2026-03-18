@@ -14,18 +14,17 @@ import dev.sisby.switchy.util.DispatchMapCodec;
 import dev.sisby.switchy.util.FormatUtils;
 import dev.sisby.switchy.util.SwitchyCodecs;
 import dev.sisby.switchy.util.TypeRegistry;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.dynamic.Codecs;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.ChatFormatting;
+import net.minecraft.resources.Identifier;
+import net.minecraft.core.NonNullList;
+import net.minecraft.util.ExtraCodecs;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;
@@ -51,81 +50,81 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	public final Codec<Map<SwitchyComponentType<?>, Object>> TYPE_TO_VALUE_MAP_CODEC = DispatchMapCodec.of(codec(), t -> (Codec<Object>) t.codec());
 
 	public static final Map<Identifier, Codec<?>> CODECS = new HashMap<>(Map.ofEntries(
-		Map.entry(Identifier.of("minecraft", "nbt"), SwitchyCodecs.NBT),
-		Map.entry(Identifier.of("minecraft", "byte"), Codec.BYTE),
-		Map.entry(Identifier.of("minecraft", "short"), Codec.SHORT),
-		Map.entry(Identifier.of("minecraft", "int"), Codec.INT),
-		Map.entry(Identifier.of("minecraft", "long"), Codec.LONG),
-		Map.entry(Identifier.of("minecraft", "float"), Codec.FLOAT),
-		Map.entry(Identifier.of("minecraft", "double"), Codec.DOUBLE),
-		Map.entry(Identifier.of("minecraft", "bytes"), Codec.BYTE_BUFFER.xmap(ByteBuffer::array, ByteBuffer::wrap).xmap(Bytes::asList, Bytes::toArray)),
-		Map.entry(Identifier.of("minecraft", "ints"), Codec.INT_STREAM.xmap(IntStream::toArray, IntStream::of).xmap(Ints::asList, Ints::toArray)),
-		Map.entry(Identifier.of("minecraft", "longs"), Codec.LONG_STREAM.xmap(LongStream::toArray, LongStream::of).xmap(Longs::asList, Longs::toArray)),
-		Map.entry(Identifier.of("minecraft", "boolean"), Codec.BOOL),
-		Map.entry(Identifier.of("minecraft", "string"), Codec.STRING),
-		Map.entry(Identifier.of("minecraft", "text"), Codecs.TEXT),
-		Map.entry(Identifier.of("minecraft", "vec3d"), Vec3d.CODEC),
-		Map.entry(Identifier.of("minecraft", "identifier"), Identifier.CODEC),
-		Map.entry(Identifier.of("minecraft", "inventory"), SwitchyCodecs.INVENTORY_CODEC)
+		Map.entry(Identifier.tryBuild("minecraft", "nbt"), SwitchyCodecs.NBT),
+		Map.entry(Identifier.tryBuild("minecraft", "byte"), Codec.BYTE),
+		Map.entry(Identifier.tryBuild("minecraft", "short"), Codec.SHORT),
+		Map.entry(Identifier.tryBuild("minecraft", "int"), Codec.INT),
+		Map.entry(Identifier.tryBuild("minecraft", "long"), Codec.LONG),
+		Map.entry(Identifier.tryBuild("minecraft", "float"), Codec.FLOAT),
+		Map.entry(Identifier.tryBuild("minecraft", "double"), Codec.DOUBLE),
+		Map.entry(Identifier.tryBuild("minecraft", "bytes"), Codec.BYTE_BUFFER.xmap(ByteBuffer::array, ByteBuffer::wrap).xmap(Bytes::asList, Bytes::toArray)),
+		Map.entry(Identifier.tryBuild("minecraft", "ints"), Codec.INT_STREAM.xmap(IntStream::toArray, IntStream::of).xmap(Ints::asList, Ints::toArray)),
+		Map.entry(Identifier.tryBuild("minecraft", "longs"), Codec.LONG_STREAM.xmap(LongStream::toArray, LongStream::of).xmap(Longs::asList, Longs::toArray)),
+		Map.entry(Identifier.tryBuild("minecraft", "boolean"), Codec.BOOL),
+		Map.entry(Identifier.tryBuild("minecraft", "string"), Codec.STRING),
+		Map.entry(Identifier.tryBuild("minecraft", "text"), ExtraCodecs.COMPONENT),
+		Map.entry(Identifier.tryBuild("minecraft", "vec3d"), Vec3.CODEC),
+		Map.entry(Identifier.tryBuild("minecraft", "identifier"), Identifier.CODEC),
+		Map.entry(Identifier.tryBuild("minecraft", "inventory"), SwitchyCodecs.INVENTORY_CODEC)
 	));
 	public static final Map<Identifier, SwitchyComponentType.TextProvider<?>> TEXT_PROVIDERS = new HashMap<>(Map.of(
-		Identifier.of("minecraft", "trunc"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::truncate),
-		Identifier.of("minecraft", "nbt"), new SwitchyComponentType.SimpleTextProvider<NbtElement>(e -> FormatUtils.nbtPathResultText(List.of(e), true)),
-		Identifier.of("minecraft", "text"), new SwitchyComponentType.SimpleTextProvider<Text>(t -> t),
-		Identifier.of("minecraft", "percent"), new SwitchyComponentType.SimpleTextProvider<Number>(n -> Text.of("%.0f%%".formatted(n.floatValue() * 100.0))),
-		Identifier.of("minecraft", "rounded"), new SwitchyComponentType.SimpleTextProvider<Number>(n -> Text.of("%.0f".formatted(n.floatValue()))),
-		Identifier.of("minecraft", "halves"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::statText),
-		Identifier.of("minecraft", "vec3d"), new SwitchyComponentType.SimpleTextProvider<Vec3d>(c -> Texts.join(List.of(
-			Text.empty().append(Text.literal("X:").formatted(Formatting.GRAY)).append(Text.literal(String.valueOf(BlockPos.ofFloored(c).getX()))),
-			Text.empty().append(Text.literal("Y:").formatted(Formatting.GRAY)).append(Text.literal(String.valueOf(BlockPos.ofFloored(c).getY()))),
-			Text.empty().append(Text.literal("Z:").formatted(Formatting.GRAY)).append(Text.literal(String.valueOf(BlockPos.ofFloored(c).getZ())))
-		), Text.literal(", ").formatted(Formatting.GRAY))),
-		Identifier.of("minecraft", "identifier"), new SwitchyComponentType.SimpleTextProvider<Identifier>(i -> Text.of(FormatUtils.prettify(i.getPath()))),
-		Identifier.of("minecraft", "inventory"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::inventoryText),
-		Identifier.of("minecraft", "skin"), new SwitchyComponentType.SimpleServerTextProvider<>(FormatUtils::skin)
+		Identifier.tryBuild("minecraft", "trunc"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::truncate),
+		Identifier.tryBuild("minecraft", "nbt"), new SwitchyComponentType.SimpleTextProvider<net.minecraft.nbt.Tag>(e -> FormatUtils.nbtPathResultText(List.of(e), true)),
+		Identifier.tryBuild("minecraft", "text"), new SwitchyComponentType.SimpleTextProvider<Component>(t -> t),
+		Identifier.tryBuild("minecraft", "percent"), new SwitchyComponentType.SimpleTextProvider<Number>(n -> Component.nullToEmpty("%.0f%%".formatted(n.floatValue() * 100.0))),
+		Identifier.tryBuild("minecraft", "rounded"), new SwitchyComponentType.SimpleTextProvider<Number>(n -> Component.nullToEmpty("%.0f".formatted(n.floatValue()))),
+		Identifier.tryBuild("minecraft", "halves"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::statText),
+		Identifier.tryBuild("minecraft", "vec3d"), new SwitchyComponentType.SimpleTextProvider<Vec3>(c -> ComponentUtils.formatList(List.of(
+			Component.empty().append(Component.literal("X:").withStyle(ChatFormatting.GRAY)).append(Component.literal(String.valueOf(BlockPos.containing(c).getX()))),
+			Component.empty().append(Component.literal("Y:").withStyle(ChatFormatting.GRAY)).append(Component.literal(String.valueOf(BlockPos.containing(c).getY()))),
+			Component.empty().append(Component.literal("Z:").withStyle(ChatFormatting.GRAY)).append(Component.literal(String.valueOf(BlockPos.containing(c).getZ())))
+		), Component.literal(", ").withStyle(ChatFormatting.GRAY))),
+		Identifier.tryBuild("minecraft", "identifier"), new SwitchyComponentType.SimpleTextProvider<Identifier>(i -> Component.nullToEmpty(FormatUtils.prettify(i.getPath()))),
+		Identifier.tryBuild("minecraft", "inventory"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::inventoryText),
+		Identifier.tryBuild("minecraft", "skin"), new SwitchyComponentType.SimpleServerTextProvider<>(FormatUtils::skin)
 	));
 
 	public static final Map<Identifier, SwitchyComponentType.ArgumentEditor<?>> ARGUMENT_EDITORS = new HashMap<>(Map.of(
-		Identifier.of("minecraft", "text"), new SwitchyComponentType.SimpleArgumentEditor<Text>(e -> CommandManager.argument("name", StringArgumentType.greedyString()).executes(c -> e.execute(c, Text.of(c.getArgument("name", String.class)))))
+		Identifier.tryBuild("minecraft", "text"), new SwitchyComponentType.SimpleArgumentEditor<Component>(e -> Commands.argument("name", StringArgumentType.greedyString()).executes(c -> e.execute(c, Component.nullToEmpty(c.getArgument("name", String.class)))))
 	));
 	public static final Map<Identifier, SwitchyComponentType.EmptyChecker<?>> EMPTY_CHECKERS = new HashMap<>(Map.of(
-		Identifier.of("minecraft", "inventory"), new SwitchyComponentType.SimpleEmptyChecker<DefaultedList<ItemStack>>(dl -> dl.stream().allMatch(ItemStack::isEmpty))
+		Identifier.tryBuild("minecraft", "inventory"), new SwitchyComponentType.SimpleEmptyChecker<NonNullList<ItemStack>>(dl -> dl.stream().allMatch(ItemStack::isEmpty))
 	));
 	public static final Map<Identifier, SwitchyComponentType.Initializer<?>> INITIALIZERS = new HashMap<>(Map.of(
-		Identifier.of("minecraft", "spawn_pos"), (nbt, player, id) -> player.getServer().getOverworld().getSpawnPos().toCenterPos()
+		Identifier.tryBuild("minecraft", "spawn_pos"), (nbt, player, id) -> player.getServer().overworld().getSharedSpawnPos().getCenter()
 	));
 
 	public static final Identifier NAME_ID = Switchy.id("name");
 	public static final Identifier TAG_ID = Switchy.id("tag");
-	public static final Identifier DIMENSION = Identifier.of("minecraft", "location/dimension");
-	public static final Identifier POS = Identifier.of("minecraft", "location/pos");
-	public static final Identifier YAW = Identifier.of("minecraft", "location/yaw");
-	public static final Identifier PITCH = Identifier.of("minecraft", "location/pitch");
-	public static final Identifier SPAWN_X = Identifier.of("minecraft", "spawn/x");
-	public static final Identifier SPAWN_Y = Identifier.of("minecraft", "spawn/y");
-	public static final Identifier SPAWN_Z = Identifier.of("minecraft", "spawn/z");
-	public static final Identifier SPAWN_FORCED = Identifier.of("minecraft", "spawn/forced");
-	public static final Identifier SPAWN_ANGLE = Identifier.of("minecraft", "spawn/angle");
-	public static final Identifier SPAWN_DIMENSION = Identifier.of("minecraft", "spawn/dimension");
-	public static final Identifier EFFECTS = Identifier.of("minecraft", "effects");
-	public static final Identifier HEALTH = Identifier.of("minecraft", "health");
-	public static final Identifier FOOD = Identifier.of("minecraft", "hunger/food");
-	public static final Identifier SATURATION = Identifier.of("minecraft", "hunger/saturation");
-	public static final Identifier EXHAUSTION = Identifier.of("minecraft", "hunger/exhaustion");
-	public static final Identifier XP = Identifier.of("minecraft", "xp/progress");
-	public static final Identifier LEVEL = Identifier.of("minecraft", "xp/level");
-	public static final Identifier INVENTORY = Identifier.of("minecraft", "inventory/inventory");
-	public static final Identifier ENDER_CHEST = Identifier.of("minecraft", "inventory/ender_chest");
-	public static final Identifier ORIGINS_ORIGIN = Identifier.of("origins", "origin");
-	public static final Identifier ORIGINS_POWERS = Identifier.of("origins", "powers");
-	public static final Identifier TAILOR_SKIN = Identifier.of("fabrictailor", "skin");
-	public static final Identifier TRINKETS_SLOTS = Identifier.of("trinkets", "slots");
+	public static final Identifier DIMENSION = Identifier.tryBuild("minecraft", "location/dimension");
+	public static final Identifier POS = Identifier.tryBuild("minecraft", "location/pos");
+	public static final Identifier YAW = Identifier.tryBuild("minecraft", "location/yaw");
+	public static final Identifier PITCH = Identifier.tryBuild("minecraft", "location/pitch");
+	public static final Identifier SPAWN_X = Identifier.tryBuild("minecraft", "spawn/x");
+	public static final Identifier SPAWN_Y = Identifier.tryBuild("minecraft", "spawn/y");
+	public static final Identifier SPAWN_Z = Identifier.tryBuild("minecraft", "spawn/z");
+	public static final Identifier SPAWN_FORCED = Identifier.tryBuild("minecraft", "spawn/forced");
+	public static final Identifier SPAWN_ANGLE = Identifier.tryBuild("minecraft", "spawn/angle");
+	public static final Identifier SPAWN_DIMENSION = Identifier.tryBuild("minecraft", "spawn/dimension");
+	public static final Identifier EFFECTS = Identifier.tryBuild("minecraft", "effects");
+	public static final Identifier HEALTH = Identifier.tryBuild("minecraft", "health");
+	public static final Identifier FOOD = Identifier.tryBuild("minecraft", "hunger/food");
+	public static final Identifier SATURATION = Identifier.tryBuild("minecraft", "hunger/saturation");
+	public static final Identifier EXHAUSTION = Identifier.tryBuild("minecraft", "hunger/exhaustion");
+	public static final Identifier XP = Identifier.tryBuild("minecraft", "xp/progress");
+	public static final Identifier LEVEL = Identifier.tryBuild("minecraft", "xp/level");
+	public static final Identifier INVENTORY = Identifier.tryBuild("minecraft", "inventory/inventory");
+	public static final Identifier ENDER_CHEST = Identifier.tryBuild("minecraft", "inventory/ender_chest");
+	public static final Identifier ORIGINS_ORIGIN = Identifier.tryBuild("origins", "origin");
+	public static final Identifier ORIGINS_POWERS = Identifier.tryBuild("origins", "powers");
+	public static final Identifier TAILOR_SKIN = Identifier.tryBuild("fabrictailor", "skin");
+	public static final Identifier TRINKETS_SLOTS = Identifier.tryBuild("trinkets", "slots");
 
 	public static final SwitchyComponentType<String> NAME = registerStatic(NAME_ID, Codec.STRING, builder -> {
 		builder = builder
 			.importable(true)
-			.textProvider((server, s) -> Text.literal(s.replaceAll("<?((?:\\\\>|.)*?)>", "")).styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(s)))))
-			.argumentEditor(e -> CommandManager.argument("name", StringArgumentType.greedyString()).executes(c -> e.execute(c, c.getArgument("name", String.class))));
+			.textProvider((server, s) -> Component.literal(s.replaceAll("<?((?:\\\\>|.)*?)>", "")).withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.nullToEmpty(s)))))
+			.argumentEditor(e -> Commands.argument("name", StringArgumentType.greedyString()).executes(c -> e.execute(c, c.getArgument("name", String.class))));
 		return Switchy.STYLED_NICKNAMES ? StyledNicknamesCompat.nameComponent(builder) : builder;
 	});
 
@@ -140,7 +139,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 
 	public static final SwitchyComponentType<List<Tag>> TAG = registerStatic(TAG_ID, Codec.list(Tag.CODEC), builder -> builder
 			.textProvider((server, s) -> FormatUtils.tag(s, "text"))
-			.argumentEditor(e -> CommandManager.argument("prefix_text_suffix", StringArgumentType.greedyString()).executes(c -> {
+			.argumentEditor(e -> Commands.argument("prefix_text_suffix", StringArgumentType.greedyString()).executes(c -> {
 				String[] rawInput = c.getArgument("prefix_text_suffix", String.class).trim().split("text");
 				return e.execute(c, List.of(new Tag(rawInput[0], rawInput.length > 1 ? rawInput[1] : "")));
 			}))

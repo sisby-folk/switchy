@@ -9,22 +9,22 @@ import com.mojang.util.UUIDTypeAdapter;
 import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.compat.PlaceholderApiCompat;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
-import net.minecraft.command.argument.NbtPathArgumentType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.AbstractNbtList;
-import net.minecraft.nbt.AbstractNbtNumber;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
+import net.minecraft.commands.arguments.NbtPathArgument;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CollectionTag;
+import net.minecraft.nbt.NumericTag;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.ChatFormatting;
+import net.minecraft.resources.Identifier;
+import net.minecraft.core.NonNullList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -42,72 +42,72 @@ public class FormatUtils {
 		return WordUtils.capitalize(s.replace("_", " "));
 	}
 
-	public static Text statText(float f) {
-		return Text.empty().append(NumberFormat.getNumberInstance(Locale.ROOT).format(Math.ceil(f) / 2F));
+	public static Component statText(float f) {
+		return Component.empty().append(NumberFormat.getNumberInstance(Locale.ROOT).format(Math.ceil(f) / 2F));
 	}
 
-	public static Text truncate(Object o) {
-		return Objects.toString(o).length() <= 10 ? Text.of(Objects.toString(o)) : Text.literal(Objects.toString(o).substring(0, 10) + "...").styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(Objects.toString(o)))));
+	public static Component truncate(Object o) {
+		return Objects.toString(o).length() <= 10 ? Component.nullToEmpty(Objects.toString(o)) : Component.literal(Objects.toString(o).substring(0, 10) + "...").withStyle(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.nullToEmpty(Objects.toString(o)))));
 	}
 
-	public static Text inventoryText(DefaultedList<ItemStack> inventory) {
-		if (inventory == null || inventory.stream().allMatch(ItemStack::isEmpty)) return Text.literal("(empty)").formatted(Formatting.GRAY);
-		return Text.empty()
-			.styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.empty().append(Text.literal("Contents:\n").formatted(Formatting.GRAY)).append(Texts.join(inventory.stream().filter(i -> !i.isEmpty()).map(i -> Text.empty().append(Text.literal("- ").formatted(Formatting.GRAY)).append(String.valueOf(i.getCount())).append("x ").append(i.getName())).toList(), Text.of("\n"))))))
+	public static Component inventoryText(NonNullList<ItemStack> inventory) {
+		if (inventory == null || inventory.stream().allMatch(ItemStack::isEmpty)) return Component.literal("(empty)").withStyle(ChatFormatting.GRAY);
+		return Component.empty()
+			.withStyle(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.empty().append(Component.literal("Contents:\n").withStyle(ChatFormatting.GRAY)).append(ComponentUtils.formatList(inventory.stream().filter(i -> !i.isEmpty()).map(i -> Component.empty().append(Component.literal("- ").withStyle(ChatFormatting.GRAY)).append(String.valueOf(i.getCount())).append("x ").append(i.getHoverName())).toList(), Component.nullToEmpty("\n"))))))
 			.append(String.valueOf(inventory.stream().filter(i -> !i.isEmpty()).count()))
-			.append(Text.literal(" stacks").formatted(Formatting.GRAY));
+			.append(Component.literal(" stacks").withStyle(ChatFormatting.GRAY));
 	}
 
-	public static Text nbtPathResultText(List<NbtElement> results, boolean allowHover) {
-		if (results.isEmpty() || (results.size() == 1 && isEmpty(results.get(0)))) return Text.literal("x0").formatted(Formatting.GRAY);
+	public static Component nbtPathResultText(List<Tag> results, boolean allowHover) {
+		if (results.isEmpty() || (results.size() == 1 && isEmpty(results.get(0)))) return Component.literal("x0").withStyle(ChatFormatting.GRAY);
 		if (results.size() > 1 && allowHover) {
-			var shortList = Texts.join(results.stream().map(e -> minimalistPrettyPrint(e, 0)).toList(), Text.literal(", "));
+			var shortList = ComponentUtils.formatList(results.stream().map(e -> minimalistPrettyPrint(e, 0)).toList(), Component.literal(", "));
 			if (shortList.getString().length() < 30) return shortList;
-			return Text.literal("x%d".formatted(results.size())).styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, nbtPathResultText(results, false))));
+			return Component.literal("x%d".formatted(results.size())).withStyle(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, nbtPathResultText(results, false))));
 		}
-		if (results.size() == 1 && results.get(0) instanceof NbtList l && allowHover) return nbtPathResultText(l.stream().toList(), true);
-		if (results.size() == 1 && results.get(0) instanceof NbtCompound c && allowHover) return Text.literal("x%d".formatted(c.getKeys().size())).styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, nbtPathResultText(List.of(c), false))));
-		return Texts.join(results.stream().map(element -> minimalistPrettyPrint(element, 0)).toList(), Text.of("\n"));
+		if (results.size() == 1 && results.get(0) instanceof ListTag l && allowHover) return nbtPathResultText(l.stream().toList(), true);
+		if (results.size() == 1 && results.get(0) instanceof CompoundTag c && allowHover) return Component.literal("x%d".formatted(c.getAllKeys().size())).withStyle(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, nbtPathResultText(List.of(c), false))));
+		return ComponentUtils.formatList(results.stream().map(element -> minimalistPrettyPrint(element, 0)).toList(), Component.nullToEmpty("\n"));
 	}
 
-	public static Text minimalistPrettyPrint(NbtElement element, int indent) {
-		if (element instanceof NbtCompound compound) {
-			return Text.empty().append(Texts.join(compound.getKeys().stream().filter(k -> !isEmpty(compound.get(k))).map(k -> Text.empty().append(Text.literal(k + ": ").formatted(Formatting.GRAY)).append(minimalistPrettyPrint(compound.get(k), indent + 2))).toList(), Text.of("\n" + StringUtils.repeat(' ', indent))));
-		} else if (element instanceof AbstractNbtList<?> list) {
-			return Text.empty().append(Texts.join(list.stream().filter(e -> !isEmpty(e)).map(e -> Text.empty().append(Text.literal("- ").formatted(Formatting.GRAY)).append(minimalistPrettyPrint(e, indent + 2))).toList(), Text.of("\n" + StringUtils.repeat(' ', indent))));
-		} else if (element instanceof AbstractNbtNumber number) {
-			return Text.empty().append(Text.literal(NumberFormat.getNumberInstance(Locale.ROOT).format(number.doubleValue())));
-		} else if (element instanceof NbtString string) {
-			Identifier id = Identifier.tryParse(string.asString());
+	public static Component minimalistPrettyPrint(Tag element, int indent) {
+		if (element instanceof CompoundTag compound) {
+			return Component.empty().append(ComponentUtils.formatList(compound.getAllKeys().stream().filter(k -> !isEmpty(compound.get(k))).map(k -> Component.empty().append(Component.literal(k + ": ").withStyle(ChatFormatting.GRAY)).append(minimalistPrettyPrint(compound.get(k), indent + 2))).toList(), Component.nullToEmpty("\n" + StringUtils.repeat(' ', indent))));
+		} else if (element instanceof CollectionTag<?> list) {
+			return Component.empty().append(ComponentUtils.formatList(list.stream().filter(e -> !isEmpty(e)).map(e -> Component.empty().append(Component.literal("- ").withStyle(ChatFormatting.GRAY)).append(minimalistPrettyPrint(e, indent + 2))).toList(), Component.nullToEmpty("\n" + StringUtils.repeat(' ', indent))));
+		} else if (element instanceof NumericTag number) {
+			return Component.empty().append(Component.literal(NumberFormat.getNumberInstance(Locale.ROOT).format(number.getAsDouble())));
+		} else if (element instanceof StringTag string) {
+			Identifier id = Identifier.tryParse(string.getAsString());
 			if (id != null) {
-				return Text.literal(id.getPath()).styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(id.toString()))));
+				return Component.literal(id.getPath()).withStyle(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(id.toString()))));
 			}
-			return Text.literal(string.asString());
+			return Component.literal(string.getAsString());
 		}
-		return Text.of(element.toString());
+		return Component.nullToEmpty(element.toString());
 	}
 
-	public static Text tag(List<SwitchyComponentTypes.Tag> pairs, String between) {
-		return Texts.join(pairs.stream().map(p -> Text.empty().append(Text.literal(p.prefix())).append(Text.literal(between).formatted(Formatting.GRAY)).append(Text.literal(p.suffix()))).toList(), Text.literal(", ").formatted(Formatting.GRAY));
+	public static Component tag(List<SwitchyComponentTypes.Tag> pairs, String between) {
+		return ComponentUtils.formatList(pairs.stream().map(p -> Component.empty().append(Component.literal(p.prefix())).append(Component.literal(between).withStyle(ChatFormatting.GRAY)).append(Component.literal(p.suffix()))).toList(), Component.literal(", ").withStyle(ChatFormatting.GRAY));
 	}
 
-	public static boolean isEmpty(NbtElement element) {
-		return (element instanceof NbtCompound c && c.isEmpty())
-			|| (element instanceof AbstractNbtList<?> l && l.isEmpty())
-			|| (element instanceof NbtString s && (s.asString().isBlank() || s.asString().equals("minecraft:air")));
+	public static boolean isEmpty(Tag element) {
+		return (element instanceof CompoundTag c && c.isEmpty())
+			|| (element instanceof CollectionTag<?> l && l.isEmpty())
+			|| (element instanceof StringTag s && (s.getAsString().isBlank() || s.getAsString().equals("minecraft:air")));
 	}
 
-	public static NbtList decompose(NbtElement element) throws CommandSyntaxException {
-		if (element instanceof NbtList l) {
-			NbtList decomposed = new NbtList();
-			for (NbtElement nbtElement : l) {
+	public static ListTag decompose(Tag element) throws CommandSyntaxException {
+		if (element instanceof ListTag l) {
+			ListTag decomposed = new ListTag();
+			for (Tag nbtElement : l) {
 				decomposed.add(decompose(nbtElement));
 			}
 			return decomposed;
-		} else if (element instanceof NbtCompound compound) {
-			NbtList decomposed = new NbtList();
-			for (String key : compound.getKeys()) {
-				NbtCompound value = compound.getCompound(key).copy();
+		} else if (element instanceof CompoundTag compound) {
+			ListTag decomposed = new ListTag();
+			for (String key : compound.getAllKeys()) {
+				CompoundTag value = compound.getCompound(key).copy();
 				if (!value.isEmpty()) {
 					value.putString("key", key);
 					decomposed.add(value);
@@ -115,10 +115,10 @@ public class FormatUtils {
 			}
 			return decomposed;
 		}
-		throw NbtPathArgumentType.INVALID_PATH_NODE_EXCEPTION.create();
+		throw NbtPathArgument.ERROR_INVALID_NODE.create();
 	}
 
-	public static Text skin(MinecraftServer server, NbtCompound compound) {
+	public static Component skin(MinecraftServer server, CompoundTag compound) {
 		Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
 		MinecraftTexturesPayload payload = gson.fromJson(new String(Base64.getDecoder().decode(compound.getString("value"))), MinecraftTexturesPayload.class);
 		MinecraftProfileTexture skinTexture = payload.getTextures().get(MinecraftProfileTexture.Type.SKIN);
@@ -126,15 +126,15 @@ public class FormatUtils {
 		return Switchy.PLACEHOLDER_API && PlaceholderApiCompat.hasHeads() ? PlaceholderApiCompat.head(server, skinHash) : truncate(skinHash);
 	}
 
-	public static Text stripInteraction(Text text) {
-		MutableText mutable = text.copy();
-		List<Text> siblings = mutable.getSiblings().stream().map(FormatUtils::stripInteraction).toList();
+	public static Component stripInteraction(Component text) {
+		MutableComponent mutable = text.copy();
+		List<Component> siblings = mutable.getSiblings().stream().map(FormatUtils::stripInteraction).toList();
 		mutable.getSiblings().clear();
 		mutable.getSiblings().addAll(siblings);
 		return stripInteractionNonRecursively(mutable);
 	}
 
-	public static Text stripInteractionNonRecursively(Text text) {
-		return text.copy().styled(s -> s.withHoverEvent(null).withClickEvent(null).withInsertion(null));
+	public static Component stripInteractionNonRecursively(Component text) {
+		return text.copy().withStyle(s -> s.withHoverEvent(null).withClickEvent(null).withInsertion(null));
 	}
 }

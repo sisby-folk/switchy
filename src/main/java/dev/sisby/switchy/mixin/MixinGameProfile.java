@@ -8,7 +8,7 @@ import dev.sisby.switchy.data.SwitchyComponentType;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
 import dev.sisby.switchy.data.SwitchyProfile;
 import dev.sisby.switchy.duck.SwitchyGameProfile;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -29,9 +29,9 @@ public class MixinGameProfile implements SwitchyGameProfile {
 	@ModifyReturnValue(method = "getProperties", at = @At("RETURN"))
 	private PropertyMap overrideSkinDuringSayForBridges(PropertyMap original) {
 		if (switchy$sayProfile != null && SwitchyComponentTypes.instance() != null) {
-			SwitchyComponentType<NbtCompound> skin = (SwitchyComponentType<NbtCompound>) SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN);
+			SwitchyComponentType<CompoundTag> skin = (SwitchyComponentType<CompoundTag>) SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN);
 			if (skin != null && switchy$sayProfile.contains(skin)) {
-				NbtCompound compound = switchy$sayProfile.get(skin);
+				CompoundTag compound = switchy$sayProfile.get(skin);
 				PropertyMap newMap = new PropertyMap();
 				newMap.putAll(original);
 				newMap.removeAll("textures");

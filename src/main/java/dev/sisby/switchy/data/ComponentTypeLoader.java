@@ -10,20 +10,20 @@ import com.mojang.serialization.JsonOps;
 import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.util.FormatUtils;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
-import net.minecraft.command.argument.NbtPathArgumentType;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.resource.JsonDataLoader;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.profiler.Profiler;
+import net.minecraft.commands.arguments.NbtPathArgument;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.profiling.ProfilerFiller;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class ComponentTypeLoader extends JsonDataLoader implements IdentifiableResourceReloadListener {
+public class ComponentTypeLoader extends SimpleJsonResourceReloadListener implements IdentifiableResourceReloadListener {
 	public static final String PATH = "switchy_components";
 	public static final Gson GSON = new Gson();
 	public record EditableComponentType(boolean enabled, String codec, String path, String preview, String prefix, String editor, String emptyChecker, String group, @SerializedName("default") JsonElement defaultValue, Boolean hidden, Boolean importable, Integer priority) { }
@@ -33,7 +33,7 @@ public class ComponentTypeLoader extends JsonDataLoader implements IdentifiableR
 	}
 
 	@Override
-	protected void apply(Map<Identifier, JsonElement> prepared, ResourceManager manager, Profiler profiler) {
+	protected void apply(Map<Identifier, JsonElement> prepared, ResourceManager manager, ProfilerFiller profiler) {
 		SwitchyComponentTypes types = new SwitchyComponentTypes();
 		for (Identifier id : SwitchyComponentTypes.getStatic().keys()) { // re-apply static types e.g. NAME
 			types.register(id, i -> SwitchyComponentTypes.getStatic().get(id));
@@ -72,11 +72,11 @@ public class ComponentTypeLoader extends JsonDataLoader implements IdentifiableR
 						nbtPath = nbtPath.substring(1);
 						decompositions++;
 					}
-					NbtPathArgumentType.NbtPath previewPath = NbtPathArgumentType.nbtPath().parse(new StringReader(nbtPath));
+					NbtPathArgument.NbtPath previewPath = NbtPathArgument.nbtPath().parse(new StringReader(nbtPath));
 					int finalDecompositions = decompositions;
 					provider = (server, v) -> {
 						try {
-							NbtElement element = (NbtElement) v;
+							Tag element = (Tag) v;
 							int decomposed = 0;
 							while (decomposed < finalDecompositions) {
 								element = FormatUtils.decompose(element);
@@ -88,7 +88,7 @@ public class ComponentTypeLoader extends JsonDataLoader implements IdentifiableR
 						}
 					};
 				} else {
-					provider = (server, v) -> Text.literal(Objects.toString(v));
+					provider = (server, v) -> Component.literal(Objects.toString(v));
 				}
 			}
 			if (checker == null) {
@@ -99,11 +99,11 @@ public class ComponentTypeLoader extends JsonDataLoader implements IdentifiableR
 						nbtPath = nbtPath.substring(1);
 						decompositions++;
 					}
-					NbtPathArgumentType.NbtPath checkerPath = NbtPathArgumentType.nbtPath().parse(new StringReader(nbtPath));
+					NbtPathArgument.NbtPath checkerPath = NbtPathArgument.nbtPath().parse(new StringReader(nbtPath));
 					int finalDecompositions = decompositions;
 					checker = v -> {
 						try {
-							NbtElement element = (NbtElement) v;
+							Tag element = (Tag) v;
 							int decomposed = 0;
 							while (decomposed < finalDecompositions) {
 								element = FormatUtils.decompose(element);
@@ -117,8 +117,8 @@ public class ComponentTypeLoader extends JsonDataLoader implements IdentifiableR
 				}
 			}
 			SwitchyComponentType.TextProvider<T> finalProvider = provider;
-			SwitchyComponentType.TextProvider<T> prefixedPreviewer = (server, v) -> Text.empty().append(Text.literal(Objects.requireNonNullElse(type.prefix, "")).formatted(Formatting.GRAY)).append(finalProvider.toText(server, v));
-			NbtPathArgumentType.NbtPath path = NbtPathArgumentType.nbtPath().parse(new StringReader(type.path));
+			SwitchyComponentType.TextProvider<T> prefixedPreviewer = (server, v) -> Component.empty().append(Component.literal(Objects.requireNonNullElse(type.prefix, "")).withStyle(ChatFormatting.GRAY)).append(finalProvider.toText(server, v));
+			NbtPathArgument.NbtPath path = NbtPathArgument.nbtPath().parse(new StringReader(type.path));
 			SwitchyComponentType.EmptyChecker<T> finalChecker = checker;
 			types.register(id, codec, b -> b
 				.nbtSwitcher(path)

@@ -11,17 +11,17 @@ import dev.sisby.switchy.SwitchyCommands;
 import dev.sisby.switchy.exception.ComponentFailedInitializeException;
 import dev.sisby.switchy.exception.NbtException;
 import dev.sisby.switchy.util.TypeRegistry;
-import net.minecraft.command.argument.NbtPathArgumentType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.commands.arguments.NbtPathArgument;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -72,40 +72,40 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		codec().decode(ops, input).resultOrPartial(Switchy.LOGGER::error).ifPresent(p -> components.set(this, p.getFirst()));
 	}
 
-	default void tryInitialize(Collection<SwitchyComponentMap> consumer, NbtCompound nbt, ServerPlayerEntity player, String profileId) {
+	default void tryInitialize(Collection<SwitchyComponentMap> consumer, CompoundTag nbt, ServerPlayer player, String profileId) {
 		Initializer<T> initializer = initializer();
 		if (initializer == null) return;
 		T value = initializer.initialize(nbt, player, profileId); // value might be null (means "erase key")
 		consumer.forEach(c -> c.set(this, value));
 	}
 
-	default void tryMutate(SwitchyComponentMap components, NbtCompound playerData, ServerPlayerEntity player) throws NbtException {
+	default void tryMutate(SwitchyComponentMap components, CompoundTag playerData, ServerPlayer player) throws NbtException {
 		NbtMutator<T> nbtMutator = nbtMutator();
 		PlayerMutator<T> playerMutator = playerMutator();
 		if (nbtMutator != null) {
-			nbtMutator.mutate(player.getServer().getRegistryManager(), components.get(this), playerData);
+			nbtMutator.mutate(player.getServer().registryAccess(), components.get(this), playerData);
 		} else if (playerMutator != null) {
 			playerMutator.mutate(components.get(this), player);
 		}
 	}
 
-	default MutableText asText(MinecraftServer server, T value) {
+	default MutableComponent asText(MinecraftServer server, T value) {
 		TextProvider<T> textProvider = textProvider();
 		if (textProvider != null) {
 			return textProvider.toText(server, value).copy();
 		} else {
-			return Text.literal(Objects.toString(value));
+			return Component.literal(Objects.toString(value));
 		}
 	}
 
-	default void tryCreateEditor(Consumer<ArgumentBuilder<ServerCommandSource, ?>> consumer) {
+	default void tryCreateEditor(Consumer<ArgumentBuilder<CommandSourceStack, ?>> consumer) {
 		ArgumentEditor<T> editor = argumentEditor();
 		if (editor != null) {
 			consumer.accept(editor.create((c, v) -> SwitchyCommands.execute(c, (i, p, d, f) -> SwitchyCommands.editComponent(p, d, f, c.getArgument("profile", String.class).toLowerCase(), this, v))));
 		}
 	}
 
-	default MutableText asText(MinecraftServer server, SwitchyComponentMap components) {
+	default MutableComponent asText(MinecraftServer server, SwitchyComponentMap components) {
 		return asText(server, components.get(this));
 	}
 
@@ -119,27 +119,27 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	@FunctionalInterface
 	interface Initializer<T> {
-		T initialize(NbtCompound playerNbt, ServerPlayerEntity player, String profileId) throws ComponentFailedInitializeException;
+		T initialize(CompoundTag playerNbt, ServerPlayer player, String profileId) throws ComponentFailedInitializeException;
 	}
 
 	@FunctionalInterface
 	interface NbtReader<T> {
-		T read(DynamicRegistryManager registryManager, NbtCompound nbt) throws NbtException;
+		T read(RegistryAccess registryManager, CompoundTag nbt) throws NbtException;
 	}
 
 	@FunctionalInterface
 	interface NbtMutator<T> {
-		void mutate(DynamicRegistryManager registryManager, T value, NbtCompound nbt) throws NbtException;
+		void mutate(RegistryAccess registryManager, T value, CompoundTag nbt) throws NbtException;
 	}
 
 	@FunctionalInterface
 	interface PlayerReader<T> {
-		T read(ServerPlayerEntity player, String profileId);
+		T read(ServerPlayer player, String profileId);
 	}
 
 	@FunctionalInterface
 	interface PlayerMutator<T> {
-		void mutate(T value, ServerPlayerEntity player);
+		void mutate(T value, ServerPlayer player);
 	}
 
 	@FunctionalInterface
@@ -149,30 +149,30 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	@FunctionalInterface
 	interface TextProvider<T> {
-		Text toText(MinecraftServer server, T value);
+		Component toText(MinecraftServer server, T value);
 	}
 
 	@FunctionalInterface
 	interface ArgumentEditor<T> {
-		ArgumentBuilder<ServerCommandSource, ?> create(EditExecutor<T> executor);
+		ArgumentBuilder<CommandSourceStack, ?> create(EditExecutor<T> executor);
 	}
 
 	@FunctionalInterface
 	interface EditExecutor<T> {
-		int execute(CommandContext<ServerCommandSource> context, T value);
+		int execute(CommandContext<CommandSourceStack> context, T value);
 	}
 
-	record SimpleTextProvider<T>(Function<T, Text> provider) implements TextProvider<T> {
+	record SimpleTextProvider<T>(Function<T, Component> provider) implements TextProvider<T> {
 		@Override
-		public Text toText(MinecraftServer server, T value) {
-			return value == null ? Text.empty() : provider.apply(value);
+		public Component toText(MinecraftServer server, T value) {
+			return value == null ? Component.empty() : provider.apply(value);
 		}
 	}
 
-	record SimpleServerTextProvider<T>(BiFunction<MinecraftServer, T, Text> provider) implements TextProvider<T> {
+	record SimpleServerTextProvider<T>(BiFunction<MinecraftServer, T, Component> provider) implements TextProvider<T> {
 		@Override
-		public Text toText(MinecraftServer server, T value) {
-			return value == null ? Text.empty() : provider.apply(server, value);
+		public Component toText(MinecraftServer server, T value) {
+			return value == null ? Component.empty() : provider.apply(server, value);
 		}
 	}
 
@@ -183,18 +183,18 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		}
 	}
 
-	record SimpleArgumentEditor<T>(Function<EditExecutor<T>, ArgumentBuilder<ServerCommandSource, ?>> editor) implements ArgumentEditor<T> {
+	record SimpleArgumentEditor<T>(Function<EditExecutor<T>, ArgumentBuilder<CommandSourceStack, ?>> editor) implements ArgumentEditor<T> {
 		@Override
-		public ArgumentBuilder<ServerCommandSource, ?> create(EditExecutor<T> executor) {
+		public ArgumentBuilder<CommandSourceStack, ?> create(EditExecutor<T> executor) {
 			return editor.apply(executor);
 		}
 	}
 
 	record CopyInitializer<T>(NbtReader<T> nbtReader) implements Initializer<T> {
 		@Override
-		public T initialize(NbtCompound playerNbt, ServerPlayerEntity player, String profileId) throws ComponentFailedInitializeException {
+		public T initialize(CompoundTag playerNbt, ServerPlayer player, String profileId) throws ComponentFailedInitializeException {
 			try {
-				return nbtReader.read(player.getServer().getRegistryManager(), playerNbt);
+				return nbtReader.read(player.getServer().registryAccess(), playerNbt);
 			} catch (Exception e) {
 				throw new ComponentFailedInitializeException("", e);
 			}
@@ -202,16 +202,16 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 	}
 
 	class NbtSwitcher<T> implements NbtMutator<T>, NbtReader<T> {
-		private final NbtPathArgumentType.NbtPath nbtPath;
+		private final NbtPathArgument.NbtPath nbtPath;
 		private final Codec<T> codec;
 
-		public NbtSwitcher(NbtPathArgumentType.NbtPath nbtPath, Codec<T> codec) {
+		public NbtSwitcher(NbtPathArgument.NbtPath nbtPath, Codec<T> codec) {
 			this.nbtPath = nbtPath;
 			this.codec = codec;
 		}
 
 		@Override
-		public T read(DynamicRegistryManager registryManager, NbtCompound nbt) throws NbtException {
+		public T read(RegistryAccess registryManager, CompoundTag nbt) throws NbtException {
 			try {
 				DataResult<T> result = codec.parse(NbtOps.INSTANCE, nbtPath.get(nbt).get(0));
 				if (result.error().isPresent()) {
@@ -224,17 +224,17 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		}
 
 		@Override
-		public void mutate(DynamicRegistryManager registryManager, T value, NbtCompound nbt) throws NbtException {
+		public void mutate(RegistryAccess registryManager, T value, CompoundTag nbt) throws NbtException {
 			try {
 				if (value == null) { // special case - erase the key.
 					nbtPath.remove(nbt);
 					return;
 				}
-				DataResult<NbtElement> result = codec.encodeStart(NbtOps.INSTANCE, value);
+				DataResult<Tag> result = codec.encodeStart(NbtOps.INSTANCE, value);
 				if (result.error().isPresent()) {
 					throw new NbtException("Failed to serialize component! %s".formatted(result.error().get().message()));
 				}
-				nbtPath.put(nbt, result.getOrThrow(true, Switchy.LOGGER::error));
+				nbtPath.set(nbt, result.getOrThrow(true, Switchy.LOGGER::error));
 			} catch (CommandSyntaxException e) {
 				throw new NbtException("NBT path too deep!");
 			}
@@ -319,7 +319,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 			return this;
 		}
 
-		public Builder<T> nbtSwitcher(NbtPathArgumentType.NbtPath path) {
+		public Builder<T> nbtSwitcher(NbtPathArgument.NbtPath path) {
 			NbtSwitcher<T> switcher = new NbtSwitcher<>(path, codec);
 			this.nbtReader = switcher;
 			this.nbtMutator = switcher;

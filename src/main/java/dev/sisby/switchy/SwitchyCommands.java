@@ -27,26 +27,26 @@ import dev.sisby.switchy.exception.ProfilePreciousException;
 import dev.sisby.switchy.util.FormatUtils;
 import dev.sisby.switchy.util.TypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.argument.IdentifierArgumentType;
-import net.minecraft.command.argument.MessageArgumentType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtString;
-import net.minecraft.network.message.MessageType;
-import net.minecraft.network.message.SignedMessage;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.IdentifierArgument;
+import net.minecraft.commands.arguments.MessageArgument;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.ChatFormatting;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStreamReader;
@@ -75,19 +75,19 @@ public class SwitchyCommands {
 	private static final String EXISTING = "existing";
 	private static final String ALL = "all";
 
-	public static void greet(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
+	public static void greet(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {
 		SwitchyPlayerData data = SwitchyPlayerData.ofEarly(handler.getPlayer());
 		if (data == null) return;
-		handler.getPlayer().sendMessage(data.greet(handler.getPlayer()));
+		handler.getPlayer().sendSystemMessage(data.greet(handler.getPlayer()));
 	}
 
-	private static int list(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
+	private static int list(String input, ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback) {
 		List<String> profiles = Stream.concat(Sets.difference(data.keySet(), Set.of(data.current())).stream().sorted(), Stream.of(data.current())).toList();
 
 		feedback.accept(prefix()
-			.append(Text.literal("you have ").formatted(Formatting.GRAY))
-			.append(Text.literal("%s".formatted(data.size())).formatted(Formatting.WHITE))
-			.append(Text.literal(" profile%s available. ".formatted(data.size() == 1 ? "" : "s")).formatted(Formatting.GRAY))
+			.append(Component.literal("you have ").withStyle(ChatFormatting.GRAY))
+			.append(Component.literal("%s".formatted(data.size())).withStyle(ChatFormatting.WHITE))
+			.append(Component.literal(" profile%s available. ".formatted(data.size() == 1 ? "" : "s")).withStyle(ChatFormatting.GRAY))
 			.append(clickable("new", "/switchy new ", false))
 		);
 
@@ -100,12 +100,12 @@ public class SwitchyCommands {
 			}
 
 			feedback.accept(indent()
-				.append(profile.id().equals(data.current()) ? Text.literal("current").formatted(Formatting.GRAY) : clickable("switch", "/switch %s".formatted(StringArgumentType.escapeIfRequired(profile.id())), true))
+				.append(profile.id().equals(data.current()) ? Component.literal("current").withStyle(ChatFormatting.GRAY) : clickable("switch", "/switch %s".formatted(StringArgumentType.escapeIfRequired(profile.id())), true))
 				.append(" ")
 				.append(clickable("edit", "/switchy edit %s ".formatted(StringArgumentType.escapeIfRequired(profile.id())), false))
 				.append(" ")
-				.append(getProfileText(player, profile, false).styled(s -> s
-					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.join(profile.asTexts(player), Text.of("\n")).copy().append("\n").append(Text.literal("... /switchy view %s".formatted(StringArgumentType.escapeIfRequired(profile.id()))).formatted(Formatting.AQUA))))
+				.append(getProfileText(player, profile, false).withStyle(s -> s
+					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, ComponentUtils.formatList(profile.asTexts(player), Component.nullToEmpty("\n")).copy().append("\n").append(Component.literal("... /switchy view %s".formatted(StringArgumentType.escapeIfRequired(profile.id()))).withStyle(ChatFormatting.AQUA))))
 					.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/switchy view %s".formatted(StringArgumentType.escapeIfRequired(profile.id()))))
 				))
 			);
@@ -113,76 +113,76 @@ public class SwitchyCommands {
 
 		if (data.size() == 1 && data.current().equals("default")) {
 			feedback.accept(indent()
-				.append(Text.literal("HINT: ").formatted(Formatting.LIGHT_PURPLE))
-				.append(Text.literal("rename your first profile: ").formatted(Formatting.GRAY))
-				.append(clickable("/switchy edit default id [...]", "/switchy edit default id ", false, Formatting.AQUA, "", ""))
+				.append(Component.literal("HINT: ").withStyle(ChatFormatting.LIGHT_PURPLE))
+				.append(Component.literal("rename your first profile: ").withStyle(ChatFormatting.GRAY))
+				.append(clickable("/switchy edit default id [...]", "/switchy edit default id ", false, ChatFormatting.AQUA, "", ""))
 			);
 			hintClickables(feedback);
 		} else if (data.size() == 1) {
 			feedback.accept(indent()
-				.append(Text.literal("HINT: ").formatted(Formatting.LIGHT_PURPLE))
-				.append(Text.literal("configure profile shared data via ").formatted(Formatting.GRAY))
-				.append(clickable("/switchy components", "/switchy components", true, Formatting.AQUA, "", ""))
+				.append(Component.literal("HINT: ").withStyle(ChatFormatting.LIGHT_PURPLE))
+				.append(Component.literal("configure profile shared data via ").withStyle(ChatFormatting.GRAY))
+				.append(clickable("/switchy components", "/switchy components", true, ChatFormatting.AQUA, "", ""))
 			);
 		}
 
 		return data.size();
 	}
 
-	private static void hintClickables(Consumer<Text> feedback) {
+	private static void hintClickables(Consumer<Component> feedback) {
 		feedback.accept(indent()
-			.append(Text.literal("note: switchy output is ").formatted(Formatting.ITALIC).formatted(Formatting.GRAY))
-			.append(Text.literal("hoverable").formatted(Formatting.ITALIC).styled(s -> s
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("like this!")))))
-			.append(Text.literal(" and <[/").formatted(Formatting.ITALIC).formatted(Formatting.GRAY))
-			.append(Text.literal("clickable").formatted(Formatting.ITALIC).formatted(Formatting.AQUA).styled(s -> s
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("switchy-switch! ...")))
+			.append(Component.literal("note: switchy output is ").withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.GRAY))
+			.append(Component.literal("hoverable").withStyle(ChatFormatting.ITALIC).withStyle(s -> s
+				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("like this!")))))
+			.append(Component.literal(" and <[/").withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.GRAY))
+			.append(Component.literal("clickable").withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.AQUA).withStyle(s -> s
+				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("switchy-switch! ...")))
 				.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "switchy-switch!"))))
-			.append(Text.literal("]>!").formatted(Formatting.ITALIC).formatted(Formatting.GRAY))
+			.append(Component.literal("]>!").withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.GRAY))
 		);
 	}
 
-	private static int components(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
+	private static int components(String input, ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback) {
 		Map<Identifier, List<SwitchyComponentType<?>>> grouped = SwitchyComponentTypes.grouped(SwitchyComponentTypes.instance().values());
 		long numEnabled = grouped.values().stream().filter(g -> data.componentSet().contains(g.get(0))).count();
 		feedback.accept(prefix()
-			.append(Text.literal("you're switching ").formatted(Formatting.GRAY))
-			.append(Text.literal("%d".formatted(numEnabled).formatted(Formatting.WHITE)))
-			.append(Text.literal(" component%s and sharing ".formatted(numEnabled == 1 ? "" : "s")).formatted(Formatting.GRAY))
-			.append(Text.literal("%d".formatted(grouped.size() - numEnabled)).formatted(Formatting.WHITE))
-			.append(Text.literal(".").formatted(Formatting.GRAY))
+			.append(Component.literal("you're switching ").withStyle(ChatFormatting.GRAY))
+			.append(Component.literal("%d".formatted(numEnabled).formatted(ChatFormatting.WHITE)))
+			.append(Component.literal(" component%s and sharing ".formatted(numEnabled == 1 ? "" : "s")).withStyle(ChatFormatting.GRAY))
+			.append(Component.literal("%d".formatted(grouped.size() - numEnabled)).withStyle(ChatFormatting.WHITE))
+			.append(Component.literal(".").withStyle(ChatFormatting.GRAY))
 		);
 		grouped.forEach((id, types) -> {
 			boolean enabled = data.componentSet().contains(types.get(0));
 			List<SwitchyProfile> matchingProfiles = data.values().stream().sorted(Comparator.comparing(SwitchyProfile::id)).filter(p -> types.stream().anyMatch(t -> p.get(t) != null && (t.emptyChecker() == null || t.isPrecious(p.components())))).toList();
 			feedback.accept(indent()
 				.append(enabled ?
-					clickable(Text.literal("enabled").formatted(Formatting.GREEN), "/switchy components disable %s".formatted(id), data.size() == 1 ? ClickEvent.Action.RUN_COMMAND : ClickEvent.Action.SUGGEST_COMMAND, Text.empty().append(Text.literal("click to share ").formatted(Formatting.GRAY)).append(id.getPath()).append(Text.literal(" between profiles.").formatted(Formatting.GRAY)).append(data.size() == 1 ? Text.empty() : Text.literal("\n").append(Text.literal("this deletes data from other profiles!").formatted(Formatting.GOLD))), Formatting.RED, "[", "]") :
-					clickable(Text.literal("disabled").formatted(Formatting.RED), "/switchy components enable %s".formatted(id), ClickEvent.Action.RUN_COMMAND, Text.empty().append(Text.literal("click to switch ").formatted(Formatting.GRAY)).append(id.getPath()).append(Text.literal(" per-profile.").formatted(Formatting.GRAY)), Formatting.GREEN, "[", "]")
+					clickable(Component.literal("enabled").withStyle(ChatFormatting.GREEN), "/switchy components disable %s".formatted(id), data.size() == 1 ? ClickEvent.Action.RUN_COMMAND : ClickEvent.Action.SUGGEST_COMMAND, Component.empty().append(Component.literal("click to share ").withStyle(ChatFormatting.GRAY)).append(id.getPath()).append(Component.literal(" between profiles.").withStyle(ChatFormatting.GRAY)).append(data.size() == 1 ? Component.empty() : Component.literal("\n").append(Component.literal("this deletes data from other profiles!").withStyle(ChatFormatting.GOLD))), ChatFormatting.RED, "[", "]") :
+					clickable(Component.literal("disabled").withStyle(ChatFormatting.RED), "/switchy components enable %s".formatted(id), ClickEvent.Action.RUN_COMMAND, Component.empty().append(Component.literal("click to switch ").withStyle(ChatFormatting.GRAY)).append(id.getPath()).append(Component.literal(" per-profile.").withStyle(ChatFormatting.GRAY)), ChatFormatting.GREEN, "[", "]")
 				)
 				.append(" ")
-				.append(id.getPath()).styled(s -> s
-					.withColor(enabled ? Formatting.WHITE : Formatting.DARK_GRAY)
-					.withHoverEvent(!enabled ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, matchingProfiles.isEmpty() ? Text.literal("<no %s data yet>".formatted(id.getPath().replace("_", " "))).formatted(Formatting.GRAY) : Texts.join(matchingProfiles.stream().map(p -> Text.empty()
-						.append(Text.literal(p.id()).formatted(Formatting.GRAY))
+				.append(id.getPath()).withStyle(s -> s
+					.withColor(enabled ? ChatFormatting.WHITE : ChatFormatting.DARK_GRAY)
+					.withHoverEvent(!enabled ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, matchingProfiles.isEmpty() ? Component.literal("<no %s data yet>".formatted(id.getPath().replace("_", " "))).withStyle(ChatFormatting.GRAY) : ComponentUtils.formatList(matchingProfiles.stream().map(p -> Component.empty()
+						.append(Component.literal(p.id()).withStyle(ChatFormatting.GRAY))
 						.append(": ")
-						.append(Texts.join(types.stream().filter(t -> p.get(t) != null).map(t -> t.asText(player.getServer(), p.components())).toList(), Text.literal(", ").formatted(Formatting.GRAY)))
-					).toList(), Text.of("\n"))))
+						.append(ComponentUtils.formatList(types.stream().filter(t -> p.get(t) != null).map(t -> t.asText(player.getServer(), p.components())).toList(), Component.literal(", ").withStyle(ChatFormatting.GRAY)))
+					).toList(), Component.nullToEmpty("\n"))))
 				)
 			);
 		});
 		if (data.size() == 1 && data.current().equals("default")) {
 			feedback.accept(indent()
-				.append(Text.literal("HINT: ").formatted(Formatting.LIGHT_PURPLE))
-				.append(Text.literal("view the profile list via ").formatted(Formatting.GRAY))
-				.append(clickable("/switchy", "/switchy", true, Formatting.AQUA, "", ""))
+				.append(Component.literal("HINT: ").withStyle(ChatFormatting.LIGHT_PURPLE))
+				.append(Component.literal("view the profile list via ").withStyle(ChatFormatting.GRAY))
+				.append(clickable("/switchy", "/switchy", true, ChatFormatting.AQUA, "", ""))
 			);
 			hintClickables(feedback);
 		} else if (data.size() == 1) {
 			feedback.accept(indent()
-				.append(Text.literal("HINT: ").formatted(Formatting.LIGHT_PURPLE))
-				.append(Text.literal("create your second profile via ").formatted(Formatting.GRAY))
-				.append(clickable("/switchy new [name]", "/switchy new ", false, Formatting.AQUA, "", ""))
+				.append(Component.literal("HINT: ").withStyle(ChatFormatting.LIGHT_PURPLE))
+				.append(Component.literal("create your second profile via ").withStyle(ChatFormatting.GRAY))
+				.append(clickable("/switchy new [name]", "/switchy new ", false, ChatFormatting.AQUA, "", ""))
 			);
 		}
 		return data.componentSet().size();
@@ -190,7 +190,7 @@ public class SwitchyCommands {
 
 	public record PlayerImportData(@Nullable String name, List<SwitchyPlayerData.ProfileImportData> members, @Nullable List<SwitchyPlayerData.GroupImportData> groups) {}
 
-	private static int importProfiles(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String url, String scope) {
+	private static int importProfiles(ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback, String url, String scope) {
 		int beforeSize = data.size();
 		PlayerImportData importData;
 		try {
@@ -198,15 +198,15 @@ public class SwitchyCommands {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		Function<Integer, Text> feedbackGetter = updated -> prefix()
-			.append(!EXISTING.equals(scope) ? Text.empty()
-				.append(Text.literal("created ").formatted(Formatting.GREEN))
-				.append(Text.literal("%d".formatted(data.size() - beforeSize)).formatted(Formatting.WHITE))
-				.append(Text.literal(" profile%s and ".formatted((data.size() - beforeSize) == 1 ? "" : "s")).formatted(Formatting.GREEN)) : Text.empty()
+		Function<Integer, Component> feedbackGetter = updated -> prefix()
+			.append(!EXISTING.equals(scope) ? Component.empty()
+				.append(Component.literal("created ").withStyle(ChatFormatting.GREEN))
+				.append(Component.literal("%d".formatted(data.size() - beforeSize)).withStyle(ChatFormatting.WHITE))
+				.append(Component.literal(" profile%s and ".formatted((data.size() - beforeSize) == 1 ? "" : "s")).withStyle(ChatFormatting.GREEN)) : Component.empty()
 			)
-			.append(Text.literal("updated ").formatted(Formatting.GREEN))
-			.append(Text.literal("%d".formatted(updated - (data.size() - beforeSize))).formatted(Formatting.WHITE))
-			.append(Text.literal("%s profile%s. ".formatted(!EXISTING.equals(scope) ? " existing" : "", (updated - (data.size() - beforeSize)) == 1 ? "" : "s")).formatted(Formatting.GREEN))
+			.append(Component.literal("updated ").withStyle(ChatFormatting.GREEN))
+			.append(Component.literal("%d".formatted(updated - (data.size() - beforeSize))).withStyle(ChatFormatting.WHITE))
+			.append(Component.literal("%s profile%s. ".formatted(!EXISTING.equals(scope) ? " existing" : "", (updated - (data.size() - beforeSize)) == 1 ? "" : "s")).withStyle(ChatFormatting.GREEN))
 			.append(clickable("list", "/switchy", true));
 		List<SwitchyPlayerData.ProfileImportData> profilesToImport = importData.members();
 		if (!EXISTING.equals(scope) && !ALL.equals(scope)) {
@@ -226,9 +226,9 @@ public class SwitchyCommands {
 			return data.size() - beforeSize;
 		} catch (Exception e) {
 			feedback.accept(prefix()
-				.append("error while switching: ").formatted(Formatting.RED)
-				.append(Objects.requireNonNullElse(e.getMessage(), "???")).formatted(Formatting.GRAY)
-				.append(" see server logs for more info.").formatted(Formatting.RED)
+				.append("error while switching: ").withStyle(ChatFormatting.RED)
+				.append(Objects.requireNonNullElse(e.getMessage(), "???")).withStyle(ChatFormatting.GRAY)
+				.append(" see server logs for more info.").withStyle(ChatFormatting.RED)
 			);
 			Switchy.LOGGER.error("[Switchy] Error while switching to {} for player {}", data.current(), player.getGameProfile().getName(), e);
 			return 0;
@@ -239,7 +239,7 @@ public class SwitchyCommands {
 		return input.replace("\\<", "<").replace("\\'", "'");
 	}
 
-	private static int export(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
+	private static int export(String input, ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback) {
 		String sysName = null;
 		List<SwitchyPlayerData.ProfileImportData> members = new ArrayList<>();
 		try {
@@ -291,9 +291,9 @@ public class SwitchyCommands {
 					String key = player.getGameProfile().getName();
 					Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = player.getServer().getSessionService().getTextures(player.getGameProfile(), false);
 					SwitchyComponentType<?> skinComponent = SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN);
-					if (skinComponent != null && profile.contains(skinComponent) && profile.get(skinComponent) instanceof NbtCompound skinCompound && skinCompound.get("value") instanceof NbtString valueString) {
+					if (skinComponent != null && profile.contains(skinComponent) && profile.get(skinComponent) instanceof CompoundTag skinCompound && skinCompound.get("value") instanceof StringTag valueString) {
 						Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
-						MinecraftTexturesPayload payload = gson.fromJson(new String(Base64.getDecoder().decode(valueString.asString())), MinecraftTexturesPayload.class);
+						MinecraftTexturesPayload payload = gson.fromJson(new String(Base64.getDecoder().decode(valueString.getAsString())), MinecraftTexturesPayload.class);
 						textures = payload.getTextures();
 					}
 					MinecraftProfileTexture skin = textures.get(MinecraftProfileTexture.Type.SKIN);
@@ -304,10 +304,10 @@ public class SwitchyCommands {
 				members.add(new SwitchyPlayerData.ProfileImportData(null, profileId, name, color, pronouns, description, avatarUrl, proxyTags, components));
 			}
 			feedback.accept(prefix()
-				.append(Text.literal("exported ").formatted(Formatting.GREEN))
-				.append(Text.literal("%d".formatted(data.size())))
-				.append(Text.literal(" profile%s. ".formatted(data.size() == 1 ? "" : "s")).formatted(Formatting.GREEN))
-				.append(clickable("copy", SwitchyComponentTypes.GSON.toJson(new PlayerImportData(sysName, members, null)), ClickEvent.Action.COPY_TO_CLIPBOARD, Formatting.AQUA, "<", ">"))
+				.append(Component.literal("exported ").withStyle(ChatFormatting.GREEN))
+				.append(Component.literal("%d".formatted(data.size())))
+				.append(Component.literal(" profile%s. ".formatted(data.size() == 1 ? "" : "s")).withStyle(ChatFormatting.GREEN))
+				.append(clickable("copy", SwitchyComponentTypes.GSON.toJson(new PlayerImportData(sysName, members, null)), ClickEvent.Action.COPY_TO_CLIPBOARD, ChatFormatting.AQUA, "<", ">"))
 			);
 		} catch (NbtException e) {
 			throw new RuntimeException(e);
@@ -315,7 +315,7 @@ public class SwitchyCommands {
 		return data.size();
 	}
 
-	private static int viewProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId) {
+	private static int viewProfile(ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback, String profileId) {
 		SwitchyProfile profile;
 		try {
 			profile = data.getProfile(profileId, player);
@@ -323,16 +323,16 @@ public class SwitchyCommands {
 			throw new RuntimeException(e);
 		}
 		if (profile == null) {
-			feedback.accept(prefix().append(Text.literal("profile doesn't exist!").formatted(Formatting.YELLOW)));
+			feedback.accept(prefix().append(Component.literal("profile doesn't exist!").withStyle(ChatFormatting.YELLOW)));
 			return 0;
 		}
-		List<MutableText> texts = profile.components().asTexts(player.getServer());
+		List<MutableComponent> texts = profile.components().asTexts(player.getServer());
 		feedback.accept(prefix()
-			.append(Text.literal("profile ").formatted(Formatting.GRAY))
+			.append(Component.literal("profile ").withStyle(ChatFormatting.GRAY))
 			.append(profileId)
-			.append(Text.literal(" contains ").formatted(Formatting.GRAY))
+			.append(Component.literal(" contains ").withStyle(ChatFormatting.GRAY))
 			.append("%d".formatted(texts.size()))
-			.append(Text.literal(" component%s. ".formatted(profile.components().size() == 1 ? "" : "s")).formatted(Formatting.GRAY))
+			.append(Component.literal(" component%s. ".formatted(profile.components().size() == 1 ? "" : "s")).withStyle(ChatFormatting.GRAY))
 			.append(profileId.equals(data.current()) ? clickable("list", "/switchy", true) : clickable("switch", "/switch %s".formatted(StringArgumentType.escapeIfRequired(profileId)), true))
 		);
 		texts.forEach(componentText -> feedback.accept(indent().append(componentText)));
@@ -343,7 +343,7 @@ public class SwitchyCommands {
 	}
 
 
-	private static int say(CommandContext<ServerCommandSource> context, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId) {
+	private static int say(CommandContext<CommandSourceStack> context, ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback, String profileId) {
 		SwitchyProfile profile;
 		try {
 			profile = data.getProfile(profileId, player);
@@ -351,23 +351,23 @@ public class SwitchyCommands {
 			throw new RuntimeException(e);
 		}
 		if (profile == null) {
-			feedback.accept(prefix().append(Text.literal("profile doesn't exist!").formatted(Formatting.YELLOW)));
+			feedback.accept(prefix().append(Component.literal("profile doesn't exist!").withStyle(ChatFormatting.YELLOW)));
 			return 0;
 		}
 		try {
-			MessageArgumentType.getSignedMessage(context, "message", message -> say(message, player, profile));
+			MessageArgument.resolveChatMessage(context, "message", message -> say(message, player, profile));
 		} catch (CommandSyntaxException e) {
 			throw new RuntimeException(e);
 		}
 		return 1;
 	}
 
-	public static void say(SignedMessage message, ServerPlayerEntity player, SwitchyProfile profile) {
+	public static void say(PlayerChatMessage message, ServerPlayer player, SwitchyProfile profile) {
 		try {
 			((SwitchyGameProfile) player.getGameProfile()).switchy$setSayProfile(profile);
-			ServerCommandSource source = player.getCommandSource(); // display name hooked here
-			if (Switchy.STYLED_CHAT) StyledChatCompat.modifyForSending(message, source, MessageType.CHAT);
-			source.getServer().getPlayerManager().broadcast(message, source, MessageType.params(MessageType.CHAT, source)); // skin ID might be hooked here?
+			CommandSourceStack source = player.createCommandSourceStack(); // display name hooked here
+			if (Switchy.STYLED_CHAT) StyledChatCompat.modifyForSending(message, source, ChatType.CHAT);
+			source.getServer().getPlayerList().broadcastChatMessage(message, source, ChatType.bind(ChatType.CHAT, source)); // skin ID might be hooked here?
 		} catch (Exception e) {
 			Switchy.LOGGER.error("[Switchy] Error while performing say");
 		} finally {
@@ -375,35 +375,35 @@ public class SwitchyCommands {
 		}
 	}
 
-	private static int switchProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId, Boolean exists) {
+	private static int switchProfile(ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback, String profileId, Boolean exists) {
 		String casedName = profileId;
 		profileId = profileId.toLowerCase();
 		boolean reallyExists = data.profileExists(profileId);
 		if (data.current().equals(profileId)) {
 			feedback.accept(prefix()
-				.append(Text.literal("profile '").formatted(Formatting.YELLOW))
+				.append(Component.literal("profile '").withStyle(ChatFormatting.YELLOW))
 				.append(profileId)
-				.append(Text.literal("' already active! specify a different profile!").formatted(Formatting.YELLOW))
+				.append(Component.literal("' already active! specify a different profile!").withStyle(ChatFormatting.YELLOW))
 			);
 			return 0;
 		}
 		if (exists == false && reallyExists) {
 			feedback.accept(prefix()
-				.append("that profile already exists! try ").formatted(Formatting.YELLOW)
-				.append(clickable("/switch %s".formatted(profileId), "/switch %s".formatted(profileId), true, Formatting.AQUA, "", ""))
+				.append("that profile already exists! try ").withStyle(ChatFormatting.YELLOW)
+				.append(clickable("/switch %s".formatted(profileId), "/switch %s".formatted(profileId), true, ChatFormatting.AQUA, "", ""))
 			);
 			return 0;
 		}
 		if (exists && !reallyExists) {
 			feedback.accept(prefix()
-				.append(Text.literal("profile ").formatted(Formatting.YELLOW))
+				.append(Component.literal("profile ").withStyle(ChatFormatting.YELLOW))
 				.append(profileId)
-				.append(Text.literal(" hasn't been made yet!").formatted(Formatting.YELLOW))
+				.append(Component.literal(" hasn't been made yet!").withStyle(ChatFormatting.YELLOW))
 			);
 			feedback.accept(indent()
-				.append(Text.literal("use ").formatted(Formatting.YELLOW))
-				.append(clickable("/switchy new %s".formatted(casedName), "/switchy new %s".formatted(casedName), true, Formatting.AQUA, "", ""))
-				.append(Text.literal(" to create it.").formatted(Formatting.YELLOW))
+				.append(Component.literal("use ").withStyle(ChatFormatting.YELLOW))
+				.append(clickable("/switchy new %s".formatted(casedName), "/switchy new %s".formatted(casedName), true, ChatFormatting.AQUA, "", ""))
+				.append(Component.literal(" to create it.").withStyle(ChatFormatting.YELLOW))
 			);
 			return 0;
 		}
@@ -415,22 +415,22 @@ public class SwitchyCommands {
 			}
 			data.switchOrCreateProfile(profileId, player, prefix()
 				.append(getProfileText(player, currentProfile))
-				.append(Text.literal(" \uD83E\uDC46 ").formatted(Formatting.GREEN))
+				.append(Component.literal(" \uD83E\uDC46 ").withStyle(ChatFormatting.GREEN))
 				.append(getProfileText(player, nextProfile))
-				.append(Text.literal("! ").formatted(Formatting.GREEN))
+				.append(Component.literal("! ").withStyle(ChatFormatting.GREEN))
 				.append(clickable("list", "/switchy", true)));
 		} catch (ProfileCurrentException e) {
 			feedback.accept(prefix()
-				.append(Text.literal("profile '").formatted(Formatting.YELLOW))
+				.append(Component.literal("profile '").withStyle(ChatFormatting.YELLOW))
 				.append(profileId)
-				.append(Text.literal("' already active! specify a different profile!").formatted(Formatting.YELLOW))
+				.append(Component.literal("' already active! specify a different profile!").withStyle(ChatFormatting.YELLOW))
 			);
 			return 0;
 		} catch (Exception e) {
 			feedback.accept(prefix()
-				.append("error while switching: ").formatted(Formatting.RED)
-				.append(Objects.requireNonNullElse(e.getMessage(), "???")).formatted(Formatting.GRAY)
-				.append(" see server logs for more info.").formatted(Formatting.RED)
+				.append("error while switching: ").withStyle(ChatFormatting.RED)
+				.append(Objects.requireNonNullElse(e.getMessage(), "???")).withStyle(ChatFormatting.GRAY)
+				.append(" see server logs for more info.").withStyle(ChatFormatting.RED)
 			);
 			Switchy.LOGGER.error("[Switchy] Error while switching to {} for player {}", profileId, player.getGameProfile().getName(), e);
 			return 0;
@@ -438,31 +438,31 @@ public class SwitchyCommands {
 		return 1;
 	}
 
-	public static MutableText getProfileText(ServerPlayerEntity player, SwitchyProfile profile) {
+	public static MutableComponent getProfileText(ServerPlayer player, SwitchyProfile profile) {
 		return getProfileText(player, profile, true);
 	}
 
-	public static MutableText getProfileText(ServerPlayerEntity player, SwitchyProfile profile, boolean allowBio) {
+	public static MutableComponent getProfileText(ServerPlayer player, SwitchyProfile profile, boolean allowBio) {
 		SwitchyComponentType<?> skin = Switchy.PLACEHOLDER_API && PlaceholderApiCompat.hasHeads() ? SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN) : null;
-		MutableText name = getNameText(player, profile);
-		return Text.empty().append(skin == null || !profile.contains(skin) ? Text.empty() : skin.asText(player.getServer(), profile.components()).append(" ")).append(allowBio ? name : FormatUtils.stripInteraction(name));
+		MutableComponent name = getNameText(player, profile);
+		return Component.empty().append(skin == null || !profile.contains(skin) ? Component.empty() : skin.asText(player.getServer(), profile.components()).append(" ")).append(allowBio ? name : FormatUtils.stripInteraction(name));
 	}
 
-	public static MutableText getNameText(ServerPlayerEntity player, SwitchyProfile profile) {
+	public static MutableComponent getNameText(ServerPlayer player, SwitchyProfile profile) {
 		return SwitchyComponentTypes.NAME.asText(player.getServer(), profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id));
 	}
 
-	private static int switchNextProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
+	private static int switchNextProfile(ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback) {
 		return switchProfile(player, data, feedback, data.profileAfter(data.current()), true);
 	}
 
-	private static int switchRandomProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) {
+	private static int switchRandomProfile(ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback) {
 		return switchProfile(player, data, feedback, data.randomBesides(data.current(), player.getRandom()), true);
 	}
 
-	public static <T> int editComponent(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId, SwitchyComponentType<T> type, T value) {
+	public static <T> int editComponent(ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback, String profileId, SwitchyComponentType<T> type, T value) {
 		if (!data.componentSet().contains(type)) {
-			feedback.accept(prefix().append(Text.literal("can't edit a shared component!").formatted(Formatting.YELLOW)));
+			feedback.accept(prefix().append(Component.literal("can't edit a shared component!").withStyle(ChatFormatting.YELLOW)));
 			return 0;
 		}
 		SwitchyProfile profile;
@@ -472,16 +472,16 @@ public class SwitchyCommands {
 			throw new RuntimeException(e);
 		}
 		T oldValue = profile.set(type, value);
-		Text feedbackText = prefix()
-			.append(Text.literal("edited ").formatted(Formatting.GREEN))
+		Component feedbackText = prefix()
+			.append(Component.literal("edited ").withStyle(ChatFormatting.GREEN))
 			.append(profileId)
-			.append(Text.literal(":").formatted(Formatting.GRAY))
+			.append(Component.literal(":").withStyle(ChatFormatting.GRAY))
 			.append(type.id().getPath())
-			.append(Text.literal(" - ").formatted(Formatting.GREEN))
-			.append(oldValue == null ? Text.of("empty") : type.asText(player.getServer(), oldValue))
-			.append(Text.literal(" \uD83E\uDC46 ").formatted(Formatting.GREEN))
+			.append(Component.literal(" - ").withStyle(ChatFormatting.GREEN))
+			.append(oldValue == null ? Component.nullToEmpty("empty") : type.asText(player.getServer(), oldValue))
+			.append(Component.literal(" \uD83E\uDC46 ").withStyle(ChatFormatting.GREEN))
 			.append(type.asText(player.getServer(), value))
-			.append(Text.literal("!").formatted(Formatting.GREEN))
+			.append(Component.literal("!").withStyle(ChatFormatting.GREEN))
 			.append(" ")
 			.append(clickable("list", "/switchy", true));
 		if (profileId.equals(data.current()) && (type.nbtMutator() != null || type.playerMutator() != null)) {
@@ -490,9 +490,9 @@ public class SwitchyCommands {
 				return 2;
 			} catch (Exception e) {
 				feedback.accept(prefix()
-					.append("error while self-switching: ").formatted(Formatting.RED)
-					.append(Objects.requireNonNullElse(e.getMessage(), "???")).formatted(Formatting.GRAY)
-					.append(" See server logs for more info.").formatted(Formatting.RED)
+					.append("error while self-switching: ").withStyle(ChatFormatting.RED)
+					.append(Objects.requireNonNullElse(e.getMessage(), "???")).withStyle(ChatFormatting.GRAY)
+					.append(" See server logs for more info.").withStyle(ChatFormatting.RED)
 				);
 				Switchy.LOGGER.error("[Switchy] Error while switching to {} for player {}", profileId, player.getGameProfile().getName(), e);
 				return 0;
@@ -503,104 +503,104 @@ public class SwitchyCommands {
 		}
 	}
 
-	private static int renameProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId, String newId) {
+	private static int renameProfile(ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback, String profileId, String newId) {
 		try {
 			data.renameProfile(profileId, newId);
 		} catch (IllegalArgumentException e) {
-			feedback.accept(prefix().append(Text.literal(e.getMessage()).formatted(Formatting.YELLOW)));
+			feedback.accept(prefix().append(Component.literal(e.getMessage()).withStyle(ChatFormatting.YELLOW)));
 			return 0;
 		}
 		feedback.accept(prefix()
-			.append(Text.literal("renamed ").formatted(Formatting.GREEN))
+			.append(Component.literal("renamed ").withStyle(ChatFormatting.GREEN))
 			.append(profileId)
-			.append(Text.literal(" \uD83E\uDC46 ").formatted(Formatting.GREEN))
+			.append(Component.literal(" \uD83E\uDC46 ").withStyle(ChatFormatting.GREEN))
 			.append(newId)
-			.append(Text.literal("!").formatted(Formatting.GREEN))
+			.append(Component.literal("!").withStyle(ChatFormatting.GREEN))
 			.append(" ")
 			.append(clickable("list", "/switchy", true))
 		);
 		return 1;
 	}
 
-	private static int deleteProfile(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, String profileId) {
+	private static int deleteProfile(ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback, String profileId) {
 		try {
 			SwitchyProfile profile = data.deleteProfile(profileId);
 			feedback.accept(prefix()
-				.append(Text.literal("profile ").formatted(Formatting.GREEN))
+				.append(Component.literal("profile ").withStyle(ChatFormatting.GREEN))
 				.append(profileId)
-				.append(Text.literal(" deleted successfully!").formatted(Formatting.GREEN))
+				.append(Component.literal(" deleted successfully!").withStyle(ChatFormatting.GREEN))
 				.append(" ")
 				.append(clickable("list", "/switchy", true))
 			);
 			return profile.components().size();
 		} catch (ProfileCurrentException e) {
-			feedback.accept(prefix().append(Text.literal("can't delete current profile!").formatted(Formatting.YELLOW)));
+			feedback.accept(prefix().append(Component.literal("can't delete current profile!").withStyle(ChatFormatting.YELLOW)));
 			return 0;
 		} catch (ProfilePreciousException e) {
 			feedback.accept(prefix()
-				.append(Text.literal("profile ").formatted(Formatting.YELLOW))
+				.append(Component.literal("profile ").withStyle(ChatFormatting.YELLOW))
 				.append(profileId)
-				.append(Text.literal(" contains ").formatted(Formatting.YELLOW))
+				.append(Component.literal(" contains ").withStyle(ChatFormatting.YELLOW))
 				.append(String.valueOf(e.getPreciousComponents().size()))
-				.append(Text.literal("x precious components!").formatted(Formatting.YELLOW))
+				.append(Component.literal("x precious components!").withStyle(ChatFormatting.YELLOW))
 			);
 			e.getPreciousComponents().asTexts(player.getServer()).forEach(componentText -> feedback.accept(indent().append(componentText)));
 			return 0;
 		}
 	}
 
-	private static int enableComponent(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, Identifier id) {
+	private static int enableComponent(ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback, Identifier id) {
 		Set<SwitchyComponentType<?>> types = SwitchyComponentTypes.instance().values().stream().filter(t -> id.equals(t.group())).collect(Collectors.toSet());
 		if (types.isEmpty() && SwitchyComponentTypes.instance().contains(id) && SwitchyComponentTypes.instance().get(id).group() == null) types.add(SwitchyComponentTypes.instance().get(id));
 		if (types.isEmpty()) {
-			feedback.accept(prefix().append(Text.literal("component doesn't exist!").formatted(Formatting.YELLOW)));
+			feedback.accept(prefix().append(Component.literal("component doesn't exist!").withStyle(ChatFormatting.YELLOW)));
 			return 0;
 		}
 		if (types.stream().anyMatch(t -> data.componentSet().contains(t))) {
-			feedback.accept(prefix().append(Text.literal("component is already enabled!").formatted(Formatting.YELLOW)));
+			feedback.accept(prefix().append(Component.literal("component is already enabled!").withStyle(ChatFormatting.YELLOW)));
 			return 0;
 		}
 		int changed = data.initComponents(types, player);
 		if (changed == 0) {
-			feedback.accept(prefix().append(Text.literal("component failed to initialize! see logs for more info").formatted(Formatting.RED)));
+			feedback.accept(prefix().append(Component.literal("component failed to initialize! see logs for more info").withStyle(ChatFormatting.RED)));
 			return 0;
 		}
 		components("", player, data, feedback);
-		feedback.accept(prefix().append(Text.literal(id.getPath())).append(Text.literal(" is now switched per-profile. ").formatted(Formatting.GREEN)).append(clickable("list", "/switchy", true)));
+		feedback.accept(prefix().append(Component.literal(id.getPath())).append(Component.literal(" is now switched per-profile. ").withStyle(ChatFormatting.GREEN)).append(clickable("list", "/switchy", true)));
 		return changed;
 	}
 
-	private static int disableComponent(ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback, Identifier id) {
+	private static int disableComponent(ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback, Identifier id) {
 		Set<SwitchyComponentType<?>> types = SwitchyComponentTypes.instance().values().stream().filter(t -> id.equals(t.group())).collect(Collectors.toSet());
 		if (types.isEmpty() && SwitchyComponentTypes.instance().contains(id) && SwitchyComponentTypes.instance().get(id).group() == null) types.add(SwitchyComponentTypes.instance().get(id));
 		if (types.isEmpty()) {
-			feedback.accept(prefix().append(Text.literal("component doesn't exist!").formatted(Formatting.YELLOW)));
+			feedback.accept(prefix().append(Component.literal("component doesn't exist!").withStyle(ChatFormatting.YELLOW)));
 			return 0;
 		}
 		if (types.stream().anyMatch(t -> !data.componentSet().contains(t))) {
-			feedback.accept(prefix().append(Text.literal("component is already disabled!").formatted(Formatting.YELLOW)));
+			feedback.accept(prefix().append(Component.literal("component is already disabled!").withStyle(ChatFormatting.YELLOW)));
 			return 0;
 		}
 		int changed = data.removeComponents(types);
 		if (changed == 0) {
-			feedback.accept(prefix().append(Text.literal("component is precious! empty it first.").formatted(Formatting.YELLOW)));
+			feedback.accept(prefix().append(Component.literal("component is precious! empty it first.").withStyle(ChatFormatting.YELLOW)));
 			return 0;
 		}
 		components("", player, data, feedback);
-		feedback.accept(prefix().append(Text.literal(id.getPath())).append(Text.literal(" is now shared between profiles. ").formatted(Formatting.GREEN)).append(clickable("list", "/switchy", true)));
+		feedback.accept(prefix().append(Component.literal(id.getPath())).append(Component.literal(" is now shared between profiles. ").withStyle(ChatFormatting.GREEN)).append(clickable("list", "/switchy", true)));
 		return changed;
 	}
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registries, CommandManager.RegistrationEnvironment environment) {
-		RequiredArgumentBuilder<ServerCommandSource, String> editBuilder = profile(true);
+	public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registries, Commands.CommandSelection environment) {
+		RequiredArgumentBuilder<CommandSourceStack, String> editBuilder = profile(true);
 		for (SwitchyComponentType<?> type : SwitchyComponentTypes.getStatic().values()) {
-			type.tryCreateEditor(arg -> editBuilder.then(CommandManager.literal(type.id().toString().replace("switchy:", "")).then(arg)));
+			type.tryCreateEditor(arg -> editBuilder.then(Commands.literal(type.id().toString().replace("switchy:", "")).then(arg)));
 		}
 
 		dispatcher.register(
-			CommandManager.literal("switch")
+			Commands.literal("switch")
 				.requires(c -> c.getPlayer() != null && SwitchyPlayerData.ofEarly(c.getPlayer()) != null && SwitchyPlayerData.ofEarly(c.getPlayer()).size() > 1)
-				.then(CommandManager.literal("?")
+				.then(Commands.literal("?")
 					.requires(c -> c.getPlayer() != null && SwitchyPlayerData.ofEarly(c.getPlayer()) != null && SwitchyPlayerData.ofEarly(c.getPlayer()).size() > 2)
 					.executes(c -> execute(c, (i, p, d, f) -> switchRandomProfile(p, d, f)))
 				)
@@ -610,58 +610,58 @@ public class SwitchyCommands {
 				.executes(c -> execute(c, (i, p, d, f) -> switchNextProfile(p, d, f)))
 		);
 		dispatcher.register(
-			CommandManager.literal("switchy")
-				.then(CommandManager.literal("new")
-					.then(CommandManager.argument("name", StringArgumentType.string())
+			Commands.literal("switchy")
+				.then(Commands.literal("new")
+					.then(Commands.argument("name", StringArgumentType.string())
 						.executes(c -> execute(c, (i, p, d, f) -> switchProfile(p, d, f, c.getArgument("name", String.class), false)))
 					)
 				)
-				.then(CommandManager.literal("view")
+				.then(Commands.literal("view")
 					.then(profile(true)
 						.executes(c -> execute(c, (i, p, d, f) -> viewProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase())))
 					)
 				)
-				.then(CommandManager.literal("say")
+				.then(Commands.literal("say")
 					.requires(c -> c.getPlayer() != null && SwitchyPlayerData.ofEarly(c.getPlayer()) != null && SwitchyPlayerData.ofEarly(c.getPlayer()).size() > 1)
 					.then(profile(true)
-						.then(CommandManager.argument("message", MessageArgumentType.message())
+						.then(Commands.argument("message", MessageArgument.message())
 							.executes(c -> execute(c, (i, p, d, f) -> say(c, p, d, f, c.getArgument("profile", String.class).toLowerCase())))
 						)
 					)
 				)
-				.then(CommandManager.literal("delete")
+				.then(Commands.literal("delete")
 					.requires(c -> c.getPlayer() != null && SwitchyPlayerData.ofEarly(c.getPlayer()) != null && SwitchyPlayerData.ofEarly(c.getPlayer()).size() > 1)
 					.then(profile(false)
 						.executes(c -> execute(c, (i, p, d, f) -> deleteProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase())))
 					)
 				)
-				.then(CommandManager.literal("edit")
+				.then(Commands.literal("edit")
 					.then(editBuilder
-						.then(CommandManager.literal("id")
+						.then(Commands.literal("id")
 							.then(
-								CommandManager.argument("id", StringArgumentType.word()).executes(c -> execute(c, (i, p, d, f) -> renameProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase(), c.getArgument("id", String.class).toLowerCase()))))
+								Commands.argument("id", StringArgumentType.word()).executes(c -> execute(c, (i, p, d, f) -> renameProfile(p, d, f, c.getArgument("profile", String.class).toLowerCase(), c.getArgument("id", String.class).toLowerCase()))))
 						)
 					)
 				)
-				.then(CommandManager.literal("import")
-					.then(CommandManager.argument("scope", StringArgumentType.word())
-						.suggests((c, b) -> CommandSource.suggestMatching(List.of(ALL, EXISTING), b))
-						.then(CommandManager.argument("url", StringArgumentType.greedyString())
+				.then(Commands.literal("import")
+					.then(Commands.argument("scope", StringArgumentType.word())
+						.suggests((c, b) -> SharedSuggestionProvider.suggest(List.of(ALL, EXISTING), b))
+						.then(Commands.argument("url", StringArgumentType.greedyString())
 							.executes(c -> execute(c, (i, p, d, f) -> importProfiles(p, d, f, c.getArgument("url", String.class), c.getArgument("scope", String.class))))
 						)
 					)
 				)
-				.then(CommandManager.literal("export")
+				.then(Commands.literal("export")
 					.requires(c -> c.getPlayer() != null && SwitchyPlayerData.ofEarly(c.getPlayer()) != null && SwitchyPlayerData.ofEarly(c.getPlayer()).size() > 1)
 					.executes(c -> execute(c, SwitchyCommands::export))
 				)
-				.then(CommandManager.literal("components")
-					.then(CommandManager.literal("disable")
+				.then(Commands.literal("components")
+					.then(Commands.literal("disable")
 						.then(groupedComponent(true)
 							.executes(c -> execute(c, (i, p, d, f) -> disableComponent(p, d, f, c.getArgument("component", Identifier.class))))
 						)
 					)
-					.then(CommandManager.literal("enable")
+					.then(Commands.literal("enable")
 						.then(groupedComponent(false)
 							.executes(c -> execute(c, (i, p, d, f) -> enableComponent(p, d, f, c.getArgument("component", Identifier.class))))
 						)
@@ -672,55 +672,55 @@ public class SwitchyCommands {
 		);
 	}
 
-	private static RequiredArgumentBuilder<ServerCommandSource, String> profile(boolean includeCurrent) {
-		return CommandManager.argument("profile", StringArgumentType.string()).suggests((c, b) -> CommandSource.suggestMatching(
+	private static RequiredArgumentBuilder<CommandSourceStack, String> profile(boolean includeCurrent) {
+		return Commands.argument("profile", StringArgumentType.string()).suggests((c, b) -> SharedSuggestionProvider.suggest(
 			(Iterable<String>) map(c, (i, p, d, f) -> (includeCurrent ? d.keySet() : Sets.difference(d.keySet(), Set.of(d.current()))).stream().map(StringArgumentType::escapeIfRequired).toList(), false), b));
 	}
 
-	private static RequiredArgumentBuilder<ServerCommandSource, Identifier> groupedComponent(Boolean enabled) {
-		return CommandManager.argument("component", IdentifierArgumentType.identifier()).suggests((c, b) -> CommandSource.suggestIdentifiers(
+	private static RequiredArgumentBuilder<CommandSourceStack, Identifier> groupedComponent(Boolean enabled) {
+		return Commands.argument("component", IdentifierArgument.id()).suggests((c, b) -> SharedSuggestionProvider.suggestResource(
 			(Iterable<Identifier>) map(c, (i, p, d, f) -> SwitchyComponentTypes.instance().values().stream().filter(t -> enabled == null || (!enabled ^ d.componentSet().contains(t))).map(t -> Objects.requireNonNullElse(t.group(), t.id())).distinct().toList(), false), b));
 	}
 
-	private static RequiredArgumentBuilder<ServerCommandSource, Identifier> component(Boolean enabled) {
-		return CommandManager.argument("component", IdentifierArgumentType.identifier()).suggests((c, b) -> CommandSource.suggestIdentifiers(
+	private static RequiredArgumentBuilder<CommandSourceStack, Identifier> component(Boolean enabled) {
+		return Commands.argument("component", IdentifierArgument.id()).suggests((c, b) -> SharedSuggestionProvider.suggestResource(
 			(Iterable<Identifier>) map(c, (i, p, d, f) -> SwitchyComponentTypes.instance().values().stream().filter(t -> enabled == null || (!enabled ^ d.componentSet().contains(t))).map(TypeRegistry.Type::id).toList(), false), b));
 	}
 
-	public static MutableText prefix() {
-		return Text.empty().append(Text.literal("[Switchy] ").formatted(Formatting.DARK_PURPLE));
+	public static MutableComponent prefix() {
+		return Component.empty().append(Component.literal("[Switchy] ").withStyle(ChatFormatting.DARK_PURPLE));
 	}
 
-	public static MutableText indent() {
-		return Text.empty().append(Text.literal("|| ").formatted(Formatting.DARK_PURPLE));
+	public static MutableComponent indent() {
+		return Component.empty().append(Component.literal("|| ").withStyle(ChatFormatting.DARK_PURPLE));
 	}
 
-	public static MutableText clickable(String name, String contents, ClickEvent.Action action, Formatting formatting, String prefix, String suffix) {
-		return clickable(Text.literal(name).formatted(formatting), contents, action, null, formatting, prefix, suffix);
+	public static MutableComponent clickable(String name, String contents, ClickEvent.Action action, ChatFormatting formatting, String prefix, String suffix) {
+		return clickable(Component.literal(name).withStyle(formatting), contents, action, null, formatting, prefix, suffix);
 	}
 
-	public static MutableText clickable(Text name, String contents, ClickEvent.Action action, Text hint, Formatting formatting, String prefix, String suffix) {
-		return Text.empty()
-			.append(Text.literal(prefix).formatted(Formatting.GRAY))
-			.append(name.copy().styled(s -> s
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.empty().append(hint == null ? Text.empty() : hint.copy().append("\n")).append(Text.literal(contents + (action == ClickEvent.Action.SUGGEST_COMMAND ? "..." : "")).formatted(formatting))))
+	public static MutableComponent clickable(Component name, String contents, ClickEvent.Action action, Component hint, ChatFormatting formatting, String prefix, String suffix) {
+		return Component.empty()
+			.append(Component.literal(prefix).withStyle(ChatFormatting.GRAY))
+			.append(name.copy().withStyle(s -> s
+				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.empty().append(hint == null ? Component.empty() : hint.copy().append("\n")).append(Component.literal(contents + (action == ClickEvent.Action.SUGGEST_COMMAND ? "..." : "")).withStyle(formatting))))
 				.withClickEvent(new ClickEvent(action, contents))
 			))
-			.append(Text.literal(suffix).formatted(Formatting.GRAY));
+			.append(Component.literal(suffix).withStyle(ChatFormatting.GRAY));
 	}
 
-	public static MutableText clickable(String name, String contents, boolean instant, Formatting formatting, String prefix, String suffix) {
+	public static MutableComponent clickable(String name, String contents, boolean instant, ChatFormatting formatting, String prefix, String suffix) {
 		return clickable(name, contents, instant ? ClickEvent.Action.RUN_COMMAND : ClickEvent.Action.SUGGEST_COMMAND, formatting, prefix, suffix);
 	}
 
-	public static MutableText clickable(String name, String command, boolean instant) {
-		return clickable(name, command, instant, Formatting.AQUA, "<", ">");
+	public static MutableComponent clickable(String name, String command, boolean instant) {
+		return clickable(name, command, instant, ChatFormatting.AQUA, "<", ">");
 	}
 
-	public static <T> T map(CommandContext<ServerCommandSource> context, SurveyorCommandExecutor<T> executor, boolean feedback) {
-		ServerPlayerEntity player;
+	public static <T> T map(CommandContext<CommandSourceStack> context, SurveyorCommandExecutor<T> executor, boolean feedback) {
+		ServerPlayer player;
 		try {
-			player = context.getSource().getPlayerOrThrow();
+			player = context.getSource().getPlayerOrException();
 		} catch (CommandSyntaxException e) {
 			if (feedback) Switchy.LOGGER.error("[Switchy] Commands cannot be invoked by a non-player");
 			return null;
@@ -728,22 +728,22 @@ public class SwitchyCommands {
 
 		SwitchyPlayerData data = SwitchyPlayerData.of(player);
 		try {
-			return executor.execute(context.getInput(), player, data, t -> context.getSource().sendFeedback(() -> t, false));
+			return executor.execute(context.getInput(), player, data, t -> context.getSource().sendSuccess(() -> t, false));
 		} catch (ProfileMissingException e) {
-			context.getSource().sendFeedback(() -> prefix().append(Text.literal("profile doesn't exist!").formatted(Formatting.YELLOW)), false);
+			context.getSource().sendSuccess(() -> prefix().append(Component.literal("profile doesn't exist!").withStyle(ChatFormatting.YELLOW)), false);
 			return null;
 		} catch (Exception e) {
-			if (feedback) context.getSource().sendFeedback(() -> prefix().append(Text.literal("command \"/%s...\" failed! Check log for details.".formatted(context.getInput().substring(0, Math.min(context.getInput().length(), 20)))).formatted(Formatting.RED)), false);
+			if (feedback) context.getSource().sendSuccess(() -> prefix().append(Component.literal("command \"/%s...\" failed! Check log for details.".formatted(context.getInput().substring(0, Math.min(context.getInput().length(), 20)))).withStyle(ChatFormatting.RED)), false);
 			if (feedback) Switchy.LOGGER.error("[Switchy] Error while executing command: {}", context.getInput(), e);
 			return null;
 		}
 	}
 
-	public static int execute(CommandContext<ServerCommandSource> context, SurveyorCommandExecutor<Integer> executor) {
+	public static int execute(CommandContext<CommandSourceStack> context, SurveyorCommandExecutor<Integer> executor) {
 		return Objects.requireNonNullElse(map(context, executor, true), 0);
 	}
 
     public interface SurveyorCommandExecutor<T> {
-		T execute(String input, ServerPlayerEntity player, SwitchyPlayerData data, Consumer<Text> feedback) throws ProfileMissingException;
+		T execute(String input, ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback) throws ProfileMissingException;
 	}
 }

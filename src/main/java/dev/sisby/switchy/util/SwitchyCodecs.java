@@ -10,12 +10,12 @@ import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.NonNullList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,17 +36,17 @@ public interface SwitchyCodecs {
 			return ops.createByte(value);
 		}
 	};
-	Codec<NbtElement> NBT = Codec.PASSTHROUGH.comapFlatMap(dynamic -> DataResult.success(dynamic.convert(NbtOps.INSTANCE).getValue()), nbt -> new Dynamic<>(NbtOps.INSTANCE, nbt));
+	Codec<Tag> NBT = Codec.PASSTHROUGH.comapFlatMap(dynamic -> DataResult.success(dynamic.convert(NbtOps.INSTANCE).getValue()), nbt -> new Dynamic<>(NbtOps.INSTANCE, nbt));
 	MapCodec<ItemStack> ITEM_STACK_MAP_CODEC = new RecursiveMapCodec<>(
 		codec -> RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
-					Registries.ITEM.getCodec().fieldOf("id").forGetter(ItemStack::getItem),
+					BuiltInRegistries.ITEM.byNameCodec().fieldOf("id").forGetter(ItemStack::getItem),
 					Codec.INT.fieldOf("Count").forGetter(ItemStack::getCount),
-					NbtCompound.CODEC.optionalFieldOf("tag").forGetter(stack -> Optional.ofNullable(stack.getNbt()))
+					CompoundTag.CODEC.optionalFieldOf("tag").forGetter(stack -> Optional.ofNullable(stack.getTag()))
 				)
 				.apply(instance, (id, count, tag) -> {
 					ItemStack newStack = new ItemStack(id, count);
-					newStack.setNbt(tag.orElse(null));
+					newStack.setTag(tag.orElse(null));
 					return newStack;
 				})
 		)
@@ -75,8 +75,8 @@ public interface SwitchyCodecs {
 		}
 	}
 
-	Codec<DefaultedList<ItemStack>> INVENTORY_CODEC = Codec.list(StackWithSlot.CODEC).xmap(l -> {
-		DefaultedList<ItemStack> dl = DefaultedList.ofSize(l.stream().mapToInt(s -> s.slot + 1).max().orElse(0), ItemStack.EMPTY);
+	Codec<NonNullList<ItemStack>> INVENTORY_CODEC = Codec.list(StackWithSlot.CODEC).xmap(l -> {
+		NonNullList<ItemStack> dl = NonNullList.withSize(l.stream().mapToInt(s -> s.slot + 1).max().orElse(0), ItemStack.EMPTY);
 		l.forEach(sws -> dl.set(sws.slot(), sws.stack()));
 		return dl;
 	}, dl -> {

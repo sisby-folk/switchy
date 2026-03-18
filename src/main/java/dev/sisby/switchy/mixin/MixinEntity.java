@@ -2,9 +2,9 @@ package dev.sisby.switchy.mixin;
 
 import dev.sisby.switchy.duck.SwitchyPlayer;
 import dev.sisby.switchy.exception.NbtException;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,32 +13,32 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
 public class MixinEntity {
-	@Inject(method = "writeNbt", at = @At("HEAD"), cancellable = true)
-	public void applyHotSwapData(NbtCompound nbt, CallbackInfoReturnable<NbtCompound> cir) {
+	@Inject(method = "saveWithoutId", at = @At("HEAD"), cancellable = true)
+	public void applyHotSwapData(CompoundTag nbt, CallbackInfoReturnable<CompoundTag> cir) {
 		Entity self = (Entity) (Object) this;
-		if (self instanceof SwitchyPlayer sp && self instanceof ServerPlayerEntity spe) { // mods will overwrite our hotswap data if we don't do this up here.
-			NbtCompound hotSwap = sp.switchy$hotSwapData();
+		if (self instanceof SwitchyPlayer sp && self instanceof ServerPlayer spe) { // mods will overwrite our hotswap data if we don't do this up here.
+			CompoundTag hotSwap = sp.switchy$hotSwapData();
 			if (hotSwap != null) {
-				if (self.getServer().isHost(spe.getGameProfile())) { // hosts don't support reconfiguration unless we patch this
-					NbtCompound levelDat = self.getServer().getSaveProperties().getPlayerData();
+				if (self.getServer().isSingleplayerOwner(spe.getGameProfile())) { // hosts don't support reconfiguration unless we patch this
+					CompoundTag levelDat = self.getServer().getWorldData().getLoadedPlayerTag();
 					if (levelDat != null) {
-						levelDat.getKeys().clear();
-						levelDat.copyFrom(hotSwap);
-						sp.switchy$getPlayerData().writeNbt(spe.getServer().getRegistryManager(), levelDat);
+						levelDat.getAllKeys().clear();
+						levelDat.merge(hotSwap);
+						sp.switchy$getPlayerData().writeNbt(spe.getServer().registryAccess(), levelDat);
 					}
 				}
-				nbt.copyFrom(hotSwap);
-				sp.switchy$getPlayerData().writeNbt(spe.getServer().getRegistryManager(), nbt);
+				nbt.merge(hotSwap);
+				sp.switchy$getPlayerData().writeNbt(spe.getServer().registryAccess(), nbt);
 				cir.setReturnValue(nbt);
 				cir.cancel();
 			}
 		}
 	}
 
-	@Inject(method = "readNbt", at = @At("TAIL"))
-	public void cacheDisplayData(NbtCompound nbt, CallbackInfo ci) {
+	@Inject(method = "load", at = @At("TAIL"))
+	public void cacheDisplayData(CompoundTag nbt, CallbackInfo ci) {
 		Entity self = (Entity) (Object) this;
-		if (self instanceof SwitchyPlayer sp && self instanceof ServerPlayerEntity spe) {
+		if (self instanceof SwitchyPlayer sp && self instanceof ServerPlayer spe) {
 			if (sp.switchy$getPlayerData() != null) {
 				for (String profile : sp.switchy$getPlayerData().keySet()) {
 					try {

@@ -6,13 +6,13 @@
 	"mixins": [
 		"MixinEntity",
 		"MixinGameProfile",
-		"MixinPlayerEntity",
-		"MixinServerPlayerEntity"
+		"MixinPlayer",
+		"MixinServerPlayer"
 	],
 	"client": [
-		"client.MixinClientPlayNetworkHandler",
-		"client.MixinMinecraftClient",
-		"client.MixinServerPlayNetworkHandler"
+		"client.MixinClientPacketListener",
+		"client.MixinMinecraft",
+		"client.MixinServerGamePacketListenerImpl"
 	],
 	"server": [
 	],
