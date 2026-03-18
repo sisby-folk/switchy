@@ -10,6 +10,7 @@ import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.SwitchyCommands;
 import dev.sisby.switchy.exception.ComponentFailedInitializeException;
 import dev.sisby.switchy.exception.NbtException;
+import dev.sisby.switchy.mixin.AccessServerPlayer;
 import dev.sisby.switchy.mixin.AccessTagValueInput;
 import dev.sisby.switchy.util.TypeRegistry;
 import net.minecraft.commands.arguments.NbtPathArgument;
@@ -85,7 +86,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		NbtMutator<T> nbtMutator = nbtMutator();
 		PlayerMutator<T> playerMutator = playerMutator();
 		if (nbtMutator != null) {
-			nbtMutator.mutate(player.createCommandSourceStack().getServer().registryAccess(), components.get(this), playerData);
+			nbtMutator.mutate(((AccessServerPlayer) player).getServer().registryAccess(), components.get(this), playerData);
 		} else if (playerMutator != null) {
 			playerMutator.mutate(components.get(this), player);
 		}
@@ -196,7 +197,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		@Override
 		public T initialize(ValueInput playerNbt, ServerPlayer player, String profileId) throws ComponentFailedInitializeException {
 			try {
-				return nbtReader.read(player.createCommandSourceStack().getServer().registryAccess(), playerNbt);
+				return nbtReader.read(((AccessServerPlayer) player).getServer().registryAccess(), playerNbt);
 			} catch (Exception e) {
 				throw new ComponentFailedInitializeException("", e);
 			}

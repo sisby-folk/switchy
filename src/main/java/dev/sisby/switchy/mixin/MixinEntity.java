@@ -1,6 +1,7 @@
 package dev.sisby.switchy.mixin;
 
 import dev.sisby.switchy.duck.SwitchyPlayer;
+import dev.sisby.switchy.duck.SwitchyWorldData;
 import dev.sisby.switchy.exception.NbtException;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.Entity;
@@ -21,8 +22,11 @@ public class MixinEntity {
 		if (self instanceof SwitchyPlayer sp && self instanceof ServerPlayer spe) { // mods will overwrite our hotswap data if we don't do this up here.
 			CompoundTag hotSwap = sp.switchy$hotSwapData();
 			if (hotSwap != null) {
+				if (((AccessServerPlayer) spe).getServer().isSingleplayerOwner(spe.nameAndId())) { // if the host ID changed since last load, reconfiguration will incorrectly load old data...
+					((SwitchyWorldData) ((AccessServerPlayer) spe).getServer().getWorldData()).overrideSingleplayerID(spe.nameAndId().id()); // so override the getter via a duck
+				}
 				for (String name : hotSwap.keySet()) output.store(name, ExtraCodecs.NBT, hotSwap.get(name));
-				sp.switchy$getPlayerData().writeNbt(spe.createCommandSourceStack().getServer().registryAccess(), output);
+				sp.switchy$getPlayerData().writeNbt(((AccessServerPlayer) spe).getServer().registryAccess(), output);
 				ci.cancel();
 			}
 		}

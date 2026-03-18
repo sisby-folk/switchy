@@ -24,6 +24,7 @@ import dev.sisby.switchy.exception.NbtException;
 import dev.sisby.switchy.exception.ProfileCurrentException;
 import dev.sisby.switchy.exception.ProfileMissingException;
 import dev.sisby.switchy.exception.ProfilePreciousException;
+import dev.sisby.switchy.mixin.AccessServerPlayer;
 import dev.sisby.switchy.util.FormatUtils;
 import dev.sisby.switchy.util.TypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -166,7 +167,7 @@ public class SwitchyCommands {
 					.withHoverEvent(!enabled ? null : new HoverEvent.ShowText(matchingProfiles.isEmpty() ? Component.literal("<no %s data yet>".formatted(id.getPath().replace("_", " "))).withStyle(ChatFormatting.GRAY) : ComponentUtils.formatList(matchingProfiles.stream().map(p -> Component.empty()
 						.append(Component.literal(p.id()).withStyle(ChatFormatting.GRAY))
 						.append(": ")
-						.append(ComponentUtils.formatList(types.stream().filter(t -> p.get(t) != null).map(t -> t.asText(player.createCommandSourceStack().getServer(), p.components())).toList(), Component.literal(", ").withStyle(ChatFormatting.GRAY)))
+						.append(ComponentUtils.formatList(types.stream().filter(t -> p.get(t) != null).map(t -> t.asText(((AccessServerPlayer) player).getServer(), p.components())).toList(), Component.literal(", ").withStyle(ChatFormatting.GRAY)))
 					).toList(), Component.nullToEmpty("\n"))))
 				)
 			);
@@ -249,7 +250,7 @@ public class SwitchyCommands {
 				// encode importables
 				for (SwitchyComponentType<?> type : profile.components().keySet()) {
 					if (type.importable()) {
-						type.encode(player.createCommandSourceStack().getServer().registryAccess().createSerializationContext(JsonOps.INSTANCE), profile.components()).ifPresent(e -> components.put(type.id().toString(), e));
+						type.encode(((AccessServerPlayer) player).getServer().registryAccess().createSerializationContext(JsonOps.INSTANCE), profile.components()).ifPresent(e -> components.put(type.id().toString(), e));
 					}
 				}
 				// attempt to rip PK name data
@@ -283,13 +284,13 @@ public class SwitchyCommands {
 					if (splitBio.size() > 2) {
 						description = splitBio.get(2);
 					}
-					name = (SwitchyComponentTypes.NAME.asText(player.createCommandSourceStack().getServer(), name).getString() + bracketed).trim(); // strip tags
+					name = (SwitchyComponentTypes.NAME.asText(((AccessServerPlayer) player).getServer(), name).getString() + bracketed).trim(); // strip tags
 				}
 				// bodge player renderer avatar from skin
 				String avatarUrl = null;
 				if (Switchy.CONFIG.exportAvatarUrl.contains("%s")) {
 					String key = player.getGameProfile().name();
-					MinecraftProfileTexture skin = player.createCommandSourceStack().getServer().services().sessionService().getTextures(player.getGameProfile()).skin();
+					MinecraftProfileTexture skin = ((AccessServerPlayer) player).getServer().services().sessionService().getTextures(player.getGameProfile()).skin();
 					SwitchyComponentType<?> skinComponent = SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN);
 					if (skinComponent != null && profile.contains(skinComponent) && profile.get(skinComponent) instanceof CompoundTag skinCompound && skinCompound.get("value") instanceof StringTag valueString) {
 						Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
@@ -325,7 +326,7 @@ public class SwitchyCommands {
 			feedback.accept(prefix().append(Component.literal("profile doesn't exist!").withStyle(ChatFormatting.YELLOW)));
 			return 0;
 		}
-		List<MutableComponent> texts = profile.components().asTexts(player.createCommandSourceStack().getServer());
+		List<MutableComponent> texts = profile.components().asTexts(((AccessServerPlayer) player).getServer());
 		feedback.accept(prefix()
 			.append(Component.literal("profile ").withStyle(ChatFormatting.GRAY))
 			.append(profileId)
@@ -368,7 +369,7 @@ public class SwitchyCommands {
 			if (Switchy.STYLED_CHAT) StyledChatCompat.modifyForSending(message, source, ChatType.CHAT);
 			source.getServer().getPlayerList().broadcastChatMessage(message, source, ChatType.bind(ChatType.CHAT, source)); // skin ID might be hooked here?
 		} catch (Exception e) {
-			Switchy.LOGGER.error("[Switchy] Error while performing say");
+			Switchy.LOGGER.error("[Switchy] Error while performing say", e);
 		} finally {
 			((SwitchyGameProfile) (Object)  player.getGameProfile()).switchy$setSayProfile(null);
 		}
@@ -444,11 +445,11 @@ public class SwitchyCommands {
 	public static MutableComponent getProfileText(ServerPlayer player, SwitchyProfile profile, boolean allowBio) {
 		SwitchyComponentType<?> skin = Switchy.PLACEHOLDER_API && PlaceholderApiCompat.hasHeads() ? SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN) : null;
 		MutableComponent name = getNameText(player, profile);
-		return Component.empty().append(skin == null || !profile.contains(skin) ? Component.empty() : skin.asText(player.createCommandSourceStack().getServer(), profile.components()).append(" ")).append(allowBio ? name : FormatUtils.stripInteraction(name));
+		return Component.empty().append(skin == null || !profile.contains(skin) ? Component.empty() : skin.asText(((AccessServerPlayer) player).getServer(), profile.components()).append(" ")).append(allowBio ? name : FormatUtils.stripInteraction(name));
 	}
 
 	public static MutableComponent getNameText(ServerPlayer player, SwitchyProfile profile) {
-		return SwitchyComponentTypes.NAME.asText(player.createCommandSourceStack().getServer(), profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id));
+		return SwitchyComponentTypes.NAME.asText(((AccessServerPlayer) player).getServer(), profile.getOrGetDefault(SwitchyComponentTypes.NAME, SwitchyProfile::id));
 	}
 
 	private static int switchNextProfile(ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback) {
@@ -477,9 +478,9 @@ public class SwitchyCommands {
 			.append(Component.literal(":").withStyle(ChatFormatting.GRAY))
 			.append(type.id().getPath())
 			.append(Component.literal(" - ").withStyle(ChatFormatting.GREEN))
-			.append(oldValue == null ? Component.nullToEmpty("empty") : type.asText(player.createCommandSourceStack().getServer(), oldValue))
+			.append(oldValue == null ? Component.nullToEmpty("empty") : type.asText(((AccessServerPlayer) player).getServer(), oldValue))
 			.append(Component.literal(" \uD83E\uDC46 ").withStyle(ChatFormatting.GREEN))
-			.append(type.asText(player.createCommandSourceStack().getServer(), value))
+			.append(type.asText(((AccessServerPlayer) player).getServer(), value))
 			.append(Component.literal("!").withStyle(ChatFormatting.GREEN))
 			.append(" ")
 			.append(clickable("list", "/switchy", true));
@@ -543,7 +544,7 @@ public class SwitchyCommands {
 				.append(String.valueOf(e.getPreciousComponents().size()))
 				.append(Component.literal("x precious components!").withStyle(ChatFormatting.YELLOW))
 			);
-			e.getPreciousComponents().asTexts(player.createCommandSourceStack().getServer()).forEach(componentText -> feedback.accept(indent().append(componentText)));
+			e.getPreciousComponents().asTexts(((AccessServerPlayer) player).getServer()).forEach(componentText -> feedback.accept(indent().append(componentText)));
 			return 0;
 		}
 	}

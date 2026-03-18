@@ -13,6 +13,7 @@ import dev.sisby.switchy.exception.ProfileCurrentException;
 import dev.sisby.switchy.exception.ProfileMissingException;
 import dev.sisby.switchy.exception.ProfilePreciousException;
 import dev.sisby.switchy.exception.ProfileExistsException;
+import dev.sisby.switchy.mixin.AccessServerPlayer;
 import dev.sisby.switchy.util.DispatchMapCodec;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.RegistryAccess;
@@ -138,9 +139,9 @@ public class SwitchyPlayerData {
 	}
 
 	public int initComponents(Set<SwitchyComponentType<?>> types, ServerPlayer player) {
-		TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, player.createCommandSourceStack().getServer().registryAccess());
+		TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, ((AccessServerPlayer) player).getServer().registryAccess());
 		player.saveWithoutId(output);
-		ValueInput input = TagValueInput.create(ProblemReporter.DISCARDING, player.createCommandSourceStack().getServer().registryAccess(), output.buildResult());
+		ValueInput input = TagValueInput.create(ProblemReporter.DISCARDING, ((AccessServerPlayer) player).getServer().registryAccess(), output.buildResult());
 		for (SwitchyComponentType<?> type : types) {
 			if (initComponent(type, player, input)) {
 				types.add(type);
@@ -185,9 +186,9 @@ public class SwitchyPlayerData {
 
 	public SwitchyProfile getOrCreateProfile(String profileId, ServerPlayer player) {
 		if (profileExists(profileId)) return profiles.get(profileId);
-		TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, player.createCommandSourceStack().getServer().registryAccess());
+		TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, ((AccessServerPlayer) player).getServer().registryAccess());
 		player.saveWithoutId(output);
-		ValueInput input = TagValueInput.create(ProblemReporter.DISCARDING, player.createCommandSourceStack().getServer().registryAccess(), output.buildResult());
+		ValueInput input = TagValueInput.create(ProblemReporter.DISCARDING, ((AccessServerPlayer) player).getServer().registryAccess(), output.buildResult());
 		SwitchyComponentMap components = SwitchyComponentMap.empty();
 		for (SwitchyComponentType<?> componentType : componentTypes) {
 			try {
@@ -277,7 +278,7 @@ public class SwitchyPlayerData {
 					SwitchyComponentType<?> type = componentSet().stream().filter(t -> t.id().toString().equals(componentKey)).findFirst().orElse(null);
 					if (type != null && type.importable()) {
 						if (current.equals(id)) newCurrent = profile;
-						type.decode(player.createCommandSourceStack().getServer().registryAccess().createSerializationContext(JsonOps.INSTANCE), data.components.get(componentKey), profile.components());
+						type.decode(((AccessServerPlayer) player).getServer().registryAccess().createSerializationContext(JsonOps.INSTANCE), data.components.get(componentKey), profile.components());
 					}
 				}
 			}
@@ -290,13 +291,13 @@ public class SwitchyPlayerData {
 	}
 
 	private CompoundTag updateFromPlayer(SwitchyProfile profile, ServerPlayer player) throws NbtException {
-		TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, player.createCommandSourceStack().getServer().registryAccess());
+		TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, ((AccessServerPlayer) player).getServer().registryAccess());
 		player.saveWithoutId(output);
 		CompoundTag nbt = output.buildResult();
-		ValueInput input = TagValueInput.create(ProblemReporter.DISCARDING, player.createCommandSourceStack().getServer().registryAccess(), nbt);
+		ValueInput input = TagValueInput.create(ProblemReporter.DISCARDING, ((AccessServerPlayer) player).getServer().registryAccess(), nbt);
 		for (SwitchyComponentType<?> componentType : componentTypes) {
 			if (componentType.nbtReader() != null) {
-				profile.components().set(componentType, componentType.nbtReader().read(player.createCommandSourceStack().getServer().registryAccess(), input));
+				profile.components().set(componentType, componentType.nbtReader().read(((AccessServerPlayer) player).getServer().registryAccess(), input));
 			} else if (componentType.playerReader() != null) {
 				profile.components().set(componentType, componentType.playerReader().read(player, profile.id()));
 			}
@@ -327,7 +328,7 @@ public class SwitchyPlayerData {
 		// Read Components
 		CompoundTag playerNbt;
 		if (selfSwitch) {
-			TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, player.createCommandSourceStack().getServer().registryAccess());
+			TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, ((AccessServerPlayer) player).getServer().registryAccess());
 			player.saveWithoutId(output);
 			playerNbt = output.buildResult();
 		} else {

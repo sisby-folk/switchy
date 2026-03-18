@@ -10,6 +10,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.compat.StyledNicknamesCompat;
+import dev.sisby.switchy.mixin.AccessServerPlayer;
 import dev.sisby.switchy.util.DispatchMapCodec;
 import dev.sisby.switchy.util.FormatUtils;
 import dev.sisby.switchy.util.SwitchyCodecs;
@@ -91,7 +92,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 		Identifier.fromNamespaceAndPath("minecraft", "inventory"), new SwitchyComponentType.SimpleEmptyChecker<NonNullList<ItemStack>>(dl -> dl.stream().allMatch(ItemStack::isEmpty))
 	));
 	public static final Map<Identifier, SwitchyComponentType.Initializer<?>> INITIALIZERS = new HashMap<>(Map.of(
-		Identifier.fromNamespaceAndPath("minecraft", "spawn_pos"), (nbt, player, id) -> player.createCommandSourceStack().getServer().overworld().getRespawnData().pos().getCenter()
+		Identifier.fromNamespaceAndPath("minecraft", "spawn_pos"), (nbt, player, id) -> ((AccessServerPlayer) player).getServer().overworld().getRespawnData().pos().getCenter()
 	));
 
 	public static final Identifier NAME_ID = Switchy.id("name");

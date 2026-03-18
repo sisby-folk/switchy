@@ -33,8 +33,8 @@ public class MixinServerPlayer implements SwitchyPlayer {
 	public void switchy$startReload() {
 		ServerPlayer self = (ServerPlayer) (Object) this;
 		if (switchy$playerData != null) {
-			TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, self.createCommandSourceStack().getServer().registryAccess());
-			switchy$playerData.writeNbt(self.createCommandSourceStack().getServer().registryAccess(), output);
+			TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, ((AccessServerPlayer) self).getServer().registryAccess());
+			switchy$playerData.writeNbt(((AccessServerPlayer) self).getServer().registryAccess(), output);
 			switchy$reloadData = output.buildResult();
 		}
 	}
@@ -43,8 +43,8 @@ public class MixinServerPlayer implements SwitchyPlayer {
 	public void switchy$finishReload() {
 		ServerPlayer self = (ServerPlayer) (Object) this;
 		if (switchy$reloadData != null) {
-			ValueInput input = TagValueInput.create(ProblemReporter.DISCARDING, self.createCommandSourceStack().getServer().registryAccess(), switchy$reloadData);
-			switchy$playerData = SwitchyPlayerData.fromNbt(self.createCommandSourceStack().getServer().registryAccess(), input);
+			ValueInput input = TagValueInput.create(ProblemReporter.DISCARDING, ((AccessServerPlayer) self).getServer().registryAccess(), switchy$reloadData);
+			switchy$playerData = SwitchyPlayerData.fromNbt(((AccessServerPlayer) self).getServer().registryAccess(), input);
 			switchy$reloadData = null;
 		}
 	}
@@ -60,9 +60,9 @@ public class MixinServerPlayer implements SwitchyPlayer {
 	public SwitchyPlayerData switchy$getOrCreatePlayerData() {
 		ServerPlayer self = (ServerPlayer) (Object) this;
 		if (switchy$playerData == null) {
-			TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, self.createCommandSourceStack().getServer().registryAccess());
+			TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, ((AccessServerPlayer) self).getServer().registryAccess());
 			self.saveWithoutId(output);
-			ValueInput input = TagValueInput.create(ProblemReporter.DISCARDING, self.createCommandSourceStack().getServer().registryAccess(), output.buildResult());
+			ValueInput input = TagValueInput.create(ProblemReporter.DISCARDING, ((AccessServerPlayer) self).getServer().registryAccess(), output.buildResult());
 			switchy$playerData = SwitchyPlayerData.create(self, input);
 			switchy$playerData.validate(self, input);
 		}
@@ -78,7 +78,7 @@ public class MixinServerPlayer implements SwitchyPlayer {
 	public void readPlayerData(ValueInput input, CallbackInfo ci) {
 		ServerPlayer self = (ServerPlayer) (Object) this;
 		if (input.contains(Switchy.ID)) {
-			switchy$playerData = SwitchyPlayerData.fromNbt(self.createCommandSourceStack().getServer().registryAccess(), input);
+			switchy$playerData = SwitchyPlayerData.fromNbt(((AccessServerPlayer) self).getServer().registryAccess(), input);
 			switchy$playerData.validate(self, input);
 		}
 	}
@@ -86,7 +86,7 @@ public class MixinServerPlayer implements SwitchyPlayer {
 	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
 	public void writePlayerData(ValueOutput output, CallbackInfo ci) {
 		ServerPlayer self = (ServerPlayer) (Object) this;
-		if (switchy$playerData != null && switchy$reloadData == null) switchy$playerData.writeNbt(self.createCommandSourceStack().getServer().registryAccess(), output);
+		if (switchy$playerData != null && switchy$reloadData == null) switchy$playerData.writeNbt(((AccessServerPlayer) self).getServer().registryAccess(), output);
 	}
 
 	@Inject(method = "restoreFrom", at = @At("TAIL"))

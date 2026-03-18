@@ -1,6 +1,7 @@
 package dev.sisby.switchy.data;
 
 import com.mojang.serialization.Codec;
+import dev.sisby.switchy.mixin.AccessServerPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
@@ -21,7 +22,7 @@ public record SwitchyProfile(String id, SwitchyComponentMap components) implemen
 
 	public Collection<Component> asTexts(ServerPlayer player) {
 		List<Component> outList = new ArrayList<>(List.of(Component.empty().append(Component.literal("id: ").withStyle(ChatFormatting.GRAY)).append(id)));
-		outList.addAll(components().asTexts(player.createCommandSourceStack().getServer()));
+		outList.addAll(components().asTexts(((AccessServerPlayer) player).getServer()));
 		return outList;
 	}
 

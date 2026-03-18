@@ -13,7 +13,7 @@ import net.minecraft.nbt.CompoundTag;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(GameProfile.class)
+@Mixin(value = GameProfile.class, remap = false)
 public class MixinGameProfile implements SwitchyGameProfile {
 	private SwitchyProfile switchy$sayProfile = null;
 
