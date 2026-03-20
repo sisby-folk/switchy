@@ -10,6 +10,6 @@
 	"enabled": true,
 	"codec": "nbt",
 	"path": "cardinal_components.hexcasting:favored_pigment.pigment",
-	"preview": "$.stack.id",
+	"preview": "$stack.id",
 	"group": "hexcasting:pigment"
 }
