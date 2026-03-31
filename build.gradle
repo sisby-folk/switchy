@@ -106,7 +106,7 @@ modrinth {
 	changelog = !file("CHANGELOG.md").exists() ? "" : rootProject.file("CHANGELOG.md").text + "\n\nChangelog: https://github.com/${user}/${slug}/releases/tag/v${modVersion}+${tagBranch}"
 	syncBodyFrom = rootProject.file("README.md").text
 	dependencies {
-		required.version libs.fapi.get().getName(), libs.versions.fapi.get()
+		required.project libs.fapi.get().getName()
 	}
 }
 
