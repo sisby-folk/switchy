@@ -40,7 +40,7 @@ public class ComponentTypeLoader extends SimpleJsonResourceReloadListener implem
 		}
 		for (Identifier id : prepared.keySet()) {
 			EditableComponentType type = GSON.fromJson(prepared.get(id), EditableComponentType.class);
-			if (!type.enabled()) continue;
+			if (!Switchy.CONFIG.isEnabled(id, type.enabled)) continue;
 			Codec<?> codec = SwitchyComponentTypes.CODECS.get(type.codec != null && SwitchyComponentTypes.CODECS.containsKey(Identifier.tryParse(type.codec)) ? Identifier.tryParse(type.codec) : Identifier.tryParse("nbt"));
 			registerDataType(types, codec, id, type);
 		}
