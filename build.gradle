@@ -64,6 +64,10 @@ java {
 	targetCompatibility = JavaVersion.VERSION_25
 }
 
+loom {
+	accessWidenerPath = file("src/main/resources/${modId}.accesswidener")
+}
+
 publishing {
 	repositories {
 		maven {
