@@ -1,5 +1,7 @@
 package dev.sisby.switchy.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.mojang.authlib.GameProfile;
 import dev.sisby.switchy.Switchy;
 import dev.sisby.switchy.SwitchyCommands;
 import dev.sisby.switchy.compat.StyledNicknamesCompat;
@@ -22,5 +24,13 @@ public class MixinPlayer {
 			return Switchy.STYLED_NICKNAMES ? StyledNicknamesCompat.formatNickname(name) : name;
 		}
 		return text;
+	}
+
+	@ModifyReturnValue(method = "getGameProfile", at = @At(value = "RETURN"))
+	private GameProfile copyGameProfileWhileOverridden(GameProfile original) {
+		if (((Object) original) instanceof SwitchyGameProfile sgp && sgp.switchy$getSayProfile() != null) {
+			return new GameProfile(original.id(), original.name(), original.properties()); // calling .properties() will hit the mixin NOW instead of later when its codec'd
+		}
+		return original;
 	}
 }
