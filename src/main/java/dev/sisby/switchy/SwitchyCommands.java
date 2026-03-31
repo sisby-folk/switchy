@@ -13,7 +13,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.JsonOps;
 import com.mojang.util.UUIDTypeAdapter;
-import dev.sisby.switchy.compat.PlaceholderApiCompat;
 import dev.sisby.switchy.compat.StyledChatCompat;
 import dev.sisby.switchy.data.SwitchyComponentType;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
@@ -443,7 +442,7 @@ public class SwitchyCommands {
 	}
 
 	public static MutableComponent getProfileText(ServerPlayer player, SwitchyProfile profile, boolean allowBio) {
-		SwitchyComponentType<?> skin = Switchy.PLACEHOLDER_API && PlaceholderApiCompat.hasHeads() ? SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN) : null;
+		SwitchyComponentType<?> skin = SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN);
 		MutableComponent name = getNameText(player, profile);
 		return Component.empty().append(skin == null || !profile.contains(skin) ? Component.empty() : skin.asText(((AccessServerPlayer) player).getServer(), profile.components()).append(" ")).append(allowBio ? name : FormatUtils.stripInteraction(name));
 	}

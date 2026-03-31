@@ -1,15 +1,14 @@
 package dev.sisby.switchy.util;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.mojang.authlib.minecraft.MinecraftProfileTexture;
-import com.mojang.authlib.yggdrasil.response.MinecraftTexturesPayload;
+import com.google.common.collect.HashMultimap;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.util.UUIDTypeAdapter;
-import dev.sisby.switchy.Switchy;
-import dev.sisby.switchy.compat.PlaceholderApiCompat;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
 import net.minecraft.commands.arguments.NbtPathArgument;
+import net.minecraft.network.chat.contents.objects.PlayerSprite;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.NumericTag;
@@ -25,15 +24,14 @@ import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.resources.Identifier;
 import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.component.ResolvableProfile;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.text.NumberFormat;
-import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.UUID;
 
 public class FormatUtils {
 
@@ -119,11 +117,10 @@ public class FormatUtils {
 	}
 
 	public static Component skin(MinecraftServer server, CompoundTag compound) {
-		Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
-		MinecraftTexturesPayload payload = gson.fromJson(new String(Base64.getDecoder().decode(compound.getString("value").orElse(""))), MinecraftTexturesPayload.class);
-		MinecraftProfileTexture skinTexture = payload.textures().get(MinecraftProfileTexture.Type.SKIN);
-		String skinHash = skinTexture.getHash();
-		return Switchy.PLACEHOLDER_API && PlaceholderApiCompat.hasHeads() ? PlaceholderApiCompat.head(server, skinHash) : truncate(skinHash);
+		PropertyMap map = new PropertyMap(HashMultimap.create());
+		map.put("textures", new Property("textures", compound.getString("value").orElse(""), compound.getString("signature").orElse("")));
+		ResolvableProfile profile = ResolvableProfile.createResolved(new GameProfile(Util.NIL_UUID, "profile", map));
+		return Component.object(new PlayerSprite(profile, true), Component.literal("[?]"));
 	}
 
 	public static Component stripInteraction(Component text) {
