@@ -20,6 +20,7 @@
 	"mixins": [
 		"${modId}.mixins.json"
 	],
+	"accessWidener": "${modId}.accesswidener",
 	"depends": {
 		"minecraft": ">=${mc}",
 		"fabricloader": ">=${fl}",

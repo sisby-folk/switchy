@@ -1,7 +1,6 @@
 package dev.sisby.switchy.util;
 
 import com.google.common.collect.HashMultimap;
-import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -9,7 +8,6 @@ import com.mojang.datafixers.util.Either;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
 import net.minecraft.commands.arguments.NbtPathArgument;
 import net.minecraft.network.chat.contents.objects.PlayerSprite;
-import net.minecraft.util.Util;
 import net.minecraft.world.entity.player.PlayerSkin;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CollectionTag;
@@ -30,7 +28,6 @@ import net.minecraft.world.item.component.ResolvableProfile;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
-import javax.swing.text.html.Option;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
@@ -121,9 +118,9 @@ public class FormatUtils {
 	}
 
 	public static Component skin(MinecraftServer server, CompoundTag compound) {
-		PropertyMap map = new PropertyMap(HashMultimap.create());
+		HashMultimap<String, Property> map = HashMultimap.create();
 		map.put("textures", new Property("textures", compound.getString("value").orElse(""), null));
-		ResolvableProfile profile = ResolvableProfile.create(Either.right(new ResolvableProfile.Partial(Optional.empty(), Optional.empty(), map)), PlayerSkin.Patch.EMPTY);
+		ResolvableProfile profile = ResolvableProfile.create(Either.right(new ResolvableProfile.Partial(Optional.empty(), Optional.empty(), new PropertyMap(map))), PlayerSkin.Patch.EMPTY);
 		return Component.object(new PlayerSprite(profile, true), Component.literal("[?]"));
 	}
 

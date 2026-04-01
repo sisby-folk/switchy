@@ -362,15 +362,16 @@ public class SwitchyCommands {
 	}
 
 	public static void say(PlayerChatMessage message, ServerPlayer player, SwitchyProfile profile) {
+		SwitchyGameProfile gameProfile = ((SwitchyGameProfile) (Object) player.getGameProfile()); // MUST use this object, as setting the say profile breaks getGameProfile.
 		try {
-			((SwitchyGameProfile) (Object) player.getGameProfile()).switchy$setSayProfile(profile);
+			gameProfile.switchy$setSayProfile(profile);
 			CommandSourceStack source = player.createCommandSourceStack(); // display name hooked here
 			if (Switchy.STYLED_CHAT) StyledChatCompat.modifyForSending(message, source, ChatType.CHAT);
 			source.getServer().getPlayerList().broadcastChatMessage(message, source, ChatType.bind(ChatType.CHAT, source)); // skin ID might be hooked here?
 		} catch (Exception e) {
 			Switchy.LOGGER.error("[Switchy] Error while performing say", e);
 		} finally {
-			((SwitchyGameProfile) (Object)  player.getGameProfile()).switchy$setSayProfile(null);
+			gameProfile.switchy$setSayProfile(null);
 		}
 	}
 

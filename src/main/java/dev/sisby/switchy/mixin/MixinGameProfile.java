@@ -1,6 +1,7 @@
 package dev.sisby.switchy.mixin;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -13,7 +14,7 @@ import net.minecraft.nbt.CompoundTag;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(value = GameProfile.class, remap = false)
+@Mixin(value = GameProfile.class, remap = false, priority = 1500) // must apply AFTER fabric tailor, to avoid its override
 public class MixinGameProfile implements SwitchyGameProfile {
 	private SwitchyProfile switchy$sayProfile = null;
 
@@ -33,11 +34,11 @@ public class MixinGameProfile implements SwitchyGameProfile {
 			SwitchyComponentType<CompoundTag> skin = (SwitchyComponentType<CompoundTag>) SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN);
 			if (skin != null && switchy$sayProfile.contains(skin)) {
 				CompoundTag compound = switchy$sayProfile.get(skin);
-				PropertyMap newMap = new PropertyMap(HashMultimap.create());
+				Multimap<String, Property> newMap = HashMultimap.create();
 				newMap.putAll(original);
 				newMap.removeAll("textures");
 				newMap.put("textures", new Property("textures", compound.getString("value").orElse(""), compound.getString("signature").orElse("")));
-				return newMap;
+				return new PropertyMap(newMap);
 			}
 		}
 		return original;
