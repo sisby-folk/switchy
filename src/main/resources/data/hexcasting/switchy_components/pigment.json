@@ -1,0 +1,15 @@
+{
+	"fabric:load_conditions": [
+		{
+			"condition": "fabric:all_mods_loaded",
+			"values": [
+				"hexcasting"
+			]
+		}
+	],
+	"enabled": true,
+	"codec": "nbt",
+	"path": "cardinal_components.hexcasting:favored_pigment.pigment",
+	"preview": "$stack.id",
+	"group": "hexcasting:pigment"
+}
