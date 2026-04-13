@@ -70,8 +70,6 @@ import java.util.stream.Stream;
 
 public class SwitchyCommands {
 	private static final Pattern COLOR_PATTERN = Pattern.compile("<(?:color:)?#([0-9a-fA-f]{6})>", Pattern.CASE_INSENSITIVE);
-	private static final Pattern BIO_PATTERN = Pattern.compile("<hover:'?((?:\\\\'|.)*?)'?>", Pattern.CASE_INSENSITIVE);
-	private static final Pattern BRACKETED_PATTERN = Pattern.compile("(\\([^()]+\\))", Pattern.CASE_INSENSITIVE);
 	private static final String EXISTING = "existing";
 	private static final String ALL = "all";
 
@@ -191,7 +189,7 @@ public class SwitchyCommands {
 	private static int showNameFormat(ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback) {
 		if (data.nameFormat().isPresent()) feedback.accept(prefix().append(Component.literal("import name format is currently set to:").withStyle(ChatFormatting.GRAY)));
 		if (data.nameFormat().isEmpty()) feedback.accept(prefix().append(Component.literal("import name format is unset. currently defaulting to:").withStyle(ChatFormatting.GRAY)));
-		feedback.accept(indent().append(data.nameFormatOrDefault()));
+		feedback.accept(indent().append(FormatUtils.highlightNameFormat(data.nameFormatOrDefault())));
 		return 1;
 	}
 
@@ -233,9 +231,9 @@ public class SwitchyCommands {
 			}
 		}
 		data.setNameFormat(nameFormat);
-		if (data.nameFormat().isPresent()) feedback.accept(prefix().append(Component.literal("name format changed.").withStyle(ChatFormatting.GREEN)).append(Component.literal(" name format is now:").withStyle(ChatFormatting.GRAY)));
-		if (data.nameFormat().isEmpty()) feedback.accept(prefix().append(Component.literal("name format reset to default.").withStyle(ChatFormatting.GREEN)).append(Component.literal(" name format is now:").withStyle(ChatFormatting.GRAY)));
-		feedback.accept(indent().append(Component.literal(data.nameFormatOrDefault())));
+		if (data.nameFormat().isPresent()) feedback.accept(prefix().append(Component.literal("import name format changed.").withStyle(ChatFormatting.GREEN)).append(Component.literal(" format is now:").withStyle(ChatFormatting.GRAY)));
+		if (data.nameFormat().isEmpty()) feedback.accept(prefix().append(Component.literal("import name format reset to default.").withStyle(ChatFormatting.GREEN)).append(Component.literal(" format is now:").withStyle(ChatFormatting.GRAY)));
+		feedback.accept(indent().append(FormatUtils.highlightNameFormat(data.nameFormatOrDefault())));
 		return 1;
 	}
 
