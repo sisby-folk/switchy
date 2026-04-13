@@ -74,7 +74,7 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 
 	default <S> boolean decode(DynamicOps<S> ops, S input, SwitchyComponentMap components) {
 		Optional<Pair<T, S>> result = codec().decode(ops, input).resultOrPartial(Switchy.LOGGER::error);
-		if (result.isPresent() && Objects.equals(components.get(this), result.get().getFirst())) {
+		if (result.isPresent() && !Objects.equals(components.get(this), result.get().getFirst())) {
 			components.set(this, result.get().getFirst());
 			return true;
 		}

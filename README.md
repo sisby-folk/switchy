@@ -12,7 +12,7 @@ Serverside player profiles for hotseat multiplayer, adventure maps, and plural s
 
 This is both **data-driven** and **player-customizable**. Here's a profile with [Styled Nicknames](https://modrinth.com/mod/styled-nicknames) and [Fabric Tailor](https://modrinth.com/mod/fabrictailor) (+[SCH](https://github.com/sisby-folk/ServerChatHeads/releases/tag/1.0.0)):</br>
 ![components](https://cdn.modrinth.com/data/ss0QuCRx/images/23cde9633791796124d060c13133428f67c3c662.png)<br/>
-Support is also built-in (via data) for for [Trinkets](modrinth.com/mod/trinkets)/[Accessories](https://modrinth.com/mod/accessories), [Pehkui](https://modrinth.com/mod/pehkui) (width/height), and [Origins](https://modrinth.com/mod/origins).
+Support is also built-in (via data) for [Lampblack Pronouns](https://modrinth.com/mod/lampblack), [Trinkets](modrinth.com/mod/trinkets)/[Accessories](https://modrinth.com/mod/accessories), [Pehkui](https://modrinth.com/mod/pehkui) (width/height), and [Origins](https://modrinth.com/mod/origins).
 
 You can even fluently chat using the display names of other profiles, just like [PluralKit](https://pluralkit.me/):<br/>
 ![chat tags](https://cdn.modrinth.com/data/ss0QuCRx/images/07265dba2d427ecfadc8c0c919389b81e3173c52.gif)</br>
