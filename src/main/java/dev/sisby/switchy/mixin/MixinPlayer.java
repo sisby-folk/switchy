@@ -34,7 +34,9 @@ public class MixinPlayer {
 	@ModifyReturnValue(method = "getGameProfile", at = @At(value = "RETURN"))
 	private GameProfile copyGameProfileWhileOverridden(GameProfile original) {
 		if (((Object) original) instanceof SwitchyGameProfile sgp && sgp.switchy$getSayProfile() != null) {
-			return new GameProfile(original.id(), original.name(), original.properties()); // calling .properties() will hit the mixin NOW instead of later when its codec'd
+			GameProfile copyProfile = new GameProfile(original.id(), original.name(), original.properties());
+			((SwitchyGameProfile) (Object) copyProfile).switchy$setSayProfile(sgp.switchy$getSayProfile());
+			return copyProfile; // calling .properties() will hit the mixin NOW instead of later when its codec'd
 		}
 		return original;
 	}
