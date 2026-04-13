@@ -134,7 +134,7 @@ public class ComponentTypeLoader extends SimpleJsonResourceReloadListener<Compon
 				}
 			}
 			SwitchyComponentType.TextProvider<T> finalProvider = provider;
-			SwitchyComponentType.TextProvider<T> prefixedPreviewer = (server, v) -> Component.empty().append(Component.literal(Objects.requireNonNullElse(type.prefix, "")).withStyle(ChatFormatting.GRAY)).append(finalProvider.toText(server, v));
+			SwitchyComponentType.TextProvider<T> prefixedPreviewer = (server, v) -> Component.empty().append(Component.literal(Optional.ofNullable(type.prefix).orElse("")).withStyle(ChatFormatting.GRAY)).append(finalProvider.toText(server, v));
 			SwitchyComponentType.EmptyChecker<T> finalChecker = checker;
 			types.register(id, codec, b -> b
 				.nbtSwitcher(type.path)

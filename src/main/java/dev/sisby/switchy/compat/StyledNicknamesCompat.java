@@ -12,13 +12,13 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
-import java.util.Objects;
+import java.util.Optional;
 
 public class StyledNicknamesCompat {
 	public static SwitchyComponentType.Builder<String> nameComponent(SwitchyComponentType.Builder<String> b) {
 		return b
 			.textProvider((s, v) -> TagParser.SIMPLIFIED_TEXT_FORMAT_SAFE.parseComponent(v, ServerPlaceholderContext.of(s).asParserContext()))
-			.playerReader((p, id) -> Objects.requireNonNullElse(PlayerDataApi.getGlobalDataFor(p, Identifier.fromNamespaceAndPath("stylednicknames", "nickname"), StringTag.TYPE), StringTag.valueOf(id)).asString().orElse(""))
+			.playerReader((p, id) -> Optional.ofNullable(PlayerDataApi.getGlobalDataFor(p, Identifier.fromNamespaceAndPath("stylednicknames", "nickname"), StringTag.TYPE)).orElse(StringTag.valueOf(id)).asString().orElse(""))
 			.playerMutator((v, p) -> {
 				PlayerDataApi.setGlobalDataFor(p, Identifier.fromNamespaceAndPath("stylednicknames", "nickname"), StringTag.valueOf(v));
 				PlayerDataApi.setGlobalDataFor(p, Identifier.fromNamespaceAndPath("stylednicknames", "permission"), ByteTag.valueOf(false));

@@ -6,6 +6,7 @@ import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Either;
 import dev.sisby.switchy.data.SwitchyComponentTypes;
+import dev.sisby.switchy.data.SwitchyPlayerData;
 import net.minecraft.commands.arguments.NbtPathArgument;
 import net.minecraft.network.chat.contents.objects.PlayerSprite;
 import net.minecraft.world.entity.player.PlayerSkin;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Matcher;
 
 public class FormatUtils {
 
@@ -134,5 +136,24 @@ public class FormatUtils {
 
 	public static Component stripInteractionNonRecursively(Component text) {
 		return text.copy().withStyle(s -> s.withHoverEvent(null).withClickEvent(null).withInsertion(null));
+	}
+
+	public static Component highlightNameFormat(String nameFormat) {
+		Matcher matcher = SwitchyPlayerData.NAME_FORMAT_PATTERN.matcher(nameFormat);
+		int printed = 0;
+		MutableComponent component = Component.empty();
+		while (matcher.find()) {
+			component.append(Component.literal(nameFormat.substring(printed, matcher.start())).withStyle(ChatFormatting.GRAY));
+			component.append(Component.literal("{").withStyle(ChatFormatting.DARK_GRAY));
+			component.append(Component.literal(matcher.group(1)).withStyle(ChatFormatting.GRAY));
+			component.append(Component.literal("{").withStyle(ChatFormatting.DARK_GRAY));
+			component.append(Component.literal(matcher.group(2)).withStyle(ChatFormatting.WHITE));
+			component.append(Component.literal("}").withStyle(ChatFormatting.DARK_GRAY));
+			component.append(Component.literal(matcher.group(3)).withStyle(ChatFormatting.GRAY));
+			component.append(Component.literal("}").withStyle(ChatFormatting.DARK_GRAY));
+			printed = matcher.end();
+		}
+		component.append(Component.literal(nameFormat.substring(printed)));
+		return component;
 	}
 }
