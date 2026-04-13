@@ -48,9 +48,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -61,19 +61,22 @@ public class SwitchyPlayerData {
 		return RecordCodecBuilder.create(instance -> instance.group(
 			Codec.STRING.fieldOf("current").forGetter(SwitchyPlayerData::current),
 			ComponentSerialization.CODEC.optionalFieldOf("greeting").forGetter(SwitchyPlayerData::greeting),
+			Codec.STRING.optionalFieldOf("nameFormat").forGetter(SwitchyPlayerData::nameFormat),
 			types.SET_CODEC.fieldOf("componentTypes").forGetter(p -> p.componentTypes),
 			DispatchMapCodec.of(ExtraCodecs.NON_EMPTY_STRING, id -> SwitchyProfile.codec(types, id)).fieldOf("profiles").xmap(a -> (Map<String, SwitchyProfile>) new HashMap<>(a), b -> b).forGetter(p -> p.profiles)
-		).apply(instance, (current, optionalGreeting, componentTypes, profiles) -> new SwitchyPlayerData(current, optionalGreeting.orElse(null), componentTypes, profiles)));
+		).apply(instance, (current, greeting, nameFormat, componentTypes, profiles) -> new SwitchyPlayerData(current, greeting.orElse(null), nameFormat.orElse(null), componentTypes, profiles)));
 	}
 
 	private String current;
-	private Component greeting;
+	private @Nullable Component greeting;
+	private @Nullable String nameFormat;
 	private final Set<SwitchyComponentType<?>> componentTypes;
 	private final Map<String, SwitchyProfile> profiles;
 
-	public SwitchyPlayerData(String current, Component greeting, Set<SwitchyComponentType<?>> componentTypes, Map<String, SwitchyProfile> profiles) {
+	public SwitchyPlayerData(String current, @Nullable Component greeting, @Nullable String nameFormat, Set<SwitchyComponentType<?>> componentTypes, Map<String, SwitchyProfile> profiles) {
 		this.current = current;
 		this.greeting = greeting;
+		this.nameFormat = nameFormat;
 		this.componentTypes = componentTypes;
 		this.profiles = profiles;
 	}
@@ -89,6 +92,7 @@ public class SwitchyPlayerData {
 	public static SwitchyPlayerData create(ServerPlayer player, CompoundTag nbt) {
 		SwitchyPlayerData data = new SwitchyPlayerData(
 			"default",
+			null,
 			null,
 			new LinkedHashSet<>(),
 			new LinkedHashMap<>()
@@ -131,6 +135,18 @@ public class SwitchyPlayerData {
 
 	public Optional<Component> greeting() {
 		return Optional.ofNullable(greeting);
+	}
+
+	public Optional<String> nameFormat() {
+		return Optional.ofNullable(nameFormat);
+	}
+
+	public String nameFormatOrDefault() {
+		return Optional.ofNullable(nameFormat).orElse(NAME_FORMAT_DEFAULT);
+	}
+
+	public void setNameFormat(String nameFormat) {
+		this.nameFormat = nameFormat;
 	}
 
 	public Component greet(ServerPlayer player) {
@@ -345,9 +361,11 @@ public class SwitchyPlayerData {
 		return orderedProfiles.get(random.nextInt(orderedProfiles.size()));
 	}
 
+	public record Privacy(@Nullable String description_privacy) { }
+
 	public record ProxyTag(@Nullable String prefix, @Nullable String suffix) {}
 
-	public record ProfileImportData(@Nullable String id, String name, @Nullable String display_name, @Nullable String color, @Nullable String pronouns, @Nullable String description, @Nullable String avatar_url, @Nullable List<ProxyTag> proxy_tags, @Nullable Map<String, JsonElement> components) {}
+	public record ProfileImportData(@Nullable String id, String name, @Nullable String display_name, @Nullable String color, @Nullable String pronouns, @Nullable String description, @Nullable String avatar_url, @Nullable List<ProxyTag> proxy_tags, @Nullable Privacy privacy, @Nullable Map<String, JsonElement> components) {}
 
 	public record GroupImportData(String name, List<String> members) {}
 
@@ -357,42 +375,75 @@ public class SwitchyPlayerData {
 		return input.replace("<", "\\<").replace("'", "\\'");
 	}
 
-	public int importProfiles(List<ProfileImportData> profileData, ServerPlayer player, @Nullable String name, boolean allowNew, Function<Integer, Component> greetingGetter) throws NbtException {
+	public static final String NAME_FORMAT_DEFAULT = "<hover:'{{pronouns} | }{{system}}{ | {bio}}'>{<#{color}>}{{name}}";
+
+	public static final Map<String, BiFunction<SwitchyCommands.PlayerImportData, ProfileImportData, String>> NAME_FORMAT_GETTERS = Map.of(
+		"pronouns", (s, m) -> m.pronouns(),
+		"tag", (s, m) -> s.tag(),
+		"system", (s, m) -> s.name(),
+		"bio", (s, m) -> "public".equals(m.privacy() == null ? null : m.privacy().description_privacy()) ? m.description() : null,
+		"color", (s, m) -> m.color(),
+		"slug", (s, m) -> m.name(),
+		"name", (s, m) -> Optional.ofNullable(m.display_name()).orElse(m.name()),
+		"paren", (s, m) -> {
+			if (m.display_name() == null) return null;
+			StringBuilder bracketed = new StringBuilder();
+			Matcher matcher = PARENTHESES.matcher(m.display_name());
+			while (matcher.find()) bracketed.append(matcher.group(1));
+			return bracketed.toString();
+		},
+		"shortdn", (s, m) -> {
+			if (m.display_name() == null) return m.name();
+			StringBuilder bracketed = new StringBuilder();
+			Matcher matcher = PARENTHESES.matcher(m.display_name());
+			while (matcher.find()) bracketed.append(matcher.group(1));
+			return m.display_name().replace(bracketed, "").trim();
+		}
+	);
+
+	public static final Pattern NAME_FORMAT_PATTERN = Pattern.compile("\\{([^{]*)\\{(\\w+)}([^}]*)}");
+
+	public int importProfiles(SwitchyCommands.PlayerImportData importData, ServerPlayer player, boolean allowNew, Function<Integer, Component> greetingGetter) throws NbtException {
 		int updated = 0;
 		boolean hadOneProfile = size() == 1;
 		SwitchyProfile newCurrent = null;
-		for (ProfileImportData data : profileData) {
-			String id = data.name().toLowerCase();
-			if (!allowNew && !keySet().contains(id)) continue;
+		Matcher format = NAME_FORMAT_PATTERN.matcher(nameFormatOrDefault());
+		for (ProfileImportData data : importData.members()) {
+			String slug = data.name().toLowerCase();
+			if (!allowNew && !keySet().contains(slug)) continue;
 			updated++;
-			SwitchyProfile profile = getOrCreateProfile(id, player);
-			StringBuilder bracketed = new StringBuilder();
-			if (data.display_name() != null) { // discord is better with long names. let's put it in the bio instead
-				Matcher matcher = PARENTHESES.matcher(data.display_name());
-				while (matcher.find()) {
-					bracketed.append(matcher.group(1));
+			SwitchyProfile profile = getOrCreateProfile(slug, player);
+
+			if (data.components() == null || !data.components().containsKey(SwitchyComponentTypes.NAME_ID.toString())) { // no switchy name data, derive using format
+				String newName = format.replaceAll(mr -> {
+					String prefix = mr.group(1);
+					String key = mr.group(2);
+					String suffix = mr.group(3);
+					String value = Optional.ofNullable(NAME_FORMAT_GETTERS.get(key)).map(g -> g.apply(importData, data)).orElse(null);
+					return value == null ? "" : prefix + quickTextEscape(value) + suffix;
+				});
+				if (componentSet().contains(SwitchyComponentTypes.NAME) && !newName.equals(profile.get(SwitchyComponentTypes.NAME))) {
+					if (current.equals(slug)) newCurrent = profile;
+					profile.set(SwitchyComponentTypes.NAME, newName);
 				}
 			}
-			String newName = "<hover:'%s%s | %s%s'><#%s>%s".formatted(
-				bracketed.isEmpty() ? "" : quickTextEscape(bracketed.toString()) + (data.pronouns() != null ? " - " : ""),
-				quickTextEscape(Objects.requireNonNullElse(data.pronouns(), "")),
-				quickTextEscape(Objects.requireNonNullElse(name, player.getGameProfile().getName())),
-				quickTextEscape(data.description() == null ? "" : " | " + data.description()),
-				quickTextEscape(Objects.requireNonNullElse(data.color(), "FFFFFF")),
-				quickTextEscape(Objects.requireNonNullElse(data.display_name(), id).replace(bracketed, "")).trim());
-			if (componentSet().contains(SwitchyComponentTypes.NAME) && !newName.equals(profile.get(SwitchyComponentTypes.NAME))) {
-				if (current.equals(id)) newCurrent = profile;
-				profile.set(SwitchyComponentTypes.NAME, newName);
-			}
 			if (componentSet().contains(SwitchyComponentTypes.TAG) && data.proxy_tags() != null && !data.proxy_tags().isEmpty()) {
-				profile.set(SwitchyComponentTypes.TAG, data.proxy_tags().stream().map(t -> new SwitchyComponentTypes.Tag(Objects.requireNonNullElse(t.prefix(), ""), Objects.requireNonNullElse(t.suffix(), ""))).toList());
+				profile.set(SwitchyComponentTypes.TAG, data.proxy_tags().stream().map(t -> new SwitchyComponentTypes.Tag(Optional.ofNullable(t.prefix()).orElse(""), Optional.ofNullable(t.suffix()).orElse(""))).toList());
+			}
+			try {
+				SwitchyComponentType<String> pronounsComponent = (SwitchyComponentType<String>) SwitchyComponentTypes.instance().get(SwitchyComponentTypes.LAMPBLACK_PRONOUNS);
+				if (pronounsComponent != null && data.pronouns() != null) {
+					profile.set(pronounsComponent, data.pronouns());
+				}
+			} catch (ClassCastException e) {
+				// pass
 			}
 			if (data.components() != null) {
 				for (String componentKey : data.components().keySet()) {
 					SwitchyComponentType<?> type = componentSet().stream().filter(t -> t.id().toString().equals(componentKey)).findFirst().orElse(null);
 					if (type != null && type.importable()) {
-						if (current.equals(id)) newCurrent = profile;
-						type.decode(player.getServer().registryAccess().createSerializationContext(JsonOps.INSTANCE), data.components.get(componentKey), profile.components());
+						boolean changed = type.decode(player.getServer().registryAccess().createSerializationContext(JsonOps.INSTANCE), data.components.get(componentKey), profile.components());
+						if (changed && current.equals(slug)) newCurrent = profile;
 					}
 				}
 			}

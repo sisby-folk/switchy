@@ -11,13 +11,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 
 public class StyledNicknamesCompat {
 	public static SwitchyComponentType.Builder<String> nameComponent(SwitchyComponentType.Builder<String> b) {
 		return b
 			.textProvider((s, v) -> TextParserUtils.formatTextSafe(v))
-			.playerReader((p, id) -> Objects.requireNonNullElse(PlayerDataApi.getGlobalDataFor(p, Identifier.fromNamespaceAndPath("stylednicknames", "nickname"), StringTag.TYPE), StringTag.valueOf(id)).getAsString())
+			.playerReader((p, id) -> Optional.ofNullable(PlayerDataApi.getGlobalDataFor(p, Identifier.fromNamespaceAndPath("stylednicknames", "nickname"), StringTag.TYPE)).orElse(StringTag.valueOf(id)).getAsString())
 			.playerMutator((v, p) -> {
 				PlayerDataApi.setGlobalDataFor(p, Identifier.fromNamespaceAndPath("stylednicknames", "nickname"), StringTag.valueOf(v));
 				PlayerDataApi.setGlobalDataFor(p, Identifier.fromNamespaceAndPath("stylednicknames", "permission"), ByteTag.valueOf(false));
