@@ -386,6 +386,14 @@ public class SwitchyPlayerData {
 			if (componentSet().contains(SwitchyComponentTypes.TAG) && data.proxy_tags() != null && !data.proxy_tags().isEmpty()) {
 				profile.set(SwitchyComponentTypes.TAG, data.proxy_tags().stream().map(t -> new SwitchyComponentTypes.Tag(Objects.requireNonNullElse(t.prefix(), ""), Objects.requireNonNullElse(t.suffix(), ""))).toList());
 			}
+			try {
+				SwitchyComponentType<String> pronounsComponent = (SwitchyComponentType<String>) SwitchyComponentTypes.instance().get(SwitchyComponentTypes.LAMPBLACK_PRONOUNS);
+				if (pronounsComponent != null && data.pronouns() != null) {
+					profile.set(pronounsComponent, data.pronouns());
+				}
+			} catch (ClassCastException e) {
+				// pass
+			}
 			if (data.components() != null) {
 				for (String componentKey : data.components().keySet()) {
 					SwitchyComponentType<?> type = componentSet().stream().filter(t -> t.id().toString().equals(componentKey)).findFirst().orElse(null);

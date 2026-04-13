@@ -119,6 +119,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	public static final Identifier ORIGINS_POWERS = Identifier.tryBuild("origins", "powers");
 	public static final Identifier TAILOR_SKIN = Identifier.tryBuild("fabrictailor", "skin");
 	public static final Identifier TRINKETS_SLOTS = Identifier.tryBuild("trinkets", "slots");
+	public static final Identifier LAMPBLACK_PRONOUNS = Identifier.tryBuild("lampblack", "pronouns");
 
 	public static final SwitchyComponentType<String> NAME = registerStatic(NAME_ID, Codec.STRING, builder -> {
 		builder = builder

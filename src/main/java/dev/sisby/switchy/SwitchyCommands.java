@@ -285,6 +285,15 @@ public class SwitchyCommands {
 					}
 					name = (SwitchyComponentTypes.NAME.asText(player.getServer(), name).getString() + bracketed).trim(); // strip tags
 				}
+				// pronouns
+				try {
+					SwitchyComponentType<String> pronounsComponent = (SwitchyComponentType<String>) SwitchyComponentTypes.instance().get(SwitchyComponentTypes.LAMPBLACK_PRONOUNS);
+					if (pronounsComponent != null) {
+						pronouns = profile.get(pronounsComponent);
+					}
+				} catch (ClassCastException e) {
+					// pass
+				}
 				// bodge player renderer avatar from skin
 				String avatarUrl = null;
 				if (Switchy.CONFIG.exportAvatarUrl.contains("%s")) {
