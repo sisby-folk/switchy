@@ -22,6 +22,7 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 public class ComponentTypeLoader extends SimpleJsonResourceReloadListener implements IdentifiableResourceReloadListener {
 	public static final String PATH = "switchy_components";
@@ -117,7 +118,7 @@ public class ComponentTypeLoader extends SimpleJsonResourceReloadListener implem
 				}
 			}
 			SwitchyComponentType.TextProvider<T> finalProvider = provider;
-			SwitchyComponentType.TextProvider<T> prefixedPreviewer = (server, v) -> Component.empty().append(Component.literal(Objects.requireNonNullElse(type.prefix, "")).withStyle(ChatFormatting.GRAY)).append(finalProvider.toText(server, v));
+			SwitchyComponentType.TextProvider<T> prefixedPreviewer = (server, v) -> Component.empty().append(Component.literal(Optional.ofNullable(type.prefix).orElse("")).withStyle(ChatFormatting.GRAY)).append(finalProvider.toText(server, v));
 			NbtPathArgument.NbtPath path = NbtPathArgument.nbtPath().parse(new StringReader(type.path));
 			SwitchyComponentType.EmptyChecker<T> finalChecker = checker;
 			types.register(id, codec, b -> b

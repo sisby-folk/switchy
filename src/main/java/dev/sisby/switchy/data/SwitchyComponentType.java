@@ -3,6 +3,7 @@ package dev.sisby.switchy.data;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
@@ -68,8 +69,13 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 		return codec().encodeStart(ops, components.get(this)).resultOrPartial(Switchy.LOGGER::error);
 	}
 
-	default <S> void decode(DynamicOps<S> ops, S input, SwitchyComponentMap components) {
-		codec().decode(ops, input).resultOrPartial(Switchy.LOGGER::error).ifPresent(p -> components.set(this, p.getFirst()));
+	default <S> boolean decode(DynamicOps<S> ops, S input, SwitchyComponentMap components) {
+		Optional<Pair<T, S>> result = codec().decode(ops, input).resultOrPartial(Switchy.LOGGER::error);
+		if (result.isPresent() && Objects.equals(components.get(this), result.get().getFirst())) {
+			components.set(this, result.get().getFirst());
+			return true;
+		}
+		return false;
 	}
 
 	default void tryInitialize(Collection<SwitchyComponentMap> consumer, CompoundTag nbt, ServerPlayer player, String profileId) {

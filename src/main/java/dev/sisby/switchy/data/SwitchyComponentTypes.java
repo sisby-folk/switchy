@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
@@ -154,7 +154,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 			.thenComparing(id -> id);
 		Map<Identifier, List<SwitchyComponentType<?>>> grouped = new TreeMap<>(prioritizedIdComparator);
 		Comparator<SwitchyComponentType<?>> comparator = Comparator.comparing((Function<SwitchyComponentType<?>, Integer>) SwitchyComponentType::previewPriority, Comparator.reverseOrder())
-			.thenComparing(t -> Objects.requireNonNullElse(t.group(), t.id()), prioritizedIdComparator);
+			.thenComparing(t -> Optional.ofNullable(t.group()).orElse(t.id()), prioritizedIdComparator);
 		for (SwitchyComponentType<?> t : keyset.stream().sorted(comparator).toList()) {
 			Identifier group = t.group();
 			grouped.computeIfAbsent(group != null ? group : t.id(), k -> new ArrayList<>()).add(t);

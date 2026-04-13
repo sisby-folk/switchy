@@ -52,13 +52,13 @@ import org.jetbrains.annotations.Nullable;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -188,7 +188,58 @@ public class SwitchyCommands {
 		return data.componentSet().size();
 	}
 
-	public record PlayerImportData(@Nullable String name, List<SwitchyPlayerData.ProfileImportData> members, @Nullable List<SwitchyPlayerData.GroupImportData> groups) {}
+	private static int showNameFormat(ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback) {
+		if (data.nameFormat().isPresent()) feedback.accept(prefix().append(Component.literal("import name format is currently set to:").withStyle(ChatFormatting.GRAY)));
+		if (data.nameFormat().isEmpty()) feedback.accept(prefix().append(Component.literal("import name format is unset. currently defaulting to:").withStyle(ChatFormatting.GRAY)));
+		feedback.accept(indent().append(data.nameFormatOrDefault()));
+		return 1;
+	}
+
+	private static int changeNameFormat(ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback, String nameFormat) {
+		if (SwitchyPlayerData.NAME_FORMAT_DEFAULT.equals(nameFormat)) nameFormat = null;
+		if (nameFormat != null) {
+			Matcher matcher = SwitchyPlayerData.NAME_FORMAT_PATTERN.matcher(nameFormat);
+			boolean found = false;
+			while (matcher.find()) {
+				String key = matcher.group(2);
+				if (!SwitchyPlayerData.NAME_FORMAT_GETTERS.containsKey(key)) {
+					feedback.accept(prefix()
+						.append(Component.literal("name format placeholder '").withStyle(ChatFormatting.YELLOW))
+						.append(key)
+						.append(Component.literal("' is invalid!").withStyle(ChatFormatting.YELLOW))
+						.append(Component.literal(" try:").withStyle(ChatFormatting.YELLOW))
+					);
+					feedback.accept(indent()
+						.append(ComponentUtils.formatList(SwitchyPlayerData.NAME_FORMAT_GETTERS.keySet().stream().sorted().map(Component::literal).toList(), Component.literal(", ").withStyle(ChatFormatting.GRAY)))
+					);
+					return 0;
+				} else {
+					found = true;
+				}
+			}
+			if (!found) {
+				feedback.accept(prefix()
+					.append(Component.literal("format doesn't contain any ").withStyle(ChatFormatting.YELLOW))
+					.append(Component.literal("{{").withStyle(ChatFormatting.GRAY))
+					.append(Component.literal("placeholders").withStyle(ChatFormatting.YELLOW))
+					.append(Component.literal("}}").withStyle(ChatFormatting.GRAY))
+					.append(Component.literal("!").withStyle(ChatFormatting.YELLOW))
+					.append(Component.literal(" try:").withStyle(ChatFormatting.YELLOW))
+				);
+				feedback.accept(indent()
+					.append(ComponentUtils.formatList(SwitchyPlayerData.NAME_FORMAT_GETTERS.keySet().stream().sorted().map(Component::literal).toList(), Component.literal(", ").withStyle(ChatFormatting.GRAY)))
+				);
+				return 0;
+			}
+		}
+		data.setNameFormat(nameFormat);
+		if (data.nameFormat().isPresent()) feedback.accept(prefix().append(Component.literal("name format changed.").withStyle(ChatFormatting.GREEN)).append(Component.literal(" name format is now:").withStyle(ChatFormatting.GRAY)));
+		if (data.nameFormat().isEmpty()) feedback.accept(prefix().append(Component.literal("name format reset to default.").withStyle(ChatFormatting.GREEN)).append(Component.literal(" name format is now:").withStyle(ChatFormatting.GRAY)));
+		feedback.accept(indent().append(Component.literal(data.nameFormatOrDefault())));
+		return 1;
+	}
+
+	public record PlayerImportData(@Nullable String name, @Nullable String tag, @Nullable SwitchyPlayerData.Privacy privacy, List<SwitchyPlayerData.ProfileImportData> members, @Nullable List<SwitchyPlayerData.GroupImportData> groups) {}
 
 	private static int importProfiles(ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback, String url, String scope) {
 		int beforeSize = data.size();
@@ -210,7 +261,7 @@ public class SwitchyCommands {
 			.append(clickable("list", "/switchy", true));
 		List<SwitchyPlayerData.ProfileImportData> profilesToImport = importData.members();
 		if (!EXISTING.equals(scope) && !ALL.equals(scope)) {
-			SwitchyPlayerData.GroupImportData group = Objects.requireNonNullElse(importData.groups, new ArrayList<SwitchyPlayerData.GroupImportData>()).stream().filter(g -> g.name().equals(scope)).findAny().orElse(null);
+			SwitchyPlayerData.GroupImportData group = Optional.ofNullable(importData.groups).orElse(new ArrayList<>()).stream().filter(g -> g.name().equals(scope)).findAny().orElse(null);
 			SwitchyPlayerData.ProfileImportData profile = importData.members().stream().filter(p -> p.name().equals(scope)).findAny().orElse(null);
 			if (group != null) {
 				profilesToImport = importData.members().stream().filter(p -> group.members().contains(p.id())).toList();
@@ -221,13 +272,13 @@ public class SwitchyCommands {
 			}
 		}
 		try {
-			int updated = data.importProfiles(profilesToImport, player, importData.name(), !EXISTING.equals(scope), feedbackGetter);
+			int updated = data.importProfiles(new PlayerImportData(Optional.ofNullable(importData.name()).orElse(player.getGameProfile().getName()), importData.tag(), importData.privacy(), profilesToImport, importData.groups()), player, !EXISTING.equals(scope), feedbackGetter);
 			feedback.accept(feedbackGetter.apply(updated));
 			return data.size() - beforeSize;
 		} catch (Exception e) {
 			feedback.accept(prefix()
 				.append("error while switching: ").withStyle(ChatFormatting.RED)
-				.append(Objects.requireNonNullElse(e.getMessage(), "???")).withStyle(ChatFormatting.GRAY)
+				.append(Optional.ofNullable(e.getMessage()).orElse("???")).withStyle(ChatFormatting.GRAY)
 				.append(" see server logs for more info.").withStyle(ChatFormatting.RED)
 			);
 			Switchy.LOGGER.error("[Switchy] Error while switching to {} for player {}", data.current(), player.getGameProfile().getName(), e);
@@ -240,7 +291,6 @@ public class SwitchyCommands {
 	}
 
 	private static int export(String input, ServerPlayer player, SwitchyPlayerData data, Consumer<Component> feedback) {
-		String sysName = null;
 		List<SwitchyPlayerData.ProfileImportData> members = new ArrayList<>();
 		try {
 			for (String profileId : data.keySet()) {
@@ -252,40 +302,16 @@ public class SwitchyCommands {
 						type.encode(JsonOps.INSTANCE, profile.components()).ifPresent(e -> components.put(type.id().toString(), e));
 					}
 				}
-				// attempt to rip PK name data
+				// rip out color and name from display name
 				String name = profile.get(SwitchyComponentTypes.NAME);
 				String color = null;
-				String description = null;
-				String pronouns = null;
-				StringBuilder bracketed = new StringBuilder(" ");
 				if (name != null) {
 					Matcher colorMatcher = COLOR_PATTERN.matcher(name);
-					if (colorMatcher.find()) {
-						color = quickTextInscape(colorMatcher.group(1));
-					}
-					String bio = "";
-					Matcher bioMatcher = BIO_PATTERN.matcher(name);
-					if (bioMatcher.find()) {
-						bio = quickTextInscape(bioMatcher.group(1));
-					}
-					List<String> splitBio = Arrays.stream(bio.split(" \\| ")).toList();
-					if (splitBio.size() > 1) {
-						String remainder = splitBio.get(0);
-						Matcher bracketedMatcher = BRACKETED_PATTERN.matcher(splitBio.get(0));
-						while (bracketedMatcher.find()) {
-							String group = bracketedMatcher.group(1);
-							remainder = remainder.replace(group, "").trim();
-							bracketed.append(group);
-						}
-						if (!remainder.isEmpty()) pronouns = remainder;
-						if (!player.getGameProfile().getName().equals(splitBio.get(1))) sysName = splitBio.get(1);
-					}
-					if (splitBio.size() > 2) {
-						description = splitBio.get(2);
-					}
-					name = (SwitchyComponentTypes.NAME.asText(player.getServer(), name).getString() + bracketed).trim(); // strip tags
+					if (colorMatcher.find()) color = quickTextInscape(colorMatcher.group(1));
+					name = SwitchyComponentTypes.NAME.asText(player.getServer(), name).getString();
 				}
 				// pronouns
+				String pronouns = null;
 				try {
 					SwitchyComponentType<String> pronounsComponent = (SwitchyComponentType<String>) SwitchyComponentTypes.instance().get(SwitchyComponentTypes.LAMPBLACK_PRONOUNS);
 					if (pronounsComponent != null) {
@@ -310,13 +336,13 @@ public class SwitchyCommands {
 					avatarUrl = Switchy.CONFIG.exportAvatarUrl.formatted(key);
 				}
 				List<SwitchyPlayerData.ProxyTag> proxyTags = profile.getOrDefault(SwitchyComponentTypes.TAG, new ArrayList<SwitchyComponentTypes.Tag>()).stream().map(t -> new SwitchyPlayerData.ProxyTag(t.prefix(), t.suffix())).toList();
-				members.add(new SwitchyPlayerData.ProfileImportData(null, profileId, name, color, pronouns, description, avatarUrl, proxyTags, components));
+				members.add(new SwitchyPlayerData.ProfileImportData(null, profileId, name, color, pronouns, null, avatarUrl, proxyTags, null, components));
 			}
 			feedback.accept(prefix()
 				.append(Component.literal("exported ").withStyle(ChatFormatting.GREEN))
 				.append(Component.literal("%d".formatted(data.size())))
 				.append(Component.literal(" profile%s. ".formatted(data.size() == 1 ? "" : "s")).withStyle(ChatFormatting.GREEN))
-				.append(clickable("copy", SwitchyComponentTypes.GSON.toJson(new PlayerImportData(sysName, members, null)), ClickEvent.Action.COPY_TO_CLIPBOARD, ChatFormatting.AQUA, "<", ">"))
+				.append(clickable("copy", SwitchyComponentTypes.GSON.toJson(new PlayerImportData(player.getGameProfile().getName(), null, null, members, null)), ClickEvent.Action.COPY_TO_CLIPBOARD, ChatFormatting.AQUA, "<", ">"))
 			);
 		} catch (NbtException e) {
 			throw new RuntimeException(e);
@@ -438,7 +464,7 @@ public class SwitchyCommands {
 		} catch (Exception e) {
 			feedback.accept(prefix()
 				.append("error while switching: ").withStyle(ChatFormatting.RED)
-				.append(Objects.requireNonNullElse(e.getMessage(), "???")).withStyle(ChatFormatting.GRAY)
+				.append(Optional.ofNullable(e.getMessage()).orElse("???")).withStyle(ChatFormatting.GRAY)
 				.append(" see server logs for more info.").withStyle(ChatFormatting.RED)
 			);
 			Switchy.LOGGER.error("[Switchy] Error while switching to {} for player {}", profileId, player.getGameProfile().getName(), e);
@@ -454,7 +480,8 @@ public class SwitchyCommands {
 	public static MutableComponent getProfileText(ServerPlayer player, SwitchyProfile profile, boolean allowBio) {
 		SwitchyComponentType<?> skin = Switchy.PLACEHOLDER_API && PlaceholderApiCompat.hasHeads() ? SwitchyComponentTypes.instance().get(SwitchyComponentTypes.TAILOR_SKIN) : null;
 		MutableComponent name = getNameText(player, profile);
-		return Component.empty().append(skin == null || !profile.contains(skin) ? Component.empty() : skin.asText(player.getServer(), profile.components()).append(" ")).append(allowBio ? name : FormatUtils.stripInteraction(name));
+		MutableComponent skinText = skin == null || !profile.contains(skin) ? Component.empty() : skin.asText(player.getServer(), profile.components());
+		return Component.empty().append(skinText.getString().isEmpty() ? skinText : skinText.append(" ")).append(allowBio ? name : FormatUtils.stripInteraction(name));
 	}
 
 	public static MutableComponent getNameText(ServerPlayer player, SwitchyProfile profile) {
@@ -500,7 +527,7 @@ public class SwitchyCommands {
 			} catch (Exception e) {
 				feedback.accept(prefix()
 					.append("error while self-switching: ").withStyle(ChatFormatting.RED)
-					.append(Objects.requireNonNullElse(e.getMessage(), "???")).withStyle(ChatFormatting.GRAY)
+					.append(Optional.ofNullable(e.getMessage()).orElse("???")).withStyle(ChatFormatting.GRAY)
 					.append(" See server logs for more info.").withStyle(ChatFormatting.RED)
 				);
 				Switchy.LOGGER.error("[Switchy] Error while switching to {} for player {}", profileId, player.getGameProfile().getName(), e);
@@ -600,6 +627,13 @@ public class SwitchyCommands {
 		return changed;
 	}
 
+	private static final List<String> NAME_FORMATS = List.of(
+		SwitchyPlayerData.NAME_FORMAT_DEFAULT,
+		"<hover:'{{pronouns} | }{{system}}{ | {bio}}'>{<#{color}>}{{slug}}",
+		"<hover:'{{paren} | }{{system}}{ | {bio}}'>{<#{color}>}{{shortdn}}",
+		"{<#{color}>}{{name}} {{tag}}"
+	);
+
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registries, Commands.CommandSelection environment) {
 		RequiredArgumentBuilder<CommandSourceStack, String> editBuilder = profile(true);
 		for (SwitchyComponentType<?> type : SwitchyComponentTypes.getStatic().values()) {
@@ -653,6 +687,13 @@ public class SwitchyCommands {
 					)
 				)
 				.then(Commands.literal("import")
+					.then(Commands.literal("format")
+						.then(Commands.argument("name_format", StringArgumentType.greedyString())
+							.suggests((c, b) -> SharedSuggestionProvider.suggest(NAME_FORMATS, b))
+							.executes(c -> execute(c, (i, p, d, f) -> changeNameFormat(p, d, f, c.getArgument("name_format", String.class))))
+						)
+						.executes(c -> execute(c, (i, p, d, f) -> showNameFormat(p, d, f)))
+					)
 					.then(Commands.argument("scope", StringArgumentType.word())
 						.suggests((c, b) -> SharedSuggestionProvider.suggest(List.of(ALL, EXISTING), b))
 						.then(Commands.argument("url", StringArgumentType.greedyString())
@@ -688,7 +729,7 @@ public class SwitchyCommands {
 
 	private static RequiredArgumentBuilder<CommandSourceStack, Identifier> groupedComponent(Boolean enabled) {
 		return Commands.argument("component", IdentifierArgument.id()).suggests((c, b) -> SharedSuggestionProvider.suggestResource(
-			(Iterable<Identifier>) map(c, (i, p, d, f) -> SwitchyComponentTypes.instance().values().stream().filter(t -> enabled == null || (!enabled ^ d.componentSet().contains(t))).map(t -> Objects.requireNonNullElse(t.group(), t.id())).distinct().toList(), false), b));
+			(Iterable<Identifier>) map(c, (i, p, d, f) -> SwitchyComponentTypes.instance().values().stream().filter(t -> enabled == null || (!enabled ^ d.componentSet().contains(t))).map(t -> Optional.ofNullable(t.group()).orElse(t.id())).distinct().toList(), false), b));
 	}
 
 	private static RequiredArgumentBuilder<CommandSourceStack, Identifier> component(Boolean enabled) {
