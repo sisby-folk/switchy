@@ -1,0 +1,7 @@
+{
+  "enabled": true,
+  "codec": "nbt",
+  "path": "Attributes",
+  "group": "status",
+  "hidden": true
+}
