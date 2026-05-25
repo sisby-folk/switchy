@@ -230,7 +230,14 @@ public interface SwitchyComponentType<T> extends TypeRegistry.Type {
 				}
 				return result.resultOrPartial(Switchy.LOGGER::error).orElse(null);
 			} catch (CommandSyntaxException e) {
-				return null;
+				// The path is absent from the player NBT. Some vanilla data omits its key entirely when "empty"
+				// (e.g. MC 26.1 only writes "equipment" when the player has something equipped). Returning null here
+				// would make DispatchMapCodec drop the component when the profile is saved, so the profile would no
+				// longer carry an "empty" value to switch back to - leaving the previous profile's data in place.
+				// Instead, decode the codec's representation of an empty value (e.g. {} -> empty map) so the component
+				// survives serialization and gets written back, clearing the slot on switch. Codecs that can't parse
+				// an empty compound (scalars, lists) still fall back to null, preserving the old behaviour.
+				return codec.parse(registryManager.createSerializationContext(NbtOps.INSTANCE), new CompoundTag()).result().orElse(null);
 			}
 		}
 

@@ -17,6 +17,7 @@ import net.minecraft.util.ExtraCodecs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public interface SwitchyCodecs {
 	PrimitiveCodec<Byte> BYTE = new PrimitiveCodec<>() {
@@ -56,6 +57,11 @@ public interface SwitchyCodecs {
 		}
 		return l;
 	});
+
+	Codec<Map<String, ItemStack>> EQUIPMENT_CODEC = Codec.unboundedMap(
+		Codec.STRING,
+		ITEM_STACK_MAP_CODEC.codec()
+	);
 
 	record StackWithSlot(int slot, ItemStack stack) {
 		public static final Codec<StackWithSlot> CODEC = RecordCodecBuilder.create(

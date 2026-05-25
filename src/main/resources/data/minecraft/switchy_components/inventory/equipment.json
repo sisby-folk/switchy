@@ -1,0 +1,10 @@
+{
+	"enabled": true,
+	"codec": "equipment",
+	"path": "equipment",
+	"preview": "equipment",
+	"priority": 90,
+	"emptyChecker": "equipment",
+	"group": "inventory",
+	"default": {}
+}

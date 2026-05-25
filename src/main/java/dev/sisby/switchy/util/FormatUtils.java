@@ -30,8 +30,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.text.NumberFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -57,6 +59,28 @@ public class FormatUtils {
 			.withStyle(s -> s.withHoverEvent(new HoverEvent.ShowText(Component.empty().append(Component.literal("Contents:\n").withStyle(ChatFormatting.GRAY)).append(ComponentUtils.formatList(inventory.stream().filter(i -> !i.isEmpty()).map(i -> Component.empty().append(Component.literal("- ").withStyle(ChatFormatting.GRAY)).append(String.valueOf(i.getCount())).append("x ").append(i.getHoverName())).toList(), Component.nullToEmpty("\n"))))))
 			.append(String.valueOf(inventory.stream().filter(i -> !i.isEmpty()).count()))
 			.append(Component.literal(" stacks").withStyle(ChatFormatting.GRAY));
+	}
+
+	public static Component equipmentText(Map<String, ItemStack> equipment) {
+		List<Map.Entry<String, ItemStack>> items = equipment == null
+			? Collections.emptyList()
+			: equipment.entrySet().stream().filter(e -> !e.getValue().isEmpty()).toList();
+		if (items.isEmpty())
+			return Component.literal("(nothing equipped)").withStyle(ChatFormatting.GRAY);
+		return Component.empty()
+			.withStyle(s -> s.withHoverEvent(new HoverEvent.ShowText(
+				Component.empty()
+					.append(Component.literal("Equipment:\n").withStyle(ChatFormatting.GRAY))
+					.append(ComponentUtils.formatList(
+						items.stream()
+							.map(e -> Component.empty()
+								.append(Component.literal("- " + prettify(e.getKey()) + ": ").withStyle(ChatFormatting.GRAY))
+								.append(e.getValue().getCount() > 1 ? Component.literal(e.getValue().getCount() + "x ").withStyle(ChatFormatting.GRAY) : Component.empty())
+								.append(e.getValue().getHoverName()))
+							.toList(),
+						Component.literal("\n"))))))
+			.append(String.valueOf(items.size()))
+			.append(Component.literal(" slots").withStyle(ChatFormatting.GRAY));
 	}
 
 	public static Component nbtPathResultText(List<Tag> results, boolean allowHover) {

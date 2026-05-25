@@ -66,30 +66,33 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 		Map.entry(Identifier.fromNamespaceAndPath("minecraft", "text"), ComponentSerialization.CODEC),
 		Map.entry(Identifier.fromNamespaceAndPath("minecraft", "vec3d"), Vec3.CODEC),
 		Map.entry(Identifier.fromNamespaceAndPath("minecraft", "identifier"), Identifier.CODEC),
-		Map.entry(Identifier.fromNamespaceAndPath("minecraft", "inventory"), SwitchyCodecs.INVENTORY_CODEC)
+		Map.entry(Identifier.fromNamespaceAndPath("minecraft", "inventory"), SwitchyCodecs.INVENTORY_CODEC),
+		Map.entry(Identifier.fromNamespaceAndPath("minecraft", "equipment"), SwitchyCodecs.EQUIPMENT_CODEC)
 	));
-	public static final Map<Identifier, SwitchyComponentType.TextProvider<?>> TEXT_PROVIDERS = new HashMap<>(Map.of(
-		Identifier.fromNamespaceAndPath("minecraft", "trunc"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::truncate),
-		Identifier.fromNamespaceAndPath("minecraft", "nbt"), new SwitchyComponentType.SimpleTextProvider<net.minecraft.nbt.Tag>(e -> FormatUtils.nbtPathResultText(List.of(e), true)),
-		Identifier.fromNamespaceAndPath("minecraft", "text"), new SwitchyComponentType.SimpleTextProvider<Component>(t -> t),
-		Identifier.fromNamespaceAndPath("minecraft", "percent"), new SwitchyComponentType.SimpleTextProvider<Number>(n -> Component.nullToEmpty("%.0f%%".formatted(n.floatValue() * 100.0))),
-		Identifier.fromNamespaceAndPath("minecraft", "rounded"), new SwitchyComponentType.SimpleTextProvider<Number>(n -> Component.nullToEmpty("%.0f".formatted(n.floatValue()))),
-		Identifier.fromNamespaceAndPath("minecraft", "halves"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::statText),
-		Identifier.fromNamespaceAndPath("minecraft", "vec3d"), new SwitchyComponentType.SimpleTextProvider<Vec3>(c -> ComponentUtils.formatList(List.of(
+	public static final Map<Identifier, SwitchyComponentType.TextProvider<?>> TEXT_PROVIDERS = new HashMap<>(Map.ofEntries(
+		Map.entry(Identifier.fromNamespaceAndPath("minecraft", "trunc"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::truncate)),
+		Map.entry(Identifier.fromNamespaceAndPath("minecraft", "nbt"), new SwitchyComponentType.SimpleTextProvider<net.minecraft.nbt.Tag>(e -> FormatUtils.nbtPathResultText(List.of(e), true))),
+		Map.entry(Identifier.fromNamespaceAndPath("minecraft", "text"), new SwitchyComponentType.SimpleTextProvider<Component>(t -> t)),
+		Map.entry(Identifier.fromNamespaceAndPath("minecraft", "percent"), new SwitchyComponentType.SimpleTextProvider<Number>(n -> Component.nullToEmpty("%.0f%%".formatted(n.floatValue() * 100.0)))),
+		Map.entry(Identifier.fromNamespaceAndPath("minecraft", "rounded"), new SwitchyComponentType.SimpleTextProvider<Number>(n -> Component.nullToEmpty("%.0f".formatted(n.floatValue())))),
+		Map.entry(Identifier.fromNamespaceAndPath("minecraft", "halves"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::statText)),
+		Map.entry(Identifier.fromNamespaceAndPath("minecraft", "vec3d"), new SwitchyComponentType.SimpleTextProvider<Vec3>(c -> ComponentUtils.formatList(List.of(
 			Component.empty().append(Component.literal("X:").withStyle(ChatFormatting.GRAY)).append(Component.literal(String.valueOf(BlockPos.containing(c).getX()))),
 			Component.empty().append(Component.literal("Y:").withStyle(ChatFormatting.GRAY)).append(Component.literal(String.valueOf(BlockPos.containing(c).getY()))),
 			Component.empty().append(Component.literal("Z:").withStyle(ChatFormatting.GRAY)).append(Component.literal(String.valueOf(BlockPos.containing(c).getZ())))
-		), Component.literal(", ").withStyle(ChatFormatting.GRAY))),
-		Identifier.fromNamespaceAndPath("minecraft", "identifier"), new SwitchyComponentType.SimpleTextProvider<Identifier>(i -> Component.nullToEmpty(FormatUtils.prettify(i.getPath()))),
-		Identifier.fromNamespaceAndPath("minecraft", "inventory"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::inventoryText),
-		Identifier.fromNamespaceAndPath("minecraft", "skin"), new SwitchyComponentType.SimpleServerTextProvider<>(FormatUtils::skin)
+		), Component.literal(", ").withStyle(ChatFormatting.GRAY)))),
+		Map.entry(Identifier.fromNamespaceAndPath("minecraft", "identifier"), new SwitchyComponentType.SimpleTextProvider<Identifier>(i -> Component.nullToEmpty(FormatUtils.prettify(i.getPath())))),
+		Map.entry(Identifier.fromNamespaceAndPath("minecraft", "inventory"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::inventoryText)),
+		Map.entry(Identifier.fromNamespaceAndPath("minecraft", "skin"), new SwitchyComponentType.SimpleServerTextProvider<>(FormatUtils::skin)),
+		Map.entry(Identifier.fromNamespaceAndPath("minecraft", "equipment"), new SwitchyComponentType.SimpleTextProvider<>(FormatUtils::equipmentText))
 	));
 
 	public static final Map<Identifier, SwitchyComponentType.ArgumentEditor<?>> ARGUMENT_EDITORS = new HashMap<>(Map.of(
 		Identifier.fromNamespaceAndPath("minecraft", "text"), new SwitchyComponentType.SimpleArgumentEditor<Component>(e -> Commands.argument("name", StringArgumentType.greedyString()).executes(c -> e.execute(c, Component.nullToEmpty(c.getArgument("name", String.class)))))
 	));
 	public static final Map<Identifier, SwitchyComponentType.EmptyChecker<?>> EMPTY_CHECKERS = new HashMap<>(Map.of(
-		Identifier.fromNamespaceAndPath("minecraft", "inventory"), new SwitchyComponentType.SimpleEmptyChecker<NonNullList<ItemStack>>(dl -> dl.stream().allMatch(ItemStack::isEmpty))
+		Identifier.fromNamespaceAndPath("minecraft", "inventory"), new SwitchyComponentType.SimpleEmptyChecker<NonNullList<ItemStack>>(dl -> dl.stream().allMatch(ItemStack::isEmpty)),
+		Identifier.fromNamespaceAndPath("minecraft", "equipment"), new SwitchyComponentType.SimpleEmptyChecker<Map<String, ItemStack>>(m -> m == null || m.isEmpty() || m.values().stream().allMatch(ItemStack::isEmpty))
 	));
 	public static final Map<Identifier, SwitchyComponentType.Initializer<?>> INITIALIZERS = new HashMap<>(Map.of(
 		Identifier.fromNamespaceAndPath("minecraft", "spawn_pos"), (nbt, player, id) -> ((AccessServerPlayer) player).getServer().overworld().getRespawnData().pos().getCenter()
@@ -116,6 +119,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 	public static final Identifier LEVEL = Identifier.fromNamespaceAndPath("minecraft", "xp/level");
 	public static final Identifier INVENTORY = Identifier.fromNamespaceAndPath("minecraft", "inventory/inventory");
 	public static final Identifier ENDER_CHEST = Identifier.fromNamespaceAndPath("minecraft", "inventory/ender_chest");
+	public static final Identifier EQUIPMENT = Identifier.fromNamespaceAndPath("minecraft", "inventory/equipment");
 	public static final Identifier ORIGINS_ORIGIN = Identifier.fromNamespaceAndPath("origins", "origin");
 	public static final Identifier ORIGINS_POWERS = Identifier.fromNamespaceAndPath("origins", "powers");
 	public static final Identifier TAILOR_SKIN = Identifier.fromNamespaceAndPath("fabrictailor", "skin");
