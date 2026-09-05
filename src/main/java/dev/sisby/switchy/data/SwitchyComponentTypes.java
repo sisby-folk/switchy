@@ -95,7 +95,7 @@ public class SwitchyComponentTypes extends TypeRegistry<SwitchyComponentType<?>>
 		Identifier.fromNamespaceAndPath("minecraft", "equipment"), new SwitchyComponentType.SimpleEmptyChecker<Map<String, ItemStack>>(m -> m == null || m.isEmpty() || m.values().stream().allMatch(ItemStack::isEmpty))
 	));
 	public static final Map<Identifier, SwitchyComponentType.Initializer<?>> INITIALIZERS = new HashMap<>(Map.of(
-		Identifier.fromNamespaceAndPath("minecraft", "spawn_pos"), (nbt, player, id) -> ((AccessServerPlayer) player).getServer().overworld().getRespawnData().pos().getCenter()
+		Identifier.fromNamespaceAndPath("minecraft", "spawn_pos"), (nbt, player, id) -> Vec3.atCenterOf(((AccessServerPlayer) player).getServer().overworld().getRespawnData().pos())
 	));
 
 	public static final Identifier NAME_ID = Switchy.id("name");
